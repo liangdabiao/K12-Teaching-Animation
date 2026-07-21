@@ -369,7 +369,7 @@
                         <div class="empty-queue-msg">队列为空</div>
                     </div>
                     <div class="queue-info">
-                        <p>入度为0的节点会加入队列，按先进先出(FIFO)顺序处理。</p>
+                        <p>拓扑排序是对有向无环图(DAG)的顶点进行线性排序，使得对每条边(u,v)，u都排在v前面。算法：①找入度为0的顶点加入队列；②弹出顶点输出；③将其邻接顶点入度减1，若减为0则入队；④重复直到队列为空。</p>
                     </div>
                 </section>
 
@@ -1091,5 +1091,7 @@
             window.topologicalSortAnimation = animation;
         });
     </script>
+
+<div class="legend" style="padding:10px;margin:10px;"><span class="li"><b style="color:#6C5CE7">●</b> 入度=0(待处理)</span><span class="li"><b style="color:#00b894">●</b> 已排序</span><span class="li"><b style="color:#636e72">●</b> 未处理</span></div>
 </body>
 </html>

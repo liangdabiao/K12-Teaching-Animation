@@ -308,7 +308,7 @@
             <div class="info-box">
                 <div class="info-title">调用栈说明</div>
                 <div class="info-content">
-                    <p>每个方块代表一次递归调用：</p>
+                    <p>汉诺塔问题：将n个圆盘从A柱移到C柱，每次只能移动一个盘，大盘不能放在小盘上。递归解法：①将n-1个盘从A经C移到B；②将第n个盘从A移到C；③将n-1个盘从B经A移到C。总移动次数=2ⁿ-1。</p>
                     <p><span class="highlight">move(n, from, to, via)</span></p>
                     <p>参数含义：将 <span class="highlight">n</span> 个盘子从 <span class="highlight">from</span> 柱移动到 <span class="highlight">to</span> 柱，借助 <span class="highlight">via</span> 柱。</p>
                     <p><span style="color:#e67e22">高亮</span>表示当前正在执行的调用。</p>

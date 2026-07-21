@@ -3,45 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>实验室制取二氧化碳的全微观过程</title>
+<title>实验室制取二氧化碳（微观）</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#1a0a15 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#e84393; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#e84393; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#e84393; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#fd79a8; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
 <header class="topbar">
   <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">实验室制取二氧化碳的全微观过程</span>
+  <span class="title">实验室制取二氧化碳（微观）</span>
 </header>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>实验室用大理石(CaCO₃)与稀盐酸(HCl)反应制取CO₂。微观上，H⁺攻击CaCO₃晶格，Ca²⁺溶出，CO₃²⁻分解为CO₂分子和H₂O。CO₂分子从液面逸出。</p>
-    <div class="legend"><span class="li"><b style="color:#e84393">●</b> CaCO₃</span><span class="li"><b style="color:#0984e3">●</b> HCl</span><span class="li"><b style="color:#636e72">●</b> CO₂↑</span><span class="li"><b style="color:#00cec9">●</b> H₂O</span></div>
-  </aside>
+    <p>实验室制取CO₂：CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑。用大理石（CaCO₃）与稀盐酸反应，不用浓盐酸（挥发HCl气体）也不用稀硫酸（生成CaSO₄覆盖层阻止反应）。收集用向上排空气法。</p>
+    <div class="legend"><span class="li"><b style="color:#dfe6e9">■</b> CaCO₃（大理石）</span><span class="li"><b style="color:#0984e3">●</b> HCl分子</span><span class="li"><b style="color:#636e72">●</b> CO₂分子</span><span class="li"><b style="color:#00b894">●</b> H₂O分子</span></div>
+  <div class="key-points"><h3>实验要点</h3><ul><li>药品：大理石（CaCO₃）+ 稀盐酸（HCl）</li><li>方程式：CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑</li><li>不用稀H₂SO₄：生成CaSO₄微溶覆盖阻止反应</li><li>不用浓HCl：挥发使CO₂不纯</li><li>收集：向上排空气法（CO₂密度>空气）</li><li>检验：通入澄清石灰水→变浑浊</li></ul></div>
+        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>实验要点</h3><ul><li>药品：大理石(CaCO₃) + 稀盐酸(HCl)</li><li>方程式：CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑</li><li>不用稀H₂SO₄：生成CaSO₄覆盖阻止反应</li><li>收集：向上排空气法(CO₂密度>空气)</li><li>检验：通入澄清石灰水→变浑浊</li></ul></div>
+    </aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
@@ -56,20 +55,34 @@ const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
 const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
-const R={t:0,bubbles:[]};
+
+const C={t:0,p:0};
 function sceneInit(){sceneReset();}
-function sceneReset(){{t:0,bubbles:[]};}
-function sceneUpdate(dt){R.t+=dt;for(let i=0;i<2;i++)R.bubbles.push({x:cv.width*0.4+(Math.random()-0.5)*40,y:cv.height*0.6,vy:-40-Math.random()*30,vx:(Math.random()-0.5)*10,life:2,r:3+Math.random()*3});R.bubbles.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;b.r+=dt;});R.bubbles=R.bubbles.filter(b=>b.life>0);}
+function sceneReset(){C.t=0;C.p=0;}
+function sceneUpdate(dt){if(C.p<1)C.p=Math.min(1,C.p+dt*0.25);}
 function sceneDraw(){
-ctx.clearRect(0,0,cv.width,cv.height);const W=cv.width,H=cv.height;
-ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText('实验室制取CO₂：CaCO₃+2HCl→CaCl₂+H₂O+CO₂↑',W/2,25);
-ctx.fillStyle='rgba(9,132,227,0.15)';ctx.fillRect(W*0.2,H*0.5,W*0.6,H*0.35);ctx.strokeStyle='#0984e3';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.2,H*0.5);ctx.lineTo(W*0.8,H*0.5);ctx.stroke();
-ctx.fillStyle='#aaa';ctx.font='11px sans-serif';ctx.fillText('稀盐酸',W*0.15,H*0.5-5);
-ctx.fillStyle='#636e72';for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(W*0.35+i*12,H*0.75,6,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#fff';ctx.font='10px sans-serif';ctx.fillText('CaCO₃(大理石)',W*0.4,H*0.75+20);
-R.bubbles.forEach(b=>{ctx.strokeStyle='rgba(99,110,114,0.7)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.stroke();ctx.fillStyle='rgba(99,110,114,0.2)';ctx.fill();});
-ctx.fillStyle='#636e72';ctx.font='bold 12px sans-serif';ctx.fillText('CO₂↑',W*0.4,H*0.3);
-ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='12px sans-serif';ctx.fillText('H⁺攻击CaCO₃晶格→CO₃²⁻分解→CO₂分子从液面逸出',W/2,H-15);
-statusEl.textContent="CaCO₃+2HCl→CaCl₂+H₂O+CO₂↑：H⁺攻击晶格→CO₂逸出";
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const cx=cv.width/2,cy=cv.height/2;
+  // CaCO3 solid (left) shrinking
+  const solidR=40*(1-C.p*0.6);
+  ctx.fillStyle='#cbd5e1';ctx.beginPath();ctx.arc(cx-180,cy,solidR,0,7);ctx.fill();
+  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='center';
+  ctx.fillText('CaCO₃ 大理石',cx-180,cy+solidR+18);
+  // acid
+  ctx.fillStyle='rgba(59,130,246,0.2)';ctx.fillRect(cx-260,cy+60,260,40);
+  ctx.fillStyle='#cdd7ea';ctx.fillText('稀盐酸 HCl',cx-130,cy+85);
+  // flying CO2 molecules
+  const n=Math.floor(C.p*14);
+  for(let i=0;i<n;i++){
+    const a=i/n*6.28;const rr=60+ (i*17)%120;
+    const x=cx+Math.cos(a+ C.t)*rr, y=cy+Math.sin(a*1.3+C.t)*rr*0.6;
+    ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fill();
+    ctx.fillStyle='#06281c';ctx.font='10px sans-serif';ctx.fillText('CO₂',x,y+3);
+  }
+  // equation
+  ctx.fillStyle='#e8edf6';ctx.font='15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑',cx,cy-120);
+  statusEl.textContent='反应进度 '+Math.round(C.p*100)+'% ｜ 微观：CaCO₃ 被酸溶解，CO₂ 分子不断逸出';
 }
 
 let playing=false,lastT=0,speed=1,t=0;
@@ -86,7 +99,6 @@ speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
 function draw(){if(window.sceneDraw)sceneDraw();}
 if(window.sceneInit)sceneInit();
 draw();
-
 </script>
 </body>
 </html>

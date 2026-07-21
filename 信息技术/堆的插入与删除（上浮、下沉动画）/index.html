@@ -5,29 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>堆的插入与删除</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#0a0a1a 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#6C5CE7; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#6C5CE7; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#6C5CE7; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#a29bfe; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
@@ -39,9 +36,11 @@ main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>本动画演示了堆的插入与删除的过程和原理，通过交互式可视化帮助理解核心概念。</p>
-    <div class="legend"><span class="li"><b style="color:#6C5CE7">●</b> 主要元素</span></div>
-  </aside>
+    <p>堆是<b>完全二叉树</b>且具堆序性（大顶堆父≥子）。插入新元素后<b>上浮</b>恢复堆序；删除堆顶后<b>下沉</b>（与子节点交换）恢复堆序。</p>
+    <div class="legend"><span class='dot' style='background:#fbbf24'></span>堆节点</div>
+  
+        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>堆操作</h3><ul><li><b>插入</b>：放末尾→上浮调整 O(logn)</li><li><b>删除最大</b>：首尾交换→下沉调整 O(logn)</li><li>大顶堆：父≥子；小顶堆：父≤子</li><li>数组存储：父i→子2i+1, 2i+2</li><li>应用：优先队列、堆排序</li></ul></div>
+    </aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>电场与电场线</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;--good:#00b894;--warn:#fdcb6e;--bad:#d63031;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#060e1a;border:1px solid var(--line);border-radius:12px}
+.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin-bottom:10px;color:var(--accent)}
+.panel p{font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:12px}
+.key-points{margin-top:12px;padding:12px;background:rgba(9,132,227,0.08);border-radius:8px;font-size:13px;line-height:1.8}
+.key-points h3{font-size:14px;margin-bottom:8px;color:var(--warn)}
+.key-points ul{padding-left:18px}.key-points li{margin-bottom:4px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.legend span{font-size:12px;display:flex;align-items:center;gap:5px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#1a2d4a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.charge-btns{display:flex;gap:8px;margin:10px 0}
+.charge-btns button{font-size:12px;padding:6px 12px}
+.charge-btns button.active{background:var(--accent);border-color:var(--accent)}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回物理</a>
+  <span>电场与电场线</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>电场是电荷周围空间存在的一种特殊物质。正电荷电场线向外辐射，负电荷电场线向内汇聚。电场线越密→电场越强。沿电场线方向电势降低。等势面与电场线垂直。</p>
+    <div class="legend">
+      <span><span class="dot" style="background:#d63031"></span>正电荷+</span>
+      <span><span class="dot" style="background:#0984e3"></span>负电荷-</span>
+      <span><span class="dot" style="background:#fdcb6e"></span>电场线</span>
+      <span><span class="dot" style="background:#00b894"></span>等势面</span>
+    </div>
+    <div class="charge-btns">
+      <button id="btnPos" class="active" onclick="setCharge('pos')">正电荷</button>
+      <button id="btnNeg" onclick="setCharge('neg')">负电荷</button>
+      <button id="btnDipole" onclick="setCharge('dipole')">等量异种</button>
+      <button id="btnSame" onclick="setCharge('same')">等量同种</button>
+    </div>
+    <div class="key-points">
+      <h3>核心公式</h3>
+      <ul>
+        <li>电场强度：E = F/q（定义式）</li>
+        <li>点电荷电场：E = kQ/r²</li>
+        <li>匀强电场：E = U/d</li>
+        <li>电场力：F = qE</li>
+        <li>电势差：U_AB = φ_A - φ_B</li>
+        <li>电场力做功：W = qU = qEd</li>
+        <li>沿电场线方向电势降低</li>
+        <li>等势面⊥电场线</li>
+      </ul>
+    </div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+let playing=false,t=0,speed=1,chargeType='pos';
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(700,r.width-8));cv.height=Math.max(400,Math.min(600,r.height-8));}
+window.addEventListener('resize',()=>{fit();});fit();
+
+function setCharge(type){
+  chargeType=type;
+  document.querySelectorAll('.charge-btns button').forEach(b=>b.classList.remove('active'));
+  document.getElementById({pos:'btnPos',neg:'btnNeg',dipole:'btnDipole',same:'btnSame'}[type]).classList.add('active');
+  t=0;draw();
+}
+
+function getCharges(){
+  const cx=cv.width/2,cy=cv.height/2;
+  switch(chargeType){
+    case 'pos': return [{x:cx,y:cy,q:1}];
+    case 'neg': return [{x:cx,y:cy,q:-1}];
+    case 'dipole': return [{x:cx-80,y:cy,q:1},{x:cx+80,y:cy,q:-1}];
+    case 'same': return [{x:cx-80,y:cy,q:1},{x:cx+80,y:cy,q:1}];
+  }
+}
+
+function fieldAt(x,y,charges){
+  let Ex=0,Ey=0;
+  for(const c of charges){
+    const dx=x-c.x,dy=y-c.y;
+    const r2=dx*dx+dy*dy;
+    if(r2<100)continue;
+    const r=Math.sqrt(r2);
+    const E=c.q/r2*5000;
+    Ex+=E*dx/r;Ey+=E*dy/r;
+  }
+  return {Ex,Ey};
+}
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const charges=getCharges();
+  
+  // 画等势面
+  ctx.globalAlpha=0.15;
+  for(const c of charges){
+    for(let r=30;r<200;r+=30){
+      ctx.strokeStyle=c.q>0?'#d63031':'#0984e3';
+      ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(c.x,c.y,r,0,Math.PI*2);ctx.stroke();
+    }
+  }
+  ctx.globalAlpha=1;
+  
+  // 画电场线
+  const nLines=chargeType==='pos'||chargeType==='neg'?16:12;
+  for(let i=0;i<nLines;i++){
+    const angle=i/nLines*Math.PI*2;
+    let px,py;
+    if(chargeType==='neg'){
+      px=charges[0].x+Math.cos(angle)*180;
+      py=charges[0].y+Math.sin(angle)*180;
+    } else {
+      px=charges[0].x+Math.cos(angle)*15;
+      py=charges[0].y+Math.sin(angle)*15;
+    }
+    
+    ctx.strokeStyle='rgba(253,203,110,0.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(px,py);
+    
+    for(let step=0;step<200;step++){
+      const {Ex,Ey}=fieldAt(px,py,charges);
+      const Em=Math.sqrt(Ex*Ex+Ey*Ey);
+      if(Em<0.001)break;
+      const ds=3;
+      const dir=charges[0].q>0&&chargeType!=='neg'?1:(chargeType==='neg'?-1:1);
+      px+=dir*Ex/Em*ds;py+=dir*Ey/Em*ds;
+      if(px<0||px>W||py<0||py>H)break;
+      ctx.lineTo(px,py);
+      
+      // 检查是否接近负电荷
+      let tooClose=false;
+      for(const c of charges){
+        if(c.q<0){const dx=px-c.x,dy=py-c.y;if(dx*dx+dy*dy<200)tooClose=true;}
+      }
+      if(tooClose)break;
+    }
+    ctx.stroke();
+  }
+  
+  // 动画：运动的试探电荷
+  if(playing){
+    const testAngle=t*0.5%(Math.PI*2);
+    const testR=40+((t*20)%150);
+    const tx=charges[0].x+Math.cos(testAngle)*testR;
+    const ty=charges[0].y+Math.sin(testAngle)*testR;
+    const {Ex,Ey}=fieldAt(tx,ty,charges);
+    const Em=Math.sqrt(Ex*Ex+Ey*Ey);
+    
+    if(Em>0.01){
+      // 试探电荷
+      ctx.fillStyle='#fdcb6e';
+      ctx.beginPath();ctx.arc(tx,ty,5,0,Math.PI*2);ctx.fill();
+      // 力的方向
+      ctx.strokeStyle='#fdcb6e';ctx.lineWidth=2;
+      const fLen=Math.min(Em*300,30);
+      ctx.beginPath();ctx.moveTo(tx,ty);
+      ctx.lineTo(tx+Ex/Em*fLen,ty+Ey/Em*fLen);ctx.stroke();
+    }
+  }
+  
+  // 画电荷
+  for(const c of charges){
+    ctx.fillStyle=c.q>0?'#d63031':'#0984e3';
+    ctx.beginPath();ctx.arc(c.x,c.y,14,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 18px sans-serif';ctx.textAlign='center';
+    ctx.fillText(c.q>0?'+':'−',c.x,c.y+6);
+  }
+  
+  // 标注
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';ctx.textAlign='left';
+  ctx.fillText('E = kQ/r²',10,20);
+  ctx.fillText('沿电场线方向电势降低',10,38);
+  
+  statusEl.textContent='电场线分布 | '+{pos:'正点电荷',neg:'负点电荷',dipole:'等量异种电荷',same:'等量同种电荷'}[chargeType];
+}
+
+let lastTime=0;
+function loop(ts){
+  if(!lastTime)lastTime=ts;
+  const dt=(ts-lastTime)/1000*speed;
+  lastTime=ts;
+  if(playing){t+=dt;}
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';};
+document.getElementById('resetBtn').onclick=function(){t=0;draw();};
+document.getElementById('speed').oninput=function(){speed=+this.value;};
+
+draw();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -349,6 +349,7 @@
         <div class="main-content">
             <div class="panel">
                 <h2 class="panel-title">汉诺塔动画视图</h2>
+            <p>汉诺塔问题要求将n个圆盘从A柱移到C柱，规则：每次移动一个盘，大盘不能放在小盘上。递归解法：①将n-1个盘从A经C移到B；②将第n个盘从A移到C；③将n-1个盘从B经A移到C。总移动次数为2ⁿ-1。</p>
                 <div id="animation-container">
                     <canvas id="hanoiCanvas" width="800" height="400"></canvas>
                 </div>
@@ -933,5 +934,7 @@
             const visualizer = new HanoiVisualizer();
         });
     </script>
+
+<div class="legend" style="padding:10px;margin:10px;"><span class="li"><b style="color:#6C5CE7">■</b> 正在移动的盘</span><span class="li"><b style="color:#00b894">■</b> 已就位的盘</span><span class="li"><b style="color:#dfe6e9">│</b> 柱子</span></div>
 </body>
 </html>

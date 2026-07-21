@@ -3,370 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>细胞呼吸的有氧呼吸三阶段</title>
+<title>有氧呼吸三阶段</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#0a1a10 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#00b894; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#00b894; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#00b894; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#55efc4; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
 <header class="topbar">
   <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">细胞呼吸的有氧呼吸三阶段</span>
+  <span class="title">有氧呼吸三阶段</span>
 </header>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>有氧呼吸三阶段：①糖酵解（细胞质基质）：葡萄糖分解为丙酮酸，产2ATP；②丙酮酸氧化（线粒体基质）：丙酮酸脱羧生成乙酰CoA，产2ATP；③电子传递链（线粒体内膜）：[H]与O₂结合生成水，产约32ATP。总计约36ATP。</p>
-    <div class="legend"><span class="li"><b style="color:#00b894">●</b> 糖酵解</span><span class="li"><b style="color:#0984e3">●</b> 丙酮酸氧化</span><span class="li"><b style="color:#6c5ce7">●</b> 电子传递链</span><span class="li"><b style="color:#fdcb6e">⚡</b> ATP</span></div>
-  </aside>
-</main>
-<div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
-  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
-</div>
-<script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
-
-const S={t:0,step:0,progress:0,atp:0,molecules:[],h_count:0};
-const STAGES=[
-  {name:'① 糖酵解',loc:'细胞质基质',color:'#00b894',atp:2,desc:'葡萄糖 → 2丙酮酸 + 2ATP + 2[H]'},
-  {name:'② 丙酮酸氧化',loc:'线粒体基质',color:'#0984e3',atp:2,desc:'2丙酮酸 → 6CO₂ + 20[H] + 2ATP'},
-  {name:'③ 电子传递链',loc:'线粒体内膜',color:'#6c5ce7',atp:32,desc:'24[H] + 6O₂ → 12H₂O + 32ATP'}
-];
-
-function sceneInit(){sceneReset();}
-function sceneReset(){S.t=0;S.step=0;S.progress=0;S.atp=0;S.molecules=[];S.h_count=0;}
-function sceneStep(d){S.step=Math.max(0,Math.min(2,S.step+d));S.progress=0;}
-function sceneUpdate(dt){
-  S.t+=dt;S.progress=Math.min(1,S.progress+dt*0.25);
-  // 生成分子粒子
-  if(S.step===0&&Math.random()<0.05){
-    S.molecules.push({type:'glucose',x:80,y:cv.height/2,vx:30,vy:(Math.random()-0.5)*10,life:3});
-  }
-  if(S.step>=0&&Math.random()<0.03){
-    S.molecules.push({type:'pyruvate',x:cv.width*0.3,y:cv.height/2+Math.random()*40-20,vx:20,vy:0,life:2});
-  }
-  if(S.step>=1&&Math.random()<0.04){
-    S.molecules.push({type:'co2',x:cv.width*0.5+Math.random()*40,y:cv.height/2,vx:(Math.random()-0.5)*15,vy:-20,life:2});
-  }
-  if(S.step>=2&&Math.random()<0.06){
-    S.molecules.push({type:'h',x:cv.width*0.65+Math.random()*30,y:cv.height/2+Math.random()*60-30,vx:15,vy:(Math.random()-0.5)*10,life:1.5});
-  }
-  if(S.step>=2&&Math.random()<0.03){
-    S.molecules.push({type:'water',x:cv.width*0.85,y:cv.height/2+Math.random()*40-20,vx:10,vy:(Math.random()-0.5)*5,life:2});
-  }
-  S.molecules.forEach(m=>{m.x+=m.vx*dt;m.y+=m.vy*dt;m.life-=dt;});
-  S.molecules=S.molecules.filter(m=>m.life>0);
-  // ATP计数
-  const targetAtp=S.step===0?2:S.step===1?4:36;
-  S.atp+=(targetAtp-S.atp)*dt*0.5;
-}
-
-function drawMolecule(m){
-  ctx.globalAlpha=Math.min(1,m.life);
-  switch(m.type){
-    case 'glucose':
-      ctx.fillStyle='#fdcb6e';ctx.beginPath();ctx.arc(m.x,m.y,8,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#000';ctx.font='8px sans-serif';ctx.textAlign='center';ctx.fillText('G',m.x,m.y+3);
-      break;
-    case 'pyruvate':
-      ctx.fillStyle='#e17055';ctx.beginPath();ctx.arc(m.x,m.y,5,0,Math.PI*2);ctx.fill();
-      break;
-    case 'co2':
-      ctx.fillStyle='#636e72';ctx.beginPath();ctx.arc(m.x,m.y,4,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#fff';ctx.font='7px sans-serif';ctx.textAlign='center';ctx.fillText('CO₂',m.x,m.y+3);
-      break;
-    case 'h':
-      ctx.fillStyle='#fdcb6e';ctx.beginPath();ctx.arc(m.x,m.y,3,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#000';ctx.font='6px sans-serif';ctx.textAlign='center';ctx.fillText('[H]',m.x,m.y+2);
-      break;
-    case 'water':
-      ctx.fillStyle='#74b9ff';ctx.beginPath();ctx.arc(m.x,m.y,4,0,Math.PI*2);ctx.fill();
-      break;
-  }
-  ctx.globalAlpha=1;
-}
-
-function drawMitochondria(x,y,w,h){
-  // 外膜
-  ctx.strokeStyle='rgba(9,132,227,0.6)';ctx.lineWidth=3;
-  ctx.beginPath();ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);ctx.stroke();
-  // 内膜(嵴)
-  ctx.strokeStyle='rgba(9,132,227,0.4)';ctx.lineWidth=2;
-  for(let i=1;i<5;i++){
-    const cx2=x+w*0.2+i*w*0.15;
-    ctx.beginPath();
-    ctx.moveTo(cx2,y+h*0.2);
-    ctx.quadraticCurveTo(cx2+10,y+h*0.5,cx2,y+h*0.8);
-    ctx.stroke();
-  }
-}
-
-function drawATP(x,y,count,pulse){
-  const n=Math.min(Math.floor(count),36);
-  for(let i=0;i<n;i++){
-    const col=Math.floor(i/6);const row=i%6;
-    const ax=x+row*18;const ay=y+col*18;
-    const scale=1+Math.sin(S.t*3+i)*0.1*pulse;
-    ctx.save();ctx.translate(ax,ay);ctx.scale(scale,scale);
-    ctx.fillStyle='#fdcb6e';ctx.beginPath();
-    ctx.moveTo(-6,-4);ctx.lineTo(6,-4);ctx.lineTo(6,4);ctx.lineTo(-6,4);ctx.closePath();ctx.fill();
-    ctx.fillStyle='#000';ctx.font='bold 6px sans-serif';ctx.textAlign='center';
-    ctx.fillText('A',0,2);
-    ctx.restore();
-  }
-  ctx.fillStyle='#fdcb6e';ctx.font='bold 14px sans-serif';ctx.textAlign='left';
-  ctx.fillText(`≈ ${Math.floor(S.atp)} ATP`,x+n*18+10,y+5);
-}
-
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const W=cv.width,H=cv.height;
+    <p>有氧呼吸在细胞质基质与线粒体中进行三阶段：①糖酵解（细胞质，2ATP）；②丙酮酸氧化（线粒体基质）；③电子传递链（内膜，大量ATP）。1分子葡萄糖彻底氧化约产 36 ATP。</p>
+    <div class="legend"><span class='dot' style='background:#34d399'></span>糖酵解&nbsp;<span class='dot' style='background:#7dd3fc'></span>丙酮酸氧化&nbsp;<span class='dot' style='background:#a78bfa'></span>电子传递链</div>
   
-  // 标题
-  ctx.fillStyle='#fff';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-  ctx.fillText(STAGES[S.step].name+' — '+STAGES[S.step].loc,W/2,25);
-  ctx.fillStyle='#aaa';ctx.font='12px sans-serif';
-  ctx.fillText(STAGES[S.step].desc,W/2,45);
-  
-  // 阶段指示
-  for(let i=0;i<3;i++){
-    const sx=W/2-80+i*80;
-    ctx.fillStyle=i<=S.step?STAGES[i].color:'rgba(255,255,255,0.2)';
-    ctx.fillRect(sx-25,55,50,4);
-    ctx.fillStyle=i<=S.step?'#fff':'#666';ctx.font='10px sans-serif';
-    ctx.fillText(i+1,sx,53);
-  }
-  
-  // 细胞质区域
-  ctx.fillStyle='rgba(0,184,148,0.05)';
-  ctx.fillRect(20,70,W*0.28,H-100);
-  ctx.fillStyle='rgba(0,184,148,0.4)';ctx.font='11px sans-serif';ctx.textAlign='center';
-  ctx.fillText('细胞质基质',W*0.14,H-20);
-  
-  // 线粒体区域
-  drawMitochondria(W*0.3,70,W*0.65,H-100);
-  ctx.fillStyle='rgba(9,132,227,0.4)';ctx.font='11px sans-serif';
-  ctx.fillText('线粒体',W*0.62,H-20);
-  
-  // 各阶段详细动画
-  const p=S.progress;
-  
-  // 阶段1: 糖酵解
-  if(S.step>=0){
-    const active=S.step===0;
-    const alpha=active?1:0.4;
-    ctx.globalAlpha=alpha;
-    // 葡萄糖分子
-    ctx.fillStyle='#fdcb6e';ctx.beginPath();ctx.arc(W*0.1,120,12,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#000';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
-    ctx.fillText('C₆H₁₂O₆',W*0.1,124);
-    
-    // 反应箭头
-    if(active&&p>0.3){
-      ctx.strokeStyle='#00b894';ctx.lineWidth=2;
-      ctx.beginPath();ctx.moveTo(W*0.15,120);ctx.lineTo(W*0.25,120);ctx.stroke();
-      ctx.fillStyle='#00b894';ctx.beginPath();
-      ctx.moveTo(W*0.25,115);ctx.lineTo(W*0.27,120);ctx.lineTo(W*0.25,125);ctx.fill();
-    }
-    // 丙酮酸产物
-    if(active&&p>0.5){
-      for(let i=0;i<2;i++){
-        ctx.fillStyle='#e17055';ctx.beginPath();ctx.arc(W*0.28,110+i*20,7,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle='#fff';ctx.font='8px sans-serif';ctx.fillText('丙酮酸',W*0.28,113+i*20);
-      }
-    }
-    ctx.globalAlpha=1;
-  }
-  
-  // 阶段2: 丙酮酸氧化(三羧酸循环)
-  if(S.step>=1){
-    const active=S.step===1;
-    const alpha=active?1:0.4;
-    ctx.globalAlpha=alpha;
-    const ccx=W*0.45,ccy=H/2;
-    
-    // 循环圈
-    ctx.strokeStyle='#0984e3';ctx.lineWidth=3;ctx.setLineDash([5,5]);
-    ctx.beginPath();ctx.arc(ccx,ccy,50,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#0984e3';ctx.font='12px sans-serif';ctx.textAlign='center';
-    ctx.fillText('三羧酸循环',ccx,ccy);
-    
-    // CO₂释放
-    if(active&&p>0.3){
-      for(let i=0;i<6;i++){
-        const a=S.t*0.5+i*Math.PI/3;
-        const rx=ccx+Math.cos(a)*70;
-        const ry=ccy-30-Math.abs(Math.sin(a))*40;
-        ctx.fillStyle='rgba(99,110,114,0.6)';ctx.beginPath();ctx.arc(rx,ry,4,0,Math.PI*2);ctx.fill();
-      }
-      ctx.fillStyle='#636e72';ctx.font='11px sans-serif';
-      ctx.fillText('6CO₂↑',ccx,ccy-80);
-    }
-    // [H]产生
-    if(active&&p>0.5){
-      for(let i=0;i<4;i++){
-        const a=S.t+i*Math.PI/2;
-        ctx.fillStyle='#fdcb6e';ctx.beginPath();
-        ctx.arc(ccx+Math.cos(a)*60,ccy+Math.sin(a)*30,3,0,Math.PI*2);ctx.fill();
-      }
-      ctx.fillStyle='#fdcb6e';ctx.font='11px sans-serif';
-      ctx.fillText('8[H]',ccx+80,ccy);
-    }
-    ctx.globalAlpha=1;
-  }
-  
-  // 阶段3: 电子传递链
-  if(S.step>=2){
-    const active=S.step===2;
-    const alpha=active?1:0.4;
-    ctx.globalAlpha=alpha;
-    const ecx=W*0.72,ecy=H/2;
-    
-    // 内膜蛋白复合体
-    for(let i=0;i<4;i++){
-      const px=ecx-60+i*40;
-      ctx.fillStyle='rgba(108,92,231,0.6)';
-      ctx.fillRect(px-8,ecy-30,16,60);
-      ctx.fillStyle='#fff';ctx.font='8px sans-serif';ctx.textAlign='center';
-      ctx.fillText('C'+(i+1),px,ecy+4);
-    }
-    
-    // 电子传递(移动的点)
-    if(active){
-      for(let i=0;i<3;i++){
-        const ex=ecx-60+((S.t*30+i*40)%120);
-        const ey=ecy-10+Math.sin(S.t*5+i)*8;
-        ctx.fillStyle='#fdcb6e';ctx.beginPath();ctx.arc(ex,ey,3,0,Math.PI*2);ctx.fill();
-      }
-      ctx.fillStyle='#fdcb6e';ctx.font='11px sans-serif';
-      ctx.fillText('电子传递',ecx,ecy-45);
-    }
-    
-    // O₂接受电子→H₂O
-    if(active&&p>0.4){
-      ctx.fillStyle='#74b9ff';ctx.font='12px sans-serif';
-      ctx.fillText('O₂ + 4[H] → 2H₂O',ecx,ecy+55);
-      // 水分子
-      for(let i=0;i<3;i++){
-        const wx=ecx+40+Math.sin(S.t+i)*10;
-        const wy=ecy+65+i*12;
-        ctx.beginPath();ctx.arc(wx,wy,4,0,Math.PI*2);
-        ctx.fillStyle='rgba(116,185,255,0.7)';ctx.fill();
-      }
-    }
-    
-    // ATP大量生成
-    if(active&&p>0.6){
-      const pulse=1;
-      drawATP(ecx-60,ecy+90,32,pulse);
-    }
-    ctx.globalAlpha=1;
-  }
-  
-  // 绘制所有分子粒子
-  S.molecules.forEach(m=>drawMolecule(m));
-  
-  // ATP总计数(底部)
-  if(S.step>=0){
-    drawATP(30,H-55,S.atp,S.step===2?1:0.3);
-  }
-  
-  // 状态栏
-  statusEl.textContent=`有氧呼吸：糖酵解(2ATP) → 丙酮酸氧化(2ATP) → 电子传递链(32ATP) = 36ATP`;
-}
-
-let playing=false,lastT=0,speed=1,t=0;
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
-const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
-speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
-</script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>细胞呼吸的有氧呼吸三阶段</title>
-<style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#0a1a10 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#00b894; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#00b894; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#00b894; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#55efc4; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
-</style>
-</head>
-<body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">细胞呼吸的有氧呼吸三阶段</span>
-</header>
-<main>
-  <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>本动画演示了细胞呼吸的有氧呼吸三阶段的过程和原理，通过交互式可视化帮助理解核心概念。</p>
-    <div class="legend"><span class="li"><b style="color:#00b894">●</b> 主要元素</span></div>
-  </aside>
+        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>有氧呼吸三阶段</h3><ul><li>①糖酵解（细胞质基质）：葡萄糖→丙酮酸+2ATP</li><li>②三羧酸循环（线粒体）：丙酮酸→CO₂+[H]+2ATP</li><li>③电子传递链（线粒体内膜）：[H]+O₂→H₂O+34ATP</li><li>总计：1葡萄糖→38ATP(理论)或36ATP(实际)</li></ul></div>
+    </aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>

@@ -3,45 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>电解池</title>
+<title>电解池（电解饱和食盐水）</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#1a0a15 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#e84393; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#e84393; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#e84393; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#fd79a8; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
 <header class="topbar">
   <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">电解池</span>
+  <span class="title">电解池（电解饱和食盐水）</span>
 </header>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>电解饱和食盐水时，阳极Cl⁻失电子生成Cl₂↑，阴极H₂O得电子生成H₂↑和NaOH。微观上，电场驱动离子定向移动，电极表面发生氧化还原反应。这是氯碱工业的基础。</p>
-    <div class="legend"><span class="li"><b style="color:#00b894">●</b> Na⁺</span><span class="li"><b style="color:#e84393">●</b> Cl⁻</span><span class="li"><b style="color:#fdcb6e">↑</b> Cl₂/H₂</span><span class="li"><b style="color:#0984e3">●</b> H₂O</span></div>
-  </aside>
+    <p>电解饱和食盐水（氯碱工业）：2NaCl + 2H₂O →通电 2NaOH + H₂↑ + Cl₂↑。阳极：2Cl⁻ → Cl₂↑（氧化反应）；阴极：2H₂O + 2e⁻ → H₂↑ + 2OH⁻（还原反应）。</p>
+    <div class="legend"><span class="li"><b style="color:#d63031">+极</b> 阳极（Cl⁻放电→Cl₂）</span><span class="li"><b style="color:#0984e3">-极</b> 阴极（H₂O得电子→H₂+OH⁻）</span><span class="li"><b style="color:#00b894">●</b> Na⁺/Cl⁻离子</span></div>
+  <div class="key-points"><h3>电解原理</h3><ul><li>总反应：2NaCl + 2H₂O →通电 2NaOH + H₂↑ + Cl₂↑</li><li>阳极（+）：2Cl⁻ - 2e⁻ → Cl₂↑（氧化）</li><li>阴极（-）：2H₂O + 2e⁻ → H₂↑ + 2OH⁻（还原）</li><li>阴极区产生NaOH（OH⁻积累）</li><li>工业应用：氯碱工业制NaOH和Cl₂</li></ul></div>
+        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>电解原理</h3><ul><li>总反应：2NaCl + 2H₂O →通电 2NaOH + H₂↑ + Cl₂↑</li><li>阳极(+)：2Cl⁻ → Cl₂↑ + 2e⁻ (氧化)</li><li>阴极(-)：2H₂O + 2e⁻ → H₂↑ + 2OH⁻ (还原)</li><li>阴极区产生NaOH</li><li>应用：氯碱工业</li></ul></div>
+    </aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
@@ -56,21 +55,42 @@ const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
 const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
-const EL={t:0,ions:[]};for(let i=0;i<8;i++){EL.ions.push({x:0.4+Math.random()*0.2,y:0.3+Math.random()*0.4,type:i<4?"Na":"Cl"});}
+
+const E={t:0,na:0,cl:0,gas:[],phase:0};
 function sceneInit(){sceneReset();}
-function sceneReset(){{t:0,ions:[]};for(let i=0;i<8;i++){EL.ions.push({x:0.4+Math.random()*0.2,y:0.3+Math.random()*0.4,type:i<4?"Na":"Cl"});};}
-function sceneUpdate(dt){EL.t+=dt;EL.ions.forEach(p=>{if(p.type==="Na")p.x-=dt*0.03;else p.x+=dt*0.03;if(p.x<0.15)p.x=0.85;if(p.x>0.85)p.x=0.15;p.y+=Math.sin(EL.t*2)*0.005;p.y=Math.max(0.2,Math.min(0.8,p.y));});}
+function sceneReset(){E.t=0;E.na=0;E.cl=0;E.gas=[];E.phase=0;}
+function sceneUpdate(dt){
+  E.t+=dt;
+  if(E.phase<3)E.phase=Math.min(3,E.phase+dt*0.4);
+  // bubbles
+  if(E.phase>=1&&Math.random()<dt*16){
+    const left=(E.cl<1);
+    E.gas.push({x:left?cv.width*0.34:cv.width*0.66,y:cv.height*0.6-Math.random()*20,r:2+Math.random()*3,v:20+Math.random()*30,kind:left?'Cl':'H'});
+  }
+  E.gas.forEach(g=>{g.y-=g.v*dt;});
+  E.gas=E.gas.filter(g=>g.y>cv.height*0.18);
+  if(E.phase>=2)E.na=Math.min(1,E.na+dt*0.2);
+  if(E.phase>=1)E.cl=Math.min(1,E.cl+dt*0.2);
+}
 function sceneDraw(){
-ctx.clearRect(0,0,cv.width,cv.height);const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
-ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText('电解饱和食盐水：离子定向移动+电极反应',W/2,25);
-ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.strokeRect(cx-W*0.3,cy-H*0.25,W*0.6,H*0.5);ctx.fillStyle='rgba(9,132,227,0.1)';ctx.fillRect(cx-W*0.3,cy-H*0.25,W*0.6,H*0.5);
-ctx.fillStyle='#e17055';ctx.fillRect(cx-W*0.28,cy-H*0.22,8,H*0.44);ctx.fillStyle='#0984e3';ctx.fillRect(cx+W*0.27,cy-H*0.22,8,H*0.44);
-ctx.fillStyle='#e17055';ctx.font='11px sans-serif';ctx.fillText('阳极(+)',cx-W*0.28,cy-H*0.28);ctx.fillStyle='#0984e3';ctx.fillText('阴极(-)',cx+W*0.28,cy-H*0.28);
-EL.ions.forEach(p=>{const x=cx-W*0.3+p.x*W*0.6,y=cy-H*0.25+p.y*H*0.5;ctx.fillStyle=p.type==="Na"?'#00b894':'#e84393';ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='8px sans-serif';ctx.fillText(p.type==="Na"?'+':'−',x,y+3);});
-ctx.fillStyle='#e17055';ctx.font='11px sans-serif';ctx.fillText('2Cl⁻→Cl₂↑',cx-W*0.28,cy+H*0.3);
-ctx.fillStyle='#0984e3';ctx.fillText('2H₂O+2e⁻→H₂↑+2OH⁻',cx+W*0.15,cy+H*0.3);
-ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='12px sans-serif';ctx.fillText('阳极：Cl⁻失电子→Cl₂↑  阴极：H₂O得电子→H₂↑+NaOH',W/2,H-15);
-statusEl.textContent="电解饱和食盐水：阳极Cl₂↑ 阴极H₂↑+NaOH";
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const cx=cv.width/2,top=cv.height*0.18,bot=cv.height*0.66;
+  // tank
+  ctx.strokeStyle='#7f93b5';ctx.lineWidth=3;ctx.strokeRect(cx-160,top,320,bot-top);
+  // solution
+  ctx.fillStyle='rgba(59,130,246,0.18)';ctx.fillRect(cx-158,top+2,316,bot-top-2);
+  // electrodes
+  function elec(x,col,lab){ctx.strokeStyle=col;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x,bot-10);ctx.lineTo(x,top+30);ctx.stroke();ctx.fillStyle=col;ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText(lab,x,top+20);}
+  elec(cx-120,'#f87171','阳极(−)');elec(cx+120,'#34d399','阴极(+)');
+  // bubbles
+  E.gas.forEach(g=>{ctx.fillStyle=g.kind==='Cl'?'#a78bfa':'#7dd3fc';ctx.beginPath();ctx.arc(g.x,g.y,g.r,0,7);ctx.fill();});
+  // labels
+  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='left';
+  ctx.fillText('阳极：2Cl⁻ → Cl₂↑ + 2e⁻',cx-300,top+30);
+  ctx.fillText('阴极：2H₂O + 2e⁻ → H₂↑ + 2OH⁻',cx-300,bot-10);
+  if(E.na>0.5)ctx.fillText('阴极区生成 NaOH（酚酞变红）',cx+170,top+30);
+  const steps=['通电前','阳极析出 Cl₂（黄绿）','阴极析出 H₂，阴极区变碱'];
+  statusEl.textContent='阶段 '+Math.round(E.phase)+'/3：'+steps[Math.floor(E.phase)];
 }
 
 let playing=false,lastT=0,speed=1,t=0;
@@ -87,7 +107,6 @@ speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
 function draw(){if(window.sceneDraw)sceneDraw();}
 if(window.sceneInit)sceneInit();
 draw();
-
 </script>
 </body>
 </html>

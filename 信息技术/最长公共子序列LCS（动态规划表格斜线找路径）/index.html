@@ -417,7 +417,7 @@
             <div class="section-title">当前步骤</div>
             <div id="step-info" class="current-step">
                 <div class="step-title">初始化</div>
-                <p>已创建动态规划表格，第一行和第一列已初始化为0。</p>
+                <p>最长公共子序列(LCS)问题：找两个序列的最长公共子序列。动态规划解法：dp[i][j]表示X前i个和Y前j个的LCS长度。递推：若X[i]=Y[j]则dp[i][j]=dp[i-1][j-1]+1；否则dp[i][j]=max(dp[i-1][j],dp[i][j-1])。</p>
             </div>
             
             <div class="section-title">状态转移方程</div>

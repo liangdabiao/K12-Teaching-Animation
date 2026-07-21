@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>库仑定律</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;--good:#00b894;--warn:#fdcb6e;--bad:#d63031;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#060e1a;border:1px solid var(--line);border-radius:12px}
+.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin-bottom:10px;color:var(--accent)}
+.panel p{font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:12px}
+.key-points{margin-top:12px;padding:12px;background:rgba(9,132,227,0.08);border-radius:8px;font-size:13px;line-height:1.8}
+.key-points h3{font-size:14px;margin-bottom:8px;color:var(--warn)}
+.key-points ul{padding-left:18px}.key-points li{margin-bottom:4px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.legend span{font-size:12px;display:flex;align-items:center;gap:5px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#1a2d4a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}
+input[type=range]{accent-color:var(--accent);width:100%}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.slider-group{display:flex;flex-direction:column;gap:10px;margin:10px 0}
+.slider-group label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回物理</a>
+  <span>库仑定律 F = kQ₁Q₂/r²</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>库仑定律：真空中两个静止点电荷之间的作用力F与它们的电荷量Q₁、Q₂的乘积成正比，与它们距离r的平方成反比。公式：<b>F = kQ₁Q₂/r²</b>，其中k = 9×10⁹ N·m²/C²。同种电荷相斥，异种电荷相吸。</p>
+    <div class="legend">
+      <span><span class="dot" style="background:#d63031"></span>正电荷</span>
+      <span><span class="dot" style="background:#0984e3"></span>负电荷</span>
+      <span><span class="dot" style="background:#fdcb6e"></span>库仑力</span>
+    </div>
+    <div class="slider-group">
+      <label>Q₁ = <span id="q1Val">3</span> μC <input type="range" id="q1" min="-5" max="5" value="3"></label>
+      <label>Q₂ = <span id="q2Val">2</span> μC <input type="range" id="q2" min="-5" max="5" value="2"></label>
+      <label>距离 r = <span id="rVal">10</span> cm <input type="range" id="rSlider" min="3" max="20" value="10"></label>
+    </div>
+    <div class="key-points">
+      <h3>核心公式</h3>
+      <ul>
+        <li><b>F = kQ₁Q₂/r²</b></li>
+        <li>k = 9×10⁹ N·m²/C²（静电力常量）</li>
+        <li>适用条件：真空、点电荷</li>
+        <li>同种电荷→斥力；异种电荷→引力</li>
+        <li>库仑力是矢量，沿连线方向</li>
+        <li>满足牛顿第三定律（作用力=反作用力）</li>
+        <li>r加倍→F变为1/4（平方反比）</li>
+      </ul>
+    </div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+let playing=false,t=0,speed=1;
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(800,r.width-8));cv.height=Math.max(350,Math.min(550,r.height-8));}
+window.addEventListener('resize',()=>{fit();});fit();
+
+const q1S=document.getElementById('q1'),q2S=document.getElementById('q2'),rS=document.getElementById('rSlider');
+const q1V=document.getElementById('q1Val'),q2V=document.getElementById('q2Val'),rV=document.getElementById('rVal');
+let Q1=3,Q2=2,R=10;
+q1S.oninput=()=>{Q1=+q1S.value;q1V.textContent=Q1;};
+q2S.oninput=()=>{Q2=+q2S.value;q2V.textContent=Q2;};
+rS.oninput=()=>{R=+rS.value;rV.textContent=R;};
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const cy=H/2;
+  const cx=W/2;
+  const scale=R*8;
+  const x1=cx-scale/2,x2=cx+scale/2;
+  
+  // F = kQ1Q2/r^2 (简化计算)
+  const F=Math.abs(Q1*Q2)/(R*R)*9;
+  const isRepel=(Q1*Q2>0);
+  
+  // 距离标尺
+  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(x1,cy+50);ctx.lineTo(x2,cy+50);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x1,cy+45);ctx.lineTo(x1,cy+55);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x2,cy+45);ctx.lineTo(x2,cy+55);ctx.stroke();
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('r = '+R+' cm',cx,cy+68);
+  
+  // 电荷1
+  const c1Color=Q1>=0?'#d63031':'#0984e3';
+  const c1Size=14+Math.abs(Q1)*2;
+  ctx.fillStyle=c1Color;ctx.beginPath();ctx.arc(x1,cy,c1Size,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';
+  ctx.fillText(Q1>=0?'+':'−',x1,cy+5);
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';
+  ctx.fillText('Q₁='+Q1+'μC',x1,cy-c1Size-10);
+  
+  // 电荷2
+  const c2Color=Q2>=0?'#d63031':'#0984e3';
+  const c2Size=14+Math.abs(Q2)*2;
+  ctx.fillStyle=c2Color;ctx.beginPath();ctx.arc(x2,cy,c2Size,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';
+  ctx.fillText(Q2>=0?'+':'−',x2,cy+5);
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';
+  ctx.fillText('Q₂='+Q2+'μC',x2,cy-c2Size-10);
+  
+  // 库仑力箭头
+  if(Q1!==0&&Q2!==0){
+    const arrowLen=Math.min(F*5,80);
+    ctx.strokeStyle='#fdcb6e';ctx.lineWidth=3;ctx.fillStyle='#fdcb6e';
+    
+    // 力在Q1上
+    const dir1=isRepel?-1:1;
+    ctx.beginPath();ctx.moveTo(x1,cy);ctx.lineTo(x1+dir1*arrowLen,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x1+dir1*arrowLen,cy);
+    ctx.lineTo(x1+dir1*arrowLen-dir1*8,cy-5);ctx.lineTo(x1+dir1*arrowLen-dir1*8,cy+5);ctx.fill();
+    
+    // 力在Q2上
+    const dir2=isRepel?1:-1;
+    ctx.beginPath();ctx.moveTo(x2,cy);ctx.lineTo(x2+dir2*arrowLen,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x2+dir2*arrowLen,cy);
+    ctx.lineTo(x2+dir2*arrowLen-dir2*8,cy-5);ctx.lineTo(x2+dir2*arrowLen-dir2*8,cy+5);ctx.fill();
+    
+    ctx.fillStyle='#fdcb6e';ctx.font='bold 13px sans-serif';
+    ctx.fillText('F='+F.toFixed(1)+'N',x1+dir1*arrowLen/2,cy-15);
+    ctx.fillText('F='+F.toFixed(1)+'N',x2+dir2*arrowLen/2,cy-15);
+  }
+  
+  // 力的类型标注
+  ctx.fillStyle=isRepel?'#d63031':'#00b894';ctx.font='bold 14px sans-serif';
+  ctx.fillText(isRepel?'斥力 ←→':'引力 →←',cx,cy-60);
+  
+  // F-r关系图
+  const gx=W-180,gy=30,gw=160,gh=120;
+  ctx.fillStyle='rgba(17,29,51,0.9)';ctx.fillRect(gx,gy,gw,gh);
+  ctx.strokeStyle='#1e3050';ctx.strokeRect(gx,gy,gw,gh);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 12px sans-serif';ctx.textAlign='left';
+  ctx.fillText('F ∝ 1/r² 关系',gx+10,gy+18);
+  
+  // 画曲线
+  ctx.strokeStyle='#fdcb6e';ctx.lineWidth=1.5;ctx.beginPath();
+  for(let i=0;i<gw-20;i++){
+    const rr=1+i/(gw-20)*4;
+    const ff=1/(rr*rr);
+    const px=gx+10+i;
+    const py=gy+gh-15-ff*(gh-40);
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  
+  // 当前点
+  const curR=R/5;const curF=1/(curR*curR);
+  const cpx=gx+10+(curR-1)/4*(gw-20);
+  const cpy=gy+gh-15-Math.min(curF,1)*(gh-40);
+  ctx.fillStyle='#d63031';ctx.beginPath();ctx.arc(cpx,cpy,4,0,Math.PI*2);ctx.fill();
+  
+  ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
+  ctx.fillText('r →',gx+gw-25,gy+gh-5);
+  ctx.fillText('F ↑',gx+2,gy+28);
+  
+  statusEl.textContent='F = kQ₁Q₂/r² = '+F.toFixed(1)+'N | '+(isRepel?'斥力':'引力');
+}
+
+let lastTime=0;
+function loop(ts){
+  if(!lastTime)lastTime=ts;
+  lastTime=ts;
+  if(playing){t+=0.016*speed;}
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';};
+document.getElementById('resetBtn').onclick=function(){Q1=3;Q2=2;R=10;q1S.value=3;q2S.value=2;rS.value=10;q1V.textContent=3;q2V.textContent=2;rV.textContent=10;draw();};
+document.getElementById('speed').oninput=function(){speed=+this.value;};
+
+draw();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

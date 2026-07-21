@@ -5,29 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>分子运动论</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#0a1520 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#0984e3; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#0984e3; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#0984e3; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#74b9ff; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
@@ -39,9 +36,11 @@ main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>分子动理论三大要点：①物质由大量分子组成，分子间有空隙；②分子做永不停息的无规则运动（布朗运动、扩散现象）；③分子间存在引力和斥力，统称为分子力。温度越高，分子运动越剧烈。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">●</b> 分子</span><span class="li"><b style="color:#e17055">~</b> 布朗运动轨迹</span><span class="li"><b style="color:#00cec9">↔</b> 分子力</span></div>
-  </aside>
+    <p>分子永不停息地做无规则热运动：布朗运动是悬浮微粒受分子撞击的不平衡表现；扩散是分子无规则运动的结果；温度越高运动越剧烈。</p>
+    <div class="legend"><span class='dot' style='background:#7dd3fc'></span>运动分子&nbsp;<span class='dot' style='background:#3b82f6'></span>扩散</div>
+  
+        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>分子动理论</h3><ul><li>物质由大量分子组成</li><li>分子永不停息做无规则运动</li><li>分子间存在引力和斥力</li><li><b>布朗运动</b>：微粒无规则运动（反映分子运动）</li><li>温度↑→分子运动越剧烈→扩散越快</li></ul></div>
+    </aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
@@ -57,71 +56,21 @@ const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const M={t:0,molecules:[],temp:300,brownianTrail:[],diffusionDrops:[]};
-function sceneInit(){sceneReset();for(let i=0;i<60;i++)M.molecules.push({x:Math.random(),y:Math.random(),vx:(Math.random()*2-1)*2,vy:(Math.random()*2-1)*2,r:3+Math.random()*2});}
-function sceneReset(){M.t=0;M.brownianTrail=[];M.diffusionDrops=[];for(let i=0;i<5;i++)M.diffusionDrops.push({x:0.8,y:0.3+Math.random()*0.1,spread:0});}
-function sceneUpdate(dt){
-  M.t+=dt;
-  const speed=Math.sqrt(M.temp/300);
-  M.molecules.forEach(p=>{
-    p.x+=p.vx*dt*0.3*speed;p.y+=p.vy*dt*0.3*speed;
-    if(p.x<0||p.x>1){p.vx*=-1;p.x=Math.max(0,Math.min(1,p.x));}
-    if(p.y<0||p.y>1){p.vy*=-1;p.y=Math.max(0,Math.min(1,p.y));}
-    // 分子间碰撞
-    M.molecules.forEach(q=>{if(p!==q){const dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<0.03){p.vx+=dx*2*dt;p.vy+=dy*2*dt;}}});
-  });
-  // 布朗运动粒子(大颗粒)
-  if(M.brownianTrail.length===0)M.brownianTrail.push({x:0.3,y:0.5});
-  const bp=M.brownianTrail[M.brownianTrail.length-1];
-  bp.x+=((Math.random()-0.5)*0.01);bp.y+=((Math.random()-0.5)*0.01);
-  bp.x=Math.max(0.05,Math.min(0.45,bp.x));bp.y=Math.max(0.1,Math.min(0.9,bp.y));
-  if(M.brownianTrail.length>200)M.brownianTrail.shift();
-  // 扩散
-  M.diffusionDrops.forEach(d=>{d.spread=Math.min(1,d.spread+dt*0.1);});
-}
+const M={t:0,m:[]};
+function sceneInit(){sceneReset();M.m=[];for(let i=0;i<40;i++)M.m.push({x:Math.random(),y:Math.random(),vx:(Math.random()*2-1),vy:(Math.random()*2-1)});}
+function sceneReset(){M.t=0;if(!M.m)M.m=[];}
+function sceneUpdate(dt){M.m.forEach(p=>{p.x+=p.vx*dt*0.3;p.y+=p.vy*dt*0.3;if(p.x<0||p.x>1)p.vx*=-1;if(p.y<0||p.y>1)p.vy*=-1;p.x=(p.x+1)%1;p.y=(p.y+1)%1;});}
 function sceneDraw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  const W=cv.width,H=cv.height;
-  // 容器
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=3;ctx.strokeRect(30,60,W*0.5-20,H-100);
-  ctx.fillStyle='#aaa';ctx.font='12px sans-serif';ctx.textAlign='center';
-  ctx.fillText('气体分子热运动',W*0.25,55);
-  // 分子
-  M.molecules.forEach(p=>{
-    const x=30+(W*0.5-50)*p.x,y=60+(H-110)*p.y;
-    const speed=Math.sqrt(p.vx*p.vx+p.vy*p.vy);
-    ctx.fillStyle=speed>2?'#f87171':'#7dd3fc';
-    ctx.beginPath();ctx.arc(x,y,p.r,0,Math.PI*2);ctx.fill();
-    // 速度矢量
-    ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+p.vx*5,y+p.vy*5);ctx.stroke();
-  });
-  // 布朗运动区域
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.strokeRect(W*0.55,60,W*0.2,H-100);
-  ctx.fillStyle='#aaa';ctx.fillText('布朗运动',W*0.65,55);
-  // 布朗粒子
-  if(M.brownianTrail.length>1){
-    ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;ctx.beginPath();
-    M.brownianTrail.forEach((p,i)=>{const x=W*0.55+W*0.2*p.x,y=60+(H-100)*p.y;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
-    ctx.stroke();
-    const last=M.brownianTrail[M.brownianTrail.length-1];
-    ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(W*0.55+W*0.2*last.x,60+(H-100)*last.y,6,0,Math.PI*2);ctx.fill();
-  }
-  // 扩散区域
-  ctx.strokeStyle='#7f93b5';ctx.strokeRect(W*0.8,60,W*0.18,H-100);
-  ctx.fillStyle='#aaa';ctx.fillText('扩散',W*0.89,55);
-  M.diffusionDrops.forEach(d=>{
-    const cx2=W*0.89,cy2=60+(H-100)*d.y;
-    const r=d.spread*40;
-    const grad=ctx.createRadialGradient(cx2,cy2,0,cx2,cy2,r);
-    grad.addColorStop(0,'rgba(59,130,246,0.8)');grad.addColorStop(1,'rgba(59,130,246,0)');
-    ctx.fillStyle=grad;ctx.fillRect(W*0.8,60,W*0.18,H-100);
-  });
-  // 温度控制
-  ctx.fillStyle='#cdd7ea';ctx.font='12px sans-serif';ctx.textAlign='left';
-  ctx.fillText('温度: '+Math.round(M.temp)+'K',30,H-15);
-  ctx.fillText('温度越高，分子运动越剧烈',30,H-35);
-  statusEl.textContent='分子动理论：分子永不停息做无规则运动，温度是分子平均动能的标志';
+  ctx.strokeStyle='#7f93b5';ctx.lineWidth=3;ctx.strokeRect(40,40,cv.width-80,cv.height-80);
+  M.m.forEach(p=>{const x=40+(cv.width-80)*p.x,y=40+(cv.height-80)*p.y;ctx.fillStyle='#7dd3fc';ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.fill();});
+  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='left';
+  ctx.fillText('分子永不停息地做无规则运动（布朗运动/扩散的微观本质）',40,cv.height-14);
+  // diffusion bar on right
+  ctx.fillStyle='#9fb0c8';ctx.fillText('扩散：墨水滴入清水',cv.width-200,70);
+  ctx.fillStyle='rgba(59,130,246,0.3)';ctx.fillRect(cv.width-200,80,140,160);
+  for(let i=0;i<30;i++){const r=20+(i/30)*70*M.t*0.3;const a=i/30*6.28;ctx.fillStyle='rgba(30,64,120,0.6)';ctx.beginPath();ctx.arc(cv.width-130+Math.cos(a)*r*0.4,160+Math.sin(a)*r*0.5,3,0,7);ctx.fill();}
+  statusEl.textContent='气体/液体分子持续无规则热运动';
 }
 
 let playing=false,lastT=0,speed=1,t=0;

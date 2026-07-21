@@ -5,29 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>减数分裂全过程</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#0a1a10 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#00b894; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#00b894; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#00b894; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#55efc4; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
@@ -39,9 +36,9 @@ main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>本动画演示了减数分裂全过程的过程和原理，通过交互式可视化帮助理解核心概念。</p>
-    <div class="legend"><span class="li"><b style="color:#00b894">●</b> 主要元素</span></div>
-  </aside>
+    <p>减数分裂是产生配子的特殊分裂方式。减数第一次分裂：同源染色体联会（形成四分体）→交叉互换→同源染色体分离。减数第二次分裂：着丝点分裂→姐妹染色单体分离。最终1个精原细胞→4个精子。</p>
+    <div class="legend"><span class="li"><b style="color:#0984e3">━</b> 来自父方的染色体</span><span class="li"><b style="color:#d63031">━</b> 来自母方的染色体</span><span class="li"><b style="color:#00b894">╳</b> 交叉互换</span></div>
+  <div class="key-points"><h3>核心知识</h3><ul><li>减I前期：同源染色体联会→形成四分体</li><li>四分体时期可发生非姐妹染色单体交叉互换</li><li>减I后期：同源染色体分离（等位基因分离）</li><li>减II后期：着丝点分裂（姐妹染色单体分离）</li><li>结果：染色体数目减半，DNA含量减半</li><li>1精原→4精子；1卵原→1卵细胞+3极体</li></ul></div></aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
@@ -57,122 +54,27 @@ const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const M={t:0,step:0,chromosomes:[],cellY:0};
-const STAGES=['间期：DNA复制','减Ⅰ前期：联会→四分体→交叉互换','减Ⅰ中期：同源排列赤道板','减Ⅰ后期：同源分离','减Ⅱ后期：姐妹单体分离','形成4个单倍体细胞'];
-function sceneInit(){sceneReset();initChromosomes();}
-function sceneReset(){M.t=0;M.step=0;initChromosomes();}
-function sceneStep(d){M.step=Math.max(0,Math.min(5,M.step+d));M.t=0;}
-function initChromosomes(){
-  M.chromosomes=[
-    {type:'A',x:0,col1:'#f87171',col2:'#34d399',separated:false},
-    {type:'B',x:1,col1:'#60a5fa',col2:'#fbbf24',separated:false}
-  ];
-}
+const M={t:0,step:0};
+function sceneInit(){sceneReset();}
+function sceneReset(){M.t=0;M.step=0;}
 function sceneUpdate(dt){M.t+=dt;}
-function drawChromosomePair(cx,cy,sep,phase){
-  const armLen=25;
-  // 着丝粒
-  ctx.fillStyle='#cdd7ea';ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();
-  if(sep<0.5){
-    // 未分离：两条姐妹染色单体
-    const gap=sep*20;
-    ctx.strokeStyle='#f87171';ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(cx-gap,cy-armLen);ctx.lineTo(cx-gap,cy);ctx.lineTo(cx-gap,cy+armLen);ctx.stroke();
-    ctx.strokeStyle='#34d399';
-    ctx.beginPath();ctx.moveTo(cx+gap,cy-armLen);ctx.lineTo(cx+gap,cy);ctx.lineTo(cx+gap,cy+armLen);ctx.stroke();
-  }else{
-    // 已分离
-    const d=(sep-0.5)*2*40;
-    ctx.strokeStyle='#f87171';ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(cx-d,cy-armLen);ctx.lineTo(cx-d,cy);ctx.lineTo(cx-d,cy+armLen);ctx.stroke();
-    ctx.strokeStyle='#34d399';
-    ctx.beginPath();ctx.moveTo(cx+d,cy-armLen);ctx.lineTo(cx+d,cy);ctx.lineTo(cx+d,cy+armLen);ctx.stroke();
-  }
-}
-function drawCrossOver(cx,cy,progress){
-  // 交叉互换
-  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(cx-15,cy-10);ctx.lineTo(cx+15,cy+10);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx+15,cy-10);ctx.lineTo(cx-15,cy+10);ctx.stroke();
-  ctx.setLineDash([]);
-  if(progress>0.5){
-    ctx.fillStyle='#fbbf24';ctx.font='10px sans-serif';ctx.textAlign='center';
-    ctx.fillText('交叉互换',cx,cy-30);
-  }
-}
+function sceneStep(d){M.step=Math.max(0,Math.min(5,M.step+d));}
+function chromo(x,y,c){ctx.strokeStyle=c;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-10,y);ctx.lineTo(x,y-25);ctx.lineTo(x+10,y);ctx.stroke();}
 function sceneDraw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
-  // 标题
-  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
-  ctx.fillText('减数分裂 — '+STAGES[M.step],cx,30);
-  // 步骤指示
-  for(let i=0;i<6;i++){ctx.fillStyle=i<=M.step?'#00b894':'rgba(255,255,255,0.2)';ctx.fillRect(cx-150+i*52,42,48,4);}
-  const p=Math.min(1,M.t*0.4);
-  switch(M.step){
-    case 0:{ // 间期复制
-      ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,80,0,Math.PI*2);ctx.stroke();
-      ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fill();
-      // 复制前→复制后
-      if(p<0.5){
-        drawChromosomePair(cx-30,cy,0,0);drawChromosomePair(cx+30,cy,0,0);
-        ctx.fillStyle='#aaa';ctx.font='12px sans-serif';ctx.fillText('2n=4 (复制前)',cx,cy+100);
-      }else{
-        drawChromosomePair(cx-30,cy,0,0);drawChromosomePair(cx+30,cy,0,0);
-        ctx.fillStyle='#00b894';ctx.font='12px sans-serif';ctx.fillText('DNA复制完成，每条染色体含2条姐妹单体',cx,cy+100);
-      }
-      break;
-    }
-    case 1:{ // 联会→四分体→交叉互换
-      ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,80,0,Math.PI*2);ctx.stroke();
-      // 同源染色体配对
-      const close=p*15;
-      drawChromosomePair(cx-close,cy-20,0,0);drawChromosomePair(cx+close,cy-20,0,0);
-      drawChromosomePair(cx-close,cy+20,0,0);drawChromosomePair(cx+close,cy+20,0,0);
-      if(p>0.5)drawCrossOver(cx,cy-20,p);
-      ctx.fillStyle='#aaa';ctx.font='12px sans-serif';ctx.fillText('同源染色体联会，形成四分体',cx,cy+100);
-      break;
-    }
-    case 2:{ // 中期I
-      ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,80,0,Math.PI*2);ctx.stroke();
-      // 赤道板
-      ctx.strokeStyle='#fbbf24';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(cx-60,cy);ctx.lineTo(cx+60,cy);ctx.stroke();ctx.setLineDash([]);
-      drawChromosomePair(cx-25,cy,0,0);drawChromosomePair(cx+25,cy,0,0);
-      ctx.fillStyle='#aaa';ctx.font='12px sans-serif';ctx.fillText('同源染色体排列在赤道板上',cx,cy+100);
-      break;
-    }
-    case 3:{ // 后期I：同源分离
-      ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,80,0,Math.PI*2);ctx.stroke();
-      const sep=p*50;
-      drawChromosomePair(cx-30-sep,cy-20,0,0);drawChromosomePair(cx-30-sep,cy+20,0,0);
-      drawChromosomePair(cx+30+sep,cy-20,0,0);drawChromosomePair(cx+30+sep,cy+20,0,0);
-      ctx.fillStyle='#fbbf24';ctx.font='12px sans-serif';ctx.fillText('同源染色体分离→非同源自由组合',cx,cy+100);
-      break;
-    }
-    case 4:{ // 减II
-      // 两个细胞
-      const c1x=cx-100,c2x=cx+100;
-      ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;
-      ctx.beginPath();ctx.arc(c1x,cy,55,0,Math.PI*2);ctx.stroke();
-      ctx.beginPath();ctx.arc(c2x,cy,55,0,Math.PI*2);ctx.stroke();
-      const sep2=p*20;
-      drawChromosomePair(c1x-sep2,cy-10,0.5+p*0.5,0);drawChromosomePair(c1x+sep2,cy+10,0.5+p*0.5,0);
-      drawChromosomePair(c2x-sep2,cy-10,0.5+p*0.5,0);drawChromosomePair(c2x+sep2,cy+10,0.5+p*0.5,0);
-      ctx.fillStyle='#aaa';ctx.font='12px sans-serif';ctx.fillText('减Ⅱ：姐妹染色单体分离（类似有丝分裂）',cx,cy+100);
-      break;
-    }
-    case 5:{ // 完成
-      const positions=[[cx-150,cy-40],[cx-50,cy-40],[cx+50,cy-40],[cx+150,cy-40]];
-      positions.forEach((pos,i)=>{
-        ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.arc(pos[0],pos[1],35,0,Math.PI*2);ctx.stroke();
-        drawChromosomePair(pos[0],pos[1],1,0);
-        ctx.fillStyle='#00b894';ctx.font='10px sans-serif';ctx.fillText('n=2',pos[0],pos[1]+50);
-      });
-      ctx.fillStyle='#00b894';ctx.font='bold 13px sans-serif';ctx.fillText('✓ 形成4个单倍体精细胞，染色体数目减半',cx,cy+60);
-      break;
-    }
+  const cx=cv.width/2,cy=cv.height/2;
+  ctx.fillStyle='#cdd7ea';ctx.font='14px sans-serif';ctx.textAlign='center';
+  const names=['① 间期复制','② 减Ⅰ前期：联会→四分体','③ 减Ⅰ中期：同源染色体排列','④ 减Ⅰ后期：同源分离','⑤ 减Ⅱ：姐妹染色单体分开','⑥ 形成4个精子'];
+  ctx.fillText(names[M.step],cx,50);
+  // draw cells
+  const cols=2,rows=3;
+  for(let s=0;s<=M.step;s++){
+    const gx=cx-220+(s%3)*220, gy=120+Math.floor(s/3)*180;
+    ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.arc(gx,gy,55,0,7);ctx.stroke();
+    const n=2+ (s>=4?2:0);
+    for(let i=0;i<n;i++){chromo(gx-20+i*20,gy+ (i%2?10:-10), i%2?'#f87171':'#34d399');}
   }
-  statusEl.textContent='减数分裂：染色体复制一次，细胞分裂两次，子细胞染色体数目减半';
+  statusEl.textContent='减数分裂：染色体复制一次，细胞连续分裂两次，子细胞染色体减半';
 }
 
 let playing=false,lastT=0,speed=1,t=0;

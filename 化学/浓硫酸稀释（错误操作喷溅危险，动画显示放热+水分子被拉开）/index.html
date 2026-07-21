@@ -3,45 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>浓硫酸稀释</title>
+<title>浓硫酸稀释（错误操作喷溅危险，动画显示放热+水分子被拉开）</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#1a0a15 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#e84393; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#e84393; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#e84393; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#fd79a8; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
 <header class="topbar">
   <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">浓硫酸稀释</span>
+  <span class="title">浓硫酸稀释（错误操作喷溅危险，动画显示放热+水分子被拉开）</span>
 </header>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>浓硫酸稀释时释放大量热量。必须将浓硫酸沿容器壁缓慢注入水中并不断搅拌，绝不能将水倒入浓硫酸中——否则水浮在酸面上剧烈沸腾喷溅，极其危险。</p>
-    <div class="legend"><span class="li"><b style="color:#e84393">●</b> H₂SO₄分子</span><span class="li"><b style="color:#0984e3">●</b> H₂O分子</span><span class="li"><b style="color:#fdcb6e">⚡</b> 放热</span></div>
-  </aside>
+    <p>浓硫酸稀释必须"酸入水"：将浓硫酸沿容器壁缓慢注入水中，并用玻璃棒不断搅拌。绝不能将水倒入浓硫酸中！因为浓硫酸密度大于水，水入酸会浮在表面，剧烈放热导致水沸腾飞溅。</p>
+    <div class="legend"><span class="li"><b style="color:#0984e3">●</b> 水分子</span><span class="li"><b style="color:#d63031">●</b> H₂SO₄分子</span><span class="li"><b style="color:#fdcb6e">~</b> 热量释放</span></div>
+  <div class="key-points"><h3>安全操作要点</h3><ul><li>原则：<b>"酸入水，沿壁慢注，不断搅拌"</b></li><li>原因：ρ(浓H₂SO₄) = 1.84 g/cm³ > ρ(水)</li><li>错误操作（水入酸）：水浮在酸表面→剧烈放热→飞溅</li><li>浓硫酸三大特性：吸水性、脱水性、强氧化性</li><li>稀释过程大量放热，属于物理变化+化学变化</li></ul></div></aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
@@ -56,21 +53,47 @@ const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
 const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
-const A={t:0,heat:0,mols:[]};for(let i=0;i<20;i++)A.mols.push({x:Math.random(),y:0.7,vx:(Math.random()-0.5)*2,vy:(Math.random()-0.5)*2});
+
+const S={p:0,splash:[],beaker:[],timer:0};
+function beaker(cx,baseY,w,h,color,label,temp,danger){
+  ctx.save();
+  // liquid
+  const liqTop=baseY-h*(0.35+0.55*S.p);
+  ctx.fillStyle='rgba('+((color>>16)&255)+','+((color>>8)&255)+','+(color&255)+',0.30)';
+  ctx.fillRect(cx-w/2,liqTop,w,h-(liqTop-baseY)+h);
+  ctx.fillStyle='rgba('+((color>>16)&255)+','+((color>>8)&255)+','+(color&255)+',0.55)';
+  ctx.fillRect(cx-w/2,liqTop,w,Math.min(h,baseY-liqTop));
+  // glass
+  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-w/2,baseY-h);ctx.lineTo(cx-w/2,baseY);ctx.lineTo(cx+w/2,baseY);ctx.lineTo(cx+w/2,baseY-h);ctx.stroke();
+  // thermometer
+  const tx=cx+w/2+26;
+  ctx.strokeStyle='#8aa';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(tx,baseY-h-10);ctx.lineTo(tx,baseY+6);ctx.stroke();
+  const th=Math.min(1,Math.max(0,(temp-20)/240));
+  ctx.fillStyle=th>0.7?'#f87171':'#f59e0b';ctx.fillRect(tx-2,baseY+6-th*40,4,th*40);
+  // label
+  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='center';
+  ctx.fillText(label,cx,baseY+22);
+  ctx.fillText(temp.toFixed(0)+'℃',tx,baseY-h-22);
+  ctx.restore();
+}
 function sceneInit(){sceneReset();}
-function sceneReset(){{t:0,heat:0,mols:[]};for(let i=0;i<20;i++)A.mols.push({x:Math.random(),y:0.7,vx:(Math.random()-0.5)*2,vy:(Math.random()-0.5)*2});}
-function sceneUpdate(dt){A.t+=dt;A.heat=Math.min(1,A.t*0.2);A.mols.forEach(p=>{p.x+=p.vx*dt*(1+A.heat*3)*0.3;p.y+=p.vy*dt*(1+A.heat*3)*0.3;if(p.x<0||p.x>1)p.vx*=-1;if(p.y<0.3||p.y>1)p.vy*=-1;p.x=Math.max(0,Math.min(1,p.x));p.y=Math.max(0.3,Math.min(1,p.y));});}
+function sceneReset(){S.p=0;S.splash=[];S.timer=0;}
+function sceneUpdate(dt){
+  if(S.p<1)S.p=Math.min(1,S.p+dt*0.22);
+  if(S.p>0.25&&S.p<0.7&&Math.random()<dt*10){
+    S.splash.push({x:cv.width*0.72+(Math.random()*50-25),y:cv.height*0.5,vx:(Math.random()*2-1)*140,vy:-140-Math.random()*140,life:1});
+  }
+  S.splash.forEach(s=>{s.x+=s.vx*dt;s.y+=s.vy*dt;s.vy+=500*dt;s.life-=dt*1.3;});
+  S.splash=S.splash.filter(s=>s.life>0&&s.y<cv.height);
+}
 function sceneDraw(){
-ctx.clearRect(0,0,cv.width,cv.height);const W=cv.width,H=cv.height;
-ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText('浓硫酸稀释：大量放热，必须酸入水！',W/2,25);
-ctx.fillStyle='rgba(9,132,227,0.2)';ctx.fillRect(W*0.2,H*0.3,W*0.6,H*0.6);ctx.strokeStyle='#0984e3';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.2,H*0.3);ctx.lineTo(W*0.8,H*0.3);ctx.stroke();
-ctx.fillStyle='#0984e3';ctx.font='11px sans-serif';ctx.fillText('水',W*0.15,H*0.3-5);
-const glow=ctx.createRadialGradient(W/2,H*0.5,10,W/2,H*0.5,100);glow.addColorStop(0,`rgba(225,69,83,${A.heat*0.3})`);glow.addColorStop(1,'rgba(225,69,83,0)');ctx.fillStyle=glow;ctx.fillRect(W*0.2,H*0.3,W*0.6,H*0.6);
-A.mols.forEach(p=>{ctx.fillStyle='#74b9ff';ctx.beginPath();ctx.arc(W*0.2+p.x*W*0.6,H*0.3+p.y*H*0.6,3,0,Math.PI*2);ctx.fill();});
-if(A.heat>0.3){ctx.fillStyle='#e17055';ctx.font='16px sans-serif';ctx.fillText('⚠ 放热!',W/2,H*0.25);}
-ctx.fillStyle='#fdcb6e';ctx.font='bold 13px sans-serif';ctx.fillText('✓ 正确：酸沿壁注入水+搅拌  ✗ 错误：水倒入酸→喷溅!',W/2,H-30);
-ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='12px sans-serif';ctx.fillText('浓硫酸溶于水释放大量热，水浮在酸面上剧烈沸腾喷溅',W/2,H-10);
-statusEl.textContent="浓硫酸稀释：大量放热，必须酸入水、沿壁慢倒、不断搅拌";
+  ctx.clearRect(0,0,cv.width,cv.height);
+  beaker(cv.width*0.30,cv.height*0.62,150,150,0x3b82f6,'正确：酸入水',120+S.p*50,false);
+  beaker(cv.width*0.72,cv.height*0.62,150,150,0xf87171,'错误：水入酸',120+S.p*230,true);
+  ctx.fillStyle='#fbbf24';ctx.font='12px sans-serif';ctx.textAlign='left';
+  S.splash.forEach(s=>{ctx.globalAlpha=Math.max(0,s.life);ctx.beginPath();ctx.arc(s.x,s.y,3,0,7);ctx.fill();ctx.globalAlpha=1;});
+  statusEl.textContent='进度 '+Math.round(S.p*100)+'% ｜ 右杯剧烈放热、酸液飞溅，严禁把水倒入浓硫酸！';
 }
 
 let playing=false,lastT=0,speed=1,t=0;
@@ -87,7 +110,6 @@ speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
 function draw(){if(window.sceneDraw)sceneDraw();}
 if(window.sceneInit)sceneInit();
 draw();
-
 </script>
 </body>
 </html>

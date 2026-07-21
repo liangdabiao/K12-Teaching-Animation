@@ -5,29 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>人体内环境与稳态</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#0a1a10 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#00b894; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#00b894; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#00b894; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#55efc4; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
@@ -39,9 +36,9 @@ main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>内环境由血浆、组织液和淋巴组成，是细胞与外界环境进行物质交换的媒介。稳态通过神经-体液-免疫调节网络维持：血糖调节（胰岛素/胰高血糖素）、体温调节（产热/散热平衡）、水盐平衡（抗利尿激素）。</p>
-    <div class="legend"><span class="li"><b style="color:#e17055">●</b> 血糖</span><span class="li"><b style="color:#0984e3">●</b> 胰岛素</span><span class="li"><b style="color:#00b894">●</b> 正常范围</span></div>
-  </aside>
+    <p>内环境由血浆、组织液、淋巴组成，是细胞直接生活的液体环境。稳态是指内环境的理化性质（温度、pH、渗透压等）维持相对稳定的状态，通过神经-体液-免疫调节网络实现。</p>
+    <div class="legend"><span class="li"><b style="color:#0984e3">■</b> 血浆</span><span class="li"><b style="color:#00b894">■</b> 组织液</span><span class="li"><b style="color:#fdcb6e">■</b> 淋巴</span><span class="li"><b style="color:#d63031">↔</b> 物质交换</span></div>
+  <div class="key-points"><h3>核心概念</h3><ul><li>内环境 = 血浆 + 组织液 + 淋巴</li><li>稳态：温度37°C、pH 7.35-7.45、渗透压稳定</li><li>调节机制：神经-体液-免疫调节网络</li><li>血糖调节：胰岛素（降血糖）+ 胰高血糖素（升血糖）</li><li>体温调节：下丘脑体温调节中枢</li><li>负反馈：是维持稳态的重要机制</li></ul></div></aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
@@ -57,86 +54,28 @@ const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const H={t:0,glucose:5.0,target:5.0,water:0.5,temp:37,step:0};
+const H={t:0,p:0,var:0};
 function sceneInit(){sceneReset();}
-function sceneReset(){H.t=0;H.glucose=5.0;H.target=5.0;H.water=0.5;H.temp=37;H.step=0;}
-function sceneStep(d){H.step=Math.max(0,Math.min(2,H.step+d));}
-function sceneUpdate(dt){
-  H.t+=dt;
-  // 血糖调节
-  const diff=H.target-H.glucose;
-  H.glucose+=diff*dt*0.3;
-  H.glucose+=Math.sin(H.t*2)*0.05;
-  // 体温
-  H.temp=37+Math.sin(H.t*0.5)*0.3;
-}
+function sceneReset(){H.t=0;H.p=0;H.var=0;}
+function sceneUpdate(dt){if(H.p<1)H.p=Math.min(1,H.p+dt*0.2);H.var=Math.sin(H.t*1.5)*0.5+0.5;}
 function sceneDraw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  const W=cv.width,H2=cv.height;
-  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
-  ctx.fillText('人体内环境与稳态调节',W/2,25);
-  // 血糖调节图
-  const gx=W*0.15,gy=80,gw=W*0.3,gh=150;
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=1;ctx.strokeRect(gx,gy,gw,gh);
-  ctx.fillStyle='#aaa';ctx.font='12px sans-serif';ctx.textAlign='center';
-  ctx.fillText('血糖浓度调节',gx+gw/2,gy-8);
-  // Y轴标签
-  ctx.textAlign='right';ctx.fillText('8 mmol/L',gx-5,gy+10);ctx.fillText('4 mmol/L',gx-5,gy+gh);
-  // 正常范围
-  ctx.fillStyle='rgba(0,184,148,0.1)';ctx.fillRect(gx,gy+gh*0.4,gw,gh*0.3);
-  ctx.strokeStyle='#00b894';ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(gx,gy+gh*0.4);ctx.lineTo(gx+gw,gy+gh*0.4);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(gx,gy+gh*0.7);ctx.lineTo(gx+gw,gy+gh*0.7);ctx.stroke();
-  ctx.setLineDash([]);
-  // 血糖曲线
-  ctx.strokeStyle='#e17055';ctx.lineWidth=2;ctx.beginPath();
-  for(let i=0;i<gw;i++){
-    const t2=i/gw*10;
-    const val=5+Math.sin(t2*0.8)*2*Math.exp(-t2*0.1);
-    const y=gy+gh-(val-3)/6*gh;
-    i===0?ctx.moveTo(gx+i,y):ctx.lineTo(gx+i,y);
-  }
-  ctx.stroke();
-  // 当前值标记
-  const curY=gy+gh-(H.glucose-3)/6*gh;
-  ctx.fillStyle='#e17055';ctx.beginPath();ctx.arc(gx+gw-5,curY,5,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.textAlign='left';
-  ctx.fillText(H.glucose.toFixed(1)+' mmol/L',gx+gw+8,curY+4);
-  // 胰岛素/胰高血糖素标注
-  if(H.glucose>6){ctx.fillStyle='#0984e3';ctx.fillText('↑胰岛素分泌',gx+gw-60,curY-15);}
-  if(H.glucose<4.5){ctx.fillStyle='#e17055';ctx.fillText('↑胰高血糖素',gx+gw-70,curY+20);}
-  // 体温调节
-  const tx=W*0.55,ty=80,tw=W*0.35,th=150;
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=1;ctx.strokeRect(tx,ty,tw,th);
-  ctx.fillStyle='#aaa';ctx.font='12px sans-serif';ctx.textAlign='center';
-  ctx.fillText('体温调节',tx+tw/2,ty-8);
-  // 体温曲线
-  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.beginPath();
-  for(let i=0;i<tw;i++){
-    const t2=i/tw*8;
-    const val=37+Math.sin(t2*0.5)*1.5*Math.exp(-t2*0.15);
-    const y=ty+th-(val-35)/4*th;
-    i===0?ctx.moveTo(tx+i,y):ctx.lineTo(tx+i,y);
-  }
-  ctx.stroke();
-  // 正常范围
-  ctx.fillStyle='rgba(253,203,110,0.1)';ctx.fillRect(tx,ty+th*0.3,tw,th*0.35);
-  ctx.fillStyle='#fbbf24';ctx.font='11px sans-serif';ctx.textAlign='center';
-  ctx.fillText('37°C',tx+tw/2,ty+th+15);
-  // 产热/散热
-  ctx.fillStyle='#e17055';ctx.font='10px sans-serif';
-  ctx.fillText('寒冷→骨骼肌战栗产热',tx+tw*0.25,ty+th+30);
-  ctx.fillStyle='#0984e3';
-  ctx.fillText('炎热→汗腺分泌散热',tx+tw*0.7,ty+th+30);
-  // 水盐平衡
-  ctx.fillStyle='#aaa';ctx.font='12px sans-serif';ctx.textAlign='center';
-  ctx.fillText('水盐平衡',W/2,ty+th+55);
-  ctx.fillStyle='#74b9ff';ctx.font='10px sans-serif';
-  ctx.fillText('饮水不足→细胞外液渗透压↑→下丘脑→抗利尿激素↑→肾小管重吸收↑→尿量↓',W/2,ty+th+72);
-  // 调节网络总结
-  ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='12px sans-serif';ctx.textAlign='center';
-  ctx.fillText('稳态通过 神经-体液-免疫 调节网络维持',W/2,H2-15);
-  statusEl.textContent='内环境稳态：血糖、体温、水盐平衡通过负反馈调节维持动态平衡';
+  const cx=cv.width/2,cy=cv.height/2;
+  // body outline
+  ctx.strokeStyle='#7f93b5';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(cx,cy,160,200,0,0,7);ctx.stroke();
+  ctx.fillStyle='rgba(59,130,246,0.12)';ctx.beginPath();ctx.ellipse(cx,cy,160,200,0,0,7);ctx.fill();
+  // organs
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(cx-40,cy-60,26,0,7);ctx.fill();ctx.fillStyle='#cdd7ea';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('胰岛',cx-40,cy-90);
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(cx+50,cy+40,22,0,7);ctx.fill();ctx.fillText('肾',cx+50,cy+75);
+  // feedback loop arrow
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,230,0.3,2.7);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.fillText('负反馈调节',cx,cy-235);
+  // gauge
+  const gx=cv.width-90,gy=cy;
+  ctx.strokeStyle='#7f93b5';ctx.beginPath();ctx.arc(gx,gy,40,0,7);ctx.stroke();
+  ctx.strokeStyle='#34d399';ctx.lineWidth=4;ctx.beginPath();ctx.arc(gx,gy,40,-Math.PI/2,-Math.PI/2+6.28*H.var);ctx.stroke();
+  ctx.fillStyle='#cdd7ea';ctx.fillText('血糖',gx,gy-55);
+  statusEl.textContent='血糖/体温/水盐通过神经-体液调节维持稳态（负反馈）';
 }
 
 let playing=false,lastT=0,speed=1,t=0;

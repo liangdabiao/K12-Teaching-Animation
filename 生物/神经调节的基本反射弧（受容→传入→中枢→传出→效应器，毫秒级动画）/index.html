@@ -3,45 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>神经调节的基本反射弧</title>
+<title>反射弧（神经调节基础）</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
-body { background:linear-gradient(135deg,#0a1a10 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
-.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
-.topbar .back { color:#00b894; text-decoration:none; font-weight:600; white-space:nowrap; }
-.topbar .back:hover { text-decoration:underline; }
-.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
-main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
-.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
-.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
-.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
-.panel h2 { color:#00b894; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
-.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
-.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
-.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
-.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
-.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
-.controls button.primary { background:#00b894; color:white; }
-.controls button.primary:hover { filter:brightness(1.2); }
-.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
-.controls input[type="range"] { width:100px; }
-.controls .status { color:#55efc4; font-weight:600; margin-left:auto; }
-@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
 <header class="topbar">
   <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">神经调节的基本反射弧</span>
+  <span class="title">反射弧（神经调节基础）</span>
 </header>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
     <h2>原理说明</h2>
-    <p>本动画演示了神经调节的基本反射弧的过程和原理，通过交互式可视化帮助理解核心概念。</p>
-    <div class="legend"><span class="li"><b style="color:#00b894">●</b> 主要元素</span></div>
-  </aside>
+    <p>反射弧是完成反射活动的结构基础，由五部分组成：感受器→传入神经→神经中枢→传出神经→效应器。兴奋在反射弧中单向传递，从感受器开始到效应器作出反应。</p>
+    <div class="legend"><span class="li"><b style="color:#0984e3">①</b> 感受器</span><span class="li"><b style="color:#00b894">②</b> 传入神经</span><span class="li"><b style="color:#fdcb6e">③</b> 神经中枢</span><span class="li"><b style="color:#e17055">④</b> 传出神经</span><span class="li"><b style="color:#d63031">⑤</b> 效应器</span></div>
+  <div class="key-points"><h3>反射弧组成</h3><ul><li>①感受器：接受刺激→产生兴奋</li><li>②传入神经：将兴奋传向中枢</li><li>③神经中枢：分析综合→发出指令</li><li>④传出神经：将指令传向效应器</li><li>⑤效应器：执行反应（肌肉收缩/腺体分泌）</li><li>兴奋传导方向：<b>单向</b>（不可逆）</li></ul></div></aside>
 </main>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
@@ -57,87 +54,23 @@ const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const N={t:0,signal:0,step:0,ions:[],vesicles:[]};
+const Rf={t:0,p:0,lit:0};
 function sceneInit(){sceneReset();}
-function sceneReset(){N.t=0;N.signal=0;N.step=0;N.ions=[];N.vesicles=[];}
-function sceneStep(d){N.step=Math.max(0,Math.min(4,N.step+d));N.signal=0;}
-function sceneUpdate(dt){
-  N.t+=dt;N.signal=Math.min(1,N.signal+dt*0.5);
-  // 离子运动
-  if(N.step>=1&&Math.random()<0.1){
-    N.ions.push({x:0.2+N.step*0.15,y:0.5,vx:0,vy:(Math.random()-0.5)*2,life:2,type:Math.random()>0.5?'Na':'K'});
-  }
-  N.ions.forEach(i=>{i.x+=i.vx*dt;i.y+=i.vy*dt*0.3;i.life-=dt;});
-  N.ions=N.ions.filter(i=>i.life>0);
-  // 囊泡
-  if(N.step>=3&&Math.random()<0.05){
-    N.vesicles.push({x:0.72,y:0.4,vy:0.5,life:2});
-  }
-  N.vesicles.forEach(v=>{v.y+=v.vy*dt;v.life-=dt;});
-  N.vesicles=N.vesicles.filter(v=>v.life>0);
-}
+function sceneReset(){Rf.t=0;Rf.p=0;Rf.lit=0;}
+function sceneUpdate(dt){Rf.t+=dt;if(Rf.p<1)Rf.p=Math.min(1,Rf.p+dt*0.3);Rf.lit=Math.max(0,Rf.lit-dt*2);}
+function node(x,y,on,lab){ctx.fillStyle=on?'#fbbf24':'#7f93b5';ctx.beginPath();ctx.arc(x,y,14,0,7);ctx.fill();ctx.fillStyle='#cdd7ea';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(lab,x,y-22);}
 function sceneDraw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  const W=cv.width,H=cv.height;
-  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
-  const names=['① 感受器接受刺激','② 传入神经（电信号传导）','③ 神经中枢（突触传递）','④ 传出神经','⑤ 效应器反应'];
-  ctx.fillText(names[N.step],W/2,25);
-  for(let i=0;i<5;i++){ctx.fillStyle=i<=N.step?'#00b894':'rgba(255,255,255,0.2)';ctx.fillRect(W/2-120+i*50,35,46,4);}
-  // 反射弧路径
-  const path=[[W*0.08,H*0.7],[W*0.25,H*0.4],[W*0.5,H*0.5],[W*0.7,H*0.4],[W*0.9,H*0.6]];
-  // 画神经纤维
-  ctx.strokeStyle='rgba(127,147,181,0.5)';ctx.lineWidth=4;ctx.beginPath();
-  path.forEach((p,i)=>i===0?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1]));ctx.stroke();
-  // 信号传播
-  if(N.signal>0){
-    const sigX=path[0][0]+(path[path.length-1][0]-path[0][0])*N.signal;
-    const sigIdx=Math.min(path.length-2,Math.floor(N.signal*(path.length-1)));
-    const localP=(N.signal*(path.length-1))-sigIdx;
-    const sx=path[sigIdx][0]+(path[sigIdx+1][0]-path[sigIdx][0])*localP;
-    const sy=path[sigIdx][1]+(path[sigIdx+1][1]-path[sigIdx][1])*localP;
-    // 动作电位波形
-    ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.beginPath();
-    for(let i=-30;i<=30;i++){
-      const px=sx+i;const py=sy-20*Math.exp(-i*i/100)*Math.sin(i*0.3+N.t*5);
-      i===-30?ctx.moveTo(px,py):ctx.lineTo(px,py);
-    }
-    ctx.stroke();
-    // 信号点
-    ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(sx,sy,6,0,Math.PI*2);ctx.fill();
-  }
-  // 各节点标注
-  const labels=['感受器','传入神经','神经中枢','传出神经','效应器'];
-  const icons=['👁','→','🧠','→','💪'];
-  path.forEach((p,i)=>{
-    ctx.fillStyle=i===N.step?'#00b894':'#7f93b5';
-    ctx.beginPath();ctx.arc(p[0],p[1],15,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(icons[i],p[0],p[1]+4);
-    ctx.fillStyle='#cdd7ea';ctx.font='11px sans-serif';ctx.fillText(labels[i],p[0],p[1]+30);
-  });
-  // 突触细节(步骤2-3)
-  if(N.step>=2){
-    const synX=W*0.5,synY=H*0.5;
-    ctx.strokeStyle='#e17055';ctx.lineWidth=1;ctx.setLineDash([2,2]);
-    ctx.strokeRect(synX-20,synY-25,40,50);ctx.setLineDash([]);
-    ctx.fillStyle='#e17055';ctx.font='9px sans-serif';ctx.fillText('突触',synX+25,synY-20);
-    // 神经递质
-    if(N.step>=2){
-      for(let i=0;i<3;i++){
-        const vx=synX+Math.sin(N.t*3+i*2)*8;
-        const vy=synY-10+i*10+Math.cos(N.t*2+i)*3;
-        ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(vx,vy,3,0,Math.PI*2);ctx.fill();
-      }
-    }
-  }
-  // 离子通道
-  N.ions.forEach(ion=>{
-    ctx.fillStyle=ion.type==='Na'?'#f87171':'#60a5fa';
-    ctx.beginPath();ctx.arc(ion.x*W,ion.y*H,3,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='6px sans-serif';ctx.fillText(ion.type,ion.x*W,ion.y*H+2);
-  });
-  ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='12px sans-serif';ctx.textAlign='center';
-  ctx.fillText('兴奋在神经纤维上以电信号传导，在突触处通过神经递质化学传递',W/2,H-15);
-  statusEl.textContent='反射弧：感受器→传入神经→中枢→传出神经→效应器';
+  const y=160;
+  const xs=[80,230,380,530,680];
+  const labs=['感受器','传入神经','神经中枢','传出神经','效应器'];
+  let active=Math.floor(Rf.p*5);
+  for(let i=0;i<5;i++){if(i>0){ctx.strokeStyle=(active>=i)?'#fbbf24':'#7f93b5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(xs[i-1],y);ctx.lineTo(xs[i],y);ctx.stroke();}node(xs[i],y,active>=i,labs[i]);}
+  // stimulus flash at start
+  if(active>=0){ctx.fillStyle='rgba(248,113,113,'+(0.5*Rf.p)+')';ctx.beginPath();ctx.arc(xs[0]-30,y,10,0,7);ctx.fill();}
+  // hand
+  ctx.fillStyle='#cdd7ea';ctx.fillText('刺激→缩手（毫秒级，非随意）',cv.width/2,y+60);
+  statusEl.textContent='反射弧：感受器→传入→中枢→传出→效应器，五部分缺一不可';
 }
 
 let playing=false,lastT=0,speed=1,t=0;

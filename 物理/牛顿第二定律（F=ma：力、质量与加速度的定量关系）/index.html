@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>牛顿第二定律 F=ma</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;--good:#00b894;--warn:#fdcb6e;--bad:#d63031;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+.back:hover{background:#1a2d4a}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#060e1a;border:1px solid var(--line);border-radius:12px;max-width:100%}
+.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin-bottom:10px;color:var(--accent)}
+.panel p{font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:12px}
+.key-points{margin-top:12px;padding:12px;background:rgba(9,132,227,0.08);border-radius:8px;font-size:13px;line-height:1.8}
+.key-points h3{font-size:14px;margin-bottom:8px;color:var(--warn)}
+.key-points ul{padding-left:18px}
+.key-points li{margin-bottom:4px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.legend span{font-size:12px;display:flex;align-items:center;gap:5px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#1a2d4a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#243d5e}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.slider-group{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.slider-group label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+.slider-group input{width:100%}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回物理</a>
+  <span>牛顿第二定律 F = ma</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>牛顿第二定律：物体的加速度a与所受合外力F成正比，与质量m成反比。公式：<b>F = ma</b>。力的方向与加速度方向相同。这是连接力和运动的桥梁——已知力求运动，或已知运动求力。</p>
+    <div class="legend">
+      <span><span class="dot" style="background:#0984e3"></span>物体(质量m)</span>
+      <span><span class="dot" style="background:#d63031"></span>力F(红色箭头)</span>
+      <span><span class="dot" style="background:#00b894"></span>加速度a</span>
+      <span><span class="dot" style="background:#fdcb6e"></span>速度v</span>
+    </div>
+    <div class="slider-group">
+      <label>力 F = <span id="fVal">10</span> N <input type="range" id="fSlider" min="1" max="30" value="10"></label>
+      <label>质量 m = <span id="mVal">2</span> kg <input type="range" id="mSlider" min="1" max="10" value="2"></label>
+    </div>
+    <div class="key-points">
+      <h3>核心公式</h3>
+      <ul>
+        <li><b>F = ma</b>（核心公式）</li>
+        <li>a = F/m（加速度与力成正比，与质量成反比）</li>
+        <li>1N = 1kg·m/s²</li>
+        <li>力的方向 = 加速度方向</li>
+        <li>适用于惯性参考系</li>
+        <li>瞬时性：力变→a立即变</li>
+      </ul>
+    </div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const fSlider=document.getElementById('fSlider'),mSlider=document.getElementById('mSlider');
+const fVal=document.getElementById('fVal'),mVal=document.getElementById('mVal');
+let playing=false,t=0,speed=1;
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(350,Math.min(550,r.height-8));}
+window.addEventListener('resize',()=>{fit();});fit();
+
+let F=10,M=2;
+fSlider.oninput=()=>{F=+fSlider.value;fVal.textContent=F;};
+mSlider.oninput=()=>{M=+mSlider.value;mVal.textContent=M;};
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const a=F/M;
+  const groundY=H*0.7;
+  
+  // 地面
+  ctx.strokeStyle='#1e3050';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,groundY);ctx.lineTo(W-40,groundY);ctx.stroke();
+  // 地面刻度
+  for(let x=60;x<W-40;x+=40){
+    ctx.beginPath();ctx.moveTo(x,groundY);ctx.lineTo(x,groundY+8);ctx.stroke();
+  }
+  
+  // 物体位置
+  const blockSize=30+M*4;
+  const bx=80+t*t*a*0.3;
+  const by=groundY-blockSize;
+  
+  if(bx<W-60){
+    // 物体
+    ctx.fillStyle='#0984e3';
+    ctx.fillRect(bx,by,blockSize,blockSize);
+    ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText(M+'kg',bx+blockSize/2,by+blockSize/2+5);
+    
+    // 力箭头
+    const arrowLen=F*4;
+    ctx.strokeStyle='#d63031';ctx.lineWidth=3;ctx.fillStyle='#d63031';
+    ctx.beginPath();ctx.moveTo(bx+blockSize,by+blockSize/2);
+    ctx.lineTo(bx+blockSize+arrowLen,by+blockSize/2);ctx.stroke();
+    // 箭头头
+    ctx.beginPath();
+    ctx.moveTo(bx+blockSize+arrowLen,by+blockSize/2);
+    ctx.lineTo(bx+blockSize+arrowLen-10,by+blockSize/2-6);
+    ctx.lineTo(bx+blockSize+arrowLen-10,by+blockSize/2+6);
+    ctx.fill();
+    ctx.fillStyle='#d63031';ctx.font='bold 13px sans-serif';
+    ctx.fillText('F='+F+'N',bx+blockSize+arrowLen/2,by+blockSize/2-12);
+    
+    // 加速度标注
+    ctx.fillStyle='#00b894';ctx.font='13px sans-serif';
+    ctx.fillText('a='+a.toFixed(1)+'m/s²',bx+blockSize/2,by-20);
+    
+    // 速度
+    const v=a*t*0.5;
+    ctx.fillStyle='#fdcb6e';
+    ctx.fillText('v='+v.toFixed(1)+'m/s',bx+blockSize/2,by-40);
+  }
+  
+  // 信息面板
+  ctx.fillStyle='rgba(17,29,51,0.9)';
+  ctx.fillRect(W-220,20,200,120);
+  ctx.strokeStyle='#1e3050';ctx.strokeRect(W-220,20,200,120);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 14px sans-serif';ctx.textAlign='left';
+  ctx.fillText('F = ma',W-200,45);
+  ctx.font='13px sans-serif';ctx.fillStyle='#8b9dc3';
+  ctx.fillText('F = '+F+' N',W-200,70);
+  ctx.fillText('m = '+M+' kg',W-200,90);
+  ctx.fillStyle='#00b894';
+  ctx.fillText('a = F/m = '+a.toFixed(2)+' m/s²',W-200,115);
+  ctx.fillStyle='#fdcb6e';
+  ctx.fillText('t = '+t.toFixed(1)+' s',W-200,135);
+  
+  statusEl.textContent='F='+F+'N  m='+M+'kg  a='+a.toFixed(1)+'m/s²';
+}
+
+let lastTime=0;
+function loop(ts){
+  if(!lastTime)lastTime=ts;
+  const dt=(ts-lastTime)/1000*speed;
+  lastTime=ts;
+  if(playing){t+=dt;draw();}
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+};
+document.getElementById('resetBtn').onclick=function(){t=0;draw();};
+document.getElementById('speed').oninput=function(){speed=+this.value;};
+
+draw();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
