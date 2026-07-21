@@ -918,7 +918,7 @@
             for (let i = 0; i < 3; i++) {
                 const transferred = animationState.energyValues[i] * efficiency;
                 const dissipated = animation
-<!--检测到代码截断，自动续写中...-->
+
 dissipated = animationState.energyValues[i] - transferred;
                 animationState.energyValues[i] = 0;
                 animationState.energyValues[i + 1] = transferred;

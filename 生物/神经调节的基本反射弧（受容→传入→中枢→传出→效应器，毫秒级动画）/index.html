@@ -1,1389 +1,159 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>神经调节的基本反射弧 - 交互式教学动画</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            color: #333;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 1000px;
-        }
-        
-        h1 {
-            color: #1a237e;
-            margin-bottom: 10px;
-            font-size: 2.2rem;
-        }
-        
-        .subtitle {
-            color: #3949ab;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-        }
-        
-        .container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 1000px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 50, 0.1);
-            overflow: hidden;
-        }
-        
-        .animation-area {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            background-color: #f9fafc;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        #reflexCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        
-        .control-panel {
-            padding: 20px;
-            background-color: #f8f9ff;
-        }
-        
-        .mode-selector {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .mode-btn {
-            padding: 10px 20px;
-            background-color: #e8eaf6;
-            border: 2px solid #c5cae9;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #3949ab;
-            transition: all 0.3s;
-        }
-        
-        .mode-btn.active {
-            background-color: #3949ab;
-            color: white;
-            border-color: #3949ab;
-        }
-        
-        .mode-btn:hover:not(.active) {
-            background-color: #d1d9ff;
-        }
-        
-        .main-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .control-btn {
-            padding: 10px 20px;
-            background-color: #3f51b5;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s;
-            min-width: 100px;
-        }
-        
-        .control-btn:hover {
-            background-color: #303f9f;
-        }
-        
-        .control-btn:disabled {
-            background-color: #9fa8da;
-            cursor: not-allowed;
-        }
-        
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .speed-label {
-            font-weight: 600;
-            color: #1a237e;
-        }
-        
-        #speedSlider {
-            width: 150px;
-        }
-        
-        .info-panel {
-            padding: 15px;
-            background-color: white;
-            border-top: 1px solid #e0e0e0;
-            min-height: 120px;
-        }
-        
-        .info-title {
-            color: #1a237e;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-        
-        .info-content {
-            line-height: 1.6;
-            color: #444;
-        }
-        
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .step-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #c5cae9;
-            transition: background-color 0.3s;
-        }
-        
-        .step-dot.active {
-            background-color: #3949ab;
-        }
-        
-        .step-dot.completed {
-            background-color: #4caf50;
-        }
-        
-        .test-panel {
-            padding: 20px;
-            background-color: #f1f8e9;
-            display: none;
-        }
-        
-        .test-title {
-            color: #33691e;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .test-options {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .test-btn {
-            padding: 10px 20px;
-            background-color: #7cb342;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .test-btn:hover {
-            background-color: #689f38;
-        }
-        
-        .test-area {
-            text-align: center;
-            padding: 15px;
-            background-color: white;
-            border-radius: 8px;
-            border: 1px dashed #c5e1a5;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .feedback {
-            margin-top: 10px;
-            font-weight: 600;
-            min-height: 24px;
-        }
-        
-        .correct {
-            color: #2e7d32;
-        }
-        
-        .incorrect {
-            color: #c62828;
-        }
-        
-        .component-info {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            max-width: 300px;
-            display: none;
-            z-index: 10;
-            border-left: 4px solid #3949ab;
-        }
-        
-        .component-title {
-            color: #1a237e;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
-        
-        .component-desc {
-            color: #555;
-            line-height: 1.5;
-        }
-        
-        @media (max-width: 768px) {
-            .main-controls {
-                flex-direction: column;
-            }
-            
-            .animation-area {
-                height: 400px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>神经调节的基本反射弧</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Microsoft YaHei',sans-serif; }
+body { background:linear-gradient(135deg,#0a1a10 0%,#0a0a1a 100%); color:#e0e0e0; min-height:100vh; padding:20px; display:flex; flex-direction:column; align-items:center; }
+.topbar { width:100%; max-width:1200px; display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1); }
+.topbar .back { color:#00b894; text-decoration:none; font-weight:600; white-space:nowrap; }
+.topbar .back:hover { text-decoration:underline; }
+.topbar .title { color:#fff; font-size:1.5rem; font-weight:bold; }
+main { display:flex; flex-wrap:wrap; gap:20px; max-width:1200px; width:100%; }
+.stage { flex:1; min-width:500px; background:rgba(0,0,0,0.3); border-radius:15px; padding:15px; border:1px solid rgba(255,255,255,0.1); }
+.stage canvas { width:100%; display:block; border-radius:10px; background:rgba(0,0,0,0.5); }
+.panel { width:320px; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; border:1px solid rgba(255,255,255,0.1); }
+.panel h2 { color:#00b894; margin-bottom:15px; font-size:1.3rem; border-bottom:2px solid rgba(255,255,255,0.1); padding-bottom:8px; }
+.panel p { line-height:1.7; font-size:0.95rem; color:#ccc; }
+.legend { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
+.legend .li { display:flex; align-items:center; gap:5px; font-size:0.85rem; color:#aaa; }
+.controls { max-width:1200px; width:100%; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:20px; padding:15px 20px; background:rgba(255,255,255,0.05); border-radius:12px; }
+.controls button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; background:rgba(255,255,255,0.1); color:#e0e0e0; }
+.controls button:hover { background:rgba(255,255,255,0.2); transform:translateY(-1px); }
+.controls button.primary { background:#00b894; color:white; }
+.controls button.primary:hover { filter:brightness(1.2); }
+.controls label { color:#aaa; display:flex; align-items:center; gap:8px; }
+.controls input[type="range"] { width:100px; }
+.controls .status { color:#55efc4; font-weight:600; margin-left:auto; }
+@media(max-width:900px) { main{flex-direction:column;} .stage,.panel{width:100%;min-width:unset;} }
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>神经调节的基本反射弧</h1>
-        <p class="subtitle">受容 → 传入 → 中枢 → 传出 → 效应器 | 毫秒级信号传递动画</p>
-    </div>
-    
-    <div class="container">
-        <div class="animation-area">
-            <canvas id="reflexCanvas"></canvas>
-            <div id="componentInfo" class="component-info">
-                <div class="component-title" id="infoTitle">组件标题</div>
-                <div class="component-desc" id="infoDesc">组件描述信息</div>
-            </div>
-        </div>
-        
-        <div class="control-panel">
-            <div class="mode-selector">
-                <div class="mode-btn active" data-mode="guide">引导模式</div>
-                <div class="mode-btn" data-mode="explore">探索模式</div>
-                <div class="mode-btn" data-mode="test">测试模式</div>
-            </div>
-            
-            <div class="main-controls">
-                <button id="playBtn" class="control-btn">播放</button>
-                <button id="pauseBtn" class="control-btn" disabled>暂停</button>
-                <button id="restartBtn" class="control-btn">重新开始</button>
-                <button id="prevBtn" class="control-btn">上一步</button>
-                <button id="nextBtn" class="control-btn">下一步</button>
-                
-                <div class="speed-control">
-                    <span class="speed-label">速度:</span>
-                    <input type="range" id="speedSlider" min="1" max="10" value="5">
-                    <span id="speedValue">中速</span>
-                </div>
-            </div>
-            
-            <div class="step-indicator">
-                <div class="step-dot" data-step="0"></div>
-                <div class="step-dot" data-step="1"></div>
-                <div class="step-dot" data-step="2"></div>
-                <div class="step-dot" data-step="3"></div>
-                <div class="step-dot" data-step="4"></div>
-            </div>
-        </div>
-        
-        <div class="info-panel">
-            <div class="info-title" id="currentStepTitle">反射弧简介</div>
-            <div class="info-content" id="currentStepDesc">
-                反射弧是神经调节的基本结构和功能单位，包括感受器、传入神经、神经中枢、传出神经和效应器五个部分。点击"播放"按钮开始动画演示。
-            </div>
-        </div>
-        
-        <div class="test-panel" id="testPanel">
-            <div class="test-title">知识测试</div>
-            <div class="test-options">
-                <button class="test-btn" id="labelTestBtn">结构标注挑战</button>
-                <button class="test-btn" id="orderTestBtn">顺序排序挑战</button>
-                <button class="test-btn" id="resetTestBtn">重置测试</button>
-            </div>
-            <div class="test-area" id="testArea">
-                <p>选择一种测试类型开始挑战</p>
-                <div class="feedback" id="testFeedback"></div>
-            </div>
-        </div>
-    </div>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回学科目录</a>
+  <span class="title">神经调节的基本反射弧</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>本动画演示了神经调节的基本反射弧的过程和原理，通过交互式可视化帮助理解核心概念。</p>
+    <div class="legend"><span class="li"><b style="color:#00b894">●</b> 主要元素</span></div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
 
-    <script>
-        // 全局变量
-        const canvas = document.getElementById('reflexCanvas');
-        const ctx = canvas.getContext('2d');
-        const componentInfo = document.getElementById('componentInfo');
-        const infoTitle = document.getElementById('infoTitle');
-        const infoDesc = document.getElementById('infoDesc');
-        const testPanel = document.getElementById('testPanel');
-        const testArea = document.getElementById('testArea');
-        const testFeedback = document.getElementById('testFeedback');
-        
-        // 动画状态
-        let animationState = {
-            mode: 'guide', // guide, explore, test
-            isPlaying: false,
-            currentStep: 0, // 0-4: 感受器,传入,中枢,传出,效应器
-            speed: 5, // 1-10
-            signalPosition: 0, // 0-100, 信号位置百分比
-            signalMoving: false,
-            signalDirection: 1, // 1: 正向, -1: 反向
-            components: [],
-            testActive: false,
-            testType: null,
-            labelsHidden: false
-        };
-        
-        // 反射弧组件数据
-        const reflexComponents = [
-            {
-                id: 'receptor',
-                name: '感受器',
-                description: '接受内外环境刺激并转化为神经冲动的特殊结构。例如皮肤中的触觉小体、肌梭等。',
-                color: '#FFCCBC', // 浅肉色
-                activeColor: '#FF8A65',
-                x: 100,
-                y: 250,
-                width: 60,
-                height: 80
-            },
-            {
-                id: 'afferent',
-                name: '传入神经',
-                description: '将感受器产生的神经冲动传向神经中枢的神经纤维。由感觉神经元的外周突构成。',
-                color: '#E3F2FD', // 浅蓝色
-                activeColor: '#64B5F6',
-                x: 180,
-                y: 200,
-                width: 120,
-                height: 20
-            },
-            {
-                id: 'center',
-                name: '神经中枢',
-                description: '位于脊髓或脑，对传入信息进行分析综合，并发出指令。包含中间神经元和运动神经元胞体。',
-                color: '#F3E5F5', // 浅紫色
-                activeColor: '#BA68C8',
-                x: 320,
-                y: 150,
-                width: 100,
-                height: 200
-            },
-            {
-                id: 'efferent',
-                name: '传出神经',
-                description: '将神经中枢的指令传向效应器的神经纤维。由运动神经元的轴突构成。',
-                color: '#E3F2FD', // 浅蓝色
-                activeColor: '#64B5F6',
-                x: 440,
-                y: 200,
-                width: 120,
-                height: 20
-            },
-            {
-                id: 'effector',
-                name: '效应器',
-                description: '执行神经中枢指令的器官，如肌肉或腺体。肌肉收缩或腺体分泌完成反射活动。',
-                color: '#FFEBEE', // 浅红色
-                activeColor: '#EF5350',
-                x: 580,
-                y: 230,
-                width: 80,
-                height: 100
-            }
-        ];
-        
-        // 步骤描述数据
-        const stepDescriptions = [
-            {
-                title: '感受器受容',
-                description: '感受器接受刺激（如敲击肌腱），并将刺激能量转化为神经冲动（电信号）。'
-            },
-            {
-                title: '传入神经传导',
-                description: '神经冲动沿传入神经纤维向中枢神经系统（脊髓）快速传导，速度可达每秒数十米。'
-            },
-            {
-                title: '神经中枢整合',
-                description: '神经冲动到达脊髓中枢，中间神经元对信息进行简单的分析整合，并激活运动神经元。'
-            },
-            {
-                title: '传出神经传导',
-                description: '运动神经元产生的神经冲动沿传出神经纤维传向效应器（肌肉）。'
-            },
-            {
-                title: '效应器反应',
-                description: '神经冲动到达效应器（肌肉），引起肌肉收缩，完成反射动作（如膝跳）。'
-            }
-        ];
-        
-        // 初始化Canvas
-        function initCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            
-            // 调整组件位置以适应Canvas大小
-            const scaleX = canvas.width / 800;
-            const scaleY = canvas.height / 500;
-            
-            reflexComponents.forEach(comp => {
-                comp.x *= scaleX;
-                comp.y *= scaleY;
-                comp.width *= scaleX;
-                comp.height *= scaleY;
-            });
-            
-            draw();
-        }
-        
-        // 绘制反射弧
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // 绘制背景和脊髓轮廓
-            drawBackground();
-            
-            // 绘制连接路径
-            drawNeuralPath();
-            
-            // 绘制各个组件
-            reflexComponents.forEach(comp => {
-                drawComponent(comp);
-            });
-            
-            // 绘制信号
-            if (animationState.signalMoving || animationState.signalPosition > 0) {
-                drawSignal();
-            }
-            
-            // 在测试模式下隐藏标签
-            if (!animationState.labelsHidden) {
-                drawLabels();
-            }
-        }
-        
-        // 绘制背景和脊髓
-        function drawBackground() {
-            // 绘制脊髓轮廓
-            ctx.fillStyle = '#F5F5F5';
-            ctx.fillRect(reflexComponents[2].x - 10, reflexComponents[2].y - 10, 
-                        reflexComponents[2].width + 20, reflexComponents[2].height + 20);
-            
-            // 脊髓灰质
-            ctx.fillStyle = '#E0E0E0';
-            ctx.fillRect(reflexComponents[2].x, reflexComponents[2].y, 
-                        reflexComponents[2].width, reflexComponents[2].height);
-            
-            // 绘制皮肤轮廓（感受器周围）
-            ctx.fillStyle = '#FFF3E0';
-            ctx.fillRect(reflexComponents[0].x - 20, reflexComponents[0].y - 10, 
-                        reflexComponents[0].width + 40, reflexComponents[0].height + 20);
-        }
-        
-        // 绘制神经路径
-        function drawNeuralPath() {
-            ctx.beginPath();
-            ctx.strokeStyle = '#90CAF9';
-            ctx.lineWidth = 3;
-            
-            // 从感受器到传入神经
-            ctx.moveTo(reflexComponents[0].x + reflexComponents[0].width/2, reflexComponents[0].y + reflexComponents[0].height/2);
-            ctx.lineTo(reflexComponents[1].x, reflexComponents[1].y + reflexComponents[1].height/2);
-            
-            // 传入神经
-            ctx.lineTo(reflexComponents[1].x + reflexComponents[1].width, reflexComponents[1].y + reflexComponents[1].height/2);
-            
-            // 传入神经到中枢
-            ctx.lineTo(reflexComponents[2].x, reflexComponents[2].y + reflexComponents[2].height/2);
-            
-            // 中枢到传出神经
-            ctx.moveTo(reflexComponents[2].x + reflexComponents[2].width, reflexComponents[2].y + reflexComponents[2].height/2);
-            ctx.lineTo(reflexComponents[3].x, reflexComponents[3].y + reflexComponents[3].height/2);
-            
-            // 传出神经
-            ctx.lineTo(reflexComponents[3].x + reflexComponents[3].width, reflexComponents[3].y + reflexComponents[3].height/2);
-            
-            // 传出神经到效应器
-            ctx.lineTo(reflexComponents[4].x, reflexComponents[4].y + reflexComponents[4].height/2);
-            
-            ctx.stroke();
-            
-            // 绘制箭头
-            drawArrow(reflexComponents[1].x + reflexComponents[1].width, reflexComponents[1].y + reflexComponents[1].height/2, 
-                     reflexComponents[2].x, reflexComponents[2].y + reflexComponents[2].height/2, '#90CAF9');
-            drawArrow(reflexComponents[3].x + reflexComponents[3].width, reflexComponents[3].y + reflexComponents[3].height/2, 
-                     reflexComponents[4].x, reflexComponents[4].y + reflexComponents[4].height/2, '#90CAF9');
-        }
-        
-        // 绘制箭头
-        function drawArrow(fromX, fromY, toX, toY, color) {
-            const headlen = 10;
-            const dx = toX - fromX;
-            const dy = toY - fromY;
-            const angle = Math.atan2(dy, dx);
-            
-            ctx.save();
-            ctx.strokeStyle = color;
-            ctx.fillStyle = color;
-            
-            ctx.beginPath();
-            ctx.moveTo(fromX, fromY);
-            ctx.lineTo(toX, toY);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(toX, toY);
-            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI/6), toY - headlen * Math.sin(angle - Math.PI/6));
-            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI/6), toY - headlen * Math.sin(angle + Math.PI/6));
-            ctx.closePath();
-            ctx.fill();
-            
-            ctx.restore();
-        }
-        
-        // 绘制组件
-        function drawComponent(comp) {
-            // 判断组件是否处于激活状态
-            const isActive = (
-                (animationState.currentStep === 0 && comp.id === 'receptor') ||
-                (animationState.currentStep === 1 && comp.id === 'afferent') ||
-                (animationState.currentStep === 2 && comp.id === 'center') ||
-                (animationState.currentStep === 3 && comp.id === 'efferent') ||
-                (animationState.currentStep === 4 && comp.id === 'effector')
-            );
-            
-            const color = isActive ? comp.activeColor : comp.color;
-            
-            ctx.fillStyle = color;
-            
-            // 根据不同组件类型绘制不同形状
-            if (comp.id === 'receptor') {
-                // 感受器 - 椭圆形
-                ctx.beginPath();
-                ctx.ellipse(comp.x + comp.width/2, comp.y + comp.height/2, 
-                           comp.width/2, comp.height/2, 0, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // 内部细节
-                ctx.fillStyle = isActive ? '#FF5722' : '#FFAB91';
-                ctx.beginPath();
-                ctx.ellipse(comp.x + comp.width/2, comp.y + comp.height/2, 
-                           comp.width/3, comp.height/3, 0, 0, Math.PI * 2);
-                ctx.fill();
-                
-            } else if (comp.id === 'afferent' || comp.id === 'efferent') {
-                // 传入/传出神经 - 长条形
-                ctx.fillRect(comp.x, comp.y, comp.width, comp.height);
-                
-                // 神经纤维细节
-                ctx.strokeStyle = isActive ? '#1976D2' : '#90CAF9';
-                ctx.lineWidth = 1;
-                for (let i = 0; i < 3; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(comp.x, comp.y + comp.height/4 * (i+1));
-                    ctx.lineTo(comp.x + comp.width, comp.y + comp.height/4 * (i+1));
-                    ctx.stroke();
-                }
-                
-            } else if (comp.id === 'center') {
-                // 神经中枢 - 矩形
-                ctx.fillRect(comp.x, comp.y, comp.width, comp.height);
-                
-                // 神经元胞体
-                ctx.fillStyle = isActive ? '#8E24AA' : '#CE93D8';
-                for (let i = 0; i < 5; i++) {
-                    const neuronX = comp.x + comp.width/6 * (i+1);
-                    const neuronY = comp.y + comp.height/2;
-                    ctx.beginPath();
-                    ctx.arc(neuronX, neuronY, 8, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
-            } else if (comp.id === 'effector') {
-                // 效应器 - 肌肉形状
-                ctx.beginPath();
-                ctx.moveTo(comp.x, comp.y + comp.height/2);
-                ctx.bezierCurveTo(
-                    comp.x + comp.width/3, comp.y,
-                    comp.x + 2*comp.width/3, comp.y,
-                    comp.x + comp.width, comp.y + comp.height/2
-                );
-                ctx.bezierCurveTo(
-                    comp.x + 2*comp.width/3, comp.y + comp.height,
-                    comp.x + comp.width/3, comp.y + comp.height,
-                    comp.x, comp.y + comp.height/2
-                );
-                ctx.closePath();
-                ctx.fill();
-                
-                // 肌肉条纹
-                ctx.strokeStyle = isActive ? '#D32F2F' : '#EF9A9A';
-                ctx.lineWidth = 2;
-                for (let i = 0; i < 4; i++) {
-                    const stripeX = comp.x + comp.width/5 * (i+1);
-                    ctx.beginPath();
-                    ctx.moveTo(stripeX, comp.y + 10);
-                    ctx.lineTo(stripeX, comp.y + comp.height - 10);
-                    ctx.stroke();
-                }
-                
-                // 如果效应器激活，绘制收缩效果
-                if (isActive && animationState.signalPosition > 90) {
-                    ctx.fillStyle = 'rgba(239, 83, 80, 0.3)';
-                    ctx.beginPath();
-                    ctx.ellipse(comp.x + comp.width/2, comp.y + comp.height/2, 
-                               comp.width/2 + 5, comp.height/2 + 5, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-            
-            // 绘制组件边框
-            ctx.strokeStyle = isActive ? '#1A237E' : '#9FA8DA';
-            ctx.lineWidth = isActive ? 3 : 1;
-            
-            if (comp.id === 'receptor' || comp.id === 'effector') {
-                ctx.beginPath();
-                ctx.ellipse(comp.x + comp.width/2, comp.y + comp.height/2, 
-                           comp.width/2, comp.height/2, 0, 0, Math.PI * 2);
-                ctx.stroke();
-            } else {
-                ctx.strokeRect(comp.x, comp.y, comp.width, comp.height);
-            }
-        }
-        
-        // 绘制信号
-        function drawSignal() {
-            const pathLength = 700; // 路径总长度（近似）
-            const signalPos = animationState.signalPosition;
-            
-            // 计算信号在路径上的位置
-            let x, y;
-            
-            if (signalPos < 15) {
-                // 感受器区域
-                const t = signalPos / 15;
-                x = reflexComponents[0].x + reflexComponents[0].width/2;
-                y = reflexComponents[0].y + reflexComponents[0].height/2;
-            } else if (signalPos < 35) {
-                // 传入神经
-                const t = (signalPos - 15) / 20;
-                x = reflexComponents[1].x + reflexComponents[1].width * t;
-                y = reflexComponents[1].y + reflexComponents[1].height/2;
-            } else if (signalPos < 50) {
-                // 传入神经到中枢
-                const t = (signalPos - 35) / 15;
-                x = reflexComponents[1].x + reflexComponents[1].width + (reflexComponents[2].x - (reflexComponents[1].x + reflexComponents[1].width)) * t;
-                y = reflexComponents[1].y + reflexComponents[1].height/2 + (reflexComponents[2].y + reflexComponents[2].height/2 - (reflexComponents[1].y + reflexComponents[1].height/2)) * t;
-            } else if (signalPos < 65) {
-                // 中枢内部
-                const t = (signalPos - 50) / 15;
-                x = reflexComponents[2].x + reflexComponents[2].width * t;
-                y = reflexComponents[2].y + reflexComponents[2].height/2;
-            } else if (signalPos < 80) {
-                // 中枢到传出神经
-                const t = (signalPos - 65) / 15;
-                x = reflexComponents[2].x + reflexComponents[2].width + (reflexComponents[3].x - (reflexComponents[2].x + reflexComponents[2].width)) * t;
-                y = reflexComponents[2].y + reflexComponents[2].height/2 + (reflexComponents[3].y + reflexComponents[3].height/2 - (reflexComponents[2].y + reflexComponents[2].height/2)) * t;
-            } else if (signalPos < 95) {
-                // 传出神经
-                const t = (signalPos - 80) / 15;
-                x = reflexComponents[3].x + reflexComponents[3].width * t;
-                y = reflexComponents[3].y + reflexComponents[3].height/2;
-            } else {
-                // 传出神经到效应器
-                const t = (signalPos - 95) / 5;
-                x = reflexComponents[3].x + reflexComponents[3].width + (reflexComponents[4].x - (reflexComponents[3].x + reflexComponents[3].width)) * t;
-                y = reflexComponents[3].y + reflexComponents[3].height/2 + (reflexComponents[4].y + reflexComponents[4].height/2 - (reflexComponents[3].y + reflexComponents[3].height/2)) * t;
-            }
-            
-            // 绘制信号（脉动光点）
-            const pulse = Math.sin(Date.now() / 100) * 0.3 + 0.7;
-            const radius = 8 * pulse;
-            
-            // 光点主体
-            const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-            gradient.addColorStop(0, '#FFFF00');
-            gradient.addColorStop(0.7, '#FFEA00');
-            gradient.addColorStop(1, 'rgba(255, 234, 0, 0)');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 光晕效果
-            ctx.fillStyle = 'rgba(255, 255, 100, 0.2)';
-            ctx.beginPath();
-            ctx.arc(x, y, radius * 1.5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
-        // 绘制标签
-        function drawLabels() {
-            ctx.fillStyle = '#1A237E';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            
-            reflexComponents.forEach(comp => {
-                const labelY = comp.id === 'receptor' ? comp.y - 10 : 
-                              comp.id === 'effector' ? comp.y + comp.height + 25 :
-                              comp.y - 10;
-                
-                ctx.fillText(comp.name, comp.x + comp.width/2, labelY);
-            });
-            
-            // 绘制步骤标签
-            ctx.fillStyle = '#3949AB';
-            ctx.font = '14px Arial';
-            
-            const stepLabels = ['受容', '传入', '中枢', '传出', '效应'];
-            for (let i = 0; i < 5; i++) {
-                const x = 100 + i * 150;
-                const y = 100;
-                
-                // 步骤圆圈
-                ctx.fillStyle = animationState.currentStep === i ? '#3949AB' : '#C5CAE9';
-                ctx.beginPath();
-                ctx.arc(x, y, 20, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // 步骤数字
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 16px Arial';
-                ctx.fillText((i+1).toString(), x, y + 5);
-                
-                // 步骤文字
-                ctx.fillStyle = '#1A237E';
-                ctx.font = '14px Arial';
-                ctx.fillText(stepLabels[i], x, y + 40);
-            }
-        }
-        
-        // 更新动画
-        function updateAnimation() {
-            if (!animationState.isPlaying) return;
-            
-            // 根据速度计算信号移动增量
-            const speedMap = {1: 0.2, 2: 0.4, 3: 0.6, 4: 0.8, 5: 1.0, 6: 1.5, 7: 2.0, 8: 3.0, 9: 4.0, 10: 5.0};
-            const increment = speedMap[animationState.speed] || 1.0;
-            
-            // 更新信号位置
-            animationState.signalPosition += increment * animationState.signalDirection;
-            
-            // 检查是否到达步骤边界
-            const stepBoundaries = [15, 35, 50, 65, 80, 100];
-            
-            if (animationState.signalDirection === 1) {
-                // 正向移动
-                if (animationState.signalPosition >= stepBoundaries[animationState.currentStep + 1]) {
-                    animationState.currentStep++;
-                    updateStepInfo();
-                    
-                    // 如果到达终点，暂停动画
-                    if (animationState.currentStep >= 4) {
-                        if (animationState.signalPosition >= 100) {
-                            animationState.isPlaying = false;
-                            animationState.signalMoving = false;
-                            updateControlButtons();
-                        }
-                    }
-                }
-                
-                // 如果超过100%，重置
-                if (animationState.signalPosition > 100) {
-                    animationState.signalPosition = 100;
-                }
-            } else {
-                // 反向移动
-                if (animationState.signalPosition <= stepBoundaries[animationState.currentStep]) {
-                    animationState.currentStep--;
-                    updateStepInfo();
-                    
-                    // 如果回到起点，暂停动画
-                    if (animationState.currentStep <= 0 && animationState.signalPosition <= 0) {
-                        animationState.isPlaying = false;
-                        animationState.signalMoving = false;
-                        updateControlButtons();
-                    }
-                }
-                
-                // 如果低于0%，重置
-                if (animationState.signalPosition < 0) {
-                    animationState.signalPosition = 0;
-                }
-            }
-            
-            draw();
-            
-            // 继续动画循环
-            if (animationState.isPlaying) {
-                requestAnimationFrame(updateAnimation);
-            }
-        }
-        
-        // 更新步骤信息
-        function updateStepInfo() {
-            const stepTitle = document.getElementById('currentStepTitle');
-            const stepDesc = document.getElementById('currentStepDesc');
-            
-            if (animationState.currentStep >= 0 && animationState.currentStep < stepDescriptions.length) {
-                stepTitle.textContent = stepDescriptions[animationState.currentStep].title;
-                stepDesc.textContent = stepDescriptions[animationState.currentStep].description;
-            }
-            
-            // 更新步骤指示器
-            document.querySelectorAll('.step-dot').forEach((dot, index) => {
-                dot.classList.remove('active', 'completed');
-                
-                if (index === animationState.currentStep) {
-                    dot.classList.add('active');
-                } else if (index < animationState.currentStep) {
-                    dot.classList.add('completed');
-                }
-            });
-        }
-        
-        // 更新控制按钮状态
-        function updateControlButtons() {
-            document.getElementById('playBtn').disabled = animationState.isPlaying;
-            document.getElementById('pauseBtn').disabled = !animationState.isPlaying;
-            document.getElementById('prevBtn').disabled = animationState.currentStep <= 0;
-            document.getElementById('nextBtn').disabled = animationState.currentStep >= 4;
-        }
-        
-        // 切换到指定步骤
-        function goToStep(step) {
-            if (step < 0 || step > 4) return;
-            
-            animationState.currentStep = step;
-            animationState.signalPosition = step * 20; // 每个步骤大约20%的位置
-            
-            updateStepInfo();
-            updateControlButtons();
-            draw();
-        }
-        
-        // 开始动画
-        function startAnimation() {
-            if (animationState.isPlaying) return;
-            
-            // 如果已经在终点，则回到起点
-            if (animationState.currentStep >= 4 && animationState.signalPosition >= 100) {
-                animationState.currentStep = 0;
-                animationState.signalPosition = 0;
-                updateStepInfo();
-            }
-            
-            animationState.isPlaying = true;
-            animationState.signalMoving = true;
-            animationState.signalDirection = 1;
-            
-            updateControlButtons();
-            updateAnimation();
-        }
-        
-        // 暂停动画
-        function pauseAnimation() {
-            animationState.isPlaying = false;
-            updateControlButtons();
-        }
-        
-        // 重新开始动画
-        function restartAnimation() {
-            animationState.currentStep = 0;
-            animationState.signalPosition = 0;
-            animationState.isPlaying = false;
-            animationState.signalMoving = false;
-            
-            updateStepInfo();
-            updateControlButtons();
-            draw();
-        }
-        
-        // 下一步
-        function nextStep() {
-            if (animationState.currentStep < 4) {
-                goToStep(animationState.currentStep + 1);
-            }
-        }
-        
-        // 上一步
-        function prevStep() {
-            if (animationState.currentStep > 0) {
-                goToStep(animationState.currentStep - 1);
-            }
-        }
-        
-        // 切换模式
-        function switchMode(mode) {
-            animationState.mode = mode;
-            
-            // 更新模式按钮状态
-            document.querySelectorAll('.mode-btn
-<!--检测到代码截断，自动续写中...-->
-).forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.mode === mode) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            // 更新界面显示
-            if (mode === 'test') {
-                testPanel.style.display = 'block';
-                animationState.labelsHidden = false; // 测试时显示标签
-                testFeedback.textContent = '';
-                testArea.innerHTML = '<p>选择一种测试类型开始挑战</p>';
-            } else {
-                testPanel.style.display = 'none';
-                animationState.labelsHidden = false;
-            }
-            
-            // 重置测试状态
-            animationState.testActive = false;
-            animationState.testType = null;
-            
-            // 如果是探索模式，确保动画停止
-            if (mode === 'explore') {
-                pauseAnimation();
-            }
-            
-            draw();
-        }
-        
-        // 显示组件信息
-        function showComponentInfo(component, x, y) {
-            if (animationState.mode !== 'explore') return;
-            
-            infoTitle.textContent = component.name;
-            infoDesc.textContent = component.description;
-            
-            componentInfo.style.left = (x + 15) + 'px';
-            componentInfo.style.top = (y + 15) + 'px';
-            componentInfo.style.display = 'block';
-        }
-        
-        // 隐藏组件信息
-        function hideComponentInfo() {
-            componentInfo.style.display = 'none';
-        }
-        
-        // 检查点击位置是否在组件内
-        function getComponentAt(x, y) {
-            for (const comp of reflexComponents) {
-                if (x >= comp.x && x <= comp.x + comp.width &&
-                    y >= comp.y && y <= comp.y + comp.height) {
-                    return comp;
-                }
-            }
-            return null;
-        }
-        
-        // 结构标注测试
-        function startLabelTest() {
-            animationState.testActive = true;
-            animationState.testType = 'label';
-            animationState.labelsHidden = true;
-            
-            testArea.innerHTML = `
-                <p>点击反射弧中的五个组成部分，然后在下拉菜单中选择正确的名称：</p>
-                <div id="labelTestComponents"></div>
-                <div style="margin-top: 15px;">
-                    <select id="labelSelect">
-                        <option value="">选择组件名称</option>
-                        <option value="receptor">感受器</option>
-                        <option value="afferent">传入神经</option>
-                        <option value="center">神经中枢</option>
-                        <option value="efferent">传出神经</option>
-                        <option value="effector">效应器</option>
-                    </select>
-                    <button id="submitLabelBtn" style="margin-left: 10px;">提交答案</button>
-                </div>
-                <div class="feedback" id="labelFeedback"></div>
-            `;
-            
-            testFeedback.textContent = '';
-            testFeedback.className = 'feedback';
-            
-            // 初始化组件点击区域
-            const componentsDiv = document.getElementById('labelTestComponents');
-            componentsDiv.innerHTML = '';
-            
-            reflexComponents.forEach(comp => {
-                const compDiv = document.createElement('div');
-                compDiv.className = 'test-component';
-                compDiv.dataset.id = comp.id;
-                compDiv.style.cssText = `
-                    display: inline-block;
-                    width: 80px;
-                    height: 40px;
-                    margin: 5px;
-                    background-color: ${comp.color};
-                    border: 2px dashed #9FA8DA;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    text-align: center;
-                    line-height: 40px;
-                    color: transparent;
-                    font-size: 12px;
-                `;
-                compDiv.textContent = '点击选择';
-                compDiv.onclick = function() {
-                    document.querySelectorAll('.test-component').forEach(c => {
-                        c.style.borderColor = '#9FA8DA';
-                    });
-                    this.style.borderColor = '#3949AB';
-                    this.style.borderStyle = 'solid';
-                    document.getElementById('labelSelect').value = this.dataset.id;
-                };
-                componentsDiv.appendChild(compDiv);
-            });
-            
-            document.getElementById('submitLabelBtn').onclick = checkLabelAnswer;
-        }
-        
-        // 检查标注答案
-        function checkLabelAnswer() {
-            const select = document.getElementById('labelSelect');
-            const selectedComp = document.querySelector('.test-component[style*="border-color: rgb(57, 73, 171)"]');
-            const feedback = document.getElementById('labelFeedback');
-            
-            if (!select.value || !selectedComp) {
-                feedback.textContent = '请先选择一个组件和对应的名称';
-                feedback.className = 'feedback incorrect';
-                return;
-            }
-            
-            if (select.value === selectedComp.dataset.id) {
-                feedback.textContent = '✓ 正确！';
-                feedback.className = 'feedback correct';
-                
-                // 标记为已正确
-                selectedComp.style.backgroundColor = '#C8E6C9';
-                selectedComp.style.color = '#2E7D32';
-                selectedComp.textContent = reflexComponents.find(c => c.id === select.value).name;
-                selectedComp.onclick = null;
-                
-                // 检查是否全部完成
-                const remaining = document.querySelectorAll('.test-component:not([style*="background-color: rgb(200, 230, 201)"])').length;
-                if (remaining === 0) {
-                    testFeedback.textContent = '🎉 恭喜！你已正确标注所有组件！';
-                    testFeedback.className = 'feedback correct';
-                }
-            } else {
-                feedback.textContent = '✗ 不正确，请再试一次';
-                feedback.className = 'feedback incorrect';
-            }
-        }
-        
-        // 顺序排序测试
-        function startOrderTest() {
-            animationState.testActive = true;
-            animationState.testType = 'order';
-            
-            testArea.innerHTML = `
-                <p>将反射弧的五个环节按正确顺序排列：</p>
-                <div id="orderTestArea" style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 10px;
-                    margin: 15px 0;
-                ">
-                    <div id="dropZone" style="
-                        width: 100%;
-                        min-height: 200px;
-                        border: 2px dashed #C5E1A5;
-                        border-radius: 8px;
-                        padding: 15px;
-                        display: flex;
-                        flex-direction: column;
-                        gap: 8px;
-                    ">
-                        <p style="color: #7CB342; text-align: center;">将组件拖放到这里排序</p>
-                    </div>
-                    <div id="sourceComponents" style="
-                        display: flex;
-                        gap: 10px;
-                        flex-wrap: wrap;
-                        justify-content: center;
-                        margin-top: 10px;
-                    "></div>
-                </div>
-                <button id="checkOrderBtn">检查顺序</button>
-                <div class="feedback" id="orderFeedback" style="margin-top: 10px;"></div>
-            `;
-            
-            testFeedback.textContent = '';
-            testFeedback.className = 'feedback';
-            
-            // 创建可拖拽的组件
-            const sourceDiv = document.getElementById('sourceComponents');
-            const dropZone = document.getElementById('dropZone');
-            const components = [...reflexComponents];
-            
-            // 打乱顺序
-            for (let i = components.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [components[i], components[j]] = [components[j], components[i]];
-            }
-            
-            components.forEach(comp => {
-                const draggable = document.createElement('div');
-                draggable.className = 'draggable-component';
-                draggable.dataset.id = comp.id;
-                draggable.draggable = true;
-                draggable.style.cssText = `
-                    padding: 8px 15px;
-                    background-color: ${comp.color};
-                    border: 2px solid ${comp.activeColor};
-                    border-radius: 6px;
-                    cursor: move;
-                    font-weight: 600;
-                    color: #1A237E;
-                    user-select: none;
-                `;
-                draggable.textContent = comp.name;
-                
-                draggable.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', comp.id);
-                    e.dataTransfer.effectAllowed = 'move';
-                });
-                
-                sourceDiv.appendChild(draggable);
-            });
-            
-            // 设置放置区域
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                dropZone.style.borderColor = '#7CB342';
-                dropZone.style.backgroundColor = '#F1F8E9';
-            });
-            
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.style.borderColor = '#C5E1A5';
-                dropZone.style.backgroundColor = 'white';
-            });
-            
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                const compId = e.dataTransfer.getData('text/plain');
-                const comp = reflexComponents.find(c => c.id === compId);
-                
-                if (comp) {
-                    // 检查是否已经存在
-                    const existing = dropZone.querySelector(`[data-id="${compId}"]`);
-                    if (!existing) {
-                        const droppedComp = document.createElement('div');
-                        droppedComp.className = 'dropped-component';
-                        droppedComp.dataset.id = compId;
-                        droppedComp.style.cssText = `
-                            padding: 8px 15px;
-                            background-color: ${comp.color};
-                            border: 2px solid ${comp.activeColor};
-                            border-radius: 6px;
-                            margin: 5px 0;
-                            font-weight: 600;
-                            color: #1A237E;
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                        `;
-                        
-                        droppedComp.innerHTML = `
-                            <span>${comp.name}</span>
-                            <button class="remove-btn" style="
-                                background: none;
-                                border: none;
-                                color: #EF5350;
-                                cursor: pointer;
-                                font-size: 18px;
-                            ">×</button>
-                        `;
-                        
-                        droppedComp.querySelector('.remove-btn').onclick = function() {
-                            droppedComp.remove();
-                            // 重新显示在源区域
-                            const sourceComp = sourceDiv.querySelector(`[data-id="${compId}"]`);
-                            if (sourceComp) {
-                                sourceComp.style.display = 'block';
-                            }
-                        };
-                        
-                        dropZone.appendChild(droppedComp);
-                        
-                        // 从源区域隐藏
-                        const sourceComp = sourceDiv.querySelector(`[data-id="${compId}"]`);
-                        if (sourceComp) {
-                            sourceComp.style.display = 'none';
-                        }
-                    }
-                }
-                
-                dropZone.style.borderColor = '#C5E1A5';
-                dropZone.style.backgroundColor = 'white';
-            });
-            
-            document.getElementById('checkOrderBtn').onclick = checkOrderAnswer;
-        }
-        
-        // 检查顺序答案
-        function checkOrderAnswer() {
-            const droppedComps = document.querySelectorAll('#dropZone .dropped-component');
-            const orderFeedback = document.getElementById('orderFeedback');
-            
-            if (droppedComps.length !== 5) {
-                orderFeedback.textContent = '请将全部5个组件拖放到排序区域';
-                orderFeedback.className = 'feedback incorrect';
-                return;
-            }
-            
-            const correctOrder = ['receptor', 'afferent', 'center', 'efferent', 'effector'];
-            let isCorrect = true;
-            
-            droppedComps.forEach((comp, index) => {
-                if (comp.dataset.id !== correctOrder[index]) {
-                    isCorrect = false;
-                }
-            });
-            
-            if (isCorrect) {
-                orderFeedback.textContent = '✓ 完全正确！反射弧顺序正确！';
-                orderFeedback.className = 'feedback correct';
-                testFeedback.textContent = '🎉 太棒了！你完全掌握了反射弧的传递顺序！';
-                testFeedback.className = 'feedback correct';
-            } else {
-                orderFeedback.textContent = '✗ 顺序不正确，请再检查一下';
-                orderFeedback.className = 'feedback incorrect';
-            }
-        }
-        
-        // 重置测试
-        function resetTest() {
-            animationState.testActive = false;
-            animationState.testType = null;
-            animationState.labelsHidden = false;
-            
-            testArea.innerHTML = '<p>选择一种测试类型开始挑战</p>';
-            testFeedback.textContent = '';
-            testFeedback.className = 'feedback';
-            
-            draw();
-        }
-        
-        // 初始化事件监听
-        function initEventListeners() {
-            // 模式切换
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    switchMode(btn.dataset.mode);
-                });
-            });
-            
-            // 控制按钮
-            document.getElementById('playBtn').addEventListener('click', startAnimation);
-            document.getElementById('pauseBtn').addEventListener('click', pauseAnimation);
-            document.getElementById('restartBtn').addEventListener('click', restartAnimation);
-            document.getElementById('prevBtn').addEventListener('click', prevStep);
-            document.getElementById('nextBtn').addEventListener('click', nextStep);
-            
-            // 速度控制
-            const speedSlider = document.getElementById('speedSlider');
-            const speedValue = document.getElementById('speedValue');
-            
-            speedSlider.addEventListener('input', () => {
-                animationState.speed = parseInt(speedSlider.value);
-                const speedLabels = ['极慢', '很慢', '较慢', '慢', '中速', '较快', '快', '很快', '极快', '真实速度'];
-                speedValue.textContent = speedLabels[animationState.speed - 1] || '中速';
-            });
-            
-            // 测试按钮
-            document.getElementById('labelTestBtn').addEventListener('click', startLabelTest);
-            document.getElementById('orderTestBtn').addEventListener('click', startOrderTest);
-            document.getElementById('resetTestBtn').addEventListener('click', resetTest);
-            
-            // Canvas点击事件
-            canvas.addEventListener('click', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                if (animationState.mode === 'explore') {
-                    const comp = getComponentAt(x, y);
-                    if (comp) {
-                        showComponentInfo(comp, x, y);
-                    } else {
-                        hideComponentInfo();
-                    }
-                } else if (animationState.mode === 'test' && animationState.testActive) {
-                    // 测试模式下的点击处理
-                    hideComponentInfo();
-                }
-            });
-            
-            // 点击其他地方隐藏组件信息
-            document.addEventListener('click', (e) => {
-                if (!canvas.contains(e.target) && !componentInfo.contains(e.target)) {
-                    hideComponentInfo();
-                }
-            });
-            
-            // 窗口大小变化时调整Canvas
-            window.addEventListener('resize', initCanvas);
-        }
-        
-        // 初始化应用
-        function initApp() {
-            initCanvas();
-            initEventListeners();
-            updateStepInfo();
-            updateControlButtons();
-            
-            // 初始绘制
-            draw();
-        }
-        
-        // 页面加载完成后初始化
-        window.addEventListener('load', initApp);
-    </script>
+const N={t:0,signal:0,step:0,ions:[],vesicles:[]};
+function sceneInit(){sceneReset();}
+function sceneReset(){N.t=0;N.signal=0;N.step=0;N.ions=[];N.vesicles=[];}
+function sceneStep(d){N.step=Math.max(0,Math.min(4,N.step+d));N.signal=0;}
+function sceneUpdate(dt){
+  N.t+=dt;N.signal=Math.min(1,N.signal+dt*0.5);
+  // 离子运动
+  if(N.step>=1&&Math.random()<0.1){
+    N.ions.push({x:0.2+N.step*0.15,y:0.5,vx:0,vy:(Math.random()-0.5)*2,life:2,type:Math.random()>0.5?'Na':'K'});
+  }
+  N.ions.forEach(i=>{i.x+=i.vx*dt;i.y+=i.vy*dt*0.3;i.life-=dt;});
+  N.ions=N.ions.filter(i=>i.life>0);
+  // 囊泡
+  if(N.step>=3&&Math.random()<0.05){
+    N.vesicles.push({x:0.72,y:0.4,vy:0.5,life:2});
+  }
+  N.vesicles.forEach(v=>{v.y+=v.vy*dt;v.life-=dt;});
+  N.vesicles=N.vesicles.filter(v=>v.life>0);
+}
+function sceneDraw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const W=cv.width,H=cv.height;
+  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  const names=['① 感受器接受刺激','② 传入神经（电信号传导）','③ 神经中枢（突触传递）','④ 传出神经','⑤ 效应器反应'];
+  ctx.fillText(names[N.step],W/2,25);
+  for(let i=0;i<5;i++){ctx.fillStyle=i<=N.step?'#00b894':'rgba(255,255,255,0.2)';ctx.fillRect(W/2-120+i*50,35,46,4);}
+  // 反射弧路径
+  const path=[[W*0.08,H*0.7],[W*0.25,H*0.4],[W*0.5,H*0.5],[W*0.7,H*0.4],[W*0.9,H*0.6]];
+  // 画神经纤维
+  ctx.strokeStyle='rgba(127,147,181,0.5)';ctx.lineWidth=4;ctx.beginPath();
+  path.forEach((p,i)=>i===0?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1]));ctx.stroke();
+  // 信号传播
+  if(N.signal>0){
+    const sigX=path[0][0]+(path[path.length-1][0]-path[0][0])*N.signal;
+    const sigIdx=Math.min(path.length-2,Math.floor(N.signal*(path.length-1)));
+    const localP=(N.signal*(path.length-1))-sigIdx;
+    const sx=path[sigIdx][0]+(path[sigIdx+1][0]-path[sigIdx][0])*localP;
+    const sy=path[sigIdx][1]+(path[sigIdx+1][1]-path[sigIdx][1])*localP;
+    // 动作电位波形
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.beginPath();
+    for(let i=-30;i<=30;i++){
+      const px=sx+i;const py=sy-20*Math.exp(-i*i/100)*Math.sin(i*0.3+N.t*5);
+      i===-30?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+    // 信号点
+    ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(sx,sy,6,0,Math.PI*2);ctx.fill();
+  }
+  // 各节点标注
+  const labels=['感受器','传入神经','神经中枢','传出神经','效应器'];
+  const icons=['👁','→','🧠','→','💪'];
+  path.forEach((p,i)=>{
+    ctx.fillStyle=i===N.step?'#00b894':'#7f93b5';
+    ctx.beginPath();ctx.arc(p[0],p[1],15,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(icons[i],p[0],p[1]+4);
+    ctx.fillStyle='#cdd7ea';ctx.font='11px sans-serif';ctx.fillText(labels[i],p[0],p[1]+30);
+  });
+  // 突触细节(步骤2-3)
+  if(N.step>=2){
+    const synX=W*0.5,synY=H*0.5;
+    ctx.strokeStyle='#e17055';ctx.lineWidth=1;ctx.setLineDash([2,2]);
+    ctx.strokeRect(synX-20,synY-25,40,50);ctx.setLineDash([]);
+    ctx.fillStyle='#e17055';ctx.font='9px sans-serif';ctx.fillText('突触',synX+25,synY-20);
+    // 神经递质
+    if(N.step>=2){
+      for(let i=0;i<3;i++){
+        const vx=synX+Math.sin(N.t*3+i*2)*8;
+        const vy=synY-10+i*10+Math.cos(N.t*2+i)*3;
+        ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(vx,vy,3,0,Math.PI*2);ctx.fill();
+      }
+    }
+  }
+  // 离子通道
+  N.ions.forEach(ion=>{
+    ctx.fillStyle=ion.type==='Na'?'#f87171':'#60a5fa';
+    ctx.beginPath();ctx.arc(ion.x*W,ion.y*H,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='6px sans-serif';ctx.fillText(ion.type,ion.x*W,ion.y*H+2);
+  });
+  ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('兴奋在神经纤维上以电信号传导，在突触处通过神经递质化学传递',W/2,H-15);
+  statusEl.textContent='反射弧：感受器→传入神经→中枢→传出神经→效应器';
+}
+
+let playing=false,lastT=0,speed=1,t=0;
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
+stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
+stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+function draw(){if(window.sceneDraw)sceneDraw();}
+if(window.sceneInit)sceneInit();
+draw();
+</script>
 </body>
 </html>
