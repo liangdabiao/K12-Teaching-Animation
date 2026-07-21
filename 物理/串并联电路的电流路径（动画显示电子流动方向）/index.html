@@ -1,1163 +1,423 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>串并联电路电流路径教学动画</title>
-    <style>
-        /* 样式保持不变 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding: 15px;
-            border-bottom: 2px solid #3b82f6;
-            width: 100%;
-            max-width: 1000px;
-        }
-        
-        h1 {
-            color: #60a5fa;
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .subtitle {
-            color: #94a3b8;
-            font-size: 1.1rem;
-        }
-        
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            max-width: 1200px;
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .animation-panel {
-            flex: 1;
-            min-width: 600px;
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            border: 1px solid #475569;
-        }
-        
-        .control-panel {
-            flex: 0 0 320px;
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            border: 1px solid #475569;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .canvas-container {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            background-color: #1e293b;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid #475569;
-        }
-        
-        #circuitCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        
-        .panel-title {
-            color: #38bdf8;
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #475569;
-        }
-        
-        .control-group {
-            background: rgba(51, 65, 85, 0.5);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .control-group h3 {
-            color: #7dd3fc;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-        }
-        
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        button {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            flex: 1;
-            min-width: 120px;
-        }
-        
-        button:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        button.active {
-            background: #10b981;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        .toggle-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .toggle-label {
-            font-size: 0.95rem;
-            color: #cbd5e1;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #475569;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background-color: #10b981;
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-        
-        .info-display {
-            background: rgba(51, 65, 85, 0.5);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
-        }
-        
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #475569;
-        }
-        
-        .info-label {
-            color: #94a3b8;
-        }
-        
-        .info-value {
-            color: #fbbf24;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #475569;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
-        
-        .explanation {
-            max-width: 1000px;
-            margin-top: 25px;
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            border: 1px solid #475569;
-        }
-        
-        .explanation h3 {
-            color: #38bdf8;
-            margin-bottom: 10px;
-        }
-        
-        .explanation p {
-            line-height: 1.6;
-            margin-bottom: 10px;
-            color: #cbd5e1;
-        }
-        
-        @media (max-width: 1000px) {
-            .container {
-                flex-direction: column;
-            }
-            
-            .animation-panel, .control-panel {
-                min-width: 100%;
-            }
-        }
-    </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>串并联电路电流路径教学动画</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI','Microsoft YaHei',sans-serif}
+body{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e2e8f0;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center}
+.hd{text-align:center;margin-bottom:18px;padding:12px;border-bottom:2px solid #3b82f6;max-width:1100px;width:100%}
+h1{color:#60a5fa;font-size:1.8rem;margin-bottom:4px}
+.sub{color:#94a3b8;font-size:.95rem}
+.ct{display:flex;flex-wrap:wrap;gap:18px;max-width:1100px;width:100%;justify-content:center}
+.ap{flex:1;min-width:520px;background:rgba(30,41,59,.85);border-radius:12px;padding:16px;border:1px solid #475569}
+.cp{flex:0 0 280px;background:rgba(30,41,59,.85);border-radius:12px;padding:16px;border:1px solid #475569;display:flex;flex-direction:column;gap:12px}
+.pt{color:#38bdf8;font-size:1.15rem;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid #334155}
+.cw{position:relative;width:100%;height:440px;background:#0f172a;border-radius:8px;overflow:hidden;border:1px solid #334155}
+#cv{width:100%;height:100%;display:block}
+.lg{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.li{display:flex;align-items:center;gap:5px;font-size:.82rem;color:#cbd5e1}
+.lc{width:14px;height:14px;border-radius:3px}
+.cg{background:rgba(51,65,85,.5);border-radius:8px;padding:10px}
+.cg h3{color:#7dd3fc;margin-bottom:8px;font-size:.92rem}
+.bg{display:flex;flex-wrap:wrap;gap:6px}
+button{background:#3b82f6;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:600;transition:.2s;flex:1;min-width:75px;font-size:.85rem}
+button:hover{background:#2563eb;transform:scale(1.03)}
+button.on{background:#10b981}
+.tg{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.tg label{font-size:.85rem;color:#cbd5e1}
+.sw{position:relative;display:inline-block;width:40px;height:22px}
+.sw input{opacity:0;width:0;height:0}
+.sl{position:absolute;cursor:pointer;inset:0;background:#475569;transition:.3s;border-radius:22px}
+.sl:before{position:absolute;content:"";height:14px;width:14px;left:4px;bottom:4px;background:#fff;transition:.3s;border-radius:50%}
+input:checked+.sl{background:#10b981}
+input:checked+.sl:before{transform:translateX(18px)}
+.ir{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #334155;font-size:.85rem}
+.il{color:#94a3b8}.iv{color:#fbbf24;font-weight:700}
+.ex{max-width:1100px;margin-top:16px;background:rgba(30,41,59,.85);border-radius:12px;padding:16px;border:1px solid #475569}
+.ex h3{color:#38bdf8;margin-bottom:6px}
+.ex p{line-height:1.6;margin-bottom:6px;color:#cbd5e1;font-size:.9rem}
+@media(max-width:860px){.ct{flex-direction:column}.ap,.cp{min-width:100%}}
+</style>
 </head>
-<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
-    <div class="header">
-        <h1>串并联电路电流路径教学动画</h1>
-        <p class="subtitle">可视化电子流动方向与电流路径 - 交互式学习工具</p>
-    </div>
-    
-    <div class="container">
-        <div class="animation-panel">
-            <h2 class="panel-title">电路动画演示</h2>
-            <div class="canvas-container">
-                <canvas id="circuitCanvas"></canvas>
-            </div>
-            
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #60a5fa;"></div>
-                    <span>电子流动方向（实际方向）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #f87171;"></div>
-                    <span>电流方向（规定方向）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #10b981;"></div>
-                    <span>电源正极</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #475569;"></div>
-                    <span>电源负极</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="control-panel">
-            <h2 class="panel-title">控制面板</h2>
-            
-            <div class="control-group">
-                <h3>电路控制</h3>
-                <div class="button-group">
-                    <button id="playBtn">▶ 播放</button>
-                    <button id="pauseBtn">⏸ 暂停</button>
-                    <button id="resetBtn">↺ 重置</button>
-                </div>
-                <div class="toggle-group">
-                    <span class="toggle-label">电路开关</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="circuitSwitch" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="control-group">
-                <h3>电路类型</h3>
-                <div class="button-group">
-                    <button id="seriesBtn" class="active">串联电路</button>
-                    <button id="parallelBtn">并联电路</button>
-                </div>
-            </div>
-            
-            <div class="control-group">
-                <h3>可视化模式</h3>
-                <div class="button-group">
-                    <button id="electronFlowBtn" class="active">电子流（实际方向）</button>
-                    <button id="currentFlowBtn">电流方向（规定方向）</button>
-                </div>
-            </div>
-            
-            <div class="control-group">
-                <h3>信息显示</h3>
-                <div class="toggle-group">
-                    <span class="toggle-label">显示电子计数器</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="counterToggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="toggle-group">
-                    <span class="toggle-label">显示电流表读数</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="ammeterToggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="info-display">
-                <h3>电路信息</h3>
-                <div class="info-item">
-                    <span class="info-label">电路类型：</span>
-                    <span id="circuitType" class="info-value">串联电路</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">可视化模式：</span>
-                    <span id="visualizationMode" class="info-value">电子流方向</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">电路状态：</span>
-                    <span id="circuitStatus" class="info-value">通路</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">干路电流：</span>
-                    <span id="mainCurrent" class="info-value">1.0 A</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">支路1电流：</span>
-                    <span id="branch1Current" class="info-value">1.0 A</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">支路2电流：</span>
-                    <span id="branch2Current" class="info-value">0.5 A</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="explanation">
-        <h3>学习要点</h3>
-        <p>1. <strong>串联电路</strong>：电流只有一条路径，电子依次通过各个元件，电流处处相等。</p>
-        <p>2. <strong>并联电路</strong>：电流有多个路径（支路），电子在分支点分开流动，干路电流等于各支路电流之和。</p>
-        <p>3. <strong>电子流方向</strong>：电子带负电，从电源负极流向正极（实际方向）。</p>
-        <p>4. <strong>电流方向</strong>：物理学规定正电荷移动方向为电流方向，从电源正极流向负极（规定方向）。</p>
-        <p>5. 使用控制面板切换不同模式，观察电子流动路径和电流分配规律。</p>
-    </div>
+<body>
+<a href="../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:rgba(18,22,34,.85);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui;padding:7px 11px;border-radius:7px;border:1px solid rgba(125,211,252,.4)">← 返回</a>
+<div class="hd"><h1>串并联电路电流路径教学动画</h1><p class="sub">可视化电子流动方向与电流路径 — 交互式学习</p></div>
+<div class="ct">
+ <div class="ap">
+  <h2 class="pt">电路动画演示</h2>
+  <div class="cw"><canvas id="cv"></canvas></div>
+  <div class="lg">
+   <div class="li"><div class="lc" style="background:#60a5fa"></div>电子流（实际方向）</div>
+   <div class="li"><div class="lc" style="background:#f87171"></div>电流方向（规定方向）</div>
+   <div class="li"><div class="lc" style="background:#10b981"></div>电源正极</div>
+   <div class="li"><div class="lc" style="background:#94a3b8"></div>用电器 / 导线</div>
+  </div>
+ </div>
+ <div class="cp">
+  <h2 class="pt">控制面板</h2>
+  <div class="cg"><h3>电路控制</h3>
+   <div class="bg">
+    <button id="playBtn">▶ 播放</button>
+    <button id="pauseBtn">⏸ 暂停</button>
+    <button id="resetBtn">↺ 重置</button>
+   </div>
+   <div class="tg" style="margin-top:8px"><label>电路开关</label>
+    <label class="sw"><input type="checkbox" id="swTog" checked><span class="sl"></span></label>
+   </div>
+  </div>
+  <div class="cg"><h3>电路类型</h3>
+   <div class="bg">
+    <button id="serBtn" class="on">串联电路</button>
+    <button id="parBtn">并联电路</button>
+   </div>
+  </div>
+  <div class="cg"><h3>可视化模式</h3>
+   <div class="bg">
+    <button id="eBtn" class="on">电子流方向</button>
+    <button id="cBtn">电流方向</button>
+   </div>
+  </div>
+  <div class="cg"><h3>信息显示</h3>
+   <div class="tg"><label>显示电流表</label><label class="sw"><input type="checkbox" id="amTog" checked><span class="sl"></span></label></div>
+   <div class="tg"><label>显示电子计数</label><label class="sw"><input type="checkbox" id="cnTog" checked><span class="sl"></span></label></div>
+  </div>
+  <div style="background:rgba(51,65,85,.5);border-radius:8px;padding:10px">
+   <div class="ir"><span class="il">电路类型</span><span class="iv" id="iT">串联电路</span></div>
+   <div class="ir"><span class="il">电路状态</span><span class="iv" id="iS">通路</span></div>
+   <div class="ir"><span class="il">干路电流</span><span class="iv" id="iM">1.0 A</span></div>
+   <div class="ir"><span class="il">支路1电流</span><span class="iv" id="i1">—</span></div>
+   <div class="ir"><span class="il">支路2电流</span><span class="iv" id="i2">—</span></div>
+  </div>
+ </div>
+</div>
+<div class="ex">
+ <h3>学习要点</h3>
+ <p>1. <strong>串联电路</strong>：电流只有一条路径，电子依次通过各元件，电流处处相等 I=I₁=I₂。</p>
+ <p>2. <strong>并联电路</strong>：电流在分支点分成多条支路，干路电流等于各支路电流之和 I=I₁+I₂。</p>
+ <p>3. <strong>电子流方向</strong>：电子带负电，从电源负极（—）经外电路流向正极（+），这是实际方向。</p>
+ <p>4. <strong>电流方向</strong>：物理学规定正电荷移动方向为电流方向，从正极经外电路流向负极。</p>
+ <p>5. 切换电路类型和可视化模式，观察粒子路径和电流分配规律的变化。点击画布中的开关可控制通断。</p>
+</div>
+<script>
+(function(){
+var cv=document.getElementById('cv'),c=cv.getContext('2d');
+var W,H,S;
+function resize(){var r=cv.parentElement;cv.width=W=r.clientWidth;cv.height=H=r.clientHeight;S=Math.min(W/700,H/450);}
+resize();
+window.addEventListener('resize',function(){resize();build();});
 
-    <script>
-        // 获取Canvas元素和上下文
-        const canvas = document.getElementById('circuitCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // 设置Canvas尺寸以匹配显示尺寸
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
-        }
-        
-        // 初始化时设置尺寸
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        
-        // 电路状态变量
-        let circuitType = 'series'; // 'series' 或 'parallel'
-        let visualizationMode = 'electron'; // 'electron' 或 'current'
-        let isPlaying = true;
-        let circuitClosed = true;
-        let showCounters = true;
-        let showAmmeters = true;
-        
-        // 电子/电流粒子
-        let particles = [];
-        let particleId = 0;
-        
-        // 电流值（模拟）
-        let mainCurrent = 1.0;
-        let branch1Current = 1.0;
-        let branch2Current = 0.5;
-        
-        // 电路元件坐标定义（响应式缩放）
-        function getScaledCoords() {
-            const scale = Math.min(canvas.width / 800, canvas.height / 500);
-            const baseScale = 0.8; // 基础缩放比例
-            
-            return {
-                // 串联电路坐标
-                series: {
-                    battery: {x: 150 * scale * baseScale, y: 250 * scale * baseScale, width: 60 * scale * baseScale, height: 100 * scale * baseScale},
-                    resistor1: {x: 350 * scale * baseScale, y: 200 * scale * baseScale, width: 80 * scale * baseScale, height: 30 * scale * baseScale},
-                    resistor2: {x: 550 * scale * baseScale, y: 200 * scale * baseScale, width: 80 * scale * baseScale, height: 30 * scale * baseScale},
-                    switch: {x: 450 * scale * baseScale, y: 300 * scale * baseScale, width: 40 * scale * baseScale, height: 20 * scale * baseScale},
-                    wires: [
-                        // 电池到电阻1
-                        {x1: 210 * scale * baseScale, y1: 250 * scale * baseScale, x2: 350 * scale * baseScale, y2: 250 * scale * baseScale},
-                        // 电阻1到电阻2
-                        {x1: 430 * scale * baseScale, y1: 250 * scale * baseScale, x2: 550 * scale * baseScale, y2: 250 * scale * baseScale},
-                        // 电阻2到开关
-                        {x1: 630 * scale * baseScale, y1: 250 * scale * baseScale, x2: 670 * scale * baseScale, y2: 250 * scale * baseScale},
-                        {x1: 670 * scale * baseScale, y1: 250 * scale * baseScale, x2: 670 * scale * baseScale, y2: 300 * scale * baseScale},
-                        // 开关回电池
-                        {x1: 470 * scale * baseScale, y1: 300 * scale * baseScale, x2: 530 * scale * baseScale, y2: 300 * scale * baseScale},
-                        {x1: 530 * scale * baseScale, y1: 300 * scale * baseScale, x2: 530 * scale * baseScale, y2: 350 * scale * baseScale},
-                        {x1: 530 * scale * baseScale, y1: 350 * scale * baseScale, x2: 150 * scale * baseScale, y2: 350 * scale * baseScale},
-                        {x1: 150 * scale * baseScale, y1: 350 * scale * baseScale, x2: 150 * scale * baseScale, y2: 300 * scale * baseScale}
-                    ],
-                    // 粒子路径点
-                    particlePath: [
-                        {x: 180 * scale * baseScale, y: 300 * scale * baseScale}, // 电池负极开始
-                        {x: 210 * scale * baseScale, y: 250 * scale * baseScale}, {x: 350 * scale * baseScale, y: 250 * scale * baseScale}, // 到电阻1
-                        {x: 430 * scale * baseScale, y: 250 * scale * baseScale}, {x: 550 * scale * baseScale, y: 250 * scale * baseScale}, // 到电阻2
-                        {x: 630 * scale * baseScale, y: 250 * scale * baseScale}, {x: 670 * scale * baseScale, y: 250 * scale * baseScale}, {x: 670 * scale * baseScale, y: 300 * scale * baseScale}, // 到开关
-                        {x: 470 * scale * baseScale, y: 300 * scale * baseScale}, // 开关（如果闭合）
-                        {x: 530 * scale * baseScale, y: 300 * scale * baseScale}, {x: 530 * scale * baseScale, y: 350 * scale * baseScale}, // 回电池
-                        {x: 150 * scale * baseScale, y: 350 * scale * baseScale}, {x: 150 * scale * baseScale, y: 300 * scale * baseScale} // 回电池正极
-                    ]
-                },
-                // 并联电路坐标
-                parallel: {
-                    battery: {x: 150 * scale * baseScale, y: 250 * scale * baseScale, width: 60 * scale * baseScale, height: 100 * scale * baseScale},
-                    resistor1: {x: 400 * scale * baseScale, y: 150 * scale * baseScale, width: 80 * scale * baseScale, height: 30 * scale * baseScale},
-                    resistor2: {x: 400 * scale * baseScale, y: 350 * scale * baseScale, width: 80 * scale * baseScale, height: 30 * scale * baseScale},
-                    switch: {x: 300 * scale * baseScale, y: 250 * scale * baseScale, width: 40 * scale * baseScale, height: 20 * scale * baseScale},
-                    wires: [
-                        // 电池到分支点A
-                        {x1: 210 * scale * baseScale, y1: 250 * scale * baseScale, x2: 300 * scale * baseScale, y2: 250 * scale * baseScale},
-                        // 分支点A到电阻1
-                        {x1: 300 * scale * baseScale, y1: 250 * scale * baseScale, x2: 300 * scale * baseScale, y2: 150 * scale * baseScale},
-                        {x1: 300 * scale * baseScale, y1: 150 * scale * baseScale, x2: 400 * scale * baseScale, y2: 150 * scale * baseScale},
-                        // 分支点A到电阻2
-                        {x1: 300 * scale * baseScale, y1: 250 * scale * baseScale, x2: 300 * scale * baseScale, y2: 350 * scale * baseScale},
-                        {x1: 300 * scale * baseScale, y1: 350 * scale * baseScale, x2: 400 * scale * baseScale, y2: 350 * scale * baseScale},
-                        // 电阻1到汇合点B
-                        {x1: 480 * scale * baseScale, y1: 150 * scale * baseScale, x2: 600 * scale * baseScale, y2: 150 * scale * baseScale},
-                        {x1: 600 * scale * baseScale, y1: 150 * scale * baseScale, x2: 600 * scale * baseScale, y2: 250 * scale * baseScale},
-                        // 电阻2到汇合点B
-                        {x1: 480 * scale * baseScale, y1: 350 * scale * baseScale, x2: 600 * scale * baseScale, y2: 350 * scale * baseScale},
-                        {x1: 600 * scale * baseScale, y1: 350 * scale * baseScale, x2: 600 * scale * baseScale, y2: 250 * scale * baseScale},
-                        // 汇合点B到开关
-                        {x1: 600 * scale * baseScale, y1: 250 * scale * baseScale, x2: 640 * scale * baseScale, y2: 250 * scale * baseScale},
-                        // 开关回电池
-                        {x1: 340 * scale * baseScale, y1: 250 * scale * baseScale, x2: 400 * scale * baseScale, y2: 250 * scale * baseScale},
-                        {x1: 400 * scale * baseScale, y1: 250 * scale * baseScale, x2: 400 * scale * baseScale, y2: 300 * scale * baseScale},
-                        {x1: 400 * scale * baseScale, y1: 300 * scale * baseScale, x2: 150 * scale * baseScale, y2: 300 * scale * baseScale},
-                        {x1: 150 * scale * baseScale, y1: 300 * scale * baseScale, x2: 150 * scale * baseScale, y2: 300 * scale * baseScale}
-                    ],
-                    // 粒子路径点（两条路径）
-                    particlePath1: [ // 通过电阻1的路径
-                        {x: 180 * scale * baseScale, y: 300 * scale * baseScale}, // 电池负极开始
-                        {x: 210 * scale * baseScale, y: 250 * scale * baseScale}, {x: 300 * scale * baseScale, y: 250 * scale * baseScale}, // 到分支点A
-                        {x: 300 * scale * baseScale, y: 150 * scale * baseScale}, {x: 400 * scale * baseScale, y: 150 * scale * baseScale}, // 到电阻1
-                        {x: 480 * scale * baseScale, y: 150 * scale * baseScale}, {x: 600 * scale * baseScale, y: 150 * scale * baseScale}, {x: 600 * scale * baseScale, y: 250 * scale * baseScale}, // 到汇合点B
-                        {x: 640 * scale * baseScale, y: 250 * scale * baseScale}, // 到开关
-                        {x: 340 * scale * baseScale, y: 250 * scale * baseScale}, // 开关（如果闭合）
-                        {x: 400 * scale * baseScale, y: 250 * scale * baseScale}, {x: 400 * scale * baseScale, y: 300 * scale * baseScale}, // 回电池
-                        {x: 150 * scale * baseScale, y: 300 * scale * baseScale} // 回电池正极
-                    ],
-                    particlePath2: [ // 通过电阻2的路径
-                        {x: 180 * scale * baseScale, y: 300 * scale * baseScale}, // 电池负极开始
-                        {x: 210 * scale * baseScale, y: 250 * scale * baseScale}, {x: 300 * scale * baseScale, y: 250 * scale * baseScale}, // 到分支点A
-                        {x: 300 * scale * baseScale, y: 350 * scale * baseScale}, {x: 400 * scale * baseScale, y: 350 * scale * baseScale}, // 到电阻2
-                        {x: 480 * scale * baseScale, y: 350 * scale * baseScale}, {x: 600 * scale * baseScale, y: 350 * scale * baseScale}, {x: 600 * scale * baseScale, y: 250 * scale * baseScale}, // 到汇合点B
-                        {x: 640 * scale * baseScale, y: 250 * scale * baseScale}, // 到开关
-                        {x: 340 * scale * baseScale, y: 250 * scale * baseScale}, // 开关（如果闭合）
-                        {x: 400 * scale * baseScale, y: 250 * scale * baseScale}, {x: 400 * scale * baseScale, y: 300 * scale * baseScale}, // 回电池
-                        {x: 150 * scale * baseScale, y: 300 * scale * baseScale} // 回电池正极
-                    ]
-                }
-            };
-        }
-        
-        // 粒子类 - 修复路径处理逻辑
-        class Particle {
-            constructor(path, speed, isElectron = true) {
-                this.id = particleId++;
-                this.path = path;
-                this.currentSegmentIndex = 0; // 改为段索引而不是点索引
-                this.segmentProgress = 0; // 当前段的进度
-                this.x = path[0].x;
-                this.y = path[0].y;
-                this.speed = speed;
-                this.isElectron = isElectron;
-                this.color = isElectron ? '#60a5fa' : '#f87171';
-                this.radius = isElectron ? 6 : 5;
-                this.branch = path === circuitCoords.parallel?.particlePath2 ? 2 : 1;
-            }
-            
-            update() {
-                if (!circuitClosed || !isPlaying) return;
-                
-                // 确保有下一个段可以移动
-                if (this.currentSegmentIndex >= this.path.length - 1) {
-                    // 到达路径终点，重新开始
-                    this.currentSegmentIndex = 0;
-                    this.segmentProgress = 0;
-                    this.x = this.path[0].x;
-                    this.y = this.path[0].y;
-                    return;
-                }
-                
-                // 获取当前段
-                const startPoint = this.path[this.currentSegmentIndex];
-                const endPoint = this.path[this.currentSegmentIndex + 1];
-                
-                // 计算段长度
-                const dx = endPoint.x - startPoint.x;
-                const dy = endPoint.y - startPoint.y;
-                const segmentLength = Math.sqrt(dx * dx + dy * dy);
-                
-                // 更新段进度
-                this.segmentProgress += this.speed / segmentLength;
-                
-                if (this.segmentProgress >= 1) {
-                    // 移动到下一段
-                    this.segmentProgress = 0;
-                    this.currentSegmentIndex++;
-                    
-                    // 如果到达最后一段的末尾，重新开始
-                    if (this.currentSegmentIndex >= this.path.length - 1) {
-                        this.currentSegmentIndex = 0;
-                        this.x = this.path[0].x;
-                        this.y = this.path[0].y;
-                        return;
-                    }
-                }
-                
-                // 计算当前位置
-                const currentStart = this.path[this.currentSegmentIndex];
-                const currentEnd = this.path[this.currentSegmentIndex + 1];
-                
-                this.x = currentStart.x + (currentEnd.x - currentStart.x) * this.segmentProgress;
-                this.y = currentStart.y + (currentEnd.y - currentStart.y) * this.segmentProgress;
-            }
-            
-            draw() {
-                // 绘制粒子
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-                
-                // 如果是电子，绘制负号
-                if (this.isElectron) {
-                    ctx.beginPath();
-                    ctx.moveTo(this.x - 3, this.y);
-                    ctx.lineTo(this.x + 3, this.y);
-                    ctx.strokeStyle = '#1e293b';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    // 电子光晕效果
-                    const gradient = ctx.createRadialGradient(
-                        this.x, this.y, this.radius,
-                        this.x, this.y, this.radius * 2
-                    );
-                    gradient.addColorStop(0, 'rgba(96, 165, 250, 0.8)');
-                    gradient.addColorStop(1, 'rgba(96, 165, 250, 0)');
-                    
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius * 2, 0, Math.PI * 2);
-                    ctx.fillStyle = gradient;
-                    ctx.fill();
-                }
-            }
-        }
-        
-        // 获取当前缩放的坐标
-        let circuitCoords = getScaledCoords();
-        
-        // 初始化粒子
-        function initParticles() {
-            particles = [];
-            particleId = 0;
-            circuitCoords = getScaledCoords(); // 更新坐标
-            
-            if (circuitType === 'series') {
-                // 串联电路：创建一条路径上的粒子
-                for (let i = 0; i < 15; i++) {
-                    const path = [...circuitCoords.series.particlePath];
-                    const speed = 0.02 + Math.random() * 0.01;
-                    const delay = i * 50; // 毫秒延迟
-                    
-                    // 延迟启动粒子
-                    setTimeout(() => {
-                        particles.push(new Particle(path, speed, visualizationMode === 'electron'));
-                    }, delay);
-                }
-            } else {
-                // 并联电路：创建两条路径上的粒子
-                // 路径1（通过电阻1）的粒子
-                for (let i = 0; i < 10; i++) {
-                    const path = [...circuitCoords.parallel.particlePath1];
-                    const speed = 0.02 + Math.random() * 0.01;
-                    const delay = i * 70;
-                    
-                    setTimeout(() => {
-                        particles.push(new Particle(path, speed, visualizationMode === 'electron'));
-                    }, delay);
-                }
-                
-                // 路径2（通过电阻2）的粒子
-                for (let i = 0; i < 5; i++) {
-                    const path = [...circuitCoords.parallel.particlePath2];
-                    const speed = 0.015 + Math.random() * 0.01;
-                    const delay = i * 100;
-                    
-                    setTimeout(() => {
-                        particles.push(new Particle(path, speed, visualizationMode === 'electron'));
-                    }, delay);
-                }
-            }
-        }
-        
-        // 绘制电路
-        function drawCircuit() {
-            circuitCoords = getScaledCoords(); // 确保坐标是最新的
-            const coords = circuitCoords[circuitType];
-            
-            // 清空画布
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // 绘制导线
-            ctx.lineWidth = 3;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#94a3b8';
-            
-            coords.wires.forEach(wire => {
-                ctx.beginPath();
-                ctx.moveTo(wire.x1, wire.y1);
-                ctx.lineTo(wire.x2, wire.y2);
-                ctx.stroke();
-            });
-            
-            // 绘制高亮导线（电子流动路径）
-            if (isPlaying && circuitClosed) {
-                ctx.lineWidth = 6;
-                ctx.strokeStyle = visualizationMode === 'electron' ? 'rgba(96, 165, 250, 0.7)' : 'rgba(248, 113, 113, 0.7)';
-                
-                // 根据电路类型绘制不同路径
-                if (circuitType === 'series') {
-                    // 串联电路：绘制完整路径
-                    ctx.beginPath();
-                    ctx.moveTo(coords.particlePath[0].x, coords.particlePath[0].y);
-                    
-                    for (let i = 1; i < coords.particlePath.length; i++) {
-                        ctx.lineTo(coords.particlePath[i].x, coords.particlePath[i].y);
-                    }
-                    ctx.stroke();
-                } else {
-                    // 并联电路：绘制两条路径
-                    // 路径1
-                    ctx.beginPath();
-                    ctx.moveTo(coords.particlePath1[0].x, coords.particlePath1[0].y);
-                    
-                    for (let i = 1; i < coords.particlePath1.length; i++) {
-                        ctx.lineTo(coords.particlePath1[i].x, coords.particlePath1[i].y);
-                    }
-                    ctx.stroke();
-                    
-                    // 路径2
-                    ctx.beginPath();
-                    ctx.moveTo(coords.particlePath2[0].x, coords.particlePath2[0].y);
-                    
-                    for (let i = 1; i < coords.particlePath2.length; i++) {
-                        ctx.lineTo(coords.particlePath2[i].x, coords.particlePath2[i].y);
-                    }
-                    ctx.stroke();
-                }
-            }
-            
-            // 绘制电池
-            drawBattery(coords.battery);
-            
-            // 绘制电阻
-            drawResistor(coords.resistor1, 'R₁');
-            drawResistor(coords.resistor2, 'R₂');
-            
-            // 绘制开关
-            drawSwitch(coords.switch);
-            
-            // 绘制分支点（并联电路）
-            if (circuitType === 'parallel') {
-                drawJunction(300 * Math.min(canvas.width / 800, canvas.height / 500) * 0.8, 250 * Math.min(canvas.width / 800, canvas.height / 500) * 0.8, 'A');
-                drawJunction(600 * Math.min(canvas.width / 800, canvas.height / 500) * 0.8, 250 * Math.min(canvas.width / 800, canvas.height / 500) * 0.8, 'B');
-            }
-            
-            // 绘制电流表（如果显示）
-            if (showAmmeters) {
-                drawAmmeters();
-            }
-            
-            // 绘制电子计数器（如果显示）
-            if (showCounters) {
-                drawCounters();
-            }
-            
-            // 绘制所有粒子
-            particles.forEach(particle => {
-                particle.draw();
-            });
-        }
-        
-        // 绘制电池
-        function drawBattery(battery) {
-            const {x, y, width, height} = battery;
-            
-            // 电池外壳
-            ctx.fillStyle = '#475569';
-            ctx.fillRect(x, y, width, height);
-            
-            // 正极（红色）
-            ctx.fillStyle = '#10b981';
-            ctx.fillRect(x, y, width, height / 2);
-            
-            // 负极（黑色）
-            ctx.fillStyle = '#475569';
-            ctx.fillRect(x, y + height / 2, width, height / 2);
-            
-            // 电池符号
-            ctx.fillStyle = '#ffffff';
-            ctx.font = `bold ${Math.max(12, width/5)}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('+', x + width / 2, y + height / 4);
-            ctx.fillText('-', x + width / 2, y + 3 * height / 4);
-            
-            // 电池标签
-            ctx.fillStyle = '#cbd5e1';
-            ctx.font = `${Math.max(12, width/5)}px Arial`;
-            ctx.fillText('电源', x + width / 2, y - 15);
-        }
-        
-        // 绘制电阻
-        function drawResistor(resistor, label) {
-            const {x, y, width, height} = resistor;
-            
-            // 电阻主体
-            ctx.fillStyle = '#64748b';
-            ctx.fillRect(x, y, width, height);
-            
-            // 电阻条纹
-            ctx.fillStyle = '#475569';
-            for (let i = 1; i <= 3; i++) {
-                ctx.fillRect(x + i * width / 4 - 5, y, 10, height);
-            }
-            
-            // 电阻标签
-            ctx.fillStyle = '#cbd5e1';
-            ctx.font = `bold ${Math.max(12, width/6)}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(label, x + width / 2, y + height / 2);
-            
-            // 电阻值标签
-            ctx.font = `${Math.max(10, width/8)}px Arial`;
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText('10Ω', x + width / 2, y + height + 15);
-        }
-        
-        // 绘制开关
-        function drawSwitch(switchCoord) {
-            const {x, y, width, height} = switchCoord;
-            
-            // 开关底座
-            ctx.fillStyle = '#475569';
-            ctx.fillRect(x, y, width, height);
-            
-            // 开关状态
-            if (circuitClosed) {
-                // 闭合状态（绿色）
-                ctx.fillStyle = '#10b981';
-                ctx.fillRect(x, y, width, height);
-                
-                // 开关手柄（闭合位置）
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(x + width - 5, y - 10, 5, 20);
-            } else {
-                // 断开状态（红色）
-                ctx.fillStyle = '#ef4444';
-                ctx.fillRect(x, y, width, height);
-                
-                // 开关手柄（断开位置）
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(x, y - 10, 5, 20);
-            }
-            
-            // 开关标签
-            ctx.fillStyle = '#cbd5e1';
-            ctx.font = `${Math.max(12, width/4)}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('开关', x + width / 2, y - 20);
-        }
-        
-        // 绘制连接点
-        function drawJunction(x, y, label) {
-            const radius = Math.max(6, canvas.width / 100);
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fillStyle = '#fbbf24';
-            ctx.fill();
-            
-            ctx.fillStyle = '#1e293b';
-            ctx.font = `bold ${Math.max(10, radius)}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(label, x, y);
-        }
-        
-        // 绘制电流表 - 修复并联电路读数
-        function drawAmmeters() {
-            const scale = Math.min(canvas.width / 800, canvas.height / 500) * 0.8;
-            ctx.fillStyle = '#cbd5e1';
-            ctx.font = `${Math.max(12, 14 * scale)}px Arial`;
-            ctx.textAlign = 'center';
-            
-            if (circuitType === 'series') {
-                // 串联电路：一个电流表
-                ctx.fillText('电流表 A', 250 * scale, 180 * scale);
-                
-                // 电流表读数
-                ctx.font = `bold ${Math.max(14, 18 * scale)}px Arial`;
-                ctx.fillStyle = '#fbbf24';
-                ctx.fillText(`${mainCurrent.toFixed(1)} A`, 250 * scale, 210 * scale);
-            } else {
-                // 并联电路：三个电流表
-                // 干路电流表
-                ctx.fillStyle = '#cbd5e1';
-                ctx.font = `${Math.max(12, 14 * scale)}px Arial`;
-                ctx.fillText('电流表 A₁ (干路)', 250 * scale, 100 * scale);
-                
-                ctx.font = `bold ${Math.max(14, 18 * scale)}px Arial`;
-                ctx.fillStyle = '#fbbf24';
-                ctx.fillText(`${mainCurrent.toFixed(1)} A`, 250 * scale, 130 * scale);
-                
-                // 支路1电流表
-                ctx.fillStyle = '#cbd5e1';
-                ctx.font = `${Math.max(12, 14 * scale)}px Arial`;
-                ctx.fillText('电流表 A₂ (支路1)', 500 * scale, 100 * scale);
-                
-                ctx.font = `bold ${Math.max(14, 18 * scale)}px Arial`;
-                ctx.fillStyle = '#fbbf24';
-                ctx.fillText(`${branch1Current.toFixed(1)} A`, 500 * scale, 130 * scale);
-                
-                // 支路2电流表
-                ctx.fillStyle = '#cbd5e1';
-                ctx.font = `${Math.max(12, 14 * scale)}px Arial`;
-                ctx.fillText('电流表 A₃ (支路2)', 500 * scale, 400 * scale);
-                
-                ctx.font = `bold ${Math.max(14, 18 * scale)}px Arial`;
-                ctx.fillStyle = '#fbbf24';
-                ctx.fillText(`${branch2Current.toFixed(1)} A`, 500 * scale, 430 * scale);
-            }
-        }
-        
-        // 绘制电子计数器 - 修复计数逻辑
-        function drawCounters() {
-            const scale = Math.min(canvas.width / 800, canvas.height / 500) * 0.8;
-            ctx.fillStyle = '#60a5fa';
-            ctx.font = `bold ${Math.max(12, 14 * scale)}px Arial`;
-            ctx.textAlign = 'center';
-            
-            if (circuitType === 'series') {
-                // 串联电路：一个计数器 - 计算在主干路上的粒子
-                const electronCount = particles.filter(p => {
-                    // 在主干路上的粒子（不在起始和结束区域）
-                    return p.currentSegmentIndex > 0 && p.currentSegmentIndex < p.path.length - 2;
-                }).length;
-                ctx.fillText(`电子数: ${electronCount}`, 450 * scale, 180 * scale);
-            } else {
-                // 并联电路：三个计数器
-                // 干路计数器 - 在电池到分支点A之间的粒子
-                const mainElectronCount = particles.filter(p => {
-                    if (p.path === circuitCoords.parallel.particlePath1 || p.path === circuitCoords.parallel.particlePath2) {
-                        return p.currentSegmentIndex >= 0 && p.currentSegmentIndex <= 1;
-                    }
-                    return false;
-                }).length;
-                ctx.fillText(`电子数: ${mainElectronCount}`, 250 * scale, 180 * scale);
-                
-                // 支路1计数器 - 在电阻1内的粒子
-                const branch1ElectronCount = particles.filter(p => {
-                    return p.branch === 1 && p.currentSegmentIndex >= 2 && p.currentSegmentIndex <= 4;
-                }).length;
-                ctx.fillText(`电子数: ${branch1ElectronCount}`, 400 * scale, 100 * scale);
-                
-                // 支路2计数器 - 在电阻2内的粒子
-                const branch2ElectronCount = particles.filter(p => {
-                    return p.branch === 2 && p.currentSegmentIndex >= 2 && p.currentSegmentIndex <= 4;
-                }).length;
-                ctx.fillText(`电子数: ${branch2ElectronCount}`, 400 * scale, 400 * scale);
-            }
-        }
-        
-        // 动画循环
-        function animate() {
-            // 更新粒子
-            particles.forEach(particle => {
-                particle.update();
-            });
-            
-            // 绘制电路
-            drawCircuit();
-            
-            // 继续动画循环
-            requestAnimationFrame(animate);
-        }
-        
-        // 更新信息显示
-        function updateInfoDisplay() {
-            document.getElementById('circuitType').textContent = 
-                circuitType === 'series' ? '串联电路' : '并联电路';
-            
-            document.getElementById('visualizationMode').textContent = 
-                visualizationMode === 'electron' ? '电子流方向' : '电流方向';
-            
-            document.getElementById('circuitStatus').textContent = 
-                circuitClosed ? '通路' : '断路';
-            
-            document.getElementById('mainCurrent').textContent = 
-                circuitClosed ? `${mainCurrent.toFixed(1)} A` : '0.0 A';
-            
-            if (circuitType === 'series') {
-                document.getElementById('branch1Current').textContent = 
-                    circuitClosed ? `${mainCurrent.toFixed(1)} A` : '0.0 A';
-                document.getElementById('branch2Current').textContent = 
-                    circuitClosed ? `${mainCurrent.toFixed(1)} A` : '0.0 A';
-            } else {
-                document.getElementById('branch1Current').textContent = 
-                    circuitClosed ? `${branch1Current.toFixed(1)} A` : '0.0 A';
-                document.getElementById('branch2Current').textContent = 
-                    circuitClosed ? `${branch2Current.toFixed(1)} A` : '0.0 A';
-            }
-        }
-        
-        // 切换电路类型
-        function switchCircuitType(type) {
-            circuitType = type;
-            
-            // 更新按钮状态
-            document.getElementById('seriesBtn').classList.toggle('active', type === 'series');
-            document.getElementById('parallelBtn').classList.toggle('active', type === 'parallel');
-            
-            // 更新电流值
-            if (type === 'series') {
-                mainCurrent = 1.0;
-                branch1Current = 1.0;
-                branch2Current = 1.0;
-            } else {
-                mainCurrent = 1.5;
-                branch1Current = 1.0;
-                branch2Current = 0.5;
-            }
-            
-            // 重新初始化粒子
-            initParticles();
-            updateInfoDisplay();
-        }
-        
-        // 切换可视化模式
-        function switchVisualizationMode(mode) {
-            visualizationMode = mode;
-            
-            // 更新按钮状态
-            document.getElementById('electronFlowBtn').classList.toggle('active', mode === 'electron');
-            document.getElementById('currentFlowBtn').classList.toggle('active', mode === 'current');
-            
-            // 更新所有粒子的类型
-            particles.forEach(particle => {
-                particle.isElectron = (mode === 'electron');
-                particle.color = particle.isElectron ? '#60a5fa' : '#f87171';
-                particle.radius = particle.isElectron ? 6 : 5;
-            });
-            
-            updateInfoDisplay();
-        }
-        
-        // 初始化事件监听器
-        function initEventListeners() {
-            // 播放/暂停/重置按钮
-            document.getElementById('playBtn').addEventListener('click', () => {
-                isPlaying = true;
-            });
-            
-            document.getElementById('pauseBtn').addEventListener('click', () => {
-                isPlaying = false;
-            });
-            
-            document.getElementById('resetBtn').addEventListener('click', () => {
-                initParticles();
-            });
-            
-            // 电路开关
-            document.getElementById('circuitSwitch').addEventListener('change', (e) => {
-                circuitClosed = e.target.checked;
-                updateInfoDisplay();
-            });
-            
-            // 电路类型切换
-            document.getElementById('seriesBtn').addEventListener('click', () => {
-                switchCircuitType('series');
-            });
-            
-            document.getElementById('parallelBtn').addEventListener('click', () => {
-                switchCircuitType('parallel');
-            });
-            
-            // 可视化模式切换
-            document.getElementById('electronFlowBtn').addEventListener('click', () => {
-                switchVisualizationMode('electron');
-            });
-            
-            document.getElementById('currentFlowBtn').addEventListener('click', () => {
-                switchVisualizationMode('current');
-            });
-            
-            // 信息显示切换
-            document.getElementById('counterToggle').addEventListener('change', (e) => {
-                showCounters = e.target.checked;
-            });
-            
-            document.getElementById('ammeterToggle').addEventListener('change', (e) => {
-                showAmmeters = e.target.checked;
-            });
-            
-            // 鼠标悬停提示（简单实现）
-            canvas.addEventListener('mousemove', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                // 检测鼠标是否在元件上（简化版）
-                const coords = circuitCoords[circuitType];
-                
-                // 检查电池
-                if (x >= coords.battery.x && x <= coords.battery.x + coords.battery.width &&
-                    y >= coords.battery.y && y <= coords.battery.y + coords.battery.height) {
-                    canvas.style.cursor = 'help';
-                    return;
-                }
-                
-                // 检查电阻
-                if ((x >= coords.resistor1.x && x <= coords.resistor1.x + coords.resistor1.width &&
-                     y >= coords.resistor1.y && y <= coords.resistor1.y + coords.resistor1.height) ||
-                    (x >= coords.resistor2.x && x <= coords.resistor2.x + coords.resistor2.width &&
-                     y >= coords.resistor2.y && y <= coords.resistor2.y + coords.resistor2.height)) {
-                    canvas.style.cursor = 'help';
-                    return;
-                }
-                
-                // 检查开关
-                if (x >= coords.switch.x && x <= coords.switch.x + coords.switch.width &&
-                    y >= coords.switch.y && y <= coords.switch.y + coords.switch.height) {
-                    canvas.style.cursor = 'pointer';
-                    return;
-                }
-                
-                canvas.style.cursor = 'default';
-            });
-            
-            // 点击开关切换状态
-            canvas.addEventListener('click', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const coords = circuitCoords[circuitType];
-                
-                // 检查是否点击了开关
-                if (x >= coords.switch.x && x <= coords.switch.x + coords.switch.width &&
-                    y >= coords.switch.y && y <= coords.switch.y + coords.switch.height) {
-                    circuitClosed = !circuitClosed;
-                    document.getElementById('circuitSwitch').checked = circuitClosed;
-                    updateInfoDisplay();
-                }
-            });
-        }
-        
-        // 初始化应用
-        function initApp() {
-            initParticles();
-            initEventListeners();
-            updateInfoDisplay();
-            animate();
-        }
-        
-        // 页面加载完成后初始化
-        window.addEventListener('load', initApp);
-    </script>
+// State
+var cType='series',vMode='electron',playing=true,closed=true;
+var showAm=true,showCnt=true;
+var mainI=1.0,b1I=1.0,b2I=0.5;
+
+// Geometry
+var segs=[],paths=[];
+
+function ox(v){return(W-700*S)/2+v*S;}
+function oy(v){return(H-450*S)/2+v*S;}
+function sx(v){return v*S;}
+
+function build(){
+ segs=[];paths=[];
+ if(cType==='series'){
+  // Rectangular loop: 80,290 → 600,290 → 600,150 → 80,150 → 80,290
+  var p=[
+   {x:80,y:290},{x:200,y:290},{x:400,y:290},{x:600,y:290},
+   {x:600,y:220},{x:600,y:150},
+   {x:450,y:150},{x:280,y:150},
+   {x:80,y:150},{x:80,y:220}
+  ];
+  for(var i=0;i<p.length;i++){
+   var j=(i+1)%p.length;
+   segs.push({x1:ox(p[i].x),y1:oy(p[i].y),x2:ox(p[j].x),y2:oy(p[j].y)});
+  }
+  // Particle path: counterclockwise = electron flow (negative → positive through external circuit)
+  var pp=[];
+  for(var i=p.length-1;i>=0;i--) pp.push({x:ox(p[i].x),y:oy(p[i].y)});
+  paths.push(pp);
+ } else {
+  // Parallel: battery left, two branches middle, switch right
+  var s=[
+   {x1:80,y1:290,x2:180,y2:290},
+   {x1:180,y1:290,x2:180,y2:150},
+   {x1:180,y1:150,x2:300,y2:150},
+   {x1:300,y1:150,x2:440,y2:150},
+   {x1:440,y1:150,x2:540,y2:150},
+   {x1:540,y1:150,x2:540,y2:290},
+   {x1:540,y1:290,x2:620,y2:290},
+   {x1:620,y1:290,x2:620,y2:360},
+   {x1:620,y1:360,x2:80,y2:360},
+   {x1:80,y1:360,x2:80,y2:290},
+   // Branch junctions
+   {x1:180,y1:290,x2:180,y2:360},
+   {x1:180,y1:360,x2:300,y2:360},
+   {x1:300,y1:360,x2:440,y2:360},
+   {x1:440,y1:360,x2:540,y2:360},
+   {x1:540,y1:360,x2:540,y2:290}
+  ];
+  for(var i=0;i<s.length;i++) segs.push({x1:ox(s[i].x1),y1:oy(s[i].y1),x2:ox(s[i].x2),y2:oy(s[i].y2)});
+  // Path 1: through top branch (R1)
+  var p1=[
+   {x:80,y:290},{x:180,y:290},{x:180,y:150},{x:300,y:150},
+   {x:440,y:150},{x:540,y:150},{x:540,y:290},{x:620,y:290},
+   {x:620,y:360},{x:80,y:360},{x:80,y:290}
+  ].map(function(p){return{x:ox(p.x),y:oy(p.y)};});
+  // Path 2: through bottom branch (R2)
+  var p2=[
+   {x:80,y:290},{x:180,y:290},{x:180,y:360},{x:300,y:360},
+   {x:440,y:360},{x:540,y:360},{x:540,y:290},{x:620,y:290},
+   {x:620,y:360},{x:80,y:360},{x:80,y:290}
+  ].map(function(p){return{x:ox(p.x),y:oy(p.y)};});
+  paths=[p1,p2];
+ }
+}
+
+// Particles
+var particles=[],pid=0;
+function Particle(pi){
+ this.path=paths[pi]; this.seg=0; this.prog=Math.random();
+ this.speed=0.012+Math.random()*0.008;
+ this.x=this.path[0].x; this.y=this.path[0].y;
+}
+Particle.prototype.update=function(){
+ if(!closed||!playing)return;
+ var a=this.path[this.seg],b=this.path[(this.seg+1)%this.path.length];
+ var dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy)||1;
+ this.prog+=this.speed*4/len;
+ if(this.prog>=1){this.prog-=1;this.seg=(this.seg+1)%this.path.length;}
+ var s=this.path[this.seg],e=this.path[(this.seg+1)%this.path.length];
+ this.x=s.x+(e.x-s.x)*this.prog;
+ this.y=s.y+(e.y-s.y)*this.prog;
+};
+Particle.prototype.draw=function(){
+ var col=vMode==='electron'?'#60a5fa':'#f87171';
+ var g=c.createRadialGradient(this.x,this.y,0,this.x,this.y,sx(12));
+ g.addColorStop(0,col+'bb');g.addColorStop(1,col+'00');
+ c.beginPath();c.arc(this.x,this.y,sx(12),0,Math.PI*2);c.fillStyle=g;c.fill();
+ c.beginPath();c.arc(this.x,this.y,sx(4),0,Math.PI*2);c.fillStyle=col;c.fill();
+ c.strokeStyle='#fff';c.lineWidth=1.5;
+ if(vMode==='electron'){
+  c.beginPath();c.moveTo(this.x-sx(3),this.y);c.lineTo(this.x+sx(3),this.y);c.stroke();
+ }else{
+  c.beginPath();c.moveTo(this.x-sx(3),this.y-sx(2));c.lineTo(this.x+sx(3),this.y);c.lineTo(this.x-sx(3),this.y+sx(2));c.stroke();
+ }
+};
+
+function init(){
+ particles=[];pid=0;build();
+ if(cType==='series'){
+  for(var i=0;i<20;i++) particles.push(new Particle(0));
+ }else{
+  for(var i=0;i<12;i++) particles.push(new Particle(0));
+  for(var i=0;i<10;i++) particles.push(new Particle(1));
+ }
+ // Evenly distribute particles along path
+ for(var i=0;i<particles.length;i++){
+  var p=particles[i],n=p.path.length;
+  p.seg=i%n; p.prog=Math.random();
+ }
+}
+
+// Drawing
+function drawWires(){
+ c.lineWidth=sx(2.5);c.lineCap='round';c.strokeStyle='#64748b';
+ for(var i=0;i<segs.length;i++){
+  c.beginPath();c.moveTo(segs[i].x1,segs[i].y1);c.lineTo(segs[i].x2,segs[i].y2);c.stroke();
+ }
+ if(playing&&closed){
+  c.lineWidth=sx(6);
+  c.strokeStyle=vMode==='electron'?'rgba(96,165,250,0.15)':'rgba(248,113,113,0.15)';
+  for(var i=0;i<segs.length;i++){
+   c.beginPath();c.moveTo(segs[i].x1,segs[i].y1);c.lineTo(segs[i].x2,segs[i].y2);c.stroke();
+  }
+ }
+}
+
+function drawBattery(x,y1,y2){
+ // y1=top(+), y2=bottom(-) for vertical battery on left side
+ var pw=sx(28),ph=sx(7);
+ // + plate (green)
+ c.fillStyle='#10b981';
+ c.fillRect(x-pw/2,y1-ph/2,pw,ph);
+ c.strokeStyle='#059669';c.lineWidth=1;c.strokeRect(x-pw/2,y1-ph/2,pw,ph);
+ // - plate (gray)
+ c.fillStyle='#64748b';
+ c.fillRect(x-pw/2,y2-ph/2,pw,ph);
+ c.strokeStyle='#475569';c.strokeRect(x-pw/2,y2-ph/2,pw,ph);
+ // Labels
+ c.fillStyle='#fff';c.font='bold '+Math.max(13,sx(15))+'px Arial';c.textAlign='center';c.textBaseline='middle';
+ c.fillText('+',x,y1-sx(14));
+ c.fillText('−',x,y2+sx(14));
+ // Name
+ c.fillStyle='#94a3b8';c.font=Math.max(11,sx(12))+'px Arial';c.textAlign='right';
+ c.fillText('电源',x-pw/2-sx(6),(y1+y2)/2);
+}
+
+function drawResistor(x1,y,x2,label){
+ var h=sx(28);
+ c.fillStyle='#475569';
+ c.fillRect(x1,y-h/2,x2-x1,h);
+ c.strokeStyle='#94a3b8';c.lineWidth=1.5;
+ c.strokeRect(x1,y-h/2,x2-x1,h);
+ // Color bands
+ c.fillStyle='#60a5fa';
+ for(var i=1;i<=3;i++){
+  var bx=x1+(x2-x1)*i/4;
+  c.fillRect(bx-sx(2),y-h/2,sx(4),h);
+ }
+ c.fillStyle='#e2e8f0';c.font='bold '+Math.max(12,sx(14))+'px Arial';c.textAlign='center';c.textBaseline='middle';
+ c.fillText(label,(x1+x2)/2,y);
+ c.fillStyle='#94a3b8';c.font=Math.max(10,sx(11))+'px Arial';
+ c.fillText('10Ω',(x1+x2)/2,y+h/2+sx(12));
+}
+
+function drawSwitch(cx,cy,w,isClosed){
+ var col=isClosed?'#10b981':'#ef4444';
+ // Contact points
+ c.fillStyle='#94a3b8';
+ c.beginPath();c.arc(cx-w/2,cy,sx(4),0,Math.PI*2);c.fill();
+ c.beginPath();c.arc(cx+w/2,cy,sx(4),0,Math.PI*2);c.fill();
+ // Lever
+ c.strokeStyle=col;c.lineWidth=sx(3);c.lineCap='round';
+ c.beginPath();c.moveTo(cx-w/2,cy);
+ if(isClosed){c.lineTo(cx+w/2,cy);}
+ else{c.lineTo(cx+w/2,cy-sx(22));}
+ c.stroke();
+ // Label
+ c.fillStyle='#cbd5e1';c.font=Math.max(10,sx(11))+'px Arial';c.textAlign='center';c.textBaseline='top';
+ c.fillText('开关',cx,cy+sx(10));
+ c.fillStyle=col;c.font='bold '+Math.max(9,sx(10))+'px Arial';
+ c.fillText(isClosed?'闭合':'断开',cx,cy+sx(24));
+}
+
+function drawJunction(x,y,label){
+ c.beginPath();c.arc(x,y,sx(7),0,Math.PI*2);c.fillStyle='#fbbf24';c.fill();
+ c.fillStyle='#0f172a';c.font='bold '+Math.max(10,sx(11))+'px Arial';c.textAlign='center';c.textBaseline='middle';
+ c.fillText(label,x,y);
+}
+
+function drawComps(){
+ if(cType==='series'){
+  drawBattery(ox(80),oy(150),oy(290));
+  drawResistor(ox(280),oy(150),ox(450),'R₁');
+  drawSwitch(ox(400),oy(290),sx(60),closed);
+ }else{
+  drawBattery(ox(80),oy(150),oy(360));
+  drawResistor(ox(300),oy(150),ox(440),'R₁');
+  drawResistor(ox(300),oy(360),ox(440),'R₂');
+  drawSwitch(ox(580),oy(290),sx(40),closed);
+  drawJunction(ox(180),oy(290),'A');
+  drawJunction(ox(540),oy(290),'B');
+ }
+}
+
+function drawAm(){
+ if(!showAm)return;
+ c.fillStyle='#fbbf24';c.textAlign='center';
+ if(cType==='series'){
+  c.font='bold '+Math.max(14,sx(16))+'px Arial';
+  c.fillText('A = '+(closed?mainI.toFixed(1):'0.0')+' A',ox(350),oy(225));
+ }else{
+  c.font='bold '+Math.max(12,sx(14))+'px Arial';
+  c.fillText('A₁(干路) = '+(closed?mainI.toFixed(1):'0.0')+' A',ox(130),oy(250));
+  c.fillText('A₂ = '+(closed?b1I.toFixed(1):'0.0')+' A',ox(370),oy(100));
+  c.fillText('A₃ = '+(closed?b2I.toFixed(1):'0.0')+' A',ox(370),oy(410));
+ }
+}
+
+function draw(){
+ c.clearRect(0,0,W,H);
+ // Grid
+ c.strokeStyle='rgba(71,85,105,0.12)';c.lineWidth=1;
+ for(var x=0;x<W;x+=sx(30)){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke();}
+ for(var y=0;y<H;y+=sx(30)){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+ drawWires();
+ drawComps();
+ for(var i=0;i<particles.length;i++){particles[i].update();particles[i].draw();}
+ drawAm();
+ if(showCnt){
+  c.fillStyle='#60a5fa';c.font=Math.max(11,sx(12))+'px Arial';c.textAlign='center';
+  c.fillText('电路中电子数: '+particles.length,ox(350),oy(435));
+ }
+ // Direction label
+ c.fillStyle=vMode==='electron'?'#60a5fa':'#f87171';
+ c.font='bold '+Math.max(11,sx(12))+'px Arial';c.textAlign='left';
+ c.fillText(vMode==='electron'?'→ 电子流方向(− → +)':'→ 电流方向(+ → −)',ox(15),oy(445));
+ // Status
+ if(!closed){
+  c.fillStyle='rgba(239,68,68,0.15)';c.fillRect(0,0,W,H);
+  c.fillStyle='#ef4444';c.font='bold '+Math.max(16,sx(22))+'px Arial';c.textAlign='center';c.textBaseline='middle';
+  c.fillText('电路断开 — 电子停止流动',W/2,H/2);
+ }
+}
+
+function loop(){draw();requestAnimationFrame(loop);}
+
+// Controls
+function updateInfo(){
+ document.getElementById('iT').textContent=cType==='series'?'串联电路':'并联电路';
+ document.getElementById('iS').textContent=closed?'通路':'断路';
+ document.getElementById('iM').textContent=(closed?mainI.toFixed(1):'0.0')+' A';
+ if(cType==='series'){
+  document.getElementById('i1').textContent='—';
+  document.getElementById('i2').textContent='—';
+ }else{
+  document.getElementById('i1').textContent=(closed?b1I.toFixed(1):'0.0')+' A';
+  document.getElementById('i2').textContent=(closed?b2I.toFixed(1):'0.0')+' A';
+ }
+}
+
+document.getElementById('playBtn').onclick=function(){playing=true;};
+document.getElementById('pauseBtn').onclick=function(){playing=false;};
+document.getElementById('resetBtn').onclick=function(){init();};
+document.getElementById('swTog').onchange=function(e){closed=e.target.checked;updateInfo();};
+document.getElementById('serBtn').onclick=function(){
+ cType='series';mainI=1.0;b1I=1.0;b2I=1.0;
+ document.getElementById('serBtn').classList.add('on');
+ document.getElementById('parBtn').classList.remove('on');
+ init();updateInfo();
+};
+document.getElementById('parBtn').onclick=function(){
+ cType='parallel';mainI=1.5;b1I=1.0;b2I=0.5;
+ document.getElementById('parBtn').classList.add('on');
+ document.getElementById('serBtn').classList.remove('on');
+ init();updateInfo();
+};
+document.getElementById('eBtn').onclick=function(){
+ vMode='electron';
+ document.getElementById('eBtn').classList.add('on');
+ document.getElementById('cBtn').classList.remove('on');
+};
+document.getElementById('cBtn').onclick=function(){
+ vMode='current';
+ document.getElementById('cBtn').classList.add('on');
+ document.getElementById('eBtn').classList.remove('on');
+};
+document.getElementById('amTog').onchange=function(e){showAm=e.target.checked;};
+document.getElementById('cnTog').onchange=function(e){showCnt=e.target.checked;};
+
+// Click switch on canvas to toggle
+cv.addEventListener('click',function(e){
+ var r=cv.getBoundingClientRect();
+ var mx=e.clientX-r.left,my=e.clientY-r.top;
+ var sx1,sy1,sx2,sy2;
+ if(cType==='series'){
+  sx1=ox(370);sy1=oy(260);sx2=ox(430);sy2=oy(320);
+ }else{
+  sx1=ox(560);sy1=oy(260);sx2=ox(600);sy2=oy(320);
+ }
+ if(mx>=sx1&&mx<=sx2&&my>=sy1&&my<=sy2){
+  closed=!closed;
+  document.getElementById('swTog').checked=closed;
+  updateInfo();
+ }
+});
+
+init();updateInfo();loop();
+})();
+</script>
 </body>
 </html>

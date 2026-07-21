@@ -91,7 +91,7 @@ const fSlider=document.getElementById('fSlider'),mSlider=document.getElementById
 const fVal=document.getElementById('fVal'),mVal=document.getElementById('mVal');
 let playing=false,t=0,speed=1;
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(350,Math.min(550,r.height-8));}
-window.addEventListener('resize',()=>{fit();});fit();
+window.addEventListener('resize',()=>{fit();});
 
 let F=10,M=2;
 fSlider.oninput=()=>{F=+fSlider.value;fVal.textContent=F;};
@@ -102,65 +102,40 @@ function draw(){
   ctx.clearRect(0,0,W,H);
   const a=F/M;
   const groundY=H*0.7;
-  
-  // 地面
   ctx.strokeStyle='#1e3050';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(40,groundY);ctx.lineTo(W-40,groundY);ctx.stroke();
-  // 地面刻度
-  for(let x=60;x<W-40;x+=40){
-    ctx.beginPath();ctx.moveTo(x,groundY);ctx.lineTo(x,groundY+8);ctx.stroke();
-  }
-  
-  // 物体位置
+  for(let x=60;x<W-40;x+=40){ctx.beginPath();ctx.moveTo(x,groundY);ctx.lineTo(x,groundY+8);ctx.stroke();}
   const blockSize=30+M*4;
   const bx=80+t*t*a*0.3;
   const by=groundY-blockSize;
-  
   if(bx<W-60){
-    // 物体
-    ctx.fillStyle='#0984e3';
-    ctx.fillRect(bx,by,blockSize,blockSize);
+    ctx.fillStyle='#0984e3';ctx.fillRect(bx,by,blockSize,blockSize);
     ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
     ctx.fillText(M+'kg',bx+blockSize/2,by+blockSize/2+5);
-    
-    // 力箭头
     const arrowLen=F*4;
     ctx.strokeStyle='#d63031';ctx.lineWidth=3;ctx.fillStyle='#d63031';
     ctx.beginPath();ctx.moveTo(bx+blockSize,by+blockSize/2);
     ctx.lineTo(bx+blockSize+arrowLen,by+blockSize/2);ctx.stroke();
-    // 箭头头
-    ctx.beginPath();
-    ctx.moveTo(bx+blockSize+arrowLen,by+blockSize/2);
+    ctx.beginPath();ctx.moveTo(bx+blockSize+arrowLen,by+blockSize/2);
     ctx.lineTo(bx+blockSize+arrowLen-10,by+blockSize/2-6);
-    ctx.lineTo(bx+blockSize+arrowLen-10,by+blockSize/2+6);
-    ctx.fill();
+    ctx.lineTo(bx+blockSize+arrowLen-10,by+blockSize/2+6);ctx.fill();
     ctx.fillStyle='#d63031';ctx.font='bold 13px sans-serif';
     ctx.fillText('F='+F+'N',bx+blockSize+arrowLen/2,by+blockSize/2-12);
-    
-    // 加速度标注
     ctx.fillStyle='#00b894';ctx.font='13px sans-serif';
     ctx.fillText('a='+a.toFixed(1)+'m/s²',bx+blockSize/2,by-20);
-    
-    // 速度
     const v=a*t*0.5;
     ctx.fillStyle='#fdcb6e';
     ctx.fillText('v='+v.toFixed(1)+'m/s',bx+blockSize/2,by-40);
   }
-  
-  // 信息面板
-  ctx.fillStyle='rgba(17,29,51,0.9)';
-  ctx.fillRect(W-220,20,200,120);
+  ctx.fillStyle='rgba(17,29,51,0.9)';ctx.fillRect(W-220,20,200,120);
   ctx.strokeStyle='#1e3050';ctx.strokeRect(W-220,20,200,120);
   ctx.fillStyle='#e8edf6';ctx.font='bold 14px sans-serif';ctx.textAlign='left';
   ctx.fillText('F = ma',W-200,45);
   ctx.font='13px sans-serif';ctx.fillStyle='#8b9dc3';
   ctx.fillText('F = '+F+' N',W-200,70);
   ctx.fillText('m = '+M+' kg',W-200,90);
-  ctx.fillStyle='#00b894';
-  ctx.fillText('a = F/m = '+a.toFixed(2)+' m/s²',W-200,115);
-  ctx.fillStyle='#fdcb6e';
-  ctx.fillText('t = '+t.toFixed(1)+' s',W-200,135);
-  
+  ctx.fillStyle='#00b894';ctx.fillText('a = F/m = '+a.toFixed(2)+' m/s²',W-200,115);
+  ctx.fillStyle='#fdcb6e';ctx.fillText('t = '+t.toFixed(1)+' s',W-200,135);
   statusEl.textContent='F='+F+'N  m='+M+'kg  a='+a.toFixed(1)+'m/s²';
 }
 
@@ -180,8 +155,8 @@ document.getElementById('playBtn').onclick=function(){
 document.getElementById('resetBtn').onclick=function(){t=0;draw();};
 document.getElementById('speed').oninput=function(){speed=+this.value;};
 
-draw();
-requestAnimationFrame(loop);
+function init(){fit();draw();requestAnimationFrame(loop);}
+requestAnimationFrame(function(){requestAnimationFrame(init);});
 </script>
 </body>
 </html>
