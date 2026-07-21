@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学学生。他们具备基础的生物学知识（如DNA、质粒、酶），但需要直观、动态地理解基因工程这一抽象、微观的操作流程。
@@ -77,7 +76,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1079,7 +1077,6 @@
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.ellipse(x, y, radius * 1.5, radius, 
-<!--检测到代码截断，自动续写中...-->
 0, Math.PI * 2);
             ctx.stroke();
             

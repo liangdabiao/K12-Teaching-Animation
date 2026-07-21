@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学学生。他们已具备基础的细胞结构和叶绿体知识，但对光反应中复杂的电子传递、能量转换和质子动力建立等微观、动态过程感到抽象和难以理解。
@@ -88,7 +87,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1089,7 +1087,6 @@
         
         // 绘制NADPH分子
         function drawNADPHMolecules()
-<!--检测到代码截断，自动续写中...-->
 {
             for (let i = nadphMolecules.length - 1; i >= 0; i--) {
                 const nadph = nadphMolecules[i];

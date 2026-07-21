@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画的目标用户主要是中学或大学低年级的物理、科学史或医学相关专业的学生。他们的核心需求是：
@@ -61,7 +60,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1042,7 +1040,6 @@
                 // 如果回到步骤2之前，重置阳极击中状态
                 if (experimentState.currentStep < 3) {
                     components.
-<!--检测到代码截断，自动续写中...-->
 anode.isHit = false;
                     components.anode.hitTime = 0;
                 }

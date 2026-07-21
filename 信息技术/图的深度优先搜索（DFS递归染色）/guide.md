@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要是计算机科学或相关专业的学生，他们正在学习数据结构和算法。用户的需求层次如下：
@@ -86,7 +85,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1146,7 +1144,6 @@
                     if (neighbor.state === 'unvisited') {
                         // 步骤3: 递归访问邻居
 
-<!--检测到代码截断，自动续写中...-->
 algorithmSteps.push({
                             action: 'recurse',
                             from: nodeId,

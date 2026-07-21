@@ -311,8 +311,17 @@
             100% { opacity: 0.7; }
         }
     </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <div class="container">
         <header>
             <h1>氢原子能级跃迁与光谱产生</h1>
@@ -592,7 +601,7 @@
                     btn.disabled = true;
                 });
                 // 显示引导提示
-                alert("引导模式：请使用能量滑块选择激发能量，然后点击'激发原子'按钮。观察电子如何跃迁到更高能级。");
+                showTip("引导模式：请使用能量滑块选择激发能量，然后点击'激发原子'按钮。观察电子如何跃迁到更高能级。");
             } else {
                 guideModeBtn.classList.remove('highlight');
                 freeModeBtn.classList.add('highlight');
@@ -629,12 +638,12 @@
                 // 在引导模式下，显示提示
                 if (mode === 'guide') {
                     setTimeout(() => {
-                        alert("很好！电子已吸收能量跃迁到更高能级。现在点击'发射光子'按钮，观察电子如何返回低能级并发射光子。");
+                        showTip("很好！电子已吸收能量跃迁到更高能级。现在点击'发射光子'按钮，观察电子如何返回低能级并发射光子。");
                     }, 1000);
                 }
             } else {
                 // 能量不匹配
-                alert(`能量不匹配！需要 ${requiredEnergy.toFixed(2)} eV 才能从 n=${currentLevel} 跃迁到 n=${targetLevel}。`);
+                showTip(`能量不匹配！需要 ${requiredEnergy.toFixed(2)} eV 才能从 n=${currentLevel} 跃迁到 n=${targetLevel}。`);
             }
         }
         
@@ -693,7 +702,7 @@
             // 在引导模式下，显示提示
             if (mode === 'guide') {
                 setTimeout(() => {
-                    alert("完美！电子已跃迁回低能级，并发射了一个光子。观察右侧的光谱图，可以看到对应的光谱线。尝试不同的激发能量，观察不同的光谱线。");
+                    showTip("完美！电子已跃迁回低能级，并发射了一个光子。观察右侧的光谱图，可以看到对应的光谱线。尝试不同的激发能量，观察不同的光谱线。");
                 }, 1000);
             }
         }
@@ -745,7 +754,7 @@
             
             // 确保 from > to
             if (from <= to) {
-                alert("错误：跃迁必须从高能级到低能级！");
+                showTip("错误：跃迁必须从高能级到低能级！");
                 return;
             }
             

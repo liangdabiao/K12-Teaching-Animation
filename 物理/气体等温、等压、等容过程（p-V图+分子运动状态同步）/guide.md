@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 **用户需求分析：**
 用户（可能是高中或大学物理教师、学生）需要一个直观、动态的交互式动画，来理解理想气体在等温、等压、等容过程中宏观状态（压强p、体积V）与微观分子运动状态（分子速度、碰撞频率）之间的同步变化关系。传统的静态p-V图或文字描述难以建立这种宏观-微观的桥梁。因此，核心需求是：**将抽象的物理定律（如玻意耳定律、查理定律）与可视化的分子运动模型实时、动态地联系起来**，降低认知负荷，加深理解。
@@ -58,7 +57,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1005,7 +1003,6 @@
             
             // 绘制活塞（如果是等压或等温过程，显示可移动的活塞）
 
-<!--检测到代码截断，自动续写中...-->
 if (currentProcess === 'isobaric' || currentProcess === 'isothermal') {
                 simCtx.fillStyle = 'rgba(189, 195, 199, 0.7)';
                 simCtx.fillRect(containerX + containerWidth - 10, containerY, 10, containerHeight);
@@ -1293,7 +1290,6 @@ if (currentProcess === 'isobaric' || currentProcess === 'isothermal') {
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 交互式教学动画使用指南
 

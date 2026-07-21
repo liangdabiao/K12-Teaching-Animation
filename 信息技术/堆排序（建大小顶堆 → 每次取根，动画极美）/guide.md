@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为计算机科学或相关专业的学生、编程初学者以及对算法感兴趣的自学者。他们具备基础的编程和数据结构知识，但可能对堆排序的动态过程理解不深。
@@ -81,7 +80,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1029,7 +1027,6 @@
                 } else {
                     // 开始播放
                     animationState.isPlaying = true
-<!--检测到代码截断，自动续写中...-->
 playPauseBtn.textContent = '⏸ 暂停';
                     playPauseBtn.classList.remove('btn-primary');
                     playPauseBtn.classList.add('btn-danger');
@@ -1128,7 +1125,6 @@ playPauseBtn.textContent = '⏸ 暂停';
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 堆排序交互式教学动画使用指南
 

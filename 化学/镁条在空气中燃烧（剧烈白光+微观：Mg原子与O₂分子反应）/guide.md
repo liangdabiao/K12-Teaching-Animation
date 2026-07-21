@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中化学初学者。他们需要直观地理解一个抽象的化学反应过程。
@@ -68,7 +67,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1069,7 +1067,6 @@
             }
         }
 
-<!--检测到代码截断，自动续写中...-->
 function nextStep() {
     if (animationState.currentStep < animationState.totalSteps - 1) {
         goToStep(animationState.currentStep + 1);
@@ -1286,7 +1283,6 @@ drawMacroScene();
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《镁条燃烧教学动画》使用指南
 

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为计算机科学或相关专业的学生，已经具备二叉树的基础知识，正在学习更高级的数据结构（二叉搜索树BST及其平衡化）。他们需要直观地理解BST的动态操作过程及其局限性。
@@ -90,7 +89,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1244,7 +1242,6 @@
 
         speedSlider.addEventListener('input', () => {
 
-<!--检测到代码截断，自动续写中...-->
 bst.speed = parseInt(speedSlider.value);
             const speedLabels = ['极慢', '很慢', '慢', '较慢', '中慢', '中速', '中快', '快', '很快', '极快'];
             speedValue.textContent = speedLabels[bst.speed - 1];
@@ -1386,7 +1383,6 @@ bst.speed = parseInt(speedSlider.value);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 📚 交互式教学动画使用指南
 

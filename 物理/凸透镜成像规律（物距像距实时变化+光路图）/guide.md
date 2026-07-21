@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中物理学生，也可能包括需要复习的高中生或对光学感兴趣的初学者。
@@ -75,7 +74,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1084,7 +1082,6 @@
             // 绘制物体底部标记线
             ctx.strokeStyle = '#ff9800';
             ctx.lineWidth = 
-<!--检测到代码截断，自动续写中...-->
 ctx.lineTo(state.objectX + 15, objectTopY + 10);
             ctx.closePath();
             ctx.fill();
@@ -1370,7 +1367,6 @@ ctx.lineTo(state.objectX + 15, objectTopY + 10);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《凸透镜成像规律交互式教学动画使用指南》
 

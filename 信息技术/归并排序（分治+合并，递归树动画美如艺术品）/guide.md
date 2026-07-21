@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **核心目标用户**：学习数据结构与算法的学生（大学或自学者），以及希望直观理解归并排序原理的编程爱好者。
@@ -85,7 +84,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1076,7 +1074,6 @@
                             const direction = parentPath[j];
                             const offset = Math.pow(0.5, j + 1);
                             parentPosition
-<!--检测到代码截断，自动续写中...-->
 += direction === 'L' ? -offset : offset;
                         }
                         
@@ -1433,7 +1430,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《归并排序交互式教学动画使用指南》
 

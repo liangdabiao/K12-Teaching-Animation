@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中物理初学者。他们需要直观、生动地理解抽象的牛顿第三定律。
@@ -65,7 +64,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1114,7 +1112,6 @@
             ctx.fillStyle = '#87CEEB';
             ctx.beginPath();
             ctx.arc
-<!--检测到代码截断，自动续写中...-->
 ```html
             // 绘制窗户
             ctx.fillStyle = '#87CEEB';

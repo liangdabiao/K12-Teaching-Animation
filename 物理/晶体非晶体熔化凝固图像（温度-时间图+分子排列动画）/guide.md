@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向初中或高中物理/化学学生，用于学习“物态变化”中晶体与非晶体在熔化和凝固过程中的核心区别。用户的核心需求是：
@@ -65,7 +64,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1032,7 +1030,6 @@
             ctx.fillStyle = '#e67e22';
             ctx.font = 'italic 12px Arial';
             ctx.fillText('软化
-<!--检测到代码截断，自动续写中...-->
 开始', softeningStartX + 10, softeningStartY - 10);
         }
         

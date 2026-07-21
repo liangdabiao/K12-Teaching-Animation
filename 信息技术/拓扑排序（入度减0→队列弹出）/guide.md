@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为学习数据结构与算法（如计算机科学、软件工程专业）的大学生或自学者。他们已具备图的基本概念（节点、边、有向图），但对拓扑排序的原理和过程感到抽象，难以在脑海中动态构建其执行流程。
@@ -83,7 +82,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1134,7 +1132,6 @@
                 const adjustedFromX = fromX + Math.cos(angle) * startRadius;
                 const adjustedFromY = fromY + Math.sin(angle) * startRadius;
                 const adjustedTo
-<!--检测到代码截断，自动续写中...-->
 X = toX - Math.cos(angle) * endRadius;
                 const adjustedToY = toY - Math.sin(angle) * endRadius;
                 

@@ -267,8 +267,17 @@
             }
         }
     </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <div class="header">
         <h1>复分解反应：沉淀生成</h1>
         <div class="subtitle">AgNO₃ + NaCl → AgCl↓ + NaNO₃ 离子交换微观过程</div>
@@ -970,7 +979,7 @@
 
 ion.type.radius + 5) {
                     // 显示离子信息
-                    alert(`点击了: ${ion.type.name}\n符号: ${ion.type.symbol}\n电荷: ${ion.type.charge}\n状态: ${ion.isActive ? '自由离子' : '已反应'}`);
+                    showTip(`点击了: ${ion.type.name}\n符号: ${ion.type.symbol}\n电荷: ${ion.type.charge}\n状态: ${ion.isActive ? '自由离子' : '已反应'}`);
                     return;
                 }
             }
@@ -983,7 +992,7 @@ ion.type.radius + 5) {
                 
                 if (distance < PRECIPITATE.radius * precipitate.size + 5) {
                     // 显示沉淀信息
-                    alert(`点击了: ${PRECIPITATE.name} 沉淀\n化学式: AgCl\n状态: 固体沉淀\n说明: 难溶于水，从溶液中析出`);
+                    showTip(`点击了: ${PRECIPITATE.name} 沉淀\n化学式: AgCl\n状态: 固体沉淀\n说明: 难溶于水，从溶液中析出`);
                     return;
                 }
             }

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向高中物理或大学普通物理的初学者。用户的核心需求是：
@@ -70,7 +69,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1024,7 +1022,6 @@
                 physics.viewMode === 'overall' ? '整体视图' : '局部放大';
             
 
-<!--检测到代码截断，自动续写中...-->
             // 更新公式显示
             const formulaDetail = `F_n = <span class="highlight-blue">${physics.mass.toFixed(1)}</span> × (<span class="highlight-green">${physics.omega.toFixed(1)}</span>)² × 1.0 = <span class="highlight">${calculateCentripetalForce().toFixed(1)}</span> N`;
             document.getElementById('formulaDetail').innerHTML = formulaDetail;

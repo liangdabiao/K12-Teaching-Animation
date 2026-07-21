@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画的目标用户主要为高校生物学、医学或发育生物学专业的学生，以及相关领域的教师和爱好者。用户的核心需求是：
@@ -76,7 +75,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1114,7 +1112,6 @@
                 ctx.arc(centerX, centerY - radius * 0.5, radius * 0.15, 0, Math.PI * 2);
                 ctx.arc(centerX, centerY, radius * 0.15, 0, Math.PI * 2);
                 ctx.arc(centerX
-<!--检测到代码截断，自动续写中...-->
 , centerY + radius * 0.5, radius * 0.15, 0, Math.PI * 2);
                 ctx.fill();
                 

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中化学初学者。他们需要直观理解抽象的微观化学反应过程，特别是分子在反应中的断裂与重组。
@@ -76,7 +75,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1066,7 +1064,6 @@
         // 事件监听器
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBounding
-<!--检测到代码截断，自动续写中...-->
 ClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;

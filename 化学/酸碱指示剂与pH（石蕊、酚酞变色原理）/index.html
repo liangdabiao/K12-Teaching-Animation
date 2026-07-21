@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>酸碱指示剂与pH（石蕊、酚酞变色原理）</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#e84393;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">酸碱指示剂与pH（石蕊、酚酞变色原理）</span></header>
+<main><div class="stage"><canvas id="cv"></canvas></div>
+<aside class="panel"><h2>原理说明</h2>
+<p>酸碱指示剂：在不同pH范围内变色的有机弱酸或弱碱。石蕊：pH<5红色、5-8紫色、>8蓝色。酚酞：pH<8.2无色、8.2-10浅红、>10红色。pH = -lg[c(H⁺)]，pH<7酸性、=7中性、>7碱性。</p>
+<div class="key-points"><h3>常用指示剂</h3><ul>
+<li><b>石蕊</b>：酸→红 碱→蓝（变色范围5-8）</li>
+<li><b>酚酞</b>：酸→无色 碱→红（变色范围8.2-10）</li>
+<li><b>甲基橙</b>：酸→红 碱→黄（变色范围3.1-4.4）</li>
+<li>pH试纸：广范(pH1-14)和精密型</li>
+<li>pH = -lg c(H⁺) | 25°C: pH<7酸 =7中 >7碱</li>
+</ul></div></aside></main>
+<div class="controls"><button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><span id="status" class="status"></span></div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+let t=0,playing=false,lastT=0;
+
+let ph=7;
+function getColor(p){if(p<3)return'#d63031';if(p<5)return'#e17055';if(p<6.5)return'#fdcb6e';if(p<7.5)return'#00b894';if(p<9)return'#0984e3';if(p<11)return'#6C5CE7';return'#a29bfe';}
+function draw(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+  ctx.fillText('pH = '+ph.toFixed(1),W/2,30);
+  const barY=H*0.2,barH=30;
+  for(let i=0;i<=14;i++){const x=60+i*(W-120)/14;ctx.fillStyle=getColor(i);ctx.fillRect(x,barY,(W-120)/14,barH);}
+  const px=60+ph*(W-120)/14;
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(px,barY+barH+5);ctx.lineTo(px-5,barY+barH+15);ctx.lineTo(px+5,barY+barH+15);ctx.fill();
+  const tx=W/2,ty=H*0.5,tw=50,th=120;
+  ctx.strokeStyle='#74b9ff';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(tx-tw/2,ty);ctx.lineTo(tx-tw/2,ty+th);ctx.arc(tx,ty+th,tw/2,Math.PI,0);ctx.lineTo(tx+tw/2,ty);ctx.stroke();
+  const color=getColor(ph);ctx.fillStyle=color+'88';ctx.fillRect(tx-tw/2+2,ty+20,tw-4,th-20);
+  ctx.fillStyle='#e8edf6';ctx.font='13px sans-serif';
+  ctx.fillText('石蕊: '+(ph<5?'红色':ph>8?'蓝色':'紫色'),W/2,H*0.85);
+  ctx.fillText('酚酞: '+(ph<8.2?'无色':ph>10?'红色':'浅红'),W/2,H*0.92);
+  ctx.fillStyle=ph<7?'#d63031':ph===7?'#00b894':'#0984e3';ctx.font='bold 14px sans-serif';
+  ctx.fillText(ph<7?'酸性':ph===7?'中性':'碱性',W/2,H*0.78);
+  statusEl.textContent='pH='+ph.toFixed(1)+' | '+(ph<7?'酸性':ph===7?'中性':'碱性');
+}
+document.getElementById('resetBtn').onclick=function(){ph=7;draw();};
+cv.parentElement.parentElement.parentElement.querySelector('.controls').insertAdjacentHTML('beforeend','<label>pH <input id="ph" type="range" min="0" max="14" step="0.5" value="7"></label>');
+document.getElementById('ph').oninput=function(){ph=+this.value;draw();};
+
+let animId;
+function loop(ts){const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();if(playing)animId=requestAnimationFrame(loop);}
+document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);};
+document.getElementById('resetBtn').onclick=function(){t=0;draw();};
+draw();
+</script></body></html>

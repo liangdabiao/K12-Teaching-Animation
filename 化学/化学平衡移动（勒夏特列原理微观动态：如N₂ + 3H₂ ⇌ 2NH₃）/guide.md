@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的化学学习者。他们已具备化学反应速率、可逆反应等基础知识，但难以从微观粒子层面理解平衡移动的动态过程和勒夏特列原理的实质。
@@ -84,7 +83,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1059,7 +1057,6 @@
                 // 随机决定是否发生反应
                 if (Math.random() < forwardProb && this.n2Count >= 1 && this.h2Count >= 3) {
                    
-<!--检测到代码截断，自动续写中...-->
 this.performForwardReaction();
                     this.forwardReactions++;
                     this.lastReactionTime = now;

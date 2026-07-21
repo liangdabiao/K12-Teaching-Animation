@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：高中或大学低年级化学初学者。他们具备基础的化学知识（如原子、离子、氧化还原反应），但需要直观、动态的模型来理解抽象的原电池工作原理。
@@ -76,7 +75,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1040,7 +1038,6 @@
                 // 垂直边界
                 if (ion.y < beaker.y + 30 || ion.y > beaker.y + beaker.liquidHeight - 30) {
                     ion.y = Math.max(beaker.y + 30, Math.min(beaker.y + beaker.liquidHeight - 
-<!--检测到代码截断，自动续写中...-->
 30, ion.y));
                 }
             });

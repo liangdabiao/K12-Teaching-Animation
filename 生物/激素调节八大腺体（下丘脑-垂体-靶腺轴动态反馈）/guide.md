@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学、医学预科学生。他们已具备基础的人体生理学知识，但需要直观、动态地理解复杂的激素调节机制。
@@ -81,7 +80,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1079,7 +1077,6 @@
                 ctx.beginPath();
                 ctx.moveTo(glands.thyroid.x, glands.thyroid.y + glands.thyroid.height/2);
                 ctx.lineTo(glands.pituitary
-<!--检测到代码截断，自动续写中...-->
 .x + glands.pituitary.width, glands.pituitary.y + glands.pituitary.height/2);
                 ctx.strokeStyle = '#e74c3c';
                 ctx.lineWidth = 4;
@@ -1344,7 +1341,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 交互式教学动画使用指南
 

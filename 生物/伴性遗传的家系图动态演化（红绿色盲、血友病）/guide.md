@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画的主要用户是高中或大学低年级的生物学学生，他们正在学习孟德尔遗传的扩展——伴性遗传。用户的核心需求是：
@@ -65,7 +64,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1048,7 +1046,6 @@
                 document.getElementById('malePatients').textContent = malePatients;
                 document.getElementById('femalePatients').textContent = femalePatients;
                 document.getElementById('carriers').
-<!--检测到代码截断，自动续写中...-->
 textContent = carriers;
             }
             

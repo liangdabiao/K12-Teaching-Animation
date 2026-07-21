@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要是高中或大学低年级的生物学学生。他们需要：
@@ -70,7 +69,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1035,7 +1033,6 @@
                         let baseLetter = 'A';
                         switch(nucleotide.type) {
                             case 0: baseLetter =
-<!--检测到代码截断，自动续写中...-->
 'A'; break;
                             case 1: baseLetter = 'T'; break;
                             case 2: baseLetter = 'G'; break;
@@ -1376,7 +1373,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《DNA双螺旋结构与半保留复制》交互式教学动画使用指南
 

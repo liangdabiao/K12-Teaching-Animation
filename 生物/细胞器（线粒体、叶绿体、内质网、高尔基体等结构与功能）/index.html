@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>细胞器（线粒体、叶绿体、内质网、高尔基体等结构与功能）</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#00b894;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">细胞器（线粒体、叶绿体、内质网、高尔基体等结构与功能）</span></header>
+<main><div class="stage"><canvas id="cv"></canvas></div>
+<aside class="panel"><h2>原理说明</h2>
+<p>细胞器是细胞质中具有特定形态和功能的结构。线粒体：有氧呼吸的主要场所（双层膜，内膜折叠成嵴）。叶绿体：光合作用场所。内质网：蛋白质加工和脂质合成。高尔基体：蛋白质分类包装和运输。</p>
+<div class="key-points"><h3>八大细胞器</h3><ul>
+<li><b>线粒体</b>：有氧呼吸主要场所→产生ATP（"动力工厂"）</li>
+<li><b>叶绿体</b>：光合作用→光能→化学能（植物特有）</li>
+<li><b>内质网</b>：粗面(蛋白质加工) 滑面(脂质合成)</li>
+<li><b>高尔基体</b>：蛋白质加工、分类、包装</li>
+<li><b>核糖体</b>：蛋白质合成场所（无膜结构）</li>
+<li><b>中心体</b>：与有丝分裂有关（动物和低等植物）</li>
+<li><b>溶酶体</b>：含多种水解酶→分解衰老损伤的细胞器</li>
+<li><b>液泡</b>：调节细胞内环境（植物成熟细胞有大液泡）</li>
+</ul></div></aside></main>
+<div class="controls"><button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><span id="status" class="status"></span></div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+let t=0,playing=false,lastT=0;
+
+const organelles=[
+  {name:'线粒体',x:0.3,y:0.35,w:80,h:40,color:'#e84393',desc:'有氧呼吸/ATP'},
+  {name:'叶绿体',x:0.6,y:0.3,w:70,h:45,color:'#00b894',desc:'光合作用'},
+  {name:'内质网',x:0.45,y:0.55,w:90,h:30,color:'#0984e3',desc:'蛋白质加工/脂质合成'},
+  {name:'高尔基体',x:0.7,y:0.6,w:60,h:35,color:'#fdcb6e',desc:'蛋白质分类包装'},
+  {name:'核糖体',x:0.25,y:0.65,w:20,h:20,color:'#a29bfe',desc:'蛋白质合成'},
+  {name:'溶酶体',x:0.55,y:0.75,w:25,h:25,color:'#d63031',desc:'分解废物'},
+];
+function draw(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('细胞亚显微结构',W/2,22);
+  const cx=W/2,cy=H/2+10;
+  ctx.beginPath();ctx.ellipse(cx,cy,W*0.4,H*0.4,0,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fill();ctx.strokeStyle='#1e3050';ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,30,0,Math.PI*2);
+  ctx.fillStyle='rgba(108,92,231,0.3)';ctx.fill();ctx.strokeStyle='#6C5CE7';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.fillText('细胞核',cx,cy+4);
+  organelles.forEach(o=>{
+    const ox=W*o.x,oy=H*o.y;const pulse=1+Math.sin(t*2+organelles.indexOf(o))*0.05;
+    ctx.beginPath();ctx.ellipse(ox,oy,o.w/2*pulse,o.h/2*pulse,0,0,Math.PI*2);
+    ctx.fillStyle=o.color+'33';ctx.fill();ctx.strokeStyle=o.color;ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText(o.name,ox,oy+3);
+    ctx.fillStyle=o.color;ctx.font='9px sans-serif';ctx.fillText(o.desc,ox,oy+o.h/2+12);
+  });
+  statusEl.textContent='细胞器动画';
+}
+let animId;
+function loop(ts){const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();if(playing)animId=requestAnimationFrame(loop);}
+document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);};
+document.getElementById('resetBtn').onclick=function(){t=0;draw();};
+draw();
+</script></body></html>

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向高中化学或大学基础化学的学生，他们已了解化学平衡的基本概念，但需要深入理解勒夏特列原理（平衡移动原理）的微观本质。用户的核心需求是：
@@ -60,7 +59,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -528,7 +526,6 @@
                     <h3 class="control-title">压强影响</h3>
                     <div class="control-row">
                         <div class="control-label">压强 (体积)</div
-<!--检测到代码截断，自动续写中...-->
 <div class="slider-container">
                             <input type="range" min="50" max="150" value="100" class="slider" id="pressureSlider">
                         </div>

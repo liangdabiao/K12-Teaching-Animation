@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向初中或高中生物学学习者。用户的核心需求是：
@@ -63,7 +62,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -986,7 +984,6 @@
             for (let i = 0; i < 3; i++) {
                 const transferred = animationState.energyValues[i] * efficiency;
                 const dissipated = animation
-<!--检测到代码截断，自动续写中...-->
 dissipated = animationState.energyValues[i] - transferred;
                 animationState.energyValues[i] = 0;
                 animationState.energyValues[i + 1] = transferred;
@@ -1056,7 +1053,6 @@ dissipated = animationState.energyValues[i] - transferred;
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 # 交互式教学动画使用指南
 ## 《食物链与能量金字塔：10%法则动态演示》

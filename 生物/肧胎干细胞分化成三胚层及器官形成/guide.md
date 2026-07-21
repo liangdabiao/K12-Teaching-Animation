@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学、医学预科学生。他们具备基础的细胞生物学知识，但对胚胎发育这一动态、复杂的微观过程缺乏直观理解。
@@ -58,7 +57,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1001,7 +999,6 @@
             
             ctx.beginPath();
             ctx.move
-<!--检测到代码截断，自动续写中...-->
 to(toX, toY);
             ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
             ctx.moveTo(toX, toY);

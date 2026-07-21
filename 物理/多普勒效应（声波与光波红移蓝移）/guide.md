@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向高中或大学低年级的物理学习者。用户的核心需求是：
@@ -86,7 +85,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1069,7 +1067,6 @@
             // 光谱背景
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(spect
-<!--检测到代码截断，自动续写中...-->
 rumX, spectrumY, spectrumWidth, spectrumHeight);
             
             // 发射光谱线（静止时）
@@ -1443,7 +1440,6 @@ rumX, spectrumY, spectrumWidth, spectrumHeight);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《多普勒效应交互式教学动画使用指南》
 

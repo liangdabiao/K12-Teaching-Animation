@@ -269,8 +269,17 @@
             }
         }
     </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <header>
         <h1>光合作用验证实验：绿叶在光下制造淀粉</h1>
         <p class="subtitle">叶片部分遮光实验 - 动画显示光合作用只在见光部分进行</p>
@@ -913,7 +922,7 @@
                     compareBtn.textContent = compareMode ? '正常模式' : '对比模式';
                     animateStep();
                 } else {
-                    alert('请先完成所有实验步骤，进入"观察结果"阶段。');
+                    showTip('请先完成所有实验步骤，进入"观察结果"阶段。');
                 }
             });
             

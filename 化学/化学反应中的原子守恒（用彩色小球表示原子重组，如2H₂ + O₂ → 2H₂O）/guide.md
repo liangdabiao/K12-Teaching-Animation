@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中化学初学者，他们需要直观地理解化学反应中“原子守恒”这一核心定律。
@@ -57,7 +56,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1134,7 +1132,6 @@
         
         canvas.addEventListener('mousemove', function(e) {
 
-<!--检测到代码截断，自动续写中...-->
 if (!isExplorationMode || !isDragging || !draggedMolecule) return;
             
             const rect = canvas.getBoundingClientRect();

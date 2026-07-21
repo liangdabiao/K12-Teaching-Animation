@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要是初中或高中物理课程的初学者，他们需要直观地理解“色散”这一光学现象。用户的核心需求包括：
@@ -75,7 +74,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1052,7 +1050,6 @@
             
             // 知识扩展切换
             document.getElementById('knowledgeToggle').add
-<!--检测到代码截断，自动续写中...-->
             // 知识扩展切换
             document.getElementById('knowledgeToggle').addEventListener('click', function() {
                 const content = document.getElementById('knowledgeContent');

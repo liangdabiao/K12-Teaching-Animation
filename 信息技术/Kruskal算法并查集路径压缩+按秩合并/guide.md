@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户是学习数据结构与算法（如计算机科学、软件工程专业）的大学生或自学者。他们已了解图的基本概念和最小生成树问题，但对Kruskal算法中高效判断连通性的并查集（Union-Find）数据结构，特别是其优化技巧（路径压缩和按秩合并）感到抽象和困惑。
@@ -85,7 +84,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1124,7 +1122,6 @@
                 treeCtx.fillStyle = nodeColor;
                 treeCtx.fill();
                 treeCtx.strokeStyle = config.colors
-<!--检测到代码截断，自动续写中...-->
 .text;
                 treeCtx.lineWidth = 2;
                 treeCtx.stroke();

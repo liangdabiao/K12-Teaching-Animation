@@ -350,9 +350,18 @@
             }
         }
     </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
 
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <div class="container">
         <header>
             <h1>二分查找教学动画</h1>
@@ -557,12 +566,12 @@
                         // 检查数组是否有序
                         for (let i = 1; i < arr.length; i++) {
                             if (arr[i] < arr[i - 1]) {
-                                alert("警告：输入数组不是升序排列，二分查找需要有序数组！");
+                                showTip("警告：输入数组不是升序排列，二分查找需要有序数组！");
                                 break;
                             }
                         }
                     } catch (e) {
-                        alert("数组输入格式错误，请使用逗号分隔的整数，例如：1, 3, 5, 7, 9");
+                        showTip("数组输入格式错误，请使用逗号分隔的整数，例如：1, 3, 5, 7, 9");
                         arr = [2, 5, 8, 12, 16, 23, 38, 45, 56, 67, 78, 89, 90];
                         arrayInput.value = arr.join(', ');
                     }

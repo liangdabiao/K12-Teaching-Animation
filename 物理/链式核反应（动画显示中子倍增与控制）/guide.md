@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要为高中或大学低年级的物理、核工程专业学生，以及对核能原理感兴趣的公众。他们需要：
@@ -81,7 +80,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1039,7 +1037,6 @@
             ctx.fillText(`第 ${params.generation} 代中子`, 10, 30);
             ctx.fillText(`反应状态: ${params.reactionState === 'subcritical' ? '次临界' : 
                         params.reactionState === 'supercritical' ? '超临界' : '临界'}`, 10,
-<!--检测到代码截断，自动续写中...-->
 60);
             ctx.fillText(`k = ${params.kValue.toFixed(2)}`, 10, 90);
             

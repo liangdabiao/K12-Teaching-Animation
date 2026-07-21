@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要为高中或大学低年级的生物学学生。他们的核心需求是：
@@ -71,7 +70,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1054,7 +1052,6 @@
                 switch(activeFactor) {
                     case 'light':
 
-<!--检测到代码截断，自动续写中...-->
 xValue = values.light;
                         break;
                     case 'co2':
@@ -1244,7 +1241,6 @@ xValue = values.light;
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 交互式教学动画使用指南
 

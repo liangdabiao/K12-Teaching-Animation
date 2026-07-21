@@ -26,6 +26,15 @@ button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-c
 .status{font-size:12px;color:var(--muted);margin-left:auto}
 @media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -70,7 +79,7 @@ function sceneDraw(){
   ctx.fillStyle='#9fb0c8';ctx.fillText('膜电位(mV)',gx+w/2,gy-h/2-8);
   ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.beginPath();
   for(let i=0;i<=w;i++){const u=i/w;let v;
-    if(u<0.25)v=-70;else if(u<0.45)v=-70+(u-0.25)/0.2*120;else if(u<0.6)v=50-(u-0.45)/0.15*120;else v=-70;
+    if(u<0.25)v=-70;else if(u<0.45)v=-70+(u-0.25)/0.2*100;else if(u<0.6)v=30-(u-0.45)/0.15*100;else v=-70;
     const yy=gy-(v+90)/200*h;i?ctx.lineTo(gx+i,yy):ctx.moveTo(gx+i,yy);}
   ctx.stroke();
   ctx.fillStyle='#cdd7ea';ctx.fillText('Na⁺内流去极化 → K⁺外流复极化 → 钠钾泵恢复静息',gx+w/2,gy+h/2+24);

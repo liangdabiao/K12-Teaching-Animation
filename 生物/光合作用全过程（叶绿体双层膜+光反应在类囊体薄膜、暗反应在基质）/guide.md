@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为中学生或生物学入门者。他们需要理解光合作用这一复杂生物过程的整体框架、关键步骤和发生场所。
@@ -68,7 +67,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1076,7 +1074,6 @@
                     
                     // 绘制电子在传递链上移动
                     const electronX = element
-<!--检测到代码截断，自动续写中...-->
 .x - element.length/2 + (animationState.time % 1) * element.length;
                     ctx.fillStyle = colors.electron;
                     ctx.beginPath();
@@ -1826,7 +1823,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 光合作用全过程交互式教学动画使用指南
 

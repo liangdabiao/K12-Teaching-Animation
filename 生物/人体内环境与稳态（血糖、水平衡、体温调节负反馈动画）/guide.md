@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画的目标用户是高中生物学或医学预科的学生。他们的核心需求是：
@@ -56,7 +55,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1051,7 +1049,6 @@
             const diff = target - state.water.osmolarity;
             
             if (Math.abs(diff) > 0
-<!--检测到代码截断，自动续写中...-->
 if (Math.abs(diff) > 0.5) {
                 state.water.osmolarity += diff * 0.05;
                 state.water.time += 0.1;
@@ -1895,7 +1892,6 @@ if (Math.abs(diff) > 0.5) {
             ctx.lineWidth = 3;
             
             const maxTime = Math
-<!--检测到代码截断，自动续写中...-->
 const maxTime = Math.max(...state.glucose.chartData.map(d => d.time));
             
             for (let i = 0; i < state.glucose.chartData.length; i++) {

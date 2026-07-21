@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：高中或大学低年级的生物学、生态学学生，以及对此主题感兴趣的公众学习者。
@@ -67,7 +66,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -914,7 +912,6 @@
         function drawGraph() {
             const width = graphCanvas.width;
             const
-<!--检测到代码截断，自动续写中...-->
 height = graphCanvas.height;
             
             // 清空画布

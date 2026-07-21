@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的物理学习者。他们具备基础的电路和电磁感应知识，但对于“自感”这一抽象的动态过程理解困难，特别是断电瞬间的“反常”现象。
@@ -79,7 +78,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1040,7 +1038,6 @@
             lastTime = timestamp;
             
             updatePhysics(deltaTime
-<!--检测到代码截断，自动续写中...-->
 );
             draw();
             requestAnimationFrame(animate);

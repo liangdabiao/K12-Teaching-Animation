@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学/医学专业学生，他们已具备基础的免疫学知识，需要深入理解体液免疫与细胞免疫这两个核心分支的区别、流程及协同机制。
@@ -56,7 +55,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1056,7 +1054,6 @@
                         ctx.beginPath();
                         ctx.arc(bCell.x, bCell.y, bCell.radius * (1 + bCell.activationProgress * 2), 0, Math.PI * 2);
                         ctx.strokeStyle = `rgba(52, 152, 219, ${0.3
-<!--检测到代码截断，自动续写中...-->
 - bCell.activationProgress * 0.2})`;
                         ctx.lineWidth = 2;
                         ctx.stroke();

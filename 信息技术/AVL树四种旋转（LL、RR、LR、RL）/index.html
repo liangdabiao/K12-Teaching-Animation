@@ -26,6 +26,15 @@ button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-c
 .status{font-size:12px;color:var(--muted);margin-left:auto}
 @media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -56,28 +65,33 @@ const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const A={t:0,rot:0,tree:null};
-function sceneInit(){sceneReset();buildTree();}
-function sceneReset(){A.t=0;A.rot=0;}
-function buildTree(){
-  // simple unbalanced-ish tree for demo
-  A.tree={v:30,l:{v:20,l:{v:10,r:null},r:null},r:{v:40,r:{v:50,r:{v:60,r:null}}}};
-}
+const AVL_CASES=[
+  {name:'LL型：右旋',before:{v:30,l:{v:20,l:{v:10,r:null},r:null},r:null},after:{v:20,l:{v:10,r:null},r:{v:30,r:null}}},
+  {name:'RR型：左旋',before:{v:10,r:{v:20,r:{v:30,r:null}}},after:{v:20,l:{v:10,r:null},r:{v:30,r:null}}},
+  {name:'LR型：先左旋后右旋',before:{v:30,l:{v:10,r:{v:20,r:null}},r:null},after:{v:20,l:{v:10,r:null},r:{v:30,r:null}}},
+  {name:'RL型：先右旋后左旋',before:{v:10,r:{v:30,l:{v:20,r:null}}},after:{v:20,l:{v:10,r:null},r:{v:30,r:null}}}
+];
+const A={t:0,step:0};
+function sceneInit(){A.step=0;A.t=0;}
+function sceneReset(){A.step=0;A.t=0;}
 function drawNode(n,x,y,d){if(!n)return;ctx.fillStyle='#7dd3fc';ctx.beginPath();ctx.arc(x,y,18,0,7);ctx.fill();
   ctx.fillStyle='#06281c';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText(n.v,x,y+4);
   if(n.l){ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-d,y+70);ctx.stroke();drawNode(n.l,x-d,y+70,d*0.7);}
   if(n.r){ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+d,y+70);ctx.stroke();drawNode(n.r,x+d,y+70,d*0.7);}
 }
+function curCase(){return AVL_CASES[Math.min(3,Math.floor(A.step/2))];}
+function curTree(){return (A.step%2===0)?curCase().before:curCase().after;}
 function sceneDraw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  const names=['插入导致失衡','LL：右旋','RR：左旋','LR：先左旋后右旋','RL：先右旋后左旋'];
+  const c=curCase();
+  const phase=(A.step%2===0)?'（旋转前·失衡）':'（旋转后·平衡）';
   ctx.fillStyle='#cdd7ea';ctx.font='14px sans-serif';ctx.textAlign='center';
-  ctx.fillText('AVL树旋转：'+(A.rot<names.length?names[A.rot]:'平衡'),cv.width/2,40);
-  drawNode(A.tree,cv.width/2,110,150);
-  ctx.fillStyle='#9fb0c8';ctx.font='12px sans-serif';ctx.fillText('失衡时通过旋转保持左右子树高度差≤1',cv.width/2,cv.height-30);
-  statusEl.textContent='AVL树：插入后若失衡，按 LL/RR/LR/RL 四种旋转恢复平衡';
+  ctx.fillText('AVL树 '+c.name+phase,cv.width/2,40);
+  drawNode(curTree(),cv.width/2,120,150);
+  ctx.fillStyle='#9fb0c8';ctx.font='12px sans-serif';ctx.fillText('失衡时通过旋转保持左右子树高度差（平衡因子）≤1',cv.width/2,cv.height-30);
+  statusEl.textContent='AVL树：插入后若失衡，按 LL/RR/LR/RL 四种旋转恢复平衡（共4种情形）';
 }
-function sceneStep(d){A.rot=Math.max(0,Math.min(4,A.rot+d));}
+function sceneStep(d){A.step=Math.max(0,Math.min(7,A.step+d));}
 
 let playing=false,lastT=0,speed=1,t=0;
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');

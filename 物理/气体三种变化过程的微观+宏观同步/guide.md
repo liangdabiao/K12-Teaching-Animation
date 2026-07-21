@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的物理、化学学生。他们已具备基础的分子热运动知识，但需要将抽象的微观粒子行为与可观测的宏观物理量（压强、体积、温度）建立直观、动态的联系。
@@ -84,7 +83,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1072,7 +1070,6 @@
                 graphCtx.fillStyle = curveColor;
                 graphCtx.beginPath();
                 graphCtx.arc(currentX, current
-<!--检测到代码截断，自动续写中...-->
 Y, 4, 0, Math.PI * 2);
                 graphCtx.fill();
             }
@@ -1282,7 +1279,6 @@ Y, 4, 0, Math.PI * 2);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 # 交互式教学动画使用指南
 

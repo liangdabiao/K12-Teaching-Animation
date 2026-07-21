@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户是高中或大学低年级的物理学习者。他们可能已经学习了光的波动性（干涉、衍射）和粒子性（光电效应）的初步知识，但对于如何将两者统一起来，特别是“单光子双缝实验”这一关键性思想实验/实验事实，感到抽象和困惑。
@@ -76,7 +75,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1102,7 +1100,6 @@
                 if (params.mode === 'singlePhoton') {
                     emitSinglePhoton();
                 } else if (params.mode === '
-<!--检测到代码截断，自动续写中...-->
 photonStream') {
                     emitPhotonBurst(5);
                 }

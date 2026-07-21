@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：高中或大学低年级的物理学习者。他们已具备基础的波和电磁学知识（如横波、电场、磁场概念），但需要直观理解电磁波作为一种横波，其电场（E）、磁场（B）与传播方向（k）三者之间的空间正交关系。
@@ -76,7 +75,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1114,7 +1112,6 @@
                 
                 ctx.beginPath();
                 ctx.moveTo(snapshotPoints[0].x, snapshot
-<!--检测到代码截断，自动续写中...-->
                 ctx.moveTo(snapshotPoints[0].x, snapshotPoints[0].y);
                 for (let i = 1; i < snapshotPoints.length; i++) {
                     ctx.lineTo(snapshotPoints[i].x, snapshotPoints[i].y);
@@ -1378,7 +1375,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《电磁波：电场与磁场垂直传播》交互式教学动画使用指南
 

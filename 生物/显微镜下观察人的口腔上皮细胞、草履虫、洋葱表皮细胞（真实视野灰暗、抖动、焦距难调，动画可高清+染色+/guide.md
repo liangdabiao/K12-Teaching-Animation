@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **核心需求**：用户需要的是一个能够模拟真实显微镜操作体验，但同时又能超越真实设备局限性的教学动画。真实显微镜视野灰暗、样本抖动、调焦困难，容易挫伤初学者的学习兴趣和信心。因此，动画需要：
@@ -69,7 +68,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1044,7 +1042,6 @@
                     ctx.fillStyle = cellWallColor;
                     ctx.globalAlpha = alpha * 0.3;
                     ctx.fillRect(x - cellWidth / 2, y - cellHeight / 2, cell
-<!--检测到代码截断，自动续写中...-->
 Width / 2, cellHeight / 2);
                     
                     // 绘制细胞壁边框
@@ -1289,7 +1286,6 @@ Width / 2, cellHeight / 2);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 交互式教学动画《微观世界探索：显微镜下的细胞》使用指南
 

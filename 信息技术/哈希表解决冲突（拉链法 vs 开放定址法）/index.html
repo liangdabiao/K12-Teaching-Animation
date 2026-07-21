@@ -26,6 +26,15 @@ button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-c
 .status{font-size:12px;color:var(--muted);margin-left:auto}
 @media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -56,30 +65,40 @@ const statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const Ha={t:0,mode:0,buckets:[]};
+const CHAIN_KEYS=[12,5,9,12,21];
+const OPEN_KEYS=[12,5,9,1];
+const Ha={t:0,mode:0,buckets:[[],[],[],[]]};
+function buildBuckets(mode){
+  if(mode===0){const b=[[],[],[],[]];CHAIN_KEYS.forEach(k=>b[k%4].push(k));return b;}
+  const slots=[null,null,null,null];
+  OPEN_KEYS.forEach(k=>{let i=0,b=k%4;while(slots[b]!==null){b=(k%4+(++i))%4;}slots[b]=k;});
+  return slots.map(s=>s===null?[]:[s]);
+}
 function sceneInit(){sceneReset();}
-function sceneReset(){Ha.t=0;Ha.mode=0;Ha.buckets=[[],[],[],[]];}
-function add(k){const b=k%4;Ha.buckets[b].push(k);}
-function sceneUpdate(dt){Ha.t+=dt;if(Ha.buckets.every(b=>b.length===0)){[12,5,9,12,21].forEach(add);}}
+function sceneReset(){Ha.t=0;Ha.mode=0;Ha.buckets=buildBuckets(0);}
+function sceneUpdate(dt){Ha.t+=dt;}
 function sceneDraw(){
   ctx.clearRect(0,0,cv.width,cv.height);
   ctx.fillStyle='#cdd7ea';ctx.font='14px sans-serif';ctx.textAlign='center';
-  ctx.fillText(Ha.mode===0?'拉链法（冲突→同桶链表）':'开放定址法（冲突→探查下一空位）',cv.width/2,40);
+  ctx.fillText(Ha.mode===0?'拉链法（冲突→同桶挂链表）':'开放定址法（冲突→线性探查下一空位）',cv.width/2,40);
   for(let i=0;i<4;i++){
     const x=120+i*200,y=140;
     ctx.fillStyle='#22304a';ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.fillRect(x-30,y-20,60,36);ctx.strokeRect(x-30,y-20,60,36);
     ctx.fillStyle='#cdd7ea';ctx.fillText('桶'+i,x,y+4);
-    // chained items
     const items=Ha.buckets[i];
     for(let j=0;j<items.length;j++){
-      const yy=y+30+j*26;
-      ctx.fillStyle=Ha.mode===0?'#34d399':'#7dd3fc';ctx.fillRect(x-26,yy,52,20);ctx.fillStyle='#06281c';ctx.fillText(items[j],x,yy+13);
-      if(Ha.mode===0&&j>0){ctx.strokeStyle='#34d399';ctx.beginPath();ctx.moveTo(x,yy-6);ctx.lineTo(x,yy+4);ctx.stroke();}
+      if(Ha.mode===0){
+        const yy=y+30+j*26;
+        ctx.fillStyle='#34d399';ctx.fillRect(x-26,yy,52,20);ctx.fillStyle='#06281c';ctx.fillText(items[j],x,yy+13);
+        if(j>0){ctx.strokeStyle='#34d399';ctx.beginPath();ctx.moveTo(x,yy-6);ctx.lineTo(x,yy+4);ctx.stroke();}
+      }else{
+        ctx.fillStyle='#7dd3fc';ctx.fillRect(x-26,y-18,52,20);ctx.fillStyle='#06281c';ctx.fillText(items[j],x,y-4);
+      }
     }
   }
-  statusEl.textContent='哈希冲突：拉链法用链表挂接；开放定址法线性/二次探查空位';
+  statusEl.textContent='哈希冲突：拉链法同义词挂链表；开放定址法按探查序列填入空位';
 }
-function sceneStep(d){Ha.mode=(Ha.mode+d+2)%2;Ha.buckets=[[],[],[],[]];[12,5,9,12,21].forEach(add);}
+function sceneStep(d){Ha.mode=(Ha.mode+d+2)%2;Ha.buckets=buildBuckets(Ha.mode);}
 
 let playing=false,lastT=0,speed=1,t=0;
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>回溯算法</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#6C5CE7;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回信息技术目录</a>
+  <span class="title">回溯算法（N皇后 + 全排列）</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>回溯算法：在搜索空间中系统性地枚举所有可能解，当发现当前选择无法得到有效解时，"回退"到上一步尝试其他选择。本质是带剪枝的DFS。核心三要素：路径（已做选择）、选择列表（当前可做的选择）、结束条件（到达叶子节点）。</p>
+    <div class="legend"><span><b style="color:#00b894">■</b> 已放置皇后</span><span><b style="color:#d63031">■</b> 攻击范围</span><span><b style="color:#fdcb6e">■</b> 当前尝试</span><span><b style="color:#6C5CE7">■</b> 回溯点</span></div>
+    <div class="key-points"><h3>回溯框架</h3><ul>
+      <li><b>模板</b>：backtrack(路径, 选择列表)</li>
+      <li>  if 满足结束条件: 收集结果</li>
+      <li>  for 选择 in 选择列表:</li>
+      <li>    做选择 → backtrack(路径, 新选择列表)</li>
+      <li>    <b>撤销选择（回溯！）</b></li>
+      <li>N皇后：4皇后有2解，8皇后有92解</li>
+      <li>剪枝：利用约束条件提前排除无效分支</li>
+    </ul></div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="queenBtn">N皇后</button>
+  <button id="permBtn">全排列</button>
+  <label>N=<input id="nInput" type="range" min="4" max="8" step="1" value="4" style="width:80px"></label>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(360,Math.min(520,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+
+let mode='queen',N=4,board=[],queens=[],solutions=[],solsFound=0,t=0,stepIdx=0,playing=false,lastT=0;
+let permArr=[],permUsed=[],permResults=[],permStep=0;
+
+function initQueen(){
+  board=Array(N).fill(-1);queens=[];solutions=[];solsFound=0;stepIdx=0;t=0;
+}
+initQueen();
+
+function isValid(row,col){
+  for(let r=0;r<row;r++){
+    if(board[r]===col)return false;
+    if(Math.abs(board[r]-col)===Math.abs(r-row))return false;
+  }
+  return true;
+}
+
+let steps=[];
+function genSteps(){
+  steps=[];
+  function bt(row){
+    if(row===N){steps.push({type:'solution',board:[...board]});return;}
+    for(let col=0;col<N;col++){
+      steps.push({type:'try',row,col});
+      if(isValid(row,col)){
+        steps.push({type:'place',row,col});
+        board[row]=col;
+        bt(row+1);
+        steps.push({type:'undo',row,col});
+        board[row]=-1;
+      }else{
+        steps.push({type:'conflict',row,col});
+      }
+    }
+  }
+  board=Array(N).fill(-1);
+  bt(0);
+  board=Array(N).fill(-1);
+}
+genSteps();
+
+function drawQueen(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  const cellS=Math.min(50,Math.min(W,H-80)/N);
+  const ox=(W-N*cellS)/2,oy=50;
+  
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText(`${N}皇后问题 (解: ${solsFound})`,W/2,25);
+  
+  // 棋盘
+  for(let r=0;r<N;r++){
+    for(let c=0;c<N;c++){
+      const x=ox+c*cellS,y=oy+r*cellS;
+      ctx.fillStyle=(r+c)%2===0?'rgba(255,255,255,0.08)':'rgba(255,255,255,0.03)';
+      ctx.fillRect(x,y,cellS,cellS);
+      ctx.strokeStyle='#1e3050';ctx.strokeRect(x,y,cellS,cellS);
+    }
+  }
+  
+  // 当前步骤高亮
+  const s=steps[Math.min(stepIdx,steps.length-1)];
+  if(s&&s.type==='try'){
+    const x=ox+s.col*cellS,y=oy+s.row*cellS;
+    ctx.fillStyle='rgba(253,203,110,0.3)';ctx.fillRect(x,y,cellS,cellS);
+  }
+  if(s&&s.type==='conflict'){
+    const x=ox+s.col*cellS,y=oy+s.row*cellS;
+    ctx.fillStyle='rgba(214,48,49,0.3)';ctx.fillRect(x,y,cellS,cellS);
+    ctx.fillStyle='#d63031';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+    ctx.fillText('✗',x+cellS/2,y+cellS/2+5);
+  }
+  
+  // 已放置皇后
+  for(let r=0;r<N;r++){
+    if(board[r]>=0){
+      const x=ox+board[r]*cellS,y=oy+r*cellS;
+      ctx.fillStyle='rgba(0,184,148,0.4)';ctx.fillRect(x,y,cellS,cellS);
+      ctx.fillStyle='#00b894';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+      ctx.fillText('♛',x+cellS/2,y+cellS/2+7);
+    }
+  }
+  
+  // 攻击线
+  for(let r=0;r<N;r++){
+    if(board[r]<0)continue;
+    const cx=ox+board[r]*cellS+cellS/2,cy=oy+r*cellS+cellS/2;
+    ctx.strokeStyle='rgba(214,48,49,0.3)';ctx.lineWidth=1;
+    // 列
+    ctx.beginPath();ctx.moveTo(cx,oy);ctx.lineTo(cx,oy+N*cellS);ctx.stroke();
+    // 对角
+    for(let d=1;d<N;d++){
+      ctx.beginPath();ctx.moveTo(cx-d*cellS,cy-d*cellS);ctx.lineTo(cx+d*cellS,cy+d*cellS);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx+d*cellS,cy-d*cellS);ctx.lineTo(cx-d*cellS,cy+d*cellS);ctx.stroke();
+    }
+  }
+  
+  statusEl.textContent=`步骤: ${stepIdx}/${steps.length} | 解: ${solsFound}`;
+}
+
+function drawPerm(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('全排列回溯 (1,2,3)',W/2,25);
+  
+  // 简化展示3的全排列
+  const nums=[1,2,3];
+  const allPerms=[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]];
+  const showCount=Math.min(Math.floor(stepIdx/2),allPerms.length);
+  
+  const cellW=50,cellH=36;
+  const ox=W/2-cellW*1.5,oy=60;
+  
+  // 当前路径
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('当前排列:',W/2,oy-10);
+  const curPerm=allPerms[Math.min(showCount,allPerms.length-1)]||[];
+  curPerm.forEach((n,idx)=>{
+    const x=ox+idx*cellW;
+    ctx.fillStyle='rgba(108,92,231,0.3)';ctx.fillRect(x,oy,cellW-4,cellH);
+    ctx.strokeStyle='#6C5CE7';ctx.strokeRect(x,oy,cellW-4,cellH);
+    ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+    ctx.fillText(n,x+cellW/2-2,oy+cellH/2+5);
+  });
+  
+  // 已生成的排列
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';ctx.textAlign='left';
+  ctx.fillText('已生成:',ox,oy+cellH+30);
+  for(let i=0;i<showCount&&i<allPerms.length;i++){
+    const y=oy+cellH+50+i*28;
+    ctx.fillStyle='rgba(0,184,148,0.2)';ctx.fillRect(ox,y,cellW*3,24);
+    ctx.fillStyle='#00b894';ctx.font='14px monospace';ctx.textAlign='center';
+    ctx.fillText(`[${allPerms[i].join(', ')}]`,ox+cellW*1.5,y+16);
+  }
+  
+  statusEl.textContent=`排列: ${showCount}/${allPerms.length}`;
+}
+
+function draw(){
+  if(mode==='queen')drawQueen();
+  else drawPerm();
+}
+
+let animId;
+function loop(ts){
+  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;
+  if(t>0.15){
+    t=0;stepIdx++;
+    if(stepIdx>=steps.length){
+      // 检查是否找到解
+      const s=steps[stepIdx-1];
+      if(s&&s.type==='solution')solsFound++;
+    }
+    if(mode==='queen'&&stepIdx<steps.length){
+      const s=steps[stepIdx];
+      if(s.type==='place')board[s.row]=s.col;
+      if(s.type==='undo')board[s.row]=-1;
+      if(s.type==='solution')solsFound++;
+    }
+  }
+  draw();
+  if(playing)animId=requestAnimationFrame(loop);
+}
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
+};
+document.getElementById('resetBtn').onclick=function(){initQueen();genSteps();stepIdx=0;draw();};
+document.getElementById('queenBtn').onclick=function(){mode='queen';initQueen();genSteps();stepIdx=0;draw();};
+document.getElementById('permBtn').onclick=function(){mode='perm';stepIdx=0;draw();};
+document.getElementById('nInput').oninput=function(){N=+this.value;initQueen();genSteps();stepIdx=0;draw();};
+draw();
+</script></body></html>

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学化学初学者，他们需要直观理解氧化还原反应中电子转移这一抽象、微观的核心概念。
@@ -75,7 +74,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -962,7 +960,6 @@
                 ctx.stroke();
             } else if (particle.type === "product") {
 
-<!--检测到代码截断，自动续写中...-->
 // 生成物 - 绿色边框
                 ctx.fillStyle = particle.color;
                 ctx.fill();

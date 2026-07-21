@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为小学中高年级学生（8-12岁），可能延伸至对生命科学感兴趣的初中生或普通公众。
@@ -62,7 +61,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -954,7 +952,6 @@
         
         // 绘制器官标签
         function
-<!--检测到代码截断，自动续写中...-->
 drawOrganLabel(ctx, organ, centerX, centerY, day) {
             ctx.save();
             ctx.font = "bold 16px Arial";

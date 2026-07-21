@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画的目标用户主要是高中至大学低年级的学生，以及对环境科学感兴趣的社会公众。他们的核心需求是：
@@ -82,7 +81,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1107,7 +1105,6 @@
             
             // 绘制模式指示器
             let modeText =
-<!--检测到代码截断，自动续写中...-->
 let modeText = '';
             switch(simulationState.mode) {
                 case 'natural': modeText = '模式：仅自然循环'; break;

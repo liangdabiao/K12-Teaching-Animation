@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要为中学或大学低年级的物理学习者。他们的核心需求是：
@@ -81,7 +80,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1039,7 +1037,6 @@
             ctx.beginPath();
             ctx.arc(-300, labelY, 6, 0, Math.PI * 2);
             ctx
-<!--检测到代码截断，自动续写中...-->
 .fillStyle = planet.color;
             ctx.fill();
             

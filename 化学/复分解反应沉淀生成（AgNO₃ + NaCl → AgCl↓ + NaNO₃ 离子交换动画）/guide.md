@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中化学初学者，他们正在学习复分解反应、离子反应和沉淀生成的概念。
@@ -67,7 +66,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1039,7 +1037,6 @@
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance <
-<!--检测到代码截断，自动续写中...-->
 ion.type.radius + 5) {
                     // 显示离子信息
                     alert(`点击了: ${ion.type.name}\n符号: ${ion.type.symbol}\n电荷: ${ion.type.charge}\n状态: ${ion.isActive ? '自由离子' : '已反应'}`);
@@ -1116,7 +1113,6 @@ ion.type.radius + 5) {
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《复分解反应沉淀生成》交互式教学动画使用指南
 

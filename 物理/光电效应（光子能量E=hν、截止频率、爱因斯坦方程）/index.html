@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>光电效应</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回物理目录</a>
+  <span class="title">光电效应</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>光电效应：光照射金属表面时，金属中的电子吸收光子能量逸出成为光电子。爱因斯坦方程：Ek = hν - W₀（光电子最大初动能 = 光子能量 - 逸出功）。只有当hν ≥ W₀即ν ≥ ν₀（截止频率）时才发生光电效应。证明光具有粒子性。</p>
+    <div class="legend"><span><b style="color:#fdcb6e">~</b> 入射光子</span><span><b style="color:#0984e3">●</b> 电子</span><span><b style="color:#d63031">●</b> 逸出电子</span></div>
+    <div class="key-points"><h3>核心要点</h3><ul>
+      <li><b>E<sub>k</sub> = hν - W₀</b>（爱因斯坦光电效应方程）</li>
+      <li>h = 6.63×10⁻³⁴ J·s（普朗克常量）</li>
+      <li><b>截止频率</b>ν₀ = W₀/h：低于此频率无论光多强都无效</li>
+      <li>光强→光电流大小（光子数目多）</li>
+      <li>频率→光电子最大初动能（单个光子能量大）</li>
+      <li>瞬时性：光照即刻逸出（无需积累能量）</li>
+    </ul></div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <label>频率ν <input id="freq" type="range" min="3" max="12" step="0.5" value="6"></label>
+  <label>光强 <input id="intensity" type="range" min="1" max="5" step="1" value="3"></label>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+
+let t=0,freq=6,intensity=3,playing=false,lastT=0;
+let photons=[],electrons=[];
+const nu0=5; // 截止频率
+const h=6.63; // 简化
+
+function getFreqColor(f){
+  if(f<4)return'#d63031';if(f<5)return'#e17055';if(f<6)return'#fdcb6e';
+  if(f<7)return'#00b894';if(f<8)return'#0984e3';if(f<10)return'#6C5CE7';return'#a29bfe';
+}
+
+function spawnPhoton(){
+  photons.push({x:30,y:cv.height*0.3+Math.random()*cv.height*0.4,vx:200+Math.random()*100,life:1});
+}
+
+function draw(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  const aboveThreshold=freq>=nu0;
+  const Ek=aboveThreshold?(h*(freq-nu0)*0.1).toFixed(1):'0';
+  const color=getFreqColor(freq);
+  
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('Eₖ = hν - W₀ (爱因斯坦光电效应方程)',W/2,25);
+  ctx.fillStyle=color;ctx.font='13px sans-serif';
+  ctx.fillText(`ν = ${freq}×10¹⁴ Hz | ${aboveThreshold?'hν > W₀ ✓ 发生光电效应':'hν < W₀ ✗ 不发生'}`,W/2,48);
+  ctx.fillStyle='#fdcb6e';
+  ctx.fillText(`Eₖ = ${Ek} eV`,W/2,68);
+  
+  // 金属板
+  const mx=W*0.55,my=H*0.2,mw=20,mh=H*0.6;
+  ctx.fillStyle='rgba(99,110,130,0.6)';ctx.fillRect(mx,my,mw,mh);
+  ctx.strokeStyle='#636e72';ctx.lineWidth=2;ctx.strokeRect(mx,my,mw,mh);
+  ctx.fillStyle='#9fb0c8';ctx.font='11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('金属',mx+mw/2,my+mh+15);
+  
+  // 金属内电子
+  for(let i=0;i<8;i++){
+    const ex=mx+5+Math.sin(t*2+i)*3;
+    const ey=my+20+i*(mh-40)/7;
+    ctx.beginPath();ctx.arc(ex,ey,4,0,Math.PI*2);
+    ctx.fillStyle='#0984e3';ctx.fill();
+  }
+  
+  // 入射光子
+  photons.forEach(p=>{
+    ctx.beginPath();
+    for(let x=0;x<20;x+=2){
+      const py=p.y+Math.sin(x*0.5+t*8)*4;
+      if(x===0)ctx.moveTo(p.x+x,py);else ctx.lineTo(p.x+x,py);
+    }
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+  });
+  
+  // 逸出电子
+  if(aboveThreshold){
+    electrons.forEach(e=>{
+      ctx.beginPath();ctx.arc(e.x,e.y,4,0,Math.PI*2);
+      ctx.fillStyle='#d63031';ctx.fill();
+      ctx.strokeStyle='#d63031';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(e.x-e.vx*0.05,e.y-e.vy*0.05);ctx.stroke();
+    });
+  }
+  
+  // 收集板
+  if(aboveThreshold){
+    const cx=W*0.8,cy=H*0.2,cw=15,ch=H*0.6;
+    ctx.fillStyle='rgba(0,184,148,0.2)';ctx.fillRect(cx,cy,cw,ch);
+    ctx.strokeStyle='#00b894';ctx.strokeRect(cx,cy,cw,ch);
+    ctx.fillStyle='#00b894';ctx.font='11px sans-serif';
+    ctx.fillText('收集极',cx+cw/2,cy+ch+15);
+  }
+  
+  // 光源
+  ctx.beginPath();ctx.arc(30,H/2,15,0,Math.PI*2);
+  ctx.fillStyle=color+'44';ctx.fill();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=color;ctx.font='10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('光源',30,H/2+28);
+  
+  statusEl.textContent=`ν=${freq}×10¹⁴Hz | ${aboveThreshold?'光电效应':'无效应'} | Eₖ=${Ek}eV`;
+}
+
+let animId;
+function loop(ts){
+  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;
+  // 生成光子
+  if(Math.random()<intensity*dt*3)spawnPhoton();
+  // 更新光子
+  photons.forEach(p=>{p.x+=p.vx*dt;});
+  // 光子撞击金属
+  photons=photons.filter(p=>{
+    if(p.x>cv.width*0.55){
+      if(freq>=nu0){
+        // 逸出电子
+        electrons.push({x:cv.width*0.55+25,y:p.y,vx:80+Math.random()*60,vy:(Math.random()-0.5)*40,life:1});
+      }
+      return false;
+    }
+    return p.x<cv.width;
+  });
+  // 更新电子
+  electrons.forEach(e=>{e.x+=e.vx*dt;e.y+=e.vy*dt;e.life-=dt*0.5;});
+  electrons=electrons.filter(e=>e.life>0&&e.x<cv.width);
+  
+  draw();
+  if(playing)animId=requestAnimationFrame(loop);
+}
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
+};
+document.getElementById('resetBtn').onclick=function(){photons=[];electrons=[];t=0;draw();};
+document.getElementById('freq').oninput=function(){freq=+this.value;};
+document.getElementById('intensity').oninput=function(){intensity=+this.value;};
+draw();
+</script></body></html>

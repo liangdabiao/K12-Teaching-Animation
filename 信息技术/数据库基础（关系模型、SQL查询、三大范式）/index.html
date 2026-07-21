@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>数据库基础（关系模型、SQL查询、三大范式）</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#6C5CE7;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">数据库基础（关系模型、SQL查询、三大范式）</span></header>
+<main><div class="stage"><canvas id="cv"></canvas></div>
+<aside class="panel"><h2>原理说明</h2>
+<p>关系数据库：用二维表组织数据。每张表有行（记录）和列（字段）。主键：唯一标识一条记录。SQL用于操作关系数据库。常用：SELECT/FROM/WHERE/ORDER BY/JOIN。</p>
+<div class="key-points"><h3>核心概念</h3><ul>
+<li><b>三大范式</b>：1NF(属性不可分) 2NF(消除部分依赖) 3NF(消除传递依赖)</li>
+<li><b>SQL</b>：SELECT 列 FROM 表 WHERE 条件</li>
+<li><b>JOIN</b>：INNER JOIN(交集) LEFT JOIN(左全+匹配)</li>
+<li>主键(Primary Key)：唯一+非空</li>
+<li>外键(Foreign Key)：建立表间关联</li>
+<li>索引(Index)：加速查询</li>
+</ul></div></aside></main>
+<div class="controls"><button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><span id="status" class="status"></span></div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+let t=0,playing=false,lastT=0;
+
+let mode='table';
+const students=[{id:1,name:'张三',age:17,score:92},{id:2,name:'李四',age:16,score:85},{id:3,name:'王五',age:17,score:78},{id:4,name:'赵六',age:18,score:95},{id:5,name:'钱七',age:16,score:88}];
+function drawTable(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('关系表：Student',W/2,22);
+  const cols=['学号(PK)','姓名','年龄','成绩'];const colW=Math.min(110,(W-80)/4);const ox=(W-cols.length*colW)/2,oy=50;const rowH=32;
+  cols.forEach((c,i)=>{const x=ox+i*colW;ctx.fillStyle='rgba(108,92,231,0.3)';ctx.fillRect(x,oy,colW-2,rowH);ctx.strokeStyle='#6C5CE7';ctx.strokeRect(x,oy,colW-2,rowH);ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(c,x+colW/2,oy+rowH/2+4);});
+  const showRows=Math.min(Math.floor(t*1.5),students.length);
+  students.slice(0,showRows).forEach((s,r)=>{const y=oy+(r+1)*rowH;const vals=[s.id,s.name,s.age,s.score];vals.forEach((v,i)=>{const x=ox+i*colW;ctx.fillStyle=r%2===0?'rgba(255,255,255,0.04)':'rgba(255,255,255,0.02)';ctx.fillRect(x,y,colW-2,rowH);ctx.strokeStyle='#1e3050';ctx.strokeRect(x,y,colW-2,rowH);ctx.fillStyle='#e8edf6';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(v,x+colW/2,y+rowH/2+4);});});
+}
+function drawSQL(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('SQL查询演示',W/2,22);
+  ctx.fillStyle='#6C5CE7';ctx.font='14px monospace';ctx.textAlign='left';
+  ctx.fillText('SELECT 姓名, 成绩 FROM Student',40,60);
+  ctx.fillText('WHERE 成绩 >= 85 ORDER BY 成绩 DESC',40,82);
+  const result=students.filter(s=>s.score>=85).sort((a,b)=>b.score-a.score);
+  const show=Math.min(Math.floor(t*1.5),result.length);
+  const oy=120;ctx.fillStyle='rgba(108,92,231,0.3)';ctx.fillRect(40,oy,200,28);ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText('姓名',100,oy+18);ctx.fillText('成绩',200,oy+18);
+  result.slice(0,show).forEach((s,i)=>{const y=oy+(i+1)*28;ctx.fillStyle=i%2===0?'rgba(255,255,255,0.04)':'rgba(255,255,255,0.02)';ctx.fillRect(40,y,200,28);ctx.fillStyle='#e8edf6';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(s.name,100,y+18);ctx.fillText(s.score,200,y+18);});
+  ctx.fillStyle='#00b894';ctx.font='12px sans-serif';ctx.textAlign='left';ctx.fillText('查询结果: '+show+'条记录',40,H-20);
+}
+function draw(){if(mode==='table')drawTable();else drawSQL();statusEl.textContent=mode==='table'?'表结构':'SQL查询';}
+cv.parentElement.parentElement.parentElement.querySelector('.controls').insertAdjacentHTML('beforeend','<button id="tableBtn">表结构</button><button id="sqlBtn">SQL查询</button>');
+document.getElementById('tableBtn').onclick=function(){mode='table';t=0;draw();};
+document.getElementById('sqlBtn').onclick=function(){mode='sql';t=0;draw();};
+
+let animId;
+function loop(ts){const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();if(playing)animId=requestAnimationFrame(loop);}
+document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);};
+document.getElementById('resetBtn').onclick=function(){t=0;draw();};
+draw();
+</script></body></html>

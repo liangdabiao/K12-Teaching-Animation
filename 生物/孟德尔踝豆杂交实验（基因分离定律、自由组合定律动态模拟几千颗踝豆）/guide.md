@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中生物学学生，也可能包括对遗传学感兴趣的初学者。
@@ -86,7 +85,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1080,7 +1078,6 @@
                 
                 statsContainer.innerHTML = `
                     <div class="stat-box" style="background-color: ${colors
-<!--检测到代码截断，自动续写中...-->
 yellowRound}">
                         <div class="stat-label">黄色圆粒</div>
                         <div class="stat-value">${yellowRoundCount}</div>

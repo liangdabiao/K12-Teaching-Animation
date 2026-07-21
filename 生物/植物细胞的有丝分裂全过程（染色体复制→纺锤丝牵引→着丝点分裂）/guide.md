@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要为中学生或生物学入门者。他们的核心需求是：
@@ -55,7 +54,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1028,7 +1026,6 @@
             if (isPlaying) {
                 phaseProgress += deltaTime * 0.1; // 控制动画速度
 
-<!--检测到代码截断，自动续写中...-->
 // 检查是否进入下一阶段
                 if (phaseProgress >= phases[currentPhase].duration) {
                     phaseProgress = 0;
@@ -1200,7 +1197,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 # 植物细胞有丝分裂交互式教学动画使用指南
 

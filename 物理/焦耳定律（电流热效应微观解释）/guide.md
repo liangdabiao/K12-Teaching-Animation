@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向的典型用户是初中或高中物理学习者，他们正在学习“焦耳定律”或“电流的热效应”这一章节。用户的核心需求是：
@@ -82,7 +81,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1091,7 +1089,6 @@
                 for (let lattice of lattices) {
                     const dx = electron.x - lattice.x;
                     const dy = electron.y - lattice
-<!--检测到代码截断，自动续写中...-->
 .y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     

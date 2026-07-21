@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>计算机网络（OSI七层模型、TCP/IP协议、数据包传输）</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#6C5CE7;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">计算机网络（OSI七层模型、TCP/IP协议、数据包传输）</span></header>
+<main><div class="stage"><canvas id="cv"></canvas></div>
+<aside class="panel"><h2>原理说明</h2>
+<p>OSI七层模型（从下到上）：物理层→数据链路层→网络层→传输层→会话层→表示层→应用层。TCP/IP四层：网络接口→网际层(IP)→传输层(TCP/UDP)→应用层。</p>
+<div class="key-points"><h3>核心概念</h3><ul>
+<li><b>TCP三次握手</b>：SYN→SYN+ACK→ACK</li>
+<li><b>TCP四次挥手</b>：FIN→ACK→FIN→ACK</li>
+<li>IP地址：32位(IPv4)/128位(IPv6)</li>
+<li>HTTP/HTTPS：应用层协议(80/443端口)</li>
+<li>路由器工作在网络层；交换机在数据链路层</li>
+</ul></div></aside></main>
+<div class="controls"><button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><span id="status" class="status"></span></div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+let t=0,playing=false,lastT=0;
+
+let mode='osi';
+const layers=['应用层','表示层','会话层','传输层','网络层','数据链路层','物理层'];
+const colors=['#e84393','#fd79a8','#fdcb6e','#00b894','#0984e3','#6C5CE7','#a29bfe'];
+function drawOSI(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('OSI七层参考模型',W/2,22);
+  const show=Math.min(Math.floor(t*0.8),layers.length-1);
+  layers.forEach((l,i)=>{const y=45+i*48;const active=i<=show;ctx.fillStyle=active?colors[i]+'44':'rgba(255,255,255,0.04)';ctx.fillRect(W*0.2,y,W*0.6,40);ctx.strokeStyle=active?colors[i]:'#1e3050';ctx.lineWidth=active?2:1;ctx.strokeRect(W*0.2,y,W*0.6,40);ctx.fillStyle=active?'#fff':'#555';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText(l,W/2,y+24);});
+}
+function drawTCP(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('TCP三次握手',W/2,22);
+  const steps=['客户端→SYN(seq=x)','服务端→SYN+ACK(seq=y,ack=x+1)','客户端→ACK(ack=y+1)'];
+  const show=Math.min(Math.floor(t*0.5),2);
+  ctx.fillStyle='#0984e3';ctx.font='bold 13px sans-serif';ctx.fillText('客户端',W*0.2,60);ctx.fillText('服务端',W*0.8,60);
+  ctx.strokeStyle='#1e3050';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.2,70);ctx.lineTo(W*0.2,H-30);ctx.stroke();ctx.beginPath();ctx.moveTo(W*0.8,70);ctx.lineTo(W*0.8,H-30);ctx.stroke();
+  for(let i=0;i<=show;i++){const y=100+i*80;const color=i===0?'#00b894':i===1?'#fdcb6e':'#e84393';ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();if(i===1){ctx.moveTo(W*0.8,y);ctx.lineTo(W*0.2,y);}else{ctx.moveTo(W*0.2,y);ctx.lineTo(W*0.8,y);}ctx.stroke();const endX=i===1?W*0.2:W*0.8;ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(endX,y);ctx.lineTo(endX+(i===1?10:-10),y-5);ctx.lineTo(endX+(i===1?10:-10),y+5);ctx.fill();ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText(steps[i],W/2,y-8);}
+  if(show>=2){ctx.fillStyle='#00b894';ctx.font='bold 13px sans-serif';ctx.fillText('✓ 连接建立成功！',W/2,H-20);}
+}
+function draw(){if(mode==='osi')drawOSI();else drawTCP();statusEl.textContent=mode==='osi'?'OSI七层模型':'TCP三次握手';}
+cv.parentElement.parentElement.parentElement.querySelector('.controls').insertAdjacentHTML('beforeend','<button id="osiBtn">OSI模型</button><button id="tcpBtn">TCP握手</button>');
+document.getElementById('osiBtn').onclick=function(){mode='osi';t=0;draw();};
+document.getElementById('tcpBtn').onclick=function(){mode='tcp';t=0;draw();};
+
+let animId;
+function loop(ts){const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();if(playing)animId=requestAnimationFrame(loop);}
+document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);};
+document.getElementById('resetBtn').onclick=function(){t=0;draw();};
+draw();
+</script></body></html>

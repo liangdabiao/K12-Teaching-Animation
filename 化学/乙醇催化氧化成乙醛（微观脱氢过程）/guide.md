@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：高中或大学低年级化学学生。他们已具备基本的分子结构（如C、H、O原子，单键、双键）和氧化还原反应概念，但需要直观理解抽象的“催化脱氢”微观过程。
@@ -80,7 +79,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1081,7 +1079,6 @@
                     a.label === ethanol.atoms[bond.a1].label
                 );
                 const atom2 =
-<!--检测到代码截断，自动续写中...-->
 intermediateAtoms.find(a => 
                     a.label === ethanol.atoms[bond.a2].label
                 );
@@ -1353,7 +1350,6 @@ intermediateAtoms.find(a =>
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 乙醇催化氧化成乙醛 - 交互式教学动画使用指南
 

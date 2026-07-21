@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学学习者。他们需要直观理解抽象、微观的细胞膜运输过程。
@@ -97,7 +96,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1133,7 +1131,6 @@
                 }
                 
                 infoContent.innerHTML = html + infoContent
-<!--检测到代码截断，自动续写中...-->
 .querySelector('.comparison-table').outerHTML;
             } else {
                 infoContent.style.display = 'none';
@@ -1283,7 +1280,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《物质进出细胞的三种方式》交互式教学动画使用指南
 

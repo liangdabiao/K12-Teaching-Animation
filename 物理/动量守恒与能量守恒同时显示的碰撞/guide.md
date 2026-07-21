@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的物理学习者。他们已具备基本的力学知识（如速度、质量、动量、动能），但可能对两个守恒定律在碰撞过程中的动态关系、区别与联系感到抽象和困惑。
@@ -77,7 +76,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1027,7 +1025,6 @@
             //     simCtx.lineWidth = 1;
             //     simCtx.setLineDash([5, 5]);
             //     simCtx.beginPath
-<!--检测到代码截断，自动续写中...-->
             //     simCtx.arc(ballA.x, ballA.y, ballA.radius + ballB.radius, 0, Math.PI * 2);
             //     simCtx.stroke();
             //     simCtx.setLineDash([]);

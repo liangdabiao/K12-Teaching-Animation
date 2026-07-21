@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要是高中或大学低年级的生物学学生，他们已具备基础的细胞生物学知识，但需要直观、动态地理解中心法则这一抽象、复杂的分子生物学核心流程。
@@ -72,7 +71,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1111,7 +1109,6 @@
                 
                 ctx.beginPath();
                 ctx.move
-<!--检测到代码截断，自动续写中...-->
 To(mrnaStartX, mrnaStartY);
                 ctx.lineTo(mrnaStartX + 40, mrnaStartY);
                 ctx.strokeStyle = '#e74c3c';
@@ -1536,7 +1533,6 @@ To(mrnaStartX, mrnaStartY);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《中心法则完整流程》交互式教学动画使用指南
 

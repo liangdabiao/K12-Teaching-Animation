@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初次接触递归概念、数据结构或算法的学生（如计算机科学、数学专业低年级学生），以及对递归感到困惑的自学者。
@@ -60,7 +59,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1129,7 +1127,6 @@
                     this.beginPath();
                     this.moveTo(x + radius, y);
                     this.arcTo(x + width, y, x + width,
-<!--检测到代码截断，自动续写中...-->
 x + height, radius);
                     this.arcTo(x + width, y + height, x, y + height, radius);
                     this.arcTo(x, y + height, x, y, radius);

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向**高中或大学低年级的物理、化学初学者**。用户的核心需求是：
@@ -59,7 +58,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1035,7 +1033,6 @@
                     ctx.moveTo(centerX, centerY - currentRadius + 15);
                     ctx.lineTo(centerX - 10, centerY - currentRadius);
                     ctx
-<!--检测到代码截断，自动续写中...-->
 lineTo(centerX + 10, centerY - currentRadius);
                 }
                 ctx.closePath();
@@ -1202,7 +1199,6 @@ lineTo(centerX + 10, centerY - currentRadius);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 # 原子结构交互式教学动画使用指南
 

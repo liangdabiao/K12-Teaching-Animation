@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户是学习算法设计与分析、数据结构或准备技术面试的学生和开发者。他们对动态规划的基本概念有一定了解，但可能对“01背包”问题的状态转移和表格填充过程感到抽象和困惑。
@@ -79,7 +78,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1149,7 +1147,6 @@
             
             // 速度控制
             document.getElementById
-<!--检测到代码截断，自动续写中...-->
 ('speedSlider').addEventListener('input', function() {
                 const speed = parseInt(this.value);
                 animationState.speed = 550 - (speed * 50); // 速度值从500ms到50ms

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要是高中或大学低年级的生物学学生。他们需要直观理解细胞膜的结构，而非死记硬背文字描述。
@@ -69,7 +68,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1076,7 +1074,6 @@
             const candidates = phospholipids.filter(p => !p.isFlipping);
             if (candidates.length > 0) {
                 flipMolecule = candidates[Math.floor(Math.random()
-<!--检测到代码截断，自动续写中...-->
 * candidates.length)];
                 flipMolecule.isFlipping = true;
                 isFlipping = true;
@@ -1117,7 +1114,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 细胞膜流动镶嵌模型交互式教学动画使用指南
 

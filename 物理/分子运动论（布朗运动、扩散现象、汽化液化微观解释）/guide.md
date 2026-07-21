@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向初中或高中物理初学者，旨在将抽象的“分子运动论”核心概念可视化、动态化，帮助学生建立微观世界的物理图景。用户的核心需求是：
@@ -68,7 +67,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1060,7 +1058,6 @@
                             ctx.beginPath();
                             ctx.moveTo(
                                 arrowX - Math.cos(angle) * arrow
-<!--检测到代码截断，自动续写中...-->
 ```html
                                 arrowX - Math.cos(angle) * arrowLength,
                                 arrowY - Math.sin(angle) * arrowLength

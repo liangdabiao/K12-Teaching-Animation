@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要是高中或大学低年级的生物学学生，他们已具备DNA双螺旋、碱基配对等基础知识，现在需要直观、动态地理解中心法则中从DNA到蛋白质合成的复杂过程。
@@ -72,7 +71,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1046,7 +1044,6 @@
             // 绘制mRNA
             const mrnaSequence = ['A', 'U', 'G', 'C', 'U', 'U', 'U', 'C', 'U', 'A', 'G', 'A'];
             drawRNA(sc
-<!--检测到代码截断，自动续写中...-->
 scene2.mrnaX, scene2.mrnaY, mrnaSequence, true);
             
             // 绘制核糖体
@@ -1629,7 +1626,6 @@ scene2.mrnaX, scene2.mrnaY, mrnaSequence, true);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 交互式教学动画使用指南
 

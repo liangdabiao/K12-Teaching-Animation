@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向高中或大学低年级的化学学习者。用户的核心需求是**直观、动态地理解化学平衡这一抽象概念**。具体痛点包括：
@@ -60,7 +59,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1132,7 +1130,6 @@
                         reactionCtx.beginPath();
                         reactionCtx.moveTo(
                            
-<!--检测到代码截断，自动续写中...-->
 p.x + Math.cos(angle) * arrowLength,
                             p.y + Math.sin(angle) * arrowLength
                         );
@@ -1379,7 +1376,6 @@ p.x + Math.cos(angle) * arrowLength,
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 化学平衡动态模拟动画使用指南
 

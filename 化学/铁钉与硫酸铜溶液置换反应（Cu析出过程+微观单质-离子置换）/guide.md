@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中化学初学者。他们需要直观地理解置换反应这一抽象概念。
@@ -72,7 +71,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1020,7 +1018,6 @@
                 ctx.fillStyle = 'rgba(241, 196, 15, 0.3)';
                 ctx.beginPath();
                 ctx.arc(nailX + nailWidth /
-<!--检测到代码截断，自动续写中...-->
 2, nailY + nailHeight / 2, 50, 0, Math.PI * 2);
                 ctx.fill();
             }

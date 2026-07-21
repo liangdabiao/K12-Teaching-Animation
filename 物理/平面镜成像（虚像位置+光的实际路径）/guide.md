@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中物理初学者，可能对光的反射、虚像等抽象概念感到困惑。
@@ -78,7 +77,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1077,7 +1075,6 @@
                 showExtensions = false;
                 showSymmetryLines = false;
             } else if (step === 2
-<!--检测到代码截断，自动续写中...-->
 ```javascript
             } else if (step === 3) {
                 document.getElementById('showLightRays').checked = true;

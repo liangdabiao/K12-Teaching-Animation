@@ -281,8 +281,17 @@
             }
         }
     </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <div class="header">
         <h1>金属与酸反应微观动画</h1>
         <div class="subtitle">锌与盐酸反应：Zn + 2HCl → ZnCl₂ + H₂↑</div>

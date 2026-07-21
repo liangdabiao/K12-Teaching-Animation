@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要是计算机科学专业的学生、算法初学者以及需要巩固红黑树知识的软件开发者。他们的核心需求是：
@@ -77,7 +76,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1141,7 +1139,6 @@
                 const interpolated = new RBNode(state2.value, state2.color);
                 interpolated.x = state1.x + (state2.x - state1.x) * progress;
                 interpolated.y =
-<!--检测到代码截断，自动续写中...-->
 state1.y + (state2.y - state1.y) * progress;
                 interpolated.highlight = progress >= 0.5 ? state2.highlight : state1.highlight;
                 interpolated.highlightType = progress >= 0.5 ? state2.highlightType : state1.highlightType;
@@ -1431,7 +1428,6 @@ state1.y + (state2.y - state1.y) * progress;
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 红黑树插入过程教学动画使用指南
 

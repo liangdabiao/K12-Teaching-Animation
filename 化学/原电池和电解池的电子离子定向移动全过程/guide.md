@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：高中或大学低年级的化学学习者。他们已具备基本的氧化还原反应、离子、电流等概念，但难以在脑海中动态构建原电池与电解池中微观粒子的协同运动图景。
@@ -63,7 +62,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -989,7 +987,6 @@
                 // 电解池：电流从电源正极到负极
                 const midX = (device.wire.points[2].x + device.wire.points[3].x) / 2;
                 const midY = (device.wire.points[2].y +
-<!--检测到代码截断，自动续写中...-->
 device.wire.points[3].y) / 2;
                 
                 drawArrow(midX, midY, 0, arrowLength, colors.currentArrow, '电流方向');
@@ -1233,7 +1230,6 @@ device.wire.points[3].y) / 2;
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《原电池与电解池交互式教学动画》使用指南
 

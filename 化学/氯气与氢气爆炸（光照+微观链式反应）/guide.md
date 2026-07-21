@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向高中或大学低年级的化学学习者。用户的核心需求是：
@@ -83,7 +82,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1077,7 +1075,6 @@
                     microCtx.lineWidth = 2;
                     microCtx.beginPath();
                     microCtx.arc(particle.x1, particle.y1, 15, 0, Math.P
-<!--检测到代码截断，自动续写中...-->
 I*2);
                     microCtx.stroke();
                 }

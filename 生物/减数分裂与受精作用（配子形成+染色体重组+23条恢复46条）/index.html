@@ -366,8 +366,17 @@
             }
         }
     </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <header>
         <h1>减数分裂与受精作用教学动画</h1>
         <p class="subtitle">配子形成 + 染色体重组 + 23条恢复46条的生命循环</p>
@@ -1257,7 +1266,7 @@
         // 执行交叉互换
         function performCrossover() {
             if (currentModule !== 'meiosis' || currentStage !== 1) {
-                alert("请在减数分裂的'前期 I'阶段进行交叉互换操作。");
+                showTip("请在减数分裂的'前期 I'阶段进行交叉互换操作。");
                 return;
             }
             
@@ -1289,7 +1298,7 @@
         // 随机生成配子
         function generateRandomGamete() {
             if (currentModule !== 'meiosis' || currentStage < 8) {
-                alert("请在减数分裂完成后生成配子。");
+                showTip("请在减数分裂完成后生成配子。");
                 return;
             }
             

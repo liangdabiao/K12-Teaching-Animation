@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为学习数据结构（如计算机科学、软件工程）的本科生或自学者。他们已具备数组、树等基本数据结构知识，正学习“堆”这一抽象数据类型。
@@ -86,7 +85,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1179,7 +1177,6 @@
                 
                 if (this.heap.length === 0) {
                     const emptyMsg =
-<!--检测到代码截断，自动续写中...-->
 const emptyMsg = document.createElement('div');
                     emptyMsg.style.textAlign = 'center';
                     emptyMsg.style.padding = '40px';

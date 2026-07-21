@@ -26,6 +26,15 @@ button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-c
 .status{font-size:12px;color:var(--muted);margin-left:auto}
 @media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -39,7 +48,6 @@ button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-c
     <p>电解饱和食盐水（氯碱工业）：2NaCl + 2H₂O →通电 2NaOH + H₂↑ + Cl₂↑。阳极：2Cl⁻ → Cl₂↑（氧化反应）；阴极：2H₂O + 2e⁻ → H₂↑ + 2OH⁻（还原反应）。</p>
     <div class="legend"><span class="li"><b style="color:#d63031">+极</b> 阳极（Cl⁻放电→Cl₂）</span><span class="li"><b style="color:#0984e3">-极</b> 阴极（H₂O得电子→H₂+OH⁻）</span><span class="li"><b style="color:#00b894">●</b> Na⁺/Cl⁻离子</span></div>
   <div class="key-points"><h3>电解原理</h3><ul><li>总反应：2NaCl + 2H₂O →通电 2NaOH + H₂↑ + Cl₂↑</li><li>阳极（+）：2Cl⁻ - 2e⁻ → Cl₂↑（氧化）</li><li>阴极（-）：2H₂O + 2e⁻ → H₂↑ + 2OH⁻（还原）</li><li>阴极区产生NaOH（OH⁻积累）</li><li>工业应用：氯碱工业制NaOH和Cl₂</li></ul></div>
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>电解原理</h3><ul><li>总反应：2NaCl + 2H₂O →通电 2NaOH + H₂↑ + Cl₂↑</li><li>阳极(+)：2Cl⁻ → Cl₂↑ + 2e⁻ (氧化)</li><li>阴极(-)：2H₂O + 2e⁻ → H₂↑ + 2OH⁻ (还原)</li><li>阴极区产生NaOH</li><li>应用：氯碱工业</li></ul></div>
     </aside>
 </main>
 <div class="controls">
@@ -81,7 +89,7 @@ function sceneDraw(){
   ctx.fillStyle='rgba(59,130,246,0.18)';ctx.fillRect(cx-158,top+2,316,bot-top-2);
   // electrodes
   function elec(x,col,lab){ctx.strokeStyle=col;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x,bot-10);ctx.lineTo(x,top+30);ctx.stroke();ctx.fillStyle=col;ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText(lab,x,top+20);}
-  elec(cx-120,'#f87171','阳极(−)');elec(cx+120,'#34d399','阴极(+)');
+  elec(cx-120,'#f87171','阳极(+)');elec(cx+120,'#34d399','阴极(−)');
   // bubbles
   E.gas.forEach(g=>{ctx.fillStyle=g.kind==='Cl'?'#a78bfa':'#7dd3fc';ctx.beginPath();ctx.arc(g.x,g.y,g.r,0,7);ctx.fill();});
   // labels

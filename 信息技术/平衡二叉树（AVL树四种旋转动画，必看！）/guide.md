@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要是学习数据结构与算法的计算机科学学生或自学者。他们的核心需求是：
@@ -56,7 +55,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1168,7 +1166,6 @@
                         ctx.strokeStyle = '#e53935';
                         ctx.setLineDash([5, 5]);
                         ctx.lineWidth =
-<!--检测到代码截断，自动续写中...-->
 3;
                     } else {
                         ctx.strokeStyle = '#757575';

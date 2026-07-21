@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>安培力</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回物理目录</a>
+  <span class="title">安培力与左手定则</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>安培力：通电导体在磁场中受到的力。F = BILsinθ（B为磁感应强度，I为电流，L为导体长度，θ为电流与磁场的夹角）。方向由左手定则判定：伸开左手使拇指与四指垂直，磁感线穿过手心，四指指向电流方向，拇指所指即为安培力方向。</p>
+    <div class="legend"><span><b style="color:#0984e3">→</b> 电流I</span><span><b style="color:#00b894">→</b> 磁场B</span><span><b style="color:#d63031">↑</b> 安培力F</span></div>
+    <div class="key-points"><h3>核心要点</h3><ul>
+      <li><b>F = BILsinθ</b>（θ为I与B的夹角）</li>
+      <li>θ=90°时F最大=BIL；θ=0°时F=0</li>
+      <li><b>左手定则</b>：手心迎B，四指指I，拇指指F</li>
+      <li>安培力⊥I且⊥B（垂直于I-B平面）</li>
+      <li>电动机原理：通电线圈在磁场中受力转动</li>
+      <li>应用：电流表、电动机、扬声器</li>
+    </ul></div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <label>B(T) <input id="bField" type="range" min="0.1" max="2" step="0.1" value="1"></label>
+  <label>I(A) <input id="current" type="range" min="0.5" max="5" step="0.5" value="2"></label>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+
+let t=0,B=1,I=2,L=1,playing=false,lastT=0;
+
+function draw(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  const F=B*I*L;
+  
+  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+  ctx.fillText('F = BILsinθ = BIL (θ=90°)',W/2,28);
+  ctx.fillStyle='#fdcb6e';ctx.font='14px sans-serif';
+  ctx.fillText(`F = ${B.toFixed(1)} × ${I.toFixed(1)} × ${L} = ${F.toFixed(1)} N`,W/2,50);
+  
+  // 磁场(×表示进入纸面)
+  ctx.fillStyle='#00b894';ctx.font='16px sans-serif';
+  for(let x=60;x<W-60;x+=40){
+    for(let y=80;y<H-60;y+=35){
+      ctx.fillText('×',x,y);
+    }
+  }
+  ctx.fillStyle='#00b894';ctx.font='12px sans-serif';ctx.textAlign='left';
+  ctx.fillText('B (⊗ 进入纸面)',20,H-15);
+  
+  // 导线截面
+  const wx=W/2,wy=H/2;
+  ctx.beginPath();ctx.arc(wx,wy,18,0,Math.PI*2);
+  ctx.fillStyle='rgba(9,132,227,0.4)';ctx.fill();
+  ctx.strokeStyle='#0984e3';ctx.lineWidth=2;ctx.stroke();
+  // 电流方向(出纸面·)
+  ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+  ctx.fillText('·',wx,wy+7);
+  ctx.fillStyle='#0984e3';ctx.font='11px sans-serif';
+  ctx.fillText('I (出纸面)',wx,wy+35);
+  
+  // 安培力箭头(向上)
+  const fLen=F*30;
+  ctx.strokeStyle='#d63031';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(wx,wy-20);ctx.lineTo(wx,wy-20-fLen);ctx.stroke();
+  ctx.fillStyle='#d63031';ctx.beginPath();
+  ctx.moveTo(wx,wy-20-fLen-10);ctx.lineTo(wx-8,wy-20-fLen);ctx.lineTo(wx+8,wy-20-fLen);ctx.fill();
+  ctx.fillStyle='#d63031';ctx.font='bold 14px sans-serif';
+  ctx.fillText(`F=${F.toFixed(1)}N ↑`,wx+50,wy-20-fLen/2);
+  
+  // 左手定则示意(右下角)
+  const hx=W-100,hy=H-80;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(hx-50,hy-40,100,80);
+  ctx.strokeStyle='#1e3050';ctx.strokeRect(hx-50,hy-40,100,80);
+  ctx.fillStyle='#9fb0c8';ctx.font='10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('左手定则',hx,hy-28);
+  ctx.fillText('拇指→F',hx,hy-10);
+  ctx.fillText('四指→I',hx,hy+8);
+  ctx.fillText('手心→B',hx,hy+26);
+  
+  statusEl.textContent=`B=${B.toFixed(1)}T I=${I.toFixed(1)}A F=${F.toFixed(1)}N`;
+}
+
+let animId;
+function loop(ts){
+  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();
+  if(playing)animId=requestAnimationFrame(loop);
+}
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
+};
+document.getElementById('resetBtn').onclick=function(){B=1;I=2;document.getElementById('bField').value=1;document.getElementById('current').value=2;draw();};
+document.getElementById('bField').oninput=function(){B=+this.value;draw();};
+document.getElementById('current').oninput=function(){I=+this.value;draw();};
+draw();
+</script></body></html>

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为计算机科学或软件工程专业的学生，以及准备技术面试的开发者。他们已具备链表、指针/引用等基本数据结构知识，但需要直观、动态地理解反转算法的执行过程。
@@ -79,7 +78,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1188,7 +1186,6 @@
                             this.pointers.next.updatePosition(currNode.next, -60, -80);
                         }
                         break
-<!--检测到代码截断，自动续写中...-->
                     case 'reverse_link':
                         if (currNode) {
                             currNode.next = prevNode;
@@ -1508,7 +1505,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 交互式教学动画使用指南
 

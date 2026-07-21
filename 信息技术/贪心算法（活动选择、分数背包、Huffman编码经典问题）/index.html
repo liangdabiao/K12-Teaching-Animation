@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>贪心算法</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#6C5CE7;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回信息技术目录</a>
+  <span class="title">贪心算法</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>贪心算法：每一步都做出当前看起来最优的选择，期望导致全局最优。关键性质：贪心选择性质（局部最优选择能导致全局最优解）+ 最优子结构。经典应用：活动选择、分数背包、Huffman编码、Dijkstra等。</p>
+    <div class="legend"><span><b style="color:#00b894">■</b> 已选中</span><span><b style="color:#d63031">■</b> 冲突/排除</span><span><b style="color:#fdcb6e">■</b> 当前考虑</span></div>
+    <div class="key-points"><h3>贪心 vs 动态规划</h3><ul>
+      <li><b>贪心</b>：不回退，每步选最优，O(nlogn)排序后扫描</li>
+      <li><b>DP</b>：考虑所有子问题，有重叠子问题时更优</li>
+      <li>活动选择：按结束时间排序→选最早结束且不冲突的</li>
+      <li>分数背包：按性价比(价值/重量)排序→贪心装入</li>
+      <li>Huffman：每次选频率最小的两个节点合并</li>
+      <li>⚠️ 贪心不总能得到最优解（如0-1背包）</li>
+    </ul></div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="activityBtn">活动选择</button>
+  <button id="huffmanBtn">Huffman</button>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(500,Math.min(900,r.width-8));cv.height=Math.max(360,Math.min(520,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+
+// 活动选择问题
+const activities=[
+  {name:'A1',s:1,f:4},{name:'A2',s:3,f:5},{name:'A3',s:0,f:6},
+  {name:'A4',s:5,f:7},{name:'A5',s:3,f:9},{name:'A6',s:5,f:9},
+  {name:'A7',s:6,f:10},{name:'A8',s:8,f:11},{name:'A9',s:8,f:12},{name:'A10',s:2,f:14}
+];
+// 按结束时间排序
+const sorted=[...activities].sort((a,b)=>a.f-b.f);
+let mode='activity',step=0,selected=[],t=0,playing=false,lastT=0;
+
+function resetActivity(){step=0;selected=[];t=0;}
+
+function stepActivity(){
+  if(step>=sorted.length)return;
+  const act=sorted[step];
+  const conflict=selected.some(s=>act.s<s.f&&s.s<act.f);
+  if(!conflict)selected.push(act);
+  step++;
+}
+
+function drawActivity(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+  ctx.fillText('活动选择问题（按结束时间贪心）',W/2,25);
+  
+  const barH=28,gap=4;
+  const ox=80,oy=50;
+  const maxT=15,scale=(W-120)/maxT;
+  
+  // 时间轴
+  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;
+  for(let i=0;i<=maxT;i++){
+    const x=ox+i*scale;
+    ctx.beginPath();ctx.moveTo(x,oy-5);ctx.lineTo(x,oy+sorted.length*(barH+gap)+5);ctx.stroke();
+    ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillText(i,x,oy-12);
+  }
+  
+  sorted.forEach((act,idx)=>{
+    const y=oy+idx*(barH+gap);
+    const x1=ox+act.s*scale,x2=ox+act.f*scale;
+    const isDone=idx<step;
+    const isSel=selected.includes(act);
+    const isCurrent=idx===step;
+    
+    let bg='rgba(255,255,255,0.08)';
+    if(isSel)bg='rgba(0,184,148,0.4)';
+    else if(isCurrent)bg='rgba(253,203,110,0.3)';
+    else if(isDone)bg='rgba(214,48,49,0.2)';
+    
+    ctx.fillStyle=bg;ctx.fillRect(x1,y,x2-x1,barH);
+    ctx.strokeStyle=isSel?'#00b894':isCurrent?'#fdcb6e':'#1e3050';
+    ctx.lineWidth=isCurrent?2:1;ctx.strokeRect(x1,y,x2-x1,barH);
+    
+    ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';ctx.textAlign='right';
+    ctx.fillText(act.name,ox-8,y+barH/2+4);
+    ctx.textAlign='center';ctx.font='10px sans-serif';ctx.fillStyle='#8b9dc3';
+    ctx.fillText(`[${act.s},${act.f})`,x1+(x2-x1)/2,y+barH/2+4);
+  });
+  
+  ctx.fillStyle='#00b894';ctx.font='bold 13px sans-serif';ctx.textAlign='left';
+  ctx.fillText(`已选: ${selected.map(s=>s.name).join(', ')}`,20,H-20);
+  statusEl.textContent=`步骤: ${step}/${sorted.length} | 已选${selected.length}个活动`;
+}
+
+// Huffman
+const freqs=[{c:'A',f:45},{c:'B',f:13},{c:'C',f:12},{c:'D',f:16},{c:'E',f:9},{c:'F',f:5}];
+let huffNodes=[],huffStep=0;
+
+function buildHuffman(){
+  let nodes=freqs.map(f=>({...f,id:f.c,left:null,right:null}));
+  huffNodes=[nodes.map(n=>({...n}))];
+  while(nodes.length>1){
+    nodes.sort((a,b)=>a.f-b.f);
+    const l=nodes.shift(),r=nodes.shift();
+    const p={c:`${l.c}+${r.c}`,f:l.f+r.f,left:l,right:r,id:l.c+r.c};
+    nodes.push(p);
+    huffNodes.push(nodes.map(n=>({...n})));
+  }
+}
+buildHuffman();
+
+function drawHuffman(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+  ctx.fillText('Huffman编码构建过程',W/2,25);
+  
+  const showStep=Math.min(huffStep,huffNodes.length-1);
+  const nodes=huffNodes[showStep];
+  const cellW=60,cellH=40;
+  const ox=(W-nodes.length*cellW)/2;
+  
+  nodes.forEach((n,idx)=>{
+    const x=ox+idx*cellW,y=H*0.3;
+    const isNew=showStep>0&&idx===nodes.length-1;
+    ctx.fillStyle=isNew?'rgba(108,92,231,0.4)':'rgba(255,255,255,0.1)';
+    ctx.fillRect(x,y,cellW-4,cellH);
+    ctx.strokeStyle=isNew?'#6C5CE7':'#1e3050';ctx.lineWidth=isNew?2:1;
+    ctx.strokeRect(x,y,cellW-4,cellH);
+    ctx.fillStyle='#e8edf6';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText(n.c,x+cellW/2-2,y+16);
+    ctx.fillStyle='#fdcb6e';ctx.font='11px sans-serif';
+    ctx.fillText(n.f,x+cellW/2-2,y+32);
+  });
+  
+  ctx.fillStyle='#9fb0c8';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText(`第${showStep}次合并 | 每次选最小的两个节点合并`,W/2,H*0.6);
+  
+  if(showStep===huffNodes.length-1){
+    ctx.fillStyle='#00b894';ctx.font='bold 13px sans-serif';
+    ctx.fillText('构建完成！叶子节点编码=从根到叶的路径(左0右1)',W/2,H*0.75);
+  }
+  statusEl.textContent=`Huffman 步骤: ${showStep}/${huffNodes.length-1}`;
+}
+
+function draw(){
+  if(mode==='activity')drawActivity();
+  else drawHuffman();
+}
+
+let animId;
+function loop(ts){
+  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;
+  if(t>0.8){t=0;if(mode==='activity')stepActivity();else{if(huffStep<huffNodes.length-1)huffStep++;}}
+  draw();
+  if(playing)animId=requestAnimationFrame(loop);
+}
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
+};
+document.getElementById('resetBtn').onclick=function(){resetActivity();huffStep=0;draw();};
+document.getElementById('activityBtn').onclick=function(){mode='activity';resetActivity();draw();};
+document.getElementById('huffmanBtn').onclick=function(){mode='huffman';huffStep=0;draw();};
+draw();
+</script></body></html>

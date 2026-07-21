@@ -26,6 +26,15 @@ button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-c
 .status{font-size:12px;color:var(--muted);margin-left:auto}
 @media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
 </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -39,7 +48,6 @@ button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-c
     <p>钠与水剧烈反应：2Na + 2H₂O → 2NaOH + H₂↑。现象：钠浮在水面（密度比水小）、熔成银白色小球（反应放热、钠熔点低）、四处游动（产生H₂推动）、溶液变红（生成NaOH使酚酞变红）。</p>
     <div class="legend"><span class="li"><b style="color:#d63031">●</b> Na原子</span><span class="li"><b style="color:#0984e3">●</b> H₂O分子</span><span class="li"><b style="color:#00b894">●</b> H₂气泡</span><span class="li"><b style="color:#fdcb6e">●</b> Na⁺/OH⁻离子</span></div>
   <div class="key-points"><h3>反应要点</h3><ul><li>化学方程式：2Na + 2H₂O → 2NaOH + H₂↑</li><li>现象总结：<b>浮、熔、游、响、红</b></li><li>浮→ρ(Na) < ρ(H₂O)；熔→反应放热且Na熔点低</li><li>游→H₂不均匀推出；响→气体产生剧烈</li><li>本质：Na失去电子→Na⁺，H₂O中H⁺得电子→H₂</li><li>安全：钠的取用要用镊子，不能用手接触</li></ul></div>
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>反应要点</h3><ul><li>方程式：2Na + 2H₂O → 2NaOH + H₂↑</li><li>现象：<b>浮、熔、游、响、红</b></li><li>浮→ρ(Na)<ρ(H₂O)；熔→放热且Na熔点低</li><li>本质：Na失电子→Na⁺，H⁺得电子→H₂</li><li>安全：钠用镊子取用，不能用手接触</li></ul></div>
     </aside>
 </main>
 <div class="controls">

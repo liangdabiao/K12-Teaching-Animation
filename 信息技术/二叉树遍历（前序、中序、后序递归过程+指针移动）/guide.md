@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为学习数据结构与算法的计算机专业学生或自学者。他们已具备二叉树的基本概念，但难以直观理解递归遍历过程中程序执行栈、节点访问顺序和指针移动的协同关系。
@@ -78,7 +77,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1172,7 +1170,6 @@
                 
                 // 高亮当前代码行
                 if (step && step.codeLine
-<!--检测到代码截断，自动续写中...-->
 ) {
                     const lines = codeContainer.querySelectorAll('.code-line');
                     if (step.codeLine - 1 < lines.length) {

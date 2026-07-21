@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学学生，他们已具备DNA双螺旋结构、碱基互补配对等基础知识，需要直观理解DNA复制这一动态、复杂的分子过程。
@@ -70,7 +69,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1062,7 +1060,6 @@
             ctx.fillStyle = colors.ligase;
             ctx.beginPath();
             ctx.arc(x, y, 10, 0, Math.P
-<!--检测到代码截断，自动续写中...-->
 * 2);
             ctx.fill();
             

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中化学初学者。他们需要直观地理解抽象的微观分子运动概念，并将其与宏观的扩散现象（如溴蒸气扩散、高锰酸钾溶解）联系起来。
@@ -61,7 +60,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1023,7 +1021,6 @@
             animationTime = 0;
             initParticles();
             document.getElementById('timeProgress').textContent = '0
-<!--检测到代码截断，自动续写中...-->
 %';
             document.getElementById('leftConcentration').textContent = '100%';
             document.getElementById('rightConcentration').textContent = '0%';
@@ -1279,7 +1276,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《分子运动与扩散现象》交互式教学动画使用指南
 

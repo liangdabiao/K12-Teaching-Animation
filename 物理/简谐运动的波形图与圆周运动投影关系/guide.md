@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向高中物理或大学基础物理的学生。用户的核心需求是直观、动态地理解“简谐运动是匀速圆周运动在直径上的投影”这一抽象且关键的概念。他们可能面临的认知难点包括：
@@ -71,7 +70,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1115,7 +1113,6 @@
             if (!showLines || wavePoints.length === 0) return;
             
             const current
-<!--检测到代码截断，自动续写中...-->
 const currentPoint = wavePoints[wavePoints.length - 1];
             const phaseAngle = currentPoint.phaseAngle;
             

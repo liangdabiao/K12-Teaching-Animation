@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为计算机科学或数据结构课程的初学者，年龄可能在高中或大学低年级。他们可能对抽象的“队列”概念感到困惑，需要直观、生活化的类比来辅助理解。
@@ -69,7 +68,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1120,7 +1118,6 @@
             
             // 添加事件监听器
             enqueueBtn.addEventListener('click', en
-<!--检测到代码截断，自动续写中...-->
 queue);
             dequeueBtn.addEventListener('click', dequeue);
             resetBtn.addEventListener('click', resetQueues);
@@ -1233,7 +1230,6 @@ queue);
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《队列数据结构教学动画》使用指南
 

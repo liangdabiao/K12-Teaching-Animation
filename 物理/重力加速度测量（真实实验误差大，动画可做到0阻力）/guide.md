@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画的目标用户主要是**高中物理学生**和**大学物理初学者**。他们的核心需求是：
@@ -61,7 +60,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1188,7 +1186,6 @@
             // 绘制球体
             ctx.beginPath();
             ctx.arc(x, y, obj.radius, 0, Math.PI *
-<!--检测到代码截断，自动续写中...-->
 2);
             ctx.fillStyle = obj.color;
             ctx.fill();

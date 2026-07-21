@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要是高中或大学低年级的生物学、生理学或医学预科学生。他们需要：
@@ -62,7 +61,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1104,7 +1102,6 @@
             animationId = requestAnimationFrame(animate);
         }
 
-<!--检测到代码截断，自动续写中...-->
 // 事件处理函数
 function triggerEvent(eventType) {
     activeEvent = eventType;

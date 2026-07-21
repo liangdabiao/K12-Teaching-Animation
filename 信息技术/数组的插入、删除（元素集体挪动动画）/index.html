@@ -357,8 +357,17 @@
             }
         }
     </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <header>
         <h1>数组插入与删除操作动画教学</h1>
         <p class="subtitle">直观演示数组元素插入与删除时的集体挪动过程</p>
@@ -615,12 +624,12 @@
                 
                 // 验证输入
                 if (isNaN(insertTargetIndex) || insertTargetIndex < 0 || insertTargetIndex > arrayCapacity - 1) {
-                    alert('请输入有效的插入位置（0-6）');
+                    showTip('请输入有效的插入位置（0-6）');
                     return;
                 }
                 
                 if (isNaN(insertValue)) {
-                    alert('请输入有效的插入值');
+                    showTip('请输入有效的插入值');
                     return;
                 }
                 
@@ -632,7 +641,7 @@
             } else if (insertStep === 1) {
                 // 步骤1: 检查数组容量
                 if (insertArray.length >= arrayCapacity) {
-                    alert('数组已满，无法插入新元素！');
+                    showTip('数组已满，无法插入新元素！');
                     insertStep = 0;
                     return;
                 }
@@ -727,7 +736,7 @@
                 
                 // 验证输入
                 if (isNaN(deleteTargetIndex) || deleteTargetIndex < 0 || deleteTargetIndex >= deleteArray.length) {
-                    alert('请输入有效的删除位置（0-' + (deleteArray.length - 1) + '）');
+                    showTip('请输入有效的删除位置（0-' + (deleteArray.length - 1) + '）');
                     return;
                 }
                 
@@ -739,7 +748,7 @@
             } else if (deleteStep === 1) {
                 // 步骤1: 检查数组是否为空
                 if (deleteArray.length === 0) {
-                    alert('数组为空，无法删除元素！');
+                    showTip('数组为空，无法删除元素！');
                     deleteStep = 0;
                     return;
                 }

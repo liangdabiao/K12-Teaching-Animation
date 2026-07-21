@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的物理学习者。他们已具备波动的基本知识（如波长、频率、振幅），但对波的干涉、衍射和偏振等抽象概念的理解存在困难。
@@ -73,7 +72,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1079,7 +1077,6 @@
         
         // 绘制实验装置
         function drawApparatus
-<!--检测到代码截断，自动续写中...-->
 () {
             const width = canvas.width;
             const height = canvas.height;

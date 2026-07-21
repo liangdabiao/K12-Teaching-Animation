@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>基因突变</title>
+<style>
+:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#00b894;--line:#1e3050;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">基因突变</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>基因突变：DNA分子中碱基对的替换、增添或缺失，导致基因结构改变。镰刀型细胞贫血症：β-珠蛋白基因中CTT→CAT（谷氨酸→缬氨酸），红细胞由正常圆饼状变为镰刀状。基因突变是生物变异的根本来源，为进化提供原材料。</p>
+    <div class="legend"><span><b style="color:#e84393">●</b> A(腺嘌呤)</span><span><b style="color:#0984e3">●</b> T(胸腺嘧啶)</span><span><b style="color:#00b894">●</b> G(鸟嘌呤)</span><span><b style="color:#fdcb6e">●</b> C(胞嘧啶)</span></div>
+    <div class="key-points"><h3>基因突变要点</h3><ul>
+      <li><b>类型</b>：碱基替换（点突变）、碱基插入、碱基缺失</li>
+      <li><b>特点</b>：普遍性、随机性、不定向性、低频性、多害少利</li>
+      <li><b>诱因</b>：物理(紫外线/X射线)、化学(亚硝酸)、生物(病毒)</li>
+      <li>碱基替换不一定改变氨基酸（密码子简并性）</li>
+      <li>插入/缺失影响更大→移码突变→后续氨基酸全部改变</li>
+      <li>基因突变产生<b>新等位基因</b>，是变异的根本来源</li>
+    </ul></div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="replaceBtn">碱基替换</button>
+  <button id="insertBtn">碱基插入</button>
+  <button id="sickleBtn">镰刀型贫血</button>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(500,Math.min(900,r.width-8));cv.height=Math.max(360,Math.min(520,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+
+const COLORS={A:'#e84393',T:'#0984e3',G:'#00b894',C:'#fdcb6e'};
+const COMP={A:'T',T:'A',G:'C',C:'G'};
+
+let mode='replace',t=0,playing=false,lastT=0;
+let origSeq='ATGCATGCATGC';
+let mutatedSeq='',mutationType='';
+
+function drawDNA(seq1,seq2,highlightIdx,W,H,title){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText(title,W/2,25);
+  
+  const cellW=Math.min(40,W/(seq1.length+2));
+  const cellH=32;
+  const ox=(W-seq1.length*cellW)/2;
+  const y1=H*0.25,y2=H*0.5;
+  
+  // 上链
+  for(let i=0;i<seq1.length;i++){
+    const x=ox+i*cellW;
+    const isHL=i===highlightIdx;
+    ctx.fillStyle=isHL?'rgba(214,48,49,0.4)':'rgba(255,255,255,0.06)';
+    ctx.fillRect(x,y1,cellW-2,cellH);
+    ctx.strokeStyle=isHL?'#d63031':'#1e3050';ctx.lineWidth=isHL?2:1;
+    ctx.strokeRect(x,y1,cellW-2,cellH);
+    ctx.fillStyle=COLORS[seq1[i]]||'#fff';ctx.font='bold 14px monospace';ctx.textAlign='center';
+    ctx.fillText(seq1[i],x+cellW/2,y1+cellH/2+5);
+  }
+  // 下链
+  for(let i=0;i<seq2.length;i++){
+    const x=ox+i*cellW;
+    const isHL=i===highlightIdx;
+    ctx.fillStyle=isHL?'rgba(214,48,49,0.4)':'rgba(255,255,255,0.06)';
+    ctx.fillRect(x,y2,cellW-2,cellH);
+    ctx.strokeStyle=isHL?'#d63031':'#1e3050';ctx.lineWidth=isHL?2:1;
+    ctx.strokeRect(x,y2,cellW-2,cellH);
+    ctx.fillStyle=COLORS[seq2[i]]||'#fff';ctx.font='bold 14px monospace';ctx.textAlign='center';
+    ctx.fillText(seq2[i],x+cellW/2,y2+cellH/2+5);
+  }
+  // 氢键
+  const len=Math.min(seq1.length,seq2.length);
+  for(let i=0;i<len;i++){
+    const x=ox+i*cellW+cellW/2;
+    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;ctx.setLineDash([2,2]);
+    ctx.beginPath();ctx.moveTo(x,y1+cellH);ctx.lineTo(x,y2);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // 标签
+  ctx.fillStyle='#8b9dc3';ctx.font='11px sans-serif';ctx.textAlign='right';
+  ctx.fillText("5'",ox-8,y1+cellH/2+4);
+  ctx.fillText("3'",ox-8,y2+cellH/2+4);
+}
+
+function drawReplace(){
+  const W=cv.width,H=cv.height;
+  const p=Math.min(1,t*0.4);
+  const idx=Math.min(4,origSeq.length-1);
+  const origBase=origSeq[idx];
+  const newBase='G';
+  
+  let seq1=origSeq.split('');
+  let seq2=origSeq.split('').map(b=>COMP[b]);
+  
+  let hlIdx=p>0.5?idx:-1;
+  if(p>0.5)seq1[idx]=newBase;
+  
+  drawDNA(seq1.join(''),seq2.join(''),hlIdx,W,H,'碱基替换突变（点突变）');
+  
+  ctx.fillStyle='#9fb0c8';ctx.font='12px sans-serif';ctx.textAlign='center';
+  if(p<0.5){ctx.fillText(`原序列: ${origSeq}`,W/2,H*0.75);ctx.fillText('正在发生突变...',W/2,H*0.82);}
+  else{
+    const mutSeq=seq1.join('');
+    ctx.fillText(`突变后: ${mutSeq}`,W/2,H*0.72);
+    ctx.fillStyle='#d63031';ctx.fillText(`A→G 替换 (第${idx+1}位)`,W/2,H*0.80);
+    ctx.fillStyle='#fdcb6e';ctx.fillText('可能改变一个氨基酸（也可能因密码子简并性不变）',W/2,H*0.88);
+  }
+}
+
+function drawInsert(){
+  const W=cv.width,H=cv.height;
+  const p=Math.min(1,t*0.4);
+  const idx=3;
+  const insertBase='C';
+  
+  let seq1=origSeq.split('');
+  if(p>0.5)seq1.splice(idx,0,insertBase);
+  
+  let seq2=seq1.map(b=>COMP[b]);
+  
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('碱基插入突变（移码突变）',W/2,25);
+  
+  const cellW=Math.min(32,(W-40)/(Math.max(seq1.length,origSeq.length)+2));
+  const ox=(W-origSeq.length*cellW)/2;
+  const y1=H*0.25,y2=H*0.55;
+  const cellH=28;
+  
+  // 原序列(灰色)
+  for(let i=0;i<origSeq.length;i++){
+    const x=ox+i*cellW;
+    ctx.fillStyle='rgba(255,255,255,0.04)';ctx.fillRect(x,y1,cellW-2,cellH);
+    ctx.strokeStyle='#1e3050';ctx.strokeRect(x,y1,cellW-2,cellH);
+    ctx.fillStyle='#555';ctx.font='12px monospace';ctx.textAlign='center';
+    ctx.fillText(origSeq[i],x+cellW/2,y1+cellH/2+4);
+  }
+  
+  // 突变序列
+  const ox2=(W-seq1.length*cellW)/2;
+  for(let i=0;i<seq1.length;i++){
+    const x=ox2+i*cellW;
+    const isInsert=i===idx&&p>0.5;
+    ctx.fillStyle=isInsert?'rgba(214,48,49,0.5)':'rgba(255,255,255,0.06)';
+    ctx.fillRect(x,y2,cellW-2,cellH);
+    ctx.strokeStyle=isInsert?'#d63031':'#1e3050';ctx.lineWidth=isInsert?2:1;
+    ctx.strokeRect(x,y2,cellW-2,cellH);
+    ctx.fillStyle=isInsert?'#d63031':(COLORS[seq1[i]]||'#fff');ctx.font='bold 12px monospace';ctx.textAlign='center';
+    ctx.fillText(seq1[i],x+cellW/2,y2+cellH/2+4);
+  }
+  
+  ctx.fillStyle='#9fb0c8';ctx.font='12px sans-serif';ctx.textAlign='center';
+  if(p>0.5){
+    ctx.fillStyle='#d63031';ctx.fillText(`在第${idx+1}位插入 ${insertBase} → 后续全部移位！`,W/2,H*0.82);
+    ctx.fillStyle='#fdcb6e';ctx.fillText('移码突变：插入点后所有氨基酸都可能改变（影响极大）',W/2,H*0.90);
+  }
+}
+
+function drawSickle(){
+  const W=cv.width,H=cv.height;
+  const p=Math.min(1,t*0.3);
+  
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('镰刀型细胞贫血症（基因突变实例）',W/2,25);
+  
+  // DNA变化
+  const normalDNA='CTT',mutantDNA='CAT';
+  const normalAA='谷氨酸',mutantAA='缬氨酸';
+  
+  const y=H*0.2;
+  ctx.font='13px sans-serif';
+  ctx.fillStyle='#00b894';ctx.textAlign='center';
+  ctx.fillText('正常: DNA: CTT → mRNA: GAA → 谷氨酸（Glu）',W/2,y);
+  
+  if(p>0.3){
+    ctx.fillStyle='#d63031';
+    ctx.fillText('突变: DNA: CAT → mRNA: GUA → 缬氨酸（Val）',W/2,y+28);
+    ctx.fillStyle='#fdcb6e';ctx.font='12px sans-serif';
+    ctx.fillText('T→A 碱基替换 → 氨基酸改变 → 蛋白质异常',W/2,y+52);
+  }
+  
+  // 红细胞对比
+  const cy=H*0.6;
+  // 正常红细胞(圆形)
+  ctx.beginPath();ctx.arc(W*0.3,cy,40,0,Math.PI*2);
+  ctx.fillStyle='rgba(232,67,143,0.4)';ctx.fill();
+  ctx.strokeStyle='#e84393';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('正常红细胞',W*0.3,cy+55);
+  ctx.fillText('(圆饼状)',W*0.3,cy+70);
+  
+  // 镰刀形红细胞
+  if(p>0.5){
+    ctx.beginPath();ctx.ellipse(W*0.7,cy,45,20,0.3,0,Math.PI*2);
+    ctx.fillStyle='rgba(214,48,49,0.4)';ctx.fill();
+    ctx.strokeStyle='#d63031';ctx.lineWidth=2;ctx.stroke();
+    // 弯曲效果
+    ctx.beginPath();ctx.arc(W*0.7+10,cy-5,30,0.5,2.5);
+    ctx.strokeStyle='#d63031';ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='12px sans-serif';
+    ctx.fillText('镰刀型红细胞',W*0.7,cy+55);
+    ctx.fillText('(易破裂、堵塞血管)',W*0.7,cy+70);
+  }
+  
+  ctx.fillStyle='#9fb0c8';ctx.font='11px sans-serif';
+  ctx.fillText('常染色体隐性遗传病 | 杂合子(HbA/HbS)对疟疾有抵抗力',W/2,H*0.92);
+}
+
+function draw(){
+  if(mode==='replace')drawReplace();
+  else if(mode==='insert')drawInsert();
+  else drawSickle();
+  statusEl.textContent=`模式: ${mode==='replace'?'碱基替换':mode==='insert'?'碱基插入':'镰刀型贫血'}`;
+}
+
+let animId;
+function loop(ts){
+  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();
+  if(playing)animId=requestAnimationFrame(loop);
+}
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
+};
+document.getElementById('resetBtn').onclick=function(){t=0;draw();};
+document.getElementById('replaceBtn').onclick=function(){mode='replace';t=0;draw();};
+document.getElementById('insertBtn').onclick=function(){mode='insert';t=0;draw();};
+document.getElementById('sickleBtn').onclick=function(){mode='sickle';t=0;draw();};
+draw();
+</script></body></html>

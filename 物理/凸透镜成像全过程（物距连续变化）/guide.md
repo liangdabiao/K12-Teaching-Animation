@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向初中物理（光学）或高中物理入门阶段的学生。用户的核心需求是：
@@ -58,7 +57,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1051,7 +1049,6 @@
                 simCtx.moveTo(objectX, objectTopY);
                 simCtx.lineTo(lensX - f, centerY);
                 sim
-<!--检测到代码截断，自动续写中...-->
 Ctx.lineTo(lensX, centerY);
                 simCtx.lineTo(lensX + 100, centerY);
                 

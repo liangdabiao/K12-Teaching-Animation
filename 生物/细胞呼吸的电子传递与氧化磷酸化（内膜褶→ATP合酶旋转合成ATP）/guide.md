@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学学生。他们已具备细胞呼吸、线粒体结构、ATP等基础知识，但难以理解电子传递链（ETC）与氧化磷酸化（ATP合成）之间抽象的能量偶联机制。
@@ -72,7 +71,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1005,7 +1003,6 @@
                 const matrixGradient = ctx.createLinearGradient(0, 0, this.matrix.width, 0);
                 matrixGradient.addColorStop(0, 'rgba(52, 152, 219, 0.9)');
                 matrixGradient.addColor
-<!--检测到代码截断，自动续写中...-->
 Stop(1, 'rgba(26, 82, 118, 0.9)');
                 ctx.fillStyle = matrixGradient;
                 ctx.fillRect(this.matrix.x, this.matrix.y, this.matrix.width, this.matrix.height);

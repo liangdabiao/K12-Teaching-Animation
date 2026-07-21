@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画面向高中化学或大学基础化学的学生，用于学习“电解饱和食盐水”这一核心知识点。用户的核心需求是：
@@ -69,7 +68,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1042,7 +1040,6 @@
         function setupEventListeners() {
             // 播放/暂停/重置按钮
             document.getElementById('playBtn').addEventListener('click', ()
-<!--检测到代码截断，自动续写中...-->
 => {
                 animationState.isPlaying = true;
                 if (!animationState.animationFrameId) {
@@ -1304,7 +1301,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《电解饱和食盐水微观过程交互式教学动画》使用指南
 

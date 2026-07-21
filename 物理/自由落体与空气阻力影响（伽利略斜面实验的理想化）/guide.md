@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的物理初学者。他们已具备基本的运动学知识，但对“理想化模型”与“现实世界”的差异理解不深。
@@ -70,7 +69,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1025,7 +1023,6 @@
             gradient.addColorStop(0, ball.color);
             gradient.addColorStop(1, index === 0 ? '#f57f17' : '#c62828');
             simCtx
-<!--检测到代码截断，自动续写中...-->
             simCtx.fillStyle = gradient;
             simCtx.fill();
             

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为学习数据结构与算法、计算机科学或相关专业的大学生，也可能是准备技术面试的自学者。他们具备基础的编程和数据结构知识（如队列、图的基本概念），但对BFS的动态过程理解不深。
@@ -73,7 +72,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1201,7 +1199,6 @@
             
             handleCanvasClick(event) {
                 const
-<!--检测到代码截断，自动续写中...-->
 rect = this.canvas.getBoundingClientRect();
                 const x = event.clientX - rect.left;
                 const y = event.clientY - rect.top;

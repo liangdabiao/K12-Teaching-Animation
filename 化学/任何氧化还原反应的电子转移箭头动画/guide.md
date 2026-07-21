@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的化学学生。他们已具备基本的氧化还原反应概念（如氧化、还原、化合价变化），但需要直观理解电子转移的微观过程和方向性。
@@ -66,7 +65,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1019,7 +1017,6 @@
         }
 
         function togglePlayPause()
-<!--检测到代码截断，自动续写中...-->
 {
             const playPauseBtn = document.getElementById('playPauseBtn');
             if (isPlaying) {
@@ -1221,7 +1218,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 # 交互式教学动画使用指南
 

@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为中学生或大学低年级生物学/生态学初学者。
@@ -74,7 +73,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1038,7 +1036,6 @@
                 if (t < 5) vegetation = t / 5 * 0.1;
                 else if (t < 20) vegetation = 0.1 + (t - 5) / 15 * 0.4;
                 else
-<!--检测到代码截断，自动续写中...-->
 else if (t < 50) vegetation = 0.5 + (t - 20) / 30 * 0.3;
                 else vegetation = 0.8 + (t - 50) / 100 * 0.2;
                 metrics[1].values.push(vegetation);

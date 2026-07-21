@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中物理的初学者，他们刚刚接触电路的基本概念，对电流、电压、电阻等抽象物理量理解不深。
@@ -67,7 +66,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -973,7 +971,6 @@
                 ctx.fillText(`电子数: ${electronCount}`, 450, 180);
             } else {
                 //
-<!--检测到代码截断，自动续写中...-->
 // 并联电路：三个计数器
                 // 干路计数器
                 const mainElectronCount = particles.filter(p => p.currentPointIndex > 0 && p.currentPointIndex < 3).length;

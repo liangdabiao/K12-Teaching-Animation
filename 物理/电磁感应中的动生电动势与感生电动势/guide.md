@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的物理学习者。他们已具备基础的电磁学知识（如磁场、磁通量、法拉第电磁感应定律），但可能对动生与感生电动势的区分、产生机理及联系感到抽象和困惑。
@@ -76,7 +75,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1113,7 +1111,6 @@
                     ctx.moveTo(endX, endY);
                     ctx.lineTo(endX - Math.cos(angle) * 8 + Math.sin(angle) * 3, 
                               endY - Math.sin(angle) * 
-<!--检测到代码截断，自动续写中...-->
 ctx.lineTo(endX - Math.cos(angle) * 8 - Math.sin(angle) * 3,
                               endY - Math.sin(angle) * 8 + Math.cos(angle) * 3);
                     ctx.closePath();
@@ -1435,7 +1432,6 @@ ctx.lineTo(endX - Math.cos(angle) * 8 - Math.sin(angle) * 3,
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《电磁感应教学动画使用指南》
 

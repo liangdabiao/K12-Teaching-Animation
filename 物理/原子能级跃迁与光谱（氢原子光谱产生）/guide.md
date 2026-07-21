@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要是高中或大学低年级的物理、化学学生。他们需要理解：
@@ -61,7 +60,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1031,7 +1029,6 @@
                 
                 // 清除画布
                 atomC
-<!--检测到代码截断，自动续写中...-->
 atomCtx.clearRect(0, 0, atomCanvas.width, atomCanvas.height);
                 
                 // 绘制原子核和能级

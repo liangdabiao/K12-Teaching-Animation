@@ -325,8 +325,17 @@
             }
         }
     </style>
+<!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
 </head>
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <div class="header">
         <h1>细胞呼吸：电子传递与氧化磷酸化</h1>
         <div class="subtitle">线粒体内膜嵴 → ATP合酶旋转合成ATP | 交互式教学动画</div>
@@ -1364,7 +1373,7 @@ Stop(1, 'rgba(26, 82, 118, 0.9)');
                 if (x > complex.x - complex.width/2 && x < complex.x + complex.width/2 &&
                     y > complex.y - complex.height/2 && y < complex.y + complex.height/2) {
                     
-                    alert(`${complex.name}\n功能: ${complex.protons > 0 ? 
+                    showTip(`${complex.name}\n功能: ${complex.protons > 0 ? 
                         `传递电子并泵送${complex.protons}个质子(H⁺)到膜间隙` : 
                         '传递电子但不泵送质子'}`);
                     return;
@@ -1376,7 +1385,7 @@ Stop(1, 'rgba(26, 82, 118, 0.9)');
             if (x > synth.x - 30 && x < synth.x + 30 &&
                 y > synth.y - 50 && y < synth.y + 50) {
                 
-                alert('ATP合酶\n功能: 利用质子(H⁺)回流驱动力，催化ADP和Pi合成ATP\n结构: F0质子通道 + F1催化头');
+                showTip('ATP合酶\n功能: 利用质子(H⁺)回流驱动力，催化ADP和Pi合成ATP\n结构: F0质子通道 + F1催化头');
                 return;
             }
         });
@@ -1419,7 +1428,7 @@ Stop(1, 'rgba(26, 82, 118, 0.9)');
         
         // 添加使用说明提示
         setTimeout(() => {
-            alert('欢迎使用细胞呼吸教学动画！\n\n提示：\n1. 使用按钮控制动画进度\n2. 调节NADH浓度观察反应速率变化\n3. 开启解偶联剂观察质子梯度消失\n4. 点击复合物或ATP合酶查看详细信息\n5. 键盘快捷键：空格(播放/暂停) 1-4(切换模式) R(重置)');
+            showTip('欢迎使用细胞呼吸教学动画！\n\n提示：\n1. 使用按钮控制动画进度\n2. 调节NADH浓度观察反应速率变化\n3. 开启解偶联剂观察质子梯度消失\n4. 点击复合物或ATP合酶查看详细信息\n5. 键盘快捷键：空格(播放/暂停) 1-4(切换模式) R(重置)');
         }, 1000);
     </script>
 </body>

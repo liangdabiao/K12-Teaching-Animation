@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中物理的初学者。他们可能对抽象的分子运动、内能等微观概念感到陌生和困惑。
@@ -59,7 +58,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1039,7 +1037,6 @@
                     const coldTemp = parseInt(document.getElementById('coldTempSlider').value);
                     const coldColorIntensity = (coldTemp - 200) / 300;
                     const coldColor = `rgba(77, 150, 255, ${0.2 + coldColorIntensity * 0.
-<!--检测到代码截断，自动续写中...-->
 ```html
                                     ctx.fillStyle = coldColor;
                     ctx.fillRect(0, microCanvas.height - 50, microCanvas.width, 50);

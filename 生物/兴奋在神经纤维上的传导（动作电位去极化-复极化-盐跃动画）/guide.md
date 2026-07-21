@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学、医学、神经科学专业学生。他们具备基础的细胞生物学知识，但对抽象的神经电生理过程（如动作电位、离子通道）理解存在困难。
@@ -78,7 +77,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1080,7 +1078,6 @@
         
         // 步骤控制
         document
-<!--检测到代码截断，自动续写中...-->
 .querySelectorAll('.step-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const step = parseInt(e.target.getAttribute('data-step'));
@@ -1271,7 +1268,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 交互式教学动画使用指南
 

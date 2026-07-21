@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户是学习数据结构与算法（如计算机科学、软件工程专业）的大学生或自学者。他们已经了解二叉搜索树（BST）的基本概念，并初次接触AVL树的自平衡机制。他们的核心痛点和需求是：
@@ -78,7 +77,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1171,7 +1169,6 @@
                     // 简单自动播放
                     const playInterval = setInterval(() => {
                         if (avlAnimation.is
-<!--检测到代码截断，自动续写中...-->
 isPlaying && avlAnimation.currentStep < avlAnimation.totalSteps - 1) {
                         avlAnimation.nextStep();
                     } else {

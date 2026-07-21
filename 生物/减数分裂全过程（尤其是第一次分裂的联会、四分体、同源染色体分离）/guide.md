@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为高中或大学低年级的生物学学习者。他们需要理解减数分裂这一抽象、动态且复杂的细胞过程，特别是第一次分裂中的关键事件。
@@ -67,7 +66,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1078,7 +1076,6 @@
         function updateSpeed() {
             animationSpeed = parseFloat(speedSlider.value);
             speedValue.textContent = animationSpeed.toFixed(1) + 'x
-<!--检测到代码截断，自动续写中...-->
         }
         
         function updateStageInfo() {

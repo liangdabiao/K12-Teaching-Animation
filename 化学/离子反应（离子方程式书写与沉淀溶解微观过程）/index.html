@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>离子反应</title>
+<style>
+:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#e84393;--line:#26324a;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
+.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
+.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
+button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
+.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.key-points ul{margin:0;padding-left:18px}
+@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+</style></head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回化学目录</a>
+  <span class="title">离子反应</span>
+</header>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2>原理说明</h2>
+    <p>离子反应：有离子参加或生成的反应。本质：溶液中某些离子浓度降低。条件：生成沉淀↓、气体↑或弱电解质（水）。离子方程式书写：写→拆→删→查，删去不参与反应的 spectator ions。</p>
+    <div class="legend"><span><b style="color:#0984e3">●</b> Ag⁺</span><span><b style="color:#e84393">●</b> Cl⁻</span><span><b style="color:#fdcb6e">●</b> AgCl↓</span><span><b style="color:#00b894">●</b> Na⁺(旁观离子)</span></div>
+    <div class="key-points"><h3>离子方程式书写规则</h3><ul>
+      <li><b>可拆</b>：强酸、强碱、可溶性盐 → 写成离子形式</li>
+      <li><b>不拆</b>：沉淀↓、气体↑、弱电解质(水)、氧化物</li>
+      <li>例：AgNO₃+NaCl→AgCl↓+NaNO₃</li>
+      <li>离子式：Ag⁺ + Cl⁻ → AgCl↓</li>
+      <li>Na⁺和NO₃⁻是旁观离子，不参与反应</li>
+      <li>复分解反应条件：生成沉淀/气体/水（三者之一）</li>
+    </ul></div>
+  </aside>
+</main>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status"></span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+
+let t=0,playing=false,lastT=0,speed=1;
+let ions=[];let precipitates=[];
+
+function init(){
+  ions=[];precipitates=[];t=0;
+  // Ag⁺ ions
+  for(let i=0;i<8;i++){
+    ions.push({type:'Ag',x:cv.width*0.15+Math.random()*cv.width*0.25,y:cv.height*0.2+Math.random()*cv.height*0.6,
+      vx:(Math.random()-0.5)*60,vy:(Math.random()-0.5)*60,r:10,color:'#0984e3',label:'Ag⁺',reacted:false});
+  }
+  // Cl⁻ ions
+  for(let i=0;i<8;i++){
+    ions.push({type:'Cl',x:cv.width*0.55+Math.random()*cv.width*0.25,y:cv.height*0.2+Math.random()*cv.height*0.6,
+      vx:(Math.random()-0.5)*60,vy:(Math.random()-0.5)*60,r:9,color:'#e84393',label:'Cl⁻',reacted:false});
+  }
+  // Na⁺ spectator ions
+  for(let i=0;i<6;i++){
+    ions.push({type:'Na',x:cv.width*0.1+Math.random()*cv.width*0.8,y:cv.height*0.2+Math.random()*cv.height*0.6,
+      vx:(Math.random()-0.5)*50,vy:(Math.random()-0.5)*50,r:8,color:'#00b894',label:'Na⁺',reacted:false});
+  }
+}
+
+function update(dt){
+  t+=dt*speed;
+  const reactTime=2.0;
+  ions.forEach(ion=>{
+    if(ion.reacted)return;
+    ion.x+=ion.vx*dt*speed;ion.y+=ion.vy*dt*speed;
+    if(ion.x<20||ion.x>cv.width-20)ion.vx*=-1;
+    if(ion.y<20||ion.y>cv.height-20)ion.vy*=-1;
+    // 反应检测
+    if(t>reactTime&&ion.type==='Ag'){
+      ions.forEach(other=>{
+        if(!other.reacted&&other.type==='Cl'){
+          const dx=ion.x-other.x,dy=ion.y-other.y;
+          if(Math.sqrt(dx*dx+dy*dy)<25){
+            ion.reacted=true;other.reacted=true;
+            precipitates.push({x:(ion.x+other.x)/2,y:(ion.y+other.y)/2,r:14,grow:0});
+          }
+        }
+      });
+    }
+  });
+  precipitates.forEach(p=>{if(p.grow<1)p.grow+=dt*2;});
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  // 溶液背景
+  ctx.fillStyle='rgba(59,130,246,0.08)';ctx.fillRect(0,0,cv.width,cv.height);
+  // 分界线(t<1.5显示两种溶液分开)
+  if(t<1.5){
+    ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.setLineDash([5,5]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cv.width/2,0);ctx.lineTo(cv.width/2,cv.height);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#74b9ff';ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('AgNO₃溶液',cv.width*0.25,25);
+    ctx.fillText('NaCl溶液',cv.width*0.75,25);
+  }
+  // 离子
+  ions.forEach(ion=>{
+    if(ion.reacted)return;
+    ctx.beginPath();ctx.arc(ion.x,ion.y,ion.r,0,Math.PI*2);
+    ctx.fillStyle=ion.color+'44';ctx.fill();
+    ctx.strokeStyle=ion.color;ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(ion.label,ion.x,ion.y);
+  });
+  // 沉淀
+  precipitates.forEach(p=>{
+    const r=p.r*Math.min(1,p.grow);
+    ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);
+    ctx.fillStyle='#fdcb6e';ctx.fill();ctx.strokeStyle='#e17055';ctx.lineWidth=2;ctx.stroke();
+  });
+  // 标题
+  ctx.fillStyle='#e8edf6';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  ctx.fillText('AgNO₃ + NaCl → AgCl↓ + NaNO₃',cv.width/2,cv.height-20);
+  ctx.font='12px sans-serif';ctx.fillStyle='#fdcb6e';
+  ctx.fillText(`沉淀: ${precipitates.length}个 AgCl`,cv.width/2,cv.height-42);
+  statusEl.textContent=`t=${t.toFixed(1)}s | 离子反应进行中`;
+}
+
+init();
+let animId;
+function loop(ts){
+  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;
+  update(dt);draw();
+  if(playing)animId=requestAnimationFrame(loop);
+}
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
+};
+document.getElementById('resetBtn').onclick=function(){init();draw();};
+document.getElementById('speed').oninput=function(){speed=+this.value;};
+draw();
+</script></body></html>

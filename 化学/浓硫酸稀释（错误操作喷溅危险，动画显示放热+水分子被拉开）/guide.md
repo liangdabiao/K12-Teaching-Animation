@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中化学初学者。他们对浓硫酸的强腐蚀性和稀释操作的危险性有抽象认知，但缺乏直观、深刻的感受。
@@ -63,7 +62,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -951,7 +949,6 @@
         // 危险操作：水入酸
         function performDangerOperation() {
             if (experimentState !== 'idle
-<!--检测到代码截断，自动续写中...-->
 && currentMode === 'interactive') return;
             
             experimentState = 'danger';
@@ -1281,7 +1278,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 《浓硫酸稀释安全实验》交互式教学动画使用指南
 

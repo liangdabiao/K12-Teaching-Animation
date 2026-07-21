@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户是学习数据结构与算法（如图论、最短路径）的本科生或自学者。他们的核心需求是：
@@ -79,7 +78,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1071,7 +1069,6 @@
                 } else if (dijkstraState.settled.has(hoveredNode.id)) {
                     tooltipText += `<br>状态: 已确定最短路径`;
                 } else if (hoveredNode.id === dijkstraState.currentNode
-<!--检测到代码截断，自动续写中...-->
                 tooltipText += `<br>状态: 当前处理节点`;
                 } else {
                     tooltipText += `<br>状态: 未处理`;

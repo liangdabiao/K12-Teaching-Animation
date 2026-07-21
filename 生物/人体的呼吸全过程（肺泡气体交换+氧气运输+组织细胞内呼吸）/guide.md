@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 目标用户主要为中学生或生物学初学者。他们需要：
@@ -68,7 +67,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1019,7 +1017,6 @@
                 );
                 cellGradient.addColorStop(0, colors.gradientHighCO2);
                 cellGradient
-<!--检测到代码截断，自动续写中...-->
 .addColorStop(1, colors.gradientLowCO2);
                 
                 ctx.beginPath();

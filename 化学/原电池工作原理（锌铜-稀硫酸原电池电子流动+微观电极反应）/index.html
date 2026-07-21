@@ -316,9 +316,29 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!--p3-showtip--><script>
+window.showTip=function(msg){
+  var d=document.createElement('div');
+  d.textContent=msg;
+  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
+  document.body.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
+};
+</script>
+<!--p3-fa-fallback--><style>
+.fa,.fas,.far,.fab{font-family:system-ui,-apple-system,'Segoe UI',sans-serif!important;font-style:normal;font-weight:400;display:inline-block;text-align:center}
+.fa-arrow-left::before{content:"←"}
+.fa-arrow-right::before{content:"→"}
+.fa-battery-full::before{content:"🔋"}
+.fa-eye::before{content:"👁"}
+.fa-info-circle::before{content:"ℹ"}
+.fa-pause::before{content:"⏸"}
+.fa-play::before{content:"▶"}
+.fa-play-circle::before{content:"▶"}
+.fa-redo::before{content:"↻"}
+</style>
 </head>
-<body>
+<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
     <div class="header">
         <h1><i class="fas fa-battery-full"></i> 原电池工作原理</h1>
         <p class="subtitle">锌铜-稀硫酸原电池 | 电子流动与微观电极反应</p>
@@ -1314,13 +1334,13 @@
                 // 检查是否点击了锌电极
                 if (x >= electrodes.zinc.x && x <= electrodes.zinc.x + electrodes.zinc.width &&
                     y >= electrodes.zinc.y && y <= electrodes.zinc.y + electrodes.zinc.height) {
-                    alert(`锌电极（负极）\n反应类型：${electrodes.zinc.type}\n半反应式：${electrodes.zinc.reaction}\n\n锌原子失去电子被氧化为锌离子，电子通过导线流向铜电极。`);
+                    showTip(`锌电极（负极）\n反应类型：${electrodes.zinc.type}\n半反应式：${electrodes.zinc.reaction}\n\n锌原子失去电子被氧化为锌离子，电子通过导线流向铜电极。`);
                 }
                 
                 // 检查是否点击了铜电极
                 if (x >= electrodes.copper.x && x <= electrodes.copper.x + electrodes.copper.width &&
                     y >= electrodes.copper.y && y <= electrodes.copper.y + electrodes.copper.height) {
-                    alert(`铜电极（正极）\n反应类型：${electrodes.copper.type}\n半反应式：${electrodes.copper.reaction}\n\n溶液中的氢离子在铜电极表面获得电子，被还原为氢气逸出。`);
+                    showTip(`铜电极（正极）\n反应类型：${electrodes.copper.type}\n半反应式：${electrodes.copper.reaction}\n\n溶液中的氢离子在铜电极表面获得电子，被还原为氢气逸出。`);
                 }
             });
             

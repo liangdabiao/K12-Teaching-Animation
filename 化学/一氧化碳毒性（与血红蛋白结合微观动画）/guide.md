@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 本动画的主要用户群体是中学生或大学低年级生物学、化学或医学预科学生。他们的核心需求是：
@@ -72,7 +71,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1068,7 +1066,6 @@
         
         coSlider.addEventListener('input', function() {
             co
-<!--检测到代码截断，自动续写中...-->
 Concentration = parseInt(this.value);
             coValue.textContent = `${coConcentration}%`;
             updateCOMolecules();

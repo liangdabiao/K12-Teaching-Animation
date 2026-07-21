@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中物理初学者，对光的基本现象有初步了解，但需要直观、动态的模型来理解抽象概念。
@@ -77,7 +76,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -949,7 +947,6 @@
                         ctx.moveTo(chopstickWaterIntersectionX, chopstickWaterIntersectionY);
                         for (let i = 0; i < visualPoints.length; i++) {
                             ctx.lineTo(visualPoints[i].x, visual
-<!--检测到代码截断，自动续写中...-->
 y);
                         }
                         ctx.strokeStyle = "#F44336";

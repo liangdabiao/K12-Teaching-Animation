@@ -2,7 +2,6 @@
 
 ### 1. 专业思考
 
-### 1. 专业思考
 
 #### 用户需求分析
 1.  **目标用户**：主要为初中或高中化学初学者。他们已具备原子、离子、化学反应的基本概念，但需要将宏观的酸碱中和现象（如颜色变化、放热）与微观的粒子行为联系起来。
@@ -61,7 +60,6 @@
 
 ### 2. HTML_CODE
 
-### 2. HTML_CODE
 
 ```html
 <!DOCTYPE html>
@@ -1064,7 +1062,6 @@
                     document.getElementById('stepInfo').textContent = stepDescriptions[1];
                     animate();
 
-<!--检测到代码截断，自动续写中...-->
                     setTimeout(() => pauseAnimation(), 2000);
                     break;
                 case 3: // 碰撞结合
@@ -1255,7 +1252,6 @@
 
 ### 3. 过程输出
 
-### 3. 过程输出
 
 ## 酸碱中和反应微观本质交互式教学动画使用指南
 
