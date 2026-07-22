@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>复数 · 概念 · 几何意义 · 四则运算</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">复数</span><span class="subtitle">概念 · 几何意义 · 四则运算</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>i 的周期性</h4><div class="v">i²=-1, i³=-i<br>i⁴=1，周期为 4</div></div>
+  <div class="card s2"><div class="num">2</div><h4>复数分类</h4><div class="v">实数(b=0)、虚数(b≠0)<br>纯虚数(a=0,b≠0)</div></div>
+  <div class="card s3"><div class="num">3</div><h4>复平面</h4><div class="v">x轴=实部, y轴=虚部<br>z=a+bi ↔ 点(a,b)</div></div>
+  <div class="card s4"><div class="num">4</div><h4>四则运算法则</h4><div class="v">加减合并同类项<br>乘法展开；除法乘共轭</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">复数</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'虚数单位i',body:'<strong>虚数单位</strong> i 规定为方程 <code>x² = -1</code> 的解，即 <strong>i² = -1</strong>。由此可推出 i 的所有幂次呈<strong>周期为 4</strong> 的循环：i¹=i, i²=-1, i³=-i, i⁴=1。',points:{title:'i 的幂次循环',items:['<strong>i¹ = i</strong>','<strong>i² = -1</strong>（核心定义）','<strong>i³ = -i</strong>','<strong>i⁴ = 1</strong>，i⁵=i，周期为 4','<strong>通式</strong>：i^(4k+n) = iⁿ']}},
+  {tag:'基础',name:'复数定义与分类',body:'<strong>复数</strong> 形如 <code>z = a + bi</code>（a、b ∈ R），<strong>a 为实部</strong>，<strong>b 为虚部</strong>。当 b=0 时为<strong>实数</strong>；b≠0 时为<strong>虚数</strong>；a=0 且 b≠0 时为<strong>纯虚数</strong>。',points:{title:'复数分类',items:['<strong>实部</strong> Re(z) = a','<strong>虚部</strong> Im(z) = b','<strong>实数</strong>：b = 0','<strong>虚数</strong>：b ≠ 0','<strong>纯虚数</strong>：a=0 且 b≠0','<strong>相等</strong>：实部虚部都相等']}},
+  {tag:'基础',name:'共轭复数',body:'复数 <code>z = a + bi</code> 的<strong>共轭复数</strong>记为 <code>z̄ = a - bi</code>（实部不变、虚部取相反数）。共轭复数在复平面上<strong>关于 x 轴对称</strong>。z · z̄ = a² + b² = |z|²。',points:{title:'共轭复数性质',items:['<strong>共轭</strong>：z̄ = a - bi','<strong>对称</strong>：关于实轴对称','<strong>模平方</strong>：z · z̄ = a² + b²','<strong>实部</strong>：z + z̄ = 2a','<strong>虚部</strong>：z - z̄ = 2bi']}},
+  {tag:'几何',name:'复平面表示',body:'建立<strong>复平面</strong>：x 轴为<strong>实轴</strong>（单位 1），y 轴为<strong>虚轴</strong>（单位 i）。每个复数 z = a + bi 唯一对应<strong>点 Z(a, b)</strong>，也对应一个<strong>位置向量</strong> OZ。',points:{title:'复平面要点',items:['<strong>实轴</strong>：横轴，单位 1','<strong>虚轴</strong>：纵轴，单位 i','<strong>点 Z(a, b)</strong>：表示 z=a+bi','<strong>向量 OZ</strong>：从原点指向 Z','<strong>一一对应</strong>：复数 ↔ 点 ↔ 向量']}},
+  {tag:'几何',name:'模长计算',body:'复数 z = a+bi 的<strong>模</strong>（绝对值）：<code>|z| = √(a² + b²)</code>。几何意义是<strong>点 Z 到原点 O 的距离</strong>，也是向量 OZ 的长度。模为正实数，|z| ≥ 0。',points:{title:'模的性质',items:['<strong>公式</strong>：|z| = √(a²+b²)','<strong>几何</strong>：点 Z 到原点距离','<strong>|z|²</strong> = z · z̄ = a²+b²','<strong>三角不等式</strong>：|z₁+z₂| ≤ |z₁|+|z₂|','<strong>实数模</strong>：b=0 时 |z|=|a|']}},
+  {tag:'运算',name:'加减运算',body:'<strong>加法</strong>：<code>(a+bi) + (c+di) = (a+c) + (b+d)i</code>；<strong>减法</strong>为对应实部虚部分别相减。几何意义：<strong>平行四边形法则</strong>（或三角形法则），与向量加减完全一致。',points:{title:'加减法则',items:['<strong>加法</strong>：实部相加、虚部相加','<strong>减法</strong>：实部相减、虚部相减','<strong>几何</strong>：平行四边形法则','<strong>交换律</strong>：z₁+z₂ = z₂+z₁','<strong>结合律</strong>：(z₁+z₂)+z₃ = z₁+(z₂+z₃)']}},
+  {tag:'运算',name:'乘除运算',body:'<strong>乘法</strong>（展开后用 i²=-1）：<code>(a+bi)(c+di) = (ac-bd) + (ad+bc)i</code>。<strong>除法</strong>：分子分母<strong>同乘分母的共轭复数</strong>，使分母化为实数 a²+b²。几何上乘法对应<strong>模相乘、辐角相加</strong>。',points:{title:'乘除法则',items:['<strong>乘法</strong>：(a+bi)(c+di)=(ac-bd)+(ad+bc)i','<strong>除法</strong>：分母乘共轭复数','<strong>结果分母</strong>：c²+d²（实数）','<strong>几何乘法</strong>：模相乘、辐角相加','<strong>模的性质</strong>：|z₁·z₂|=|z₁|·|z₂|']}},
+  {tag:'综合',name:'核心速记',body:'复数 z = a+bi 是<strong>实数的扩充</strong>，由 i²=-1 引入虚数单位。复数<strong>一一对应</strong>复平面上的点 (a, b)。<strong>加减</strong>=合并同类项、对应平行四边形；<strong>乘除</strong>=展开化简、乘法对应模相乘辐角相加。',points:{title:'三句话总结',items:['<strong>定义</strong>：z = a + bi (a,b∈R)','<strong>几何</strong>：复平面点 (a, b)，模 √(a²+b²)','<strong>加减</strong>：合并同类项，平行四边形','<strong>乘除</strong>：展开化简 / 乘共轭','<strong>i 的周期</strong>：4（iⁿ 循环）']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 通用：绘制复平面坐标系 =====
+function drawPlane(cx,cy,scale){
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-260,cy);ctx.lineTo(cx+260,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-200);ctx.lineTo(cx,cy+200);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#9ab0d0';
+  ctx.beginPath();ctx.moveTo(cx+260,cy);ctx.lineTo(cx+252,cy-5);ctx.lineTo(cx+252,cy+5);ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx,cy-200);ctx.lineTo(cx-5,cy-192);ctx.lineTo(cx+5,cy-192);ctx.fill();
+  // 刻度
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.fillStyle='#5a6a8a';ctx.font='10px sans-serif';ctx.textAlign='center';
+  for(let i=-4;i<=4;i++){if(i===0)continue;const x=cx+i*scale;ctx.beginPath();ctx.moveTo(x,cy-4);ctx.lineTo(x,cy+4);ctx.stroke();ctx.fillText(i,x,cy+16);}
+  for(let i=-3;i<=3;i++){if(i===0)continue;const y=cy-i*scale;ctx.beginPath();ctx.moveTo(cx-4,y);ctx.lineTo(cx+4,y);ctx.stroke();ctx.textAlign='right';ctx.fillText(i+'i',cx-8,y);}
+  // 轴标签
+  drawText('实轴 Re',cx+245,cy-15,'#9ab0d0',11,'left');
+  drawText('虚轴 Im',cx+12,cy-195,'#9ab0d0',11,'left');
+  drawText('O',cx-12,cy+12,'#9ab0d0',11);
+}
+
+// ===== 场景1：虚数单位 i 的周期（旋转于单位圆 |z|=1）=====
+function drawIUnitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('虚数单位 i · i² = -1 · 周期为 4',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 复平面坐标系
+  drawPlane(cx,cy,45);
+  // 单位圆（|z|=1）
+  ctx.strokeStyle='rgba(251,191,36,0.3)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.arc(cx,cy,45,0,7);ctx.stroke();ctx.setLineDash([]);
+  // 四个关键点 1, i, -1, -i 在单位圆上循环
+  const pts=[{a:0,n:'1',c:'#34d399'},{a:Math.PI/2,n:'i',c:'#06b6d4'},{a:Math.PI,n:'-1',c:'#f87171'},{a:3*Math.PI/2,n:'-i',c:'#a78bfa'}];
+  // 旋转指针（按时间旋转）
+  const curIdx=Math.floor(time*0.6)%4;
+  const sweepA=time*0.6*Math.PI/2 % (2*Math.PI);
+  // 旋转线
+  const rA=time*0.6%(4*Math.PI); // 持续旋转
+  const px=cx+45*Math.cos(rA-Math.PI/2),py=cy+45*Math.sin(rA-Math.PI/2);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+  // 标四个点
+  pts.forEach(p=>{
+    const x=cx+45*Math.cos(p.a),y=cy-45*Math.sin(p.a);
+    ctx.fillStyle=p.c;ctx.shadowColor=p.c;ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fill();ctx.shadowBlur=0;
+    drawText(p.n,x,y-20,p.c,14);
+  });
+  // 当前 i 的幂公式（顶部）
+  const powers=['i¹ = i','i² = -1','i³ = -i','i⁴ = 1'];
+  const colors=['#06b6d4','#f87171','#a78bfa','#34d399'];
+  powers.forEach((p,i)=>{
+    const x=W/2-150+i*100,y=80;
+    ctx.fillStyle=i===curIdx?colors[i]+'33':'rgba(255,255,255,0.04)';
+    ctx.strokeStyle=i===curIdx?colors[i]:'#243a5e';ctx.lineWidth=i===curIdx?2:1;
+    roundRect(x-40,y-16,80,32,6);ctx.fill();ctx.stroke();
+    drawText(p,x,y,i===curIdx?colors[i]:'#9ab0d0',13);
+  });
+  drawText('i^(4k+n) = iⁿ —— 每四次一循环',W/2,H-50,'#34d399',13);
+  drawText('引入 i 使方程 x²+1=0 有解，扩充数系',W/2,H-28,'#9ab0d0',11);
+}
+
+// ===== 场景2：复数定义与分类（分类树）=====
+function drawDefineScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('复数 z = a + bi · 定义与分类',W/2,30,'#fbbf24',16);
+  // 中心公式（强调 z = a + bi）
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2-180,60,360,50,10);ctx.fill();ctx.stroke();
+  ctx.font='bold 22px serif';ctx.fillStyle='#fde68a';ctx.textAlign='center';
+  ctx.fillText('z = a + bi   (a, b ∈ R)',W/2,87);
+  drawText('a = 实部 Re(z)   ·   b = 虚部 Im(z)',W/2,128,'#9ab0d0',12);
+  // 分类树
+  const cy=200;
+  // 根：复数集
+  ctx.fillStyle='#fbbf2422';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2-80,cy,160,38,8);ctx.fill();ctx.stroke();
+  drawText('复数集 C',W/2,cy+19,'#fbbf24',14);
+  // 连线
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(W/2,cy+38);ctx.lineTo(W/2,cy+58);ctx.stroke();
+  // 分支：实数 vs 虚数（根据 b）
+  ctx.beginPath();ctx.moveTo(W/2-160,cy+58);ctx.lineTo(W/2+160,cy+58);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W/2-160,cy+58);ctx.lineTo(W/2-160,cy+75);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W/2+160,cy+58);ctx.lineTo(W/2+160,cy+75);ctx.stroke();
+  // 实数 b=0
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W/2-260,cy+75,200,40,8);ctx.fill();ctx.stroke();
+  drawText('实数 (b = 0)',W/2-160,cy+90,'#34d399',13);
+  drawText('如 3, -2, √2',W/2-160,cy+106,'#9ab0d0',11);
+  // 虚数 b≠0
+  ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(W/2+60,cy+75,200,40,8);ctx.fill();ctx.stroke();
+  drawText('虚数 (b ≠ 0)',W/2+160,cy+90,'#06b6d4',13);
+  drawText('如 2+3i, -i, 5i',W/2+160,cy+106,'#9ab0d0',11);
+  // 纯虚数子分支
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(W/2+160,cy+115);ctx.lineTo(W/2+160,cy+140);ctx.stroke();
+  ctx.fillStyle='#f8717122';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(W/2+60,cy+140,200,40,8);ctx.fill();ctx.stroke();
+  drawText('纯虚数 (a=0, b≠0)',W/2+160,cy+155,'#f87171',13);
+  drawText('如 i, 2i, -3i',W/2+160,cy+171,'#9ab0d0',11);
+  // 相等条件
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(W/2-220,H-90,440,50,8);ctx.fill();ctx.stroke();
+  drawText('复数相等：a+bi = c+di ⇔ a=c 且 b=d',W/2,H-72,'#a78bfa',13);
+  drawText('实部相等 且 虚部相等（缺一不可）',W/2,H-52,'#9ab0d0',11);
+}
+
+// ===== 场景3：共轭复数（关于实轴对称）=====
+function drawConjScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('共轭复数 · z̄ = a - bi · 关于实轴对称',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 复平面（含刻度）
+  drawPlane(cx,cy,40);
+  // 动态复数
+  const pulse=Math.sin(time*1.2)*0.3+0.7;
+  const a=3,b=2+Math.sin(time*0.8)*0.5;
+  const scale=40;
+  // z 点
+  const zx=cx+a*scale,zy=cy-b*scale;
+  // z̄ 点
+  const cx2=cx+a*scale,cy2=cy+b*scale;
+  // 对称连线（关于 x 轴）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(zx,zy);ctx.lineTo(cx2,cy2);ctx.stroke();ctx.setLineDash([]);
+  // 中点在实轴
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(zx,cy,4,0,7);ctx.fill();
+  // 向量 z
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(zx,zy);ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(zx,zy,8,0,7);ctx.fill();
+  drawText('z = '+a.toFixed(1)+' + '+b.toFixed(1)+'i',zx+50,zy,'#06b6d4',13);
+  // 向量 z̄
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx2,cy2);ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(cx2,cy2,8,0,7);ctx.fill();
+  drawText('z̄ = '+a.toFixed(1)+' - '+b.toFixed(1)+'i',cx2+50,cy2,'#f87171',13);
+  // 性质
+  drawText('z · z̄ = a² + b² = '+((a*a+b*b).toFixed(2))+' = |z|²',W/2,H-60,'#34d399',13);
+  drawText('共轭 = 实部不变、虚部取相反数',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景4：复平面表示（复数 ↔ 点 ↔ 向量）=====
+function drawPlaneScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('复平面 · 复数 z=a+bi 对应点 Z(a, b)',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  const scale=45;
+  // 复平面坐标系
+  drawPlane(cx,cy,scale);
+  // 动态复数点
+  const a=Math.cos(time*0.5)*3,b=Math.sin(time*0.7)*2;
+  const px=cx+a*scale,py=cy-b*scale;
+  // 投影到坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(cx,py);ctx.stroke();
+  ctx.setLineDash([]);
+  // 投影点
+  ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(px,cy,4,0,7);ctx.fill();
+  ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(cx,py,4,0,7);ctx.fill();
+  drawText('a='+a.toFixed(2),px,cy+16,'#a78bfa',11);
+  drawText('b='+b.toFixed(2),cx-20,py,'#a78bfa',11,'right');
+  // 向量 OZ
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();ctx.shadowBlur=0;
+  // 点 Z
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('Z('+a.toFixed(1)+', '+b.toFixed(1)+')',px,py-22,'#fbbf24',13);
+  // 三种表示
+  drawText('点 Z(a,b)   ↔   向量 OZ   ↔   复数 z=a+bi',W/2,H-50,'#34d399',13);
+  drawText('实轴单位 1，虚轴单位 i',W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景5：模长计算（直角三角形勾股）=====
+function drawModulusScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('复数的模 · |z| = √(a² + b²)',W/2,30,'#fbbf24',16);
+  const cx=W/2-60,cy=H/2+30;
+  const scale=40;
+  drawPlane(cx,cy,scale);
+  const a=3,b=2;
+  const px=cx+a*scale,py=cy-b*scale;
+  // 直角三角形
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px,cy);ctx.lineTo(cx,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  // 斜边（向量 = 模）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();ctx.shadowBlur=0;
+  // 直角标记
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  ctx.strokeRect(px-10,cy-10,10,10);
+  // 标 a 边
+  drawText('a = '+a,(cx+px)/2,cy+18,'#a78bfa',13);
+  // 标 b 边
+  drawText('b = '+b,px+25,(cy+py)/2,'#a78bfa',13);
+  // 标 |z|
+  const midX=(cx+px)/2,midY=(cy+py)/2;
+  drawText('|z|',midX-20,midY-12,'#fbbf24',15);
+  // 点 Z
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();
+  drawText('Z('+a+', '+b+')',px+30,py,'#fbbf24',12,'left');
+  // 计算公式（右侧）
+  const fx=W-220;
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(fx,90,200,H-180,10);ctx.fill();ctx.stroke();
+  drawText('模长计算',fx+100,110,'#fbbf24',14);
+  const steps=['z = '+a+' + '+b+'i','|z| = √(a²+b²)','    = √('+a*a+' + '+b*b+')','    = √'+(a*a+b*b),'    = '+Math.sqrt(a*a+b*b).toFixed(3)];
+  steps.forEach((s,i)=>drawText(s,fx+100,140+i*28,i===0?'#fde68a':'#34d399',13));
+  drawText('几何意义：点 Z 到原点 O 的距离',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景6：加减运算（平行四边形法则）=====
+function drawAddSubScene(time){
+  const W=cv.width,H=cv.height;
+  const mode=time%6<3?'+':'-';
+  drawText('加减运算 · '+(mode==='+'?'加法':'减法')+' · 平行四边形法则',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  const scale=35;
+  // 复平面坐标系
+  drawPlane(cx,cy,scale);
+  const a1=2,b1=1,a2=1,b2=2;
+  // z1 向量
+  const x1=cx+a1*scale,y1=cy-b1*scale;
+  // z2 向量
+  const x2=cx+a2*scale,y2=cy-b2*scale;
+  // 和
+  let rx,ry,lbl;
+  if(mode==='+'){rx=cx+(a1+a2)*scale;ry=cy-(b1+b2)*scale;lbl='z₁+z₂='+(a1+a2)+'+'+(b1+b2)+'i';}
+  else{rx=cx+(a1-a2)*scale;ry=cy-(b1-b2)*scale;lbl='z₁-z₂='+(a1-a2)+'+'+(b1-b2)+'i';}
+  // 平行四边形
+  ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1.5;ctx.setLineDash([5,5]);
+  if(mode==='+'){
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(rx,ry);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(rx,ry);ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  // 向量 z1
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x1,y1);ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(x1,y1,6,0,7);ctx.fill();
+  drawText('z₁='+a1+'+'+b1+'i',x1-30,y1-15,'#06b6d4',12);
+  // 向量 z2
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;ctx.shadowColor='#a78bfa';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x2,y2);ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(x2,y2,6,0,7);ctx.fill();
+  drawText('z₂='+a2+'+'+b2+'i',x2+10,y2-15,'#a78bfa',12);
+  // 结果向量
+  ctx.strokeStyle='#34d399';ctx.lineWidth=4;ctx.shadowColor='#34d399';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(rx,ry);ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(rx,ry,8,0,7);ctx.fill();
+  drawText(lbl,rx-50,ry+18,'#34d399',13);
+  // 法则
+  drawText(mode==='+'?'(a+bi)+(c+di)=(a+c)+(b+d)i':'(a+bi)-(c+di)=(a-c)+(b-d)i',W/2,H-55,'#fde68a',13);
+  drawText('几何：向量加减，平行四边形对角线',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景7：乘除运算（乘法展开 / 除法乘共轭）=====
+function drawMulDivScene(time){
+  const W=cv.width,H=cv.height;
+  const phase=time%6<3?'mul':'div';
+  drawText('乘除运算 · '+(phase==='mul'?'乘法：(a+bi)(c+di)':'除法：乘共轭复数'),W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40;
+  const scale=35;
+  // 复平面坐标系
+  drawPlane(cx,cy,scale);
+  if(phase==='mul'){
+    // z1 = 2+i, z2 = 1+2i, 乘积 = (2-2)+(4+1)i = 0+5i
+    const a1=2,b1=1,a2=1,b2=2;
+    const ra=a1*a2-b1*b2,rb=a1*b2+a2*b1;
+    const x1=cx+a1*scale,y1=cy-b1*scale;
+    const x2=cx+a2*scale,y2=cy-b2*scale;
+    const xr=cx+ra*scale,yr=cy-rb*scale;
+    // z1, z2 向量
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x1,y1);ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(x1,y1,6,0,7);ctx.fill();
+    drawText('z₁='+a1+'+'+b1+'i',x1-30,y1-12,'#06b6d4',12);
+    ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;ctx.shadowColor='#a78bfa';ctx.shadowBlur=8;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x2,y2);ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(x2,y2,6,0,7);ctx.fill();
+    drawText('z₂='+a2+'+'+b2+'i',x2-30,y2+18,'#a78bfa',12);
+    // 乘积
+    ctx.strokeStyle='#34d399';ctx.lineWidth=4;ctx.shadowColor='#34d399';ctx.shadowBlur=14;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(xr,yr);ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(xr,yr,8,0,7);ctx.fill();
+    drawText('z₁z₂='+ra+'+'+rb+'i',xr-40,yr-20,'#34d399',13);
+    // 公式
+    drawText('(a+bi)(c+di) = (ac-bd) + (ad+bc)i',W/2,H-60,'#fde68a',13);
+    drawText('几何：模相乘、辐角相加',W/2,H-35,'#9ab0d0',12);
+    drawText('|z₁z₂| = |z₁|·|z₂|',W/2,H-18,'#34d399',11);
+  }else{
+    // 除法：(1+i)/(1-i)，分母乘共轭(1+i)
+    // 分子(1+i)(1+i)=2i，分母(1-i)(1+i)=2，结果 i
+    drawText('(1+i) / (1-i)',cx,cy-150,'#06b6d4',16);
+    const steps=['= (1+i)(1+i) / [(1-i)(1+i)]','  分子 = 1 + 2i + i² = 2i','  分母 = 1 - i² = 1+1 = 2','= 2i / 2 = i'];
+    steps.forEach((s,i)=>drawText(s,W/2,cy-100+i*30,i===0?'#a78bfa':i===3?'#34d399':'#9ab0d0',13));
+    drawText('除法：分子分母同乘分母的共轭复数',W/2,H-45,'#fde68a',13);
+    drawText('分母 c²+d² 化为实数',W/2,H-25,'#9ab0d0',12);
+  }
+}
+
+// ===== 场景8：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('复数核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'定义',d:'z = a + bi (a,b∈R)',c:'#fbbf24'},
+    {t:'i 的性质',d:'i²=-1，周期4',c:'#06b6d4'},
+    {t:'分类',d:'实数/虚数/纯虚数',c:'#34d399'},
+    {t:'共轭',d:'z̄ = a - bi',c:'#a78bfa'},
+    {t:'模',d:'|z|=√(a²+b²)',c:'#f87171'},
+    {t:'几何',d:'复平面点(a,b)',c:'#ec4899'},
+    {t:'加减',d:'平行四边形',c:'#fb923c'},
+    {t:'乘除',d:'展开 / 乘共轭',c:'#67e8f9'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%4,row=Math.floor(i/4);
+    const x=60+col*(W-120)/4;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/4-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/8,y+50,m.c,15);
+    drawText(m.d,x+(W-120)/8,y+95,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawIUnitScene(t);
+  else if(stepIdx===1)drawDefineScene(t);
+  else if(stepIdx===2)drawConjScene(t);
+  else if(stepIdx===3)drawPlaneScene(t);
+  else if(stepIdx===4)drawModulusScene(t);
+  else if(stepIdx===5)drawAddSubScene(t);
+  else if(stepIdx===6)drawMulDivScene(t);
+  else if(stepIdx===7)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

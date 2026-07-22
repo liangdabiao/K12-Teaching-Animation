@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性回归分析 · 最小二乘法 · 相关系数 · 预测</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">线性回归分析</span><span class="subtitle">最小二乘法 · 相关系数 · 回归预测</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>相关性判定</h4><div class="v">确定性关系（函数）<br>vs 相关关系（统计）</div></div>
+  <div class="card s2"><div class="num">2</div><h4>相关系数 r</h4><div class="v">-1 ≤ r ≤ 1<br>衡量线性相关强弱</div></div>
+  <div class="card s3"><div class="num">3</div><h4>最小二乘法</h4><div class="v">残差平方和最小<br>min Σ(yᵢ-ŷᵢ)²</div></div>
+  <div class="card s4"><div class="num">4</div><h4>回归方程</h4><div class="v">ŷ = b̂x + â<br>过样本中心 (x̄, ȳ)</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">变量关系</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+// 样本数据（典型 5 组）
+const SAMPLE=[
+  {x:1,y:2},{x:2,y:3.1},{x:3,y:4.0},{x:4,y:4.9},{x:5,y:6.2}
+];
+// 计算统计量
+function stats(data){
+  const n=data.length;
+  let sx=0,sy=0,sxx=0,syy=0,sxy=0;
+  data.forEach(p=>{sx+=p.x;sy+=p.y;sxx+=p.x*p.x;syy+=p.y*p.y;sxy+=p.x*p.y;});
+  const mx=sx/n,my=sy/n;
+  let sxy_c=0,sxx_c=0,syy_c=0;
+  data.forEach(p=>{sxy_c+=(p.x-mx)*(p.y-my);sxx_c+=(p.x-mx)*(p.x-mx);syy_c+=(p.y-my)*(p.y-my);});
+  const b=sxy_c/sxx_c;
+  const a=my-b*mx;
+  const r=sxy_c/Math.sqrt(sxx_c*syy_c);
+  let sse=0,sst=0;
+  data.forEach(p=>{const yp=b*p.x+a;sse+=(p.y-yp)*(p.y-yp);sst+=(p.y-my)*(p.y-my);});
+  const R2=1-sse/sst;
+  return {n,mx,my,b,a,r,R2,sse,sst};
+}
+const ST=stats(SAMPLE);
+
+const STEPS=[
+  {tag:'基础',name:'变量关系',body:'两个变量之间的关系分两类：<strong>确定性关系</strong>（函数 y=f(x)，如圆面积 S=πr²、匀速运动 s=vt）和<strong>相关关系</strong>（变量间存在联系但不确定，如身高与体重、施肥量与产量）。<strong>回归分析</strong>专门研究相关关系，从带噪声的数据中寻找统计规律，是统计学最常用的方法之一。',points:{title:'关系分类',items:['<strong>确定性关系</strong>：函数，一一对应','<strong>相关关系</strong>：有联系但不唯一','<strong>正相关</strong>：x 增 y 也增','<strong>负相关</strong>：x 增 y 反而减']}},
+  {tag:'基础',name:'散点图与相关性',body:'把每组 (xᵢ, yᵢ) 数据画成<strong>散点图</strong>，可以直观判断两变量的相关性方向与强弱。散点大致沿直线上升为<strong>正相关</strong>；下降为<strong>负相关</strong>；杂乱无章为<strong>弱相关或不相关</strong>；呈曲线趋势则属<strong>非线性相关</strong>。散点图是回归分析的第一步。',points:{title:'看图判断',items:['<strong>正相关</strong>：左下→右上','<strong>负相关</strong>：左上→右下','<strong>线性相关</strong>：点聚集在直线附近','<strong>非线性</strong>：呈曲线趋势']}},
+  {tag:'核心',name:'相关系数 r',body:'<strong>相关系数 r</strong> 量化两变量线性相关程度，公式 <code>r = Σ(xᵢ-x̄)(yᵢ-ȳ) / √[Σ(xᵢ-x̄)²·Σ(yᵢ-ȳ)²]</code>。取值范围 <strong>-1 ≤ r ≤ 1</strong>。|r| 越接近 1 线性关系越强；|r| 越接近 0 线性关系越弱。本例 r ≈ 0.995 为强正相关。',points:{title:'r 的含义',items:['<strong>r > 0</strong>：正相关','<strong>r < 0</strong>：负相关','<strong>|r|→1</strong>：强相关','<strong>|r|→0</strong>：弱相关（无线性）']}},
+  {tag:'核心',name:'最小二乘法推导',body:'<strong>最小二乘法</strong>求回归直线 ŷ = b̂x + â，使<strong>残差平方和</strong> Q = Σ(yᵢ - ŷᵢ)² 达到最小。对 Q 关于 â、b̂ 求偏导并令其为零，得到<strong>正规方程组</strong>，解得 <code>b̂ = Σ(xᵢ-x̄)(yᵢ-ȳ)/Σ(xᵢ-x̄)²</code>，<code>â = ȳ - b̂·x̄</code>。',points:{title:'推导要点',items:['<strong>目标</strong>：min Σ(yᵢ-ŷᵢ)²','<strong>对 â 求导</strong>：得 â = ȳ - b̂·x̄','<strong>对 b̂ 求导</strong>：得斜率公式','<strong>结论</strong>：直线过样本中心 (x̄, ȳ)']}},
+  {tag:'计算',name:'回归方程计算',body:'由 5 组样本数据 (1,2)(2,3.1)(3,4.0)(4,4.9)(5,6.2)：算得 x̄=3.0, ȳ=4.04，<code>b̂ ≈ 1.03</code>，<code>â ≈ 0.95</code>。回归方程 <strong>ŷ = 1.03x + 0.95</strong>。该直线一定过<strong>样本中心 (3, 4.04)</strong>，这是最小二乘解的重要性质。',points:{title:'五步法',items:['<strong>①</strong> 求 x̄、ȳ','<strong>②</strong> 求 Σ(xᵢ-x̄)(yᵢ-ȳ)','<strong>③</strong> 求 Σ(xᵢ-x̄)² 得 b̂','<strong>④</strong> 用 â=ȳ-b̂x̄ 得截距']}},
+  {tag:'分析',name:'残差与 R²',body:'<strong>残差</strong> eᵢ = yᵢ - ŷᵢ 表示观测值与预测值之差，反映模型未能解释的部分。<strong>决定系数</strong> <code>R² = 1 - SSE/SST</code>，范围 0 ≤ R² ≤ 1。R² 越接近 1 拟合越好；残差图若无明显规律则模型合理。本例 R² ≈ 0.99。',points:{title:'拟合优度',items:['<strong>残差</strong>：eᵢ = yᵢ - ŷᵢ','<strong>SSE</strong>：残差平方和','<strong>SST</strong>：总平方和','<strong>R²→1</strong>：拟合优秀']}},
+  {tag:'应用',name:'实际应用与预测',body:'回归方程可用于<strong>预测</strong>：如 x=6 时 ŷ=1.03×6+0.95≈7.13。回归分析广泛应用于<strong>经济学（消费-收入）</strong>、<strong>医学（剂量-疗效）</strong>、<strong>教育（学习时间-成绩）</strong>、<strong>气象（温度-销量）</strong>等领域，是数据科学的基础工具。',points:{title:'应用要点',items:['<strong>预测</strong>：代入 x 求 ŷ','<strong>趋势分析</strong>：判断走向','<strong>外推需谨慎</strong>：远离数据区风险大','<strong>相关 ≠ 因果</strong>：需结合实际']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// 坐标系映射：x∈[0,7], y∈[0,8]
+function mapX(x){return 90+x*(cv.width-180)/7;}
+function mapY(y){return cv.height-80-y*(cv.height-160)/8;}
+function drawAxes(){
+  const W=cv.width,H=cv.height;
+  // 网格
+  ctx.strokeStyle='rgba(36,58,94,0.4)';ctx.lineWidth=1;
+  for(let i=0;i<=7;i++){
+    const px=mapX(i);
+    ctx.beginPath();ctx.moveTo(px,H-70);ctx.lineTo(px,50);ctx.stroke();
+  }
+  for(let i=0;i<=8;i++){
+    const py=mapY(i);
+    ctx.beginPath();ctx.moveTo(80,py);ctx.lineTo(W-30,py);ctx.stroke();
+  }
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(80,H-70);ctx.lineTo(W-30,H-70);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(80,H-70);ctx.lineTo(80,50);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(W-30,H-70);ctx.lineTo(W-40,H-74);ctx.lineTo(W-40,H-66);ctx.fill();
+  ctx.beginPath();ctx.moveTo(80,50);ctx.lineTo(76,60);ctx.lineTo(84,60);ctx.fill();
+  drawText('x',W-25,H-70,'#9ab0d0',13,'left');
+  drawText('y',80,42,'#9ab0d0',13);
+  // x 轴刻度
+  for(let i=0;i<=7;i++){
+    const px=mapX(i);
+    ctx.strokeStyle='#243a5e';
+    ctx.beginPath();ctx.moveTo(px,H-70);ctx.lineTo(px,H-74);ctx.stroke();
+    drawText(i,px,H-58,'#5a6a8a',10);
+  }
+  // y 轴刻度
+  for(let i=0;i<=8;i++){
+    const py=mapY(i);
+    ctx.strokeStyle='#243a5e';
+    ctx.beginPath();ctx.moveTo(80,py);ctx.lineTo(76,py);ctx.stroke();
+    drawText(i,68,py,'#5a6a8a',10,'right');
+  }
+}
+function drawSample(highlight){
+  SAMPLE.forEach((p,i)=>{
+    const px=mapX(p.x),py=mapY(p.y);
+    ctx.fillStyle=highlight?('#fbbf24'):'#06b6d4';
+    ctx.shadowColor=highlight?'#fbbf24':'#06b6d4';ctx.shadowBlur=highlight?15:6;
+    ctx.beginPath();ctx.arc(px,py,highlight?8:6,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('('+p.x+','+p.y+')',px,py-18,'#9ab0d0',10);
+  });
+}
+// 通用：画一条回归直线（带颜色和发光）
+function drawLine(b,a,color,glow,lw){
+  ctx.strokeStyle=color;ctx.lineWidth=lw||2.5;
+  if(glow){ctx.shadowColor=color;ctx.shadowBlur=glow;}
+  ctx.beginPath();ctx.moveTo(mapX(0),mapY(a));ctx.lineTo(mapX(7),mapY(b*7+a));ctx.stroke();
+  ctx.shadowBlur=0;
+}
+
+// ===== 场景1：变量关系分类 =====
+function drawRelationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('变量关系：函数关系 vs 相关关系',W/2,30,'#fbbf24',16);
+  // 左：确定性函数 y=x²
+  drawText('确定性关系（函数）',W*0.27,68,'#06b6d4',14);
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  const lx=W*0.10,rx=W*0.44,ty=95,by=H-120;
+  ctx.strokeRect(lx,ty,rx-lx,by-ty);
+  // 坐标轴
+  ctx.strokeStyle='#243a5e';
+  ctx.beginPath();ctx.moveTo(lx+(rx-lx)/2,ty);ctx.lineTo(lx+(rx-lx)/2,by);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(lx,by-(by-ty)/2);ctx.lineTo(rx,by-(by-ty)/2);ctx.stroke();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let x=-2;x<=2;x+=0.05){
+    const sx=lx+(x+2.2)/4.4*(rx-lx);
+    const sy=by-(x*x)/4*(by-ty);
+    if(x===-2)ctx.moveTo(sx,sy);else ctx.lineTo(sx,sy);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('y = x²',W*0.27,by+22,'#67e8f9',14);
+  drawText('一一对应 · 完全确定',W*0.27,by+42,'#9ab0d0',11);
+  drawText('例：S=πr², s=vt',W*0.27,by+60,'#5a6a8a',10);
+  // 右：相关关系（散点+趋势）
+  drawText('相关关系（统计）',W*0.73,68,'#fbbf24',14);
+  const lx2=W*0.56,rx2=W*0.90;
+  ctx.strokeStyle='#3a4a6a';ctx.strokeRect(lx2,ty,rx2-lx2,by-ty);
+  ctx.strokeStyle='#243a5e';
+  ctx.beginPath();ctx.moveTo(lx2,by);ctx.lineTo(rx2,by);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(lx2,ty);ctx.lineTo(lx2,by);ctx.stroke();
+  // 散点（带噪声）
+  const seed=[0.2,0.5,0.9,1.3,1.7,2.2,2.6,3.0];
+  seed.forEach((sx,i)=>{
+    const sy=0.8*sx+0.3+Math.sin(i*1.3+time)*0.2;
+    const px=lx2+sx/3.5*(rx2-lx2);
+    const py=by-sy/3.5*(by-ty);
+    ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+  });
+  ctx.shadowBlur=0;
+  // 趋势线
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  ctx.moveTo(lx2+(0.2/3.5)*(rx2-lx2),by-((0.8*0.2+0.3)/3.5)*(by-ty));
+  ctx.lineTo(lx2+(3.0/3.5)*(rx2-lx2),by-((0.8*3.0+0.3)/3.5)*(by-ty));
+  ctx.stroke();ctx.setLineDash([]);
+  drawText('有趋势但有波动',W*0.73,by+22,'#34d399',14);
+  drawText('用回归分析找规律',W*0.73,by+42,'#9ab0d0',11);
+  drawText('例：身高↔体重',W*0.73,by+60,'#5a6a8a',10);
+}
+
+// ===== 场景2：散点图与相关性 =====
+function drawScatterScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('散点图 · 判断相关性方向',W/2,30,'#fbbf24',16);
+  drawAxes();
+  drawSample(true);
+  // 显示正相关趋势箭头（淡虚线）
+  ctx.strokeStyle='rgba(52,211,153,0.35)';ctx.lineWidth=2;ctx.setLineDash([6,5]);
+  ctx.beginPath();ctx.moveTo(mapX(0.5),mapY(2));ctx.lineTo(mapX(5.5),mapY(6.5));ctx.stroke();
+  ctx.setLineDash([]);
+  // 趋势箭头
+  const ax=mapX(5.5),ay=mapY(6.5);
+  ctx.fillStyle='rgba(52,211,153,0.6)';
+  ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax-12,ay-4);ctx.lineTo(ax-4,ay-12);ctx.fill();
+  drawText('5 组样本点 · 正相关趋势',W/2,H-45,'#34d399',13);
+  drawText('散点从左下到右上 → 正相关',W/2,H-25,'#34d399',11);
+  // 动画：旋转的光圈扫过散点（依次高亮）
+  const sweep=((time*0.6)%1)*5;
+  SAMPLE.forEach((p,i)=>{
+    if(Math.abs(i-sweep)<0.6){
+      const px=mapX(p.x),py=mapY(p.y);
+      ctx.strokeStyle='rgba(251,191,36,0.7)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(px,py,14,0,7);ctx.stroke();
+    }
+  });
+}
+
+// ===== 场景3：相关系数 r =====
+function drawRScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('相关系数 r · 衡量线性相关强度',W/2,30,'#fbbf24',16);
+  // 数轴 -1 到 1
+  const axY=H/2-30,axL=W*0.15,axR=W*0.85;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(axL,axY);ctx.lineTo(axR,axY);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(axR,axY);ctx.lineTo(axR-10,axY-5);ctx.lineTo(axR-10,axY+5);ctx.fill();
+  // 刻度
+  for(let v=-1;v<=1;v+=0.25){
+    const px=axL+(v+1)/2*(axR-axL);
+    ctx.beginPath();ctx.moveTo(px,axY-6);ctx.lineTo(px,axY+6);ctx.stroke();
+    drawText(v.toFixed(2),px,axY+22,'#5a6a8a',10);
+  }
+  // 关键节点标记
+  [-1,-0.5,0,0.5,1].forEach(v=>{
+    const px=axL+(v+1)/2*(axR-axL);
+    ctx.strokeStyle='#5a6a8a';
+    ctx.beginPath();ctx.moveTo(px,axY-10);ctx.lineTo(px,axY+10);ctx.stroke();
+  });
+  // 区域标记（负相关 / 正相关）
+  ctx.fillStyle='rgba(248,113,113,0.15)';
+  ctx.fillRect(axL,axY-55,(axR-axL)/2,45);
+  ctx.fillStyle='rgba(52,211,153,0.15)';
+  ctx.fillRect(axL+(axR-axL)/2,axY-55,(axR-axL)/2,45);
+  drawText('负相关 r<0',axL+(axR-axL)/4,axY-35,'#f87171',12);
+  drawText('正相关 r>0',axL+3*(axR-axL)/4,axY-35,'#34d399',12);
+  drawText('r=0 无线性相关',axL+(axR-axL)/2,axY-35,'#9ab0d0',11);
+  // 当前 r 指针（脉动）
+  const r=ST.r;
+  const px=axL+(r+1)/2*(axR-axL);
+  const pulse=11+2*Math.sin(time*3);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=18;
+  ctx.beginPath();ctx.arc(px,axY,pulse,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('▼',px,axY-22,'#fbbf24',15);
+  // 公式
+  ctx.font='bold 14px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('r = Σ(xᵢ-x̄)(yᵢ-ȳ) / √[Σ(xᵢ-x̄)²·Σ(yᵢ-ȳ)²]',W/2,H-115);
+  drawText('本例 r = '+r.toFixed(4)+' （强正相关）',W/2,H-85,'#34d399',14);
+  drawText('|r|→1 强相关，|r|→0 弱相关，-1 ≤ r ≤ 1',W/2,H-60,'#9ab0d0',12);
+  drawText('注意：r 只衡量"线性"相关，非线性关系 r 可能接近 0',W/2,H-38,'#fbbf24',11);
+}
+
+// ===== 场景4：最小二乘法推导 =====
+function drawOLSScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('最小二乘法 · 残差平方和最小',W/2,30,'#fbbf24',16);
+  drawAxes();
+  drawSample(false);
+  // 动态调整的直线（动画搜索最优解）
+  const progress=Math.min(1,(time*0.3)%1.5);
+  // 从一个偏离最优的斜率逐渐收敛到最优
+  const bTest=ST.b+(1-progress)*0.8;
+  const aTest=ST.my-bTest*ST.mx;
+  // 画当前尝试直线（半透明黄色）
+  ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(mapX(0),mapY(aTest));
+  ctx.lineTo(mapX(7),mapY(bTest*7+aTest));
+  ctx.stroke();
+  // 当前尝试的残差虚线
+  let curSSE=0;
+  SAMPLE.forEach(p=>{
+    const py=mapY(p.y),pyp=mapY(bTest*p.x+aTest);
+    const e=p.y-(bTest*p.x+aTest);
+    curSSE+=e*e;
+    ctx.strokeStyle='rgba(248,113,113,0.5)';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(mapX(p.x),py);ctx.lineTo(mapX(p.x),pyp);ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  // 最优直线（收敛后高亮显示）
+  if(progress>0.65){
+    drawLine(ST.b,ST.a,'#34d399',12,3);
+    drawText('ŷ = '+ST.b.toFixed(2)+'x + '+ST.a.toFixed(2),W/2,H-65,'#34d399',14);
+  }
+  drawText('目标：min Σ(yᵢ - ŷᵢ)²  →  残差平方和最小',W/2,H-42,'#9ab0d0',12);
+  drawText('当前 SSE ≈ '+curSSE.toFixed(3)+'（收敛中→最优 '+ST.sse.toFixed(3)+'）',W/2,H-22,'#fbbf24',11);
+}
+
+// ===== 场景5：回归方程计算 =====
+function drawCalcScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('回归方程计算 · 5 组数据',W/2,30,'#fbbf24',16);
+  drawAxes();
+  drawSample(false);
+  // 回归直线（发光）
+  drawLine(ST.b,ST.a,'#fbbf24',12,3);
+  // 样本中心（脉动强调）
+  const cx=mapX(ST.mx),cy=mapY(ST.my);
+  const pulse=7+1.5*Math.sin(time*3);
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,pulse,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('样本中心 (x̄,ȳ)=('+ST.mx.toFixed(1)+','+ST.my.toFixed(2)+')',cx,cy-22,'#f87171',12);
+  // 方程显示框
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(W/2-180,H-95,360,30,6);ctx.fill();ctx.stroke();
+  ctx.font='bold 17px serif';ctx.fillStyle='#34d399';ctx.textAlign='center';
+  ctx.fillText('ŷ = '+ST.b.toFixed(2)+' x + '+ST.a.toFixed(2),W/2,H-80);
+  drawText('b̂ = Σ(xᵢ-x̄)(yᵢ-ȳ)/Σ(xᵢ-x̄)² = '+ST.b.toFixed(3),W/2,H-55,'#06b6d4',12);
+  drawText('â = ȳ - b̂·x̄ = '+ST.my.toFixed(2)+' - '+ST.b.toFixed(2)+'×'+ST.mx.toFixed(0)+' = '+ST.a.toFixed(3),W/2,H-35,'#06b6d4',12);
+  drawText('回归直线必过样本中心 (x̄, ȳ)',W/2,H-15,'#fbbf24',11);
+}
+
+// ===== 场景6：残差与 R² =====
+function drawResidualScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('残差分析 · R² 决定系数',W/2,30,'#fbbf24',16);
+  drawAxes();
+  drawSample(false);
+  // 回归直线
+  drawLine(ST.b,ST.a,'#fbbf24',8,2.5);
+  // ȳ 参考线
+  ctx.strokeStyle='rgba(154,176,208,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(mapX(0),mapY(ST.my));ctx.lineTo(mapX(7),mapY(ST.my));ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('ȳ',mapX(0)-10,mapY(ST.my),'#9ab0d0',10,'right');
+  // 残差虚线（脉动）
+  const pulse=0.5+0.5*Math.sin(time*3);
+  SAMPLE.forEach(p=>{
+    const py=mapY(p.y),pyp=mapY(ST.b*p.x+ST.a);
+    ctx.strokeStyle='rgba(248,113,113,'+(0.6+0.4*pulse)+')';ctx.lineWidth=2.5;ctx.setLineDash([5,3]);
+    ctx.beginPath();ctx.moveTo(mapX(p.x),py);ctx.lineTo(mapX(p.x),pyp);ctx.stroke();
+    ctx.setLineDash([]);
+    // 残差值标注
+    const e=p.y-(ST.b*p.x+ST.a);
+    drawText('e='+e.toFixed(2),mapX(p.x)+8,(py+pyp)/2,'#f87171',10,'left');
+  });
+  // R² 计算框
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(W/2-220,H-75,440,28,6);ctx.fill();ctx.stroke();
+  drawText('R² = 1 - SSE/SST = 1 - '+ST.sse.toFixed(2)+'/'+ST.sst.toFixed(2)+' = '+ST.R2.toFixed(4),W/2,H-61,'#34d399',13);
+  drawText('R²≈'+ST.R2.toFixed(2)+' → 拟合效果优秀，回归方程解释了 '+((ST.R2)*100).toFixed(1)+'% 的变异',W/2,H-38,'#34d399',11);
+  drawText('残差图若无规律 → 模型合理；若有趋势 → 需改进模型',W/2,H-18,'#9ab0d0',11);
+}
+
+// ===== 场景7：应用预测 =====
+function drawPredictScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('实际应用 · 预测与趋势分析',W/2,30,'#fbbf24',16);
+  drawAxes();
+  drawSample(false);
+  // 回归直线（延伸到预测区）
+  drawLine(ST.b,ST.a,'#fbbf24',8,2.5);
+  // 预测点 x=6
+  const predX=6,predY=ST.b*6+ST.a;
+  const px=mapX(predX),py=mapY(predY);
+  // 投影虚线
+  ctx.strokeStyle='rgba(52,211,153,0.7)';ctx.lineWidth=1.8;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(px,mapY(0));ctx.lineTo(px,py);ctx.lineTo(mapX(0),py);ctx.stroke();
+  ctx.setLineDash([]);
+  // 预测点（脉动 + 光环）
+  const pulse=7+2*Math.sin(time*3);
+  ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=18;
+  ctx.beginPath();ctx.arc(px,py,pulse,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle='rgba(52,211,153,0.4)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(px,py,pulse+6,0,7);ctx.stroke();
+  drawText('x=6',px,mapY(0)+18,'#34d399',12);
+  drawText('ŷ='+predY.toFixed(2),mapX(0)-30,py,'#34d399',12,'right');
+  // 预测计算式
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(W/2-200,H-95,400,28,6);ctx.fill();ctx.stroke();
+  drawText('预测：x=6 → ŷ = '+ST.b.toFixed(2)+'×6 + '+ST.a.toFixed(2)+' = '+predY.toFixed(2),W/2,H-81,'#34d399',12);
+  drawText('应用：经济、医学、教育、气象、趋势预测',W/2,H-55,'#9ab0d0',13);
+  drawText('注意：相关 ≠ 因果，远离样本区外推需谨慎',W/2,H-32,'#f87171',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawRelationScene(t);
+  else if(stepIdx===1)drawScatterScene(t);
+  else if(stepIdx===2)drawRScene(t);
+  else if(stepIdx===3)drawOLSScene(t);
+  else if(stepIdx===4)drawCalcScene(t);
+  else if(stepIdx===5)drawResidualScene(t);
+  else if(stepIdx===6)drawPredictScene(t);
+}
+
+function syncStep(){
+  // 同步详情面板、步骤栏激活态、状态条文案
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  // 渲染要点列表
+  const pts=(s.points&&s.points.items)||[];
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+pts.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  // 更新步骤栏 active 状态
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;  // 重置本步骤计时
+}
+
+function update(dt){
+  // 全局时间累加（即使暂停也用于驱动 idle 动画）
+  t+=dt*speed;
+  // 暂停时不自动推进步骤
+  if(!playing)return;
+  stepTime+=dt*speed;
+  // 每个步骤播放 STEP_DURATION 秒后切换下一步
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成 · 已到末步';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+// 播放/暂停切换
+playBtn.onclick=()=>{
+  playing=!playing;
+  playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing&&stepIdx===STEPS.length-1&&stepTime>=STEP_DURATION){
+    // 已到末步，重新从头播放
+    stepIdx=0;syncStep();
+  }
+};
+// 重置到第一步
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+// 单步前进
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+// 单步后退
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+// 速度调节（影响动画推进与时间累加）
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  // 构建 STEPS 步骤栏（每个步骤一个可点击方块）
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    // 名称过长时截断
+    const nm=s.name.length>10?s.name.slice(0,9)+'…':s.name;
+    el.innerHTML='<div>'+s.tag+'</div><div>'+nm+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>条件概率 · 全概率公式 · 贝叶斯入门</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">条件概率与全概率公式</span><span class="subtitle">乘法公式 · 贝叶斯入门 · 事件独立性</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>条件概率 P(B|A)</h4><div class="v">P(B|A) = P(AB)/P(A)<br>在 A 发生条件下 B 的概率</div></div>
+  <div class="card s2"><div class="num">2</div><h4>乘法公式</h4><div class="v">P(AB) = P(A)·P(B|A)<br>= P(B)·P(A|B)</div></div>
+  <div class="card s3"><div class="num">3</div><h4>全概率公式</h4><div class="v">P(B) = Σ P(Aᵢ)·P(B|Aᵢ)<br>Aᵢ 为完备事件组</div></div>
+  <div class="card s4"><div class="num">4</div><h4>贝叶斯公式</h4><div class="v">P(Aᵢ|B)=P(Aᵢ)P(B|Aᵢ)/Σⱼ<br>由结果反推原因概率</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">定义</span><span id="stepTitle">条件概率</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'定义',name:'条件概率定义',body:'<strong>条件概率</strong>是指在<strong>事件 A 已经发生</strong>的条件下，事件 B 发生的概率，记作 <code>P(B|A)</code>。其定义为 <code>P(B|A) = P(AB)/P(A)</code>，其中 P(A)&gt;0。本质是将样本空间<strong>缩小到 A</strong> 后，B 在其中的相对占比。',points:{title:'核心要点',items:['<strong>记号</strong>：P(B|A) 读作"A 条件下 B"','<strong>定义</strong>：P(B|A)=P(AB)/P(A)','<strong>前提</strong>：P(A) &gt; 0','<strong>直观</strong>：样本空间缩为 A']}},
+  {tag:'性质',name:'条件概率性质',body:'<strong>条件概率 P(·|A)</strong> 满足概率的<strong>三条公理</strong>，因此也是概率测度。<code>0 ≤ P(B|A) ≤ 1</code>；<code>P(Ω|A)=1</code>；<code>P(∅|A)=0</code>；并事件公式 <code>P(B∪C|A)=P(B|A)+P(C|A)-P(BC|A)</code>。',points:{title:'三大性质',items:['<strong>非负性</strong>：0 ≤ P(B|A) ≤ 1','<strong>规范性</strong>：P(Ω|A) = 1','<strong>可加性</strong>：P(B∪C|A)=P(B|A)+P(C|A)-P(BC|A)','<strong>对立事件</strong>：P(B̄|A)=1-P(B|A)']}},
+  {tag:'乘法',name:'乘法公式',body:'<strong>乘法公式</strong>由条件概率定义变形而来：<code>P(AB) = P(A)·P(B|A) = P(B)·P(A|B)</code>。它可用于计算<strong>多个事件同时发生</strong>的概率，特别适合<strong>不放回抽样</strong>等依次发生的事件。',points:{title:'乘法公式',items:['<strong>两事件</strong>：P(AB)=P(A)·P(B|A)','<strong>对称形式</strong>：P(AB)=P(B)·P(A|B)','<strong>三事件</strong>：P(ABC)=P(A)·P(B|A)·P(C|AB)','<strong>不放回</strong>：依次抽取概率相乘']}},
+  {tag:'全概率',name:'全概率公式',body:'若事件组 <code>A₁,A₂,...,Aₙ</code> <strong>两两互斥</strong>且 <strong>ΣAᵢ=Ω</strong>（构成完备事件组），则对任意事件 B：<code>P(B) = Σᵢ P(Aᵢ)·P(B|Aᵢ)</code>。它将<strong>复杂事件分解</strong>为若干简单情形之和。',points:{title:'全概率公式',items:['<strong>完备组</strong>：Aᵢ 两两互斥，并为 Ω','<strong>公式</strong>：P(B)=Σ P(Aᵢ)P(B|Aᵢ)','<strong>思想</strong>：分因求全','<strong>应用</strong>：分期、分类、分层抽样']}},
+  {tag:'贝叶斯',name:'贝叶斯公式',body:'<strong>贝叶斯公式</strong>由结果反推原因：在 B 已发生条件下，求原因 Aᵢ 的<strong>后验概率</strong>：<code>P(Aᵢ|B) = P(Aᵢ)P(B|Aᵢ) / Σⱼ P(Aⱼ)P(B|Aⱼ)</code>。分子是<strong>联合概率</strong>，分母是<strong>全概率</strong>。',points:{title:'贝叶斯思想',items:['<strong>后验</strong>：P(Aᵢ|B) 由结果推原因','<strong>先验</strong>：P(Aᵢ) 事先已知','<strong>似然</strong>：P(B|Aᵢ) 原因下结果的概率','<strong>归一化</strong>：分母 = P(B) 全概率']}},
+  {tag:'独立',name:'事件独立性',body:'若 <code>P(AB) = P(A)·P(B)</code>，则称事件 A、B <strong>相互独立</strong>。等价于 <code>P(B|A) = P(B)</code>，即 A 是否发生<strong>不影响</strong> B 的概率。独立是指<strong>概率意义</strong>上无关，与互斥完全不同。',points:{title:'独立性要点',items:['<strong>定义</strong>：P(AB)=P(A)P(B)','<strong>等价</strong>：P(B|A)=P(B)','<strong>对立独立</strong>：A、B̄ 也独立','<strong>独立 ≠ 互斥</strong>：互斥反而相关']}},
+  {tag:'应用',name:'不放回抽球示例',body:'袋中 3 红球 2 白球，<strong>不放回</strong>依次取两球。求<strong>两次都取到红球</strong>的概率。解：<code>P(R₁R₂)=P(R₁)·P(R₂|R₁)=3/5 × 2/4 = 3/10</code>。第一次取走红球后，红球数减少。',points:{title:'解题步骤',items:['<strong>P(R₁)</strong> = 3/5 = 0.6','<strong>P(R₂|R₁)</strong> = 2/4 = 0.5','<strong>乘法公式</strong>：3/5 × 2/4 = 3/10','<strong>不放回</strong>：第二次概率受第一次影响']}},
+  {tag:'应用',name:'疾病检测·贝叶斯',body:'某病发病率 <strong>P(病)=1%</strong>；检测准确率 <strong>P(+|病)=99%</strong>，误诊率 <strong>P(+|健康)=1%</strong>。问<strong>阳性者真患病</strong>的概率 P(病|+)=？由贝叶斯公式得 <strong>约 50%</strong>，并不像 99% 那么高。',points:{title:'贝叶斯计算',items:['<strong>先验</strong>：P(病)=0.01, P(健康)=0.99','<strong>似然</strong>：P(+|病)=0.99, P(+|健康)=0.01','<strong>分母</strong>：P(+)=0.01×0.99+0.99×0.01=0.0198','<strong>后验</strong>：P(病|+)=0.0099/0.0198≈50%']}},
+  {tag:'总结',name:'公式体系总结',body:'条件概率是<strong>乘法公式</strong>的基础，全概率公式<strong>分因求全</strong>，贝叶斯公式<strong>执果索因</strong>。三者构成<strong>概率推理</strong>的核心工具链，是机器学习、统计推断、决策分析的数学基础。',points:{title:'三大公式关系',items:['<strong>条件概率</strong>：P(B|A)=P(AB)/P(A)','<strong>乘法公式</strong>：P(AB)=P(A)·P(B|A)','<strong>全概率</strong>：分因求全 P(B)','<strong>贝叶斯</strong>：执果索因 P(Aᵢ|B)']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+// 每个步骤自动播放的停留时间（秒），到时自动进入下一步
+const STEP_DURATION=3.2;
+// 全局动画时钟 t 用于驱动各场景的连续动画（脉冲、抽取等）
+
+// ===== 场景：韦恩图 · 条件概率 =====
+// 思路：先画 Ω 外框，再画 A、B 两圆，最后用 clip 求交集 AB，
+// 用脉冲高亮体现"A 已发生"，并在底部标注条件概率公式。
+function drawVennScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('韦恩图 · 在 A 发生条件下看 B',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  const r=110,d=85;
+  const ax=cx-d,bx=cx+d;
+  // 样本空间 Ω 框
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  roundRect(60,80,W-120,H-160,20);ctx.stroke();
+  drawText('Ω（样本空间）',100,100,'#5a6a8a',12,'left');
+  // 脉冲透明度体现"A 已发生"这一条件
+  const pulse=0.25+0.15*Math.sin(time*1.5);
+  // 先画整个 A 淡底（条件事件）
+  ctx.fillStyle='rgba(251,191,36,'+pulse+')';
+  ctx.beginPath();ctx.arc(ax,cy,r,0,7);ctx.fill();
+  // B 区域（目标事件）
+  ctx.fillStyle='rgba(6,182,212,0.28)';
+  ctx.beginPath();ctx.arc(bx,cy,r,0,7);ctx.fill();
+  // 交集 AB：在 A 圆内裁剪后再画 B，得到交集区域加深
+  ctx.fillStyle='rgba(52,211,153,0.65)';
+  ctx.save();
+  ctx.beginPath();ctx.arc(ax,cy,r,0,7);ctx.clip();
+  ctx.beginPath();ctx.arc(bx,cy,r,0,7);ctx.fill();
+  ctx.restore();
+  // 圆边框（A 黄、B 青）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(ax,cy,r,0,7);ctx.stroke();
+  ctx.strokeStyle='#06b6d4';
+  ctx.beginPath();ctx.arc(bx,cy,r,0,7);ctx.stroke();
+  // 区域标签
+  drawText('A',ax-50,cy-50,'#fbbf24',18);
+  drawText('B',bx+50,cy-50,'#06b6d4',18);
+  drawText('AB',cx,cy,'#34d399',16);
+  // 公式与说明
+  const tipY=cy+r+30;
+  drawText('在 A 内，AB 占比 = P(AB)/P(A)',W/2,tipY,'#fff',13);
+  drawText('P(B|A) = P(AB) ÷ P(A)',W/2,tipY+25,'#34d399',14);
+  drawText('样本空间从 Ω「收缩」为 A',W/2,H-50,'#9ab0d0',12);
+  drawText('直观理解：把 A 看作新的样本空间',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景：条件概率性质 =====
+// 思路：把条件概率 P(·|A) 视为新的概率测度，
+// 它完全满足概率三大公理（非负、规范、可加），并列出对立事件公式。
+function drawPropertyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('条件概率性质 · 三大公理',W/2,30,'#fbbf24',16);
+  const props=[
+    {t:'非负性',f:'0 ≤ P(B|A) ≤ 1',c:'#34d399',d:'条件概率必在 [0,1] 区间'},
+    {t:'规范性',f:'P(Ω|A) = 1',c:'#06b6d4',d:'A 已发生，A 内必然事件概率为 1'},
+    {t:'可加性',f:'P(B∪C|A)=P(B|A)+P(C|A)-P(BC|A)',c:'#fbbf24',d:'与普通概率完全相同的并事件公式'},
+    {t:'对立事件',f:'P(B̄|A) = 1 - P(B|A)',c:'#f87171',d:'条件下的对立事件公式同样成立'},
+  ];
+  props.forEach((p,i)=>{
+    const y=85+i*95;
+    ctx.fillStyle=p.c+'22';ctx.strokeStyle=p.c;ctx.lineWidth=2;
+    roundRect(70,y,W-140,80,10);ctx.fill();ctx.stroke();
+    drawText('性质'+(i+1)+' · '+p.t,100,y+20,p.c,14,'left');
+    ctx.font='bold 15px Consolas,monospace';ctx.fillStyle='#fff';ctx.textAlign='left';
+    ctx.fillText(p.f,100,y+45);
+    drawText(p.d,100,y+68,p.c,11,'left');
+  });
+  drawText('结论：P(·|A) 本身就是一个概率测度',W/2,H-30,'#a78bfa',13);
+  drawText('所有普通概率的运算规则都适用',W/2,H-12,'#9ab0d0',11);
+}
+
+// ===== 场景：乘法公式 =====
+// 动画：袋子中 3 红 2 白球，依次不放回抽取，
+// 第一次取走红球后袋中红球数减少，体现 P(B|A) 的依赖性。
+function drawMultiplyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('乘法公式 · 不放回抽球',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 公式
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('P(AB) = P(A) × P(B|A)',W/2,75);
+  // 袋子
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  roundRect(120,cy-90,140,180,16);ctx.fill();ctx.stroke();
+  drawText('袋子',190,cy-105,'#9ab0d0',12);
+  // 球：3 红 2 白（数组 [-1] 表示已被取走，用于动画）
+  const balls=[['R',0],[-1,0],['R',0],['W',1],['R',0]];
+  balls.forEach((b,i)=>{
+    const bx=145+(i%3)*45,by=cy-60+Math.floor(i/3)*55;
+    if(b[0]===-1)return;
+    ctx.fillStyle=b[1]===0?'#f87171':'#e8eef8';
+    ctx.beginPath();ctx.arc(bx,by,18,0,7);ctx.fill();
+    ctx.strokeStyle='#1a1a1a';ctx.lineWidth=1;ctx.stroke();
+  });
+  drawText('3 红 + 2 白',190,cy+105,'#9ab0d0',12);
+  // 第一次抽取动画（phase 0~2 循环）
+  const phase=(time*0.6)%2;
+  const firstTaken=phase>=1;
+  const drawX=cx+80+(phase%1)*40;
+  // 第一个球
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.arc(drawX,cy,22,0,7);ctx.fill();
+  drawText('R₁',drawX,cy,'#1a1a1a',12);
+  // 第二个球（在第一次取完之后出现）
+  if(firstTaken){
+    ctx.fillStyle='#f87171';
+    ctx.beginPath();ctx.arc(drawX+60,cy,20,0,7);ctx.fill();
+    drawText('R₂',drawX+60,cy,'#1a1a1a',11);
+  }
+  // 概率标注
+  drawText('P(R₁) = 3/5 = 0.6',cx+60,cy-70,'#fbbf24',13,'left');
+  drawText('P(R₂|R₁) = 2/4 = 0.5',cx+60,cy-45,'#06b6d4',13,'left');
+  drawText('P(R₁R₂) = 0.6 × 0.5 = 0.3',cx+60,cy+50,'#34d399',14,'left');
+  drawText('两次都红 = 3/10',cx+60,cy+80,'#34d399',15,'left');
+  drawText('不放回：第二次概率受第一次结果影响',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景：全概率公式 =====
+// 动画：完备事件组 A1,A2,A3 分别以不同概率产生 B，
+// 三条彩色箭头汇聚到中央结果 P(B)，体现"分因求全"。
+function drawTotalScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('全概率公式 · 分因求全',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 公式
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('P(B) = Σ P(Aᵢ)·P(B|Aᵢ)',W/2,75);
+  // 左：完备事件组 A1, A2, A3
+  const xs=[120,260,400];
+  const cols=['#f87171','#fbbf24','#06b6d4'];
+  xs.forEach((x,i)=>{
+    ctx.fillStyle=cols[i]+'55';ctx.strokeStyle=cols[i];ctx.lineWidth=2;
+    roundRect(x,cy-60,120,90,8);ctx.fill();ctx.stroke();
+    drawText('A'+(i+1),x+60,cy-35,'#fff',15);
+    drawText('P='+(0.3+i*0.1).toFixed(1),x+60,cy-10,'#fff',12);
+    drawText('P(B|A'+(i+1)+')='+(0.2+i*0.15).toFixed(2),x+60,cy+18,'#fff',11);
+  });
+  // 汇聚箭头
+  xs.forEach((x,i)=>{
+    ctx.strokeStyle=cols[i];ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x+60,cy+30);ctx.lineTo(cx,cy+70);ctx.stroke();
+    ctx.fillStyle=cols[i];
+    ctx.beginPath();ctx.moveTo(cx,cy+70);ctx.lineTo(cx-5,cy+60);ctx.lineTo(cx+5,cy+60);ctx.fill();
+  });
+  // 结果 B
+  ctx.fillStyle='rgba(52,211,153,0.25)';ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;
+  roundRect(cx-70,cy+70,140,50,10);ctx.fill();ctx.stroke();
+  drawText('P(B)',cx,cy+95,'#34d399',18);
+  // 计算
+  const pb=0.3*0.2+0.4*0.35+0.5*0.5;
+  drawText('= 0.3×0.2 + 0.4×0.35 + 0.5×0.5 = '+pb.toFixed(2),W/2,cy+150,'#34d399',13);
+  drawText('完备事件组：互斥 + 并为 Ω',W/2,H-40,'#9ab0d0',12);
+  drawText('思想：把复杂的 B 拆成几个简单情形之和',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景：贝叶斯公式 =====
+// 动画：疾病检测示例，左边患病/健康两个群体，
+// 各自产生阳性结果汇聚到右侧 P(+)，再反推 P(病|+)≈50%。
+function drawBayesScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('贝叶斯公式 · 执果索因',W/2,30,'#fbbf24',16);
+  // 公式
+  ctx.font='bold 17px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('P(Aᵢ|B) = P(Aᵢ)·P(B|Aᵢ) / Σⱼ P(Aⱼ)·P(B|Aⱼ)',W/2,70);
+  // 疾病检测例：1% 发病率
+  const cx=W/2,cy=H/2+10;
+  // 左：人群（病 vs 健康）
+  ctx.fillStyle='rgba(248,113,113,0.35)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(80,cy-70,140,140,10);ctx.fill();ctx.stroke();
+  drawText('患病 1%',150,cy-40,'#f87171',14);
+  drawText('P(+|病)=99%',150,cy-15,'#fff',11);
+  drawText('真阳=0.0099',150,cy+15,'#fff',11);
+  drawText('P(病)=0.01',150,cy+45,'#9ab0d0',11);
+  ctx.fillStyle='rgba(6,182,212,0.3)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(240,cy-70,140,140,10);ctx.fill();ctx.stroke();
+  drawText('健康 99%',310,cy-40,'#06b6d4',14);
+  drawText('P(+|健康)=1%',310,cy-15,'#fff',11);
+  drawText('误阳=0.0099',310,cy+15,'#fff',11);
+  drawText('P(健康)=0.99',310,cy+45,'#9ab0d0',11);
+  // 汇聚到检测结果 +
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(220,cy);ctx.lineTo(420,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(380,cy);ctx.lineTo(420,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(425,cy);ctx.lineTo(415,cy-6);ctx.lineTo(415,cy+6);ctx.fill();
+  // 右：阳性结果
+  const pulse=0.35+0.2*Math.sin(time*2);
+  ctx.fillStyle='rgba(251,191,36,'+pulse+')';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  roundRect(430,cy-50,140,100,10);ctx.fill();ctx.stroke();
+  drawText('检测+',500,cy-25,'#1a1a1a',15);
+  drawText('P(+)=0.0198',500,cy,'#1a1a1a',12);
+  drawText('真病贡献=误诊贡献',500,cy+25,'#1a1a1a',11);
+  // 结论
+  drawText('P(病|+) = 0.0099 / 0.0198 ≈ 50%',W/2,cy+100,'#34d399',16);
+  drawText('阳性者真患病概率仅约 50%（并非 99%）',W/2,H-45,'#f87171',13);
+  drawText('原因：健康人基数大，误诊数量不可忽略',W/2,H-25,'#9ab0d0',11);
+  drawText('贝叶斯：分母用全概率，分子是"原因∩结果"',W/2,H-8,'#a78bfa',11);
+}
+
+// ===== 场景：独立性 =====
+// 动画：用韦恩图直观对比"独立"与"互斥"，
+// 独立时 A、B 可有交集但 B 占比不变；互斥时 P(AB)=0。
+function drawIndepScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('事件独立性 · A 发生不影响 B',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 公式
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('P(AB) = P(A) · P(B)  ⇔  P(B|A) = P(B)',W/2,72);
+  // 左：独立（两圆相交但 B 占比不变）
+  const drawIndep=(ox,oy,label)=>{
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+    roundRect(ox-110,oy-80,220,160,10);ctx.stroke();
+    ctx.fillStyle='rgba(251,191,36,0.3)';
+    ctx.beginPath();ctx.arc(ox-35,oy,55,0,7);ctx.fill();
+    ctx.fillStyle='rgba(6,182,212,0.3)';
+    ctx.beginPath();ctx.arc(ox+35,oy,55,0,7);ctx.fill();
+    ctx.save();
+    ctx.beginPath();ctx.arc(ox-35,oy,55,0,7);ctx.clip();
+    ctx.fillStyle='rgba(52,211,153,0.6)';
+    ctx.beginPath();ctx.arc(ox+35,oy,55,0,7);ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(ox-35,oy,55,0,7);ctx.stroke();
+    ctx.strokeStyle='#06b6d4';
+    ctx.beginPath();ctx.arc(ox+35,oy,55,0,7);ctx.stroke();
+    drawText(label,ox,oy+100,'#9ab0d0',13);
+  };
+  drawIndep(cx,cy-20,'P(AB)=P(A)P(B)，B 区域占比不变');
+  // 对比
+  drawText('独立：知道 A 不改变 B 概率',W/2,cy+90,'#34d399',13);
+  drawText('互斥：A 发生则 B 必不发生（P(AB)=0）',W/2,cy+115,'#f87171',13);
+  drawText('独立 ≠ 互斥：互斥反而强相关',W/2,H-40,'#fbbf24',13);
+  drawText('实际：抛硬币两次、有放回抽样常满足独立',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景：不放回抽球计算（静态）=====
+// 五步法面板：第①步先验、②剩余、③条件概率、④乘法、⑤结果。
+function drawBallsCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('不放回抽球 · 乘法公式实战',W/2,30,'#fbbf24',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,60,W-160,100,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',110,80,'#a78bfa',13,'left');
+  drawText('袋中 3 红球 2 白球，不放回依次取两球，',110,105,'#fff',13,'left');
+  drawText('求两次都取到红球的概率。',110,130,'#fff',13,'left');
+  const steps=[
+    {t:'① 第一步',d:'P(R₁) = 3/5 = 0.6',c:'#06b6d4'},
+    {t:'② 条件',d:'取走 1 红后剩 2 红 2 白',c:'#a78bfa'},
+    {t:'③ 条件概率',d:'P(R₂|R₁) = 2/4 = 0.5',c:'#67e8f9'},
+    {t:'④ 乘法公式',d:'P(R₁R₂) = 0.6 × 0.5',c:'#fbbf24'},
+    {t:'⑤ 结果',d:'P(R₁R₂) = 0.3 = 3/10',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=185+i*42;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,34,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+17,s.c,13,'left');
+    drawText(s.d,300,y+17,'#fff',13,'left');
+  });
+  drawText('不放回 = 条件概率，每一步都改变下一步',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：疾病检测贝叶斯（静态）=====
+// 五步法面板：先验 → 似然 → 联合 → 全概率 → 后验，
+// 直观说明"阳性者真患病概率仅约 50%"这一反直觉结论。
+function drawDiseaseScene(){
+  const W=cv.width,H=cv.height;
+  drawText('疾病检测 · 贝叶斯公式',W/2,30,'#fbbf24',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',90,80,'#a78bfa',13,'left');
+  drawText('发病率 1%，检测准确率 99%（病者阳性 99%，健康者阳性 1%）',90,105,'#fff',13,'left');
+  drawText('求：检测阳性者真正患病的概率。',90,130,'#fff',13,'left');
+  const rows=[
+    {t:'① 先验',d:'P(病)=0.01, P(健康)=0.99',c:'#06b6d4'},
+    {t:'② 似然',d:'P(+|病)=0.99, P(+|健康)=0.01',c:'#a78bfa'},
+    {t:'③ 联合',d:'P(病∩+)=0.0099, P(健康∩+)=0.0099',c:'#67e8f9'},
+    {t:'④ 全概率',d:'P(+)=0.0099+0.0099=0.0198',c:'#fbbf24'},
+    {t:'⑤ 贝叶斯',d:'P(病|+)=0.0099/0.0198≈50%',c:'#34d399'},
+  ];
+  rows.forEach((s,i)=>{
+    const y=175+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,38,6);ctx.fill();ctx.stroke();
+    drawText(s.t,120,y+19,s.c,13,'left');
+    drawText(s.d,280,y+19,'#fff',13,'left');
+  });
+  drawText('阳性 ≠ 一定患病：健康基数大放大误诊',W/2,H-30,'#f87171',13);
+  drawText('低发病率时，准确率 99% 也不等于确诊率',W/2,H-12,'#9ab0d0',11);
+}
+
+// ===== 场景：总结（静态）=====
+// 6 块卡片汇总：条件概率、乘法、全概率、贝叶斯、独立性、完备组。
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('条件概率体系 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'条件概率',d:'P(B|A)=P(AB)/P(A)',c:'#fbbf24'},
+    {t:'乘法公式',d:'P(AB)=P(A)·P(B|A)',c:'#06b6d4'},
+    {t:'全概率',d:'P(B)=Σ P(Aᵢ)P(B|Aᵢ)',c:'#34d399'},
+    {t:'贝叶斯',d:'P(Aᵢ|B) 执果索因',c:'#f87171'},
+    {t:'独立性',d:'P(AB)=P(A)P(B)',c:'#a78bfa'},
+    {t:'完备组',d:'互斥 + 并为 Ω',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  // 清屏后按当前步骤索引分发到对应场景绘制函数
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawVennScene(t);
+  else if(stepIdx===1)drawPropertyScene(t);
+  else if(stepIdx===2)drawMultiplyScene(t);
+  else if(stepIdx===3)drawTotalScene(t);
+  else if(stepIdx===4)drawBayesScene(t);
+  else if(stepIdx===5)drawIndepScene(t);
+  else if(stepIdx===6)drawBallsCalcScene();
+  else if(stepIdx===7)drawDiseaseScene();
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  // 将 STEPS[stepIdx] 的内容同步到右侧详情面板与底部步骤条
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  // 知识点列表动态生成（支持可选链）
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  // 高亮当前步骤按钮
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  // 切换步骤时重置该步骤的计时
+  stepTime=0;
+}
+
+function update(dt){
+  // 全局时钟始终前进（即使暂停，单步查看时画面仍有动画）
+  t+=dt*speed;
+  if(!playing)return;
+  // 播放模式下累计步骤时间，达到 STEP_DURATION 自动推进
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+// 播放/暂停切换：图标随之变化
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+// 重置：回到第一步并停止播放
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+// 单步前进 / 后退：不改变播放状态，仅切换步骤
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+// 速度滑块：0.3x ~ 3x，影响动画时钟推进速率
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  // 根据步骤配置动态生成底部步骤条
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    // 标签名 + 步骤名（过长截断）
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+// 初始化：构建步骤条 → 同步首步详情 → 启动动画循环
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

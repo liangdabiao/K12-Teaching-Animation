@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>独立性检验 · 卡方χ²检验 · 列联表与推断</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">独立性检验</span><span class="subtitle">卡方χ²检验 · 2×2 列联表 · 统计推断</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>2×2 列联表</h4><div class="v">两分类变量交叉频数<br>A1/A2 × B1/B2</div></div>
+  <div class="card s2"><div class="num">2</div><h4>χ² 公式</h4><div class="v">χ²=n(ad-bc)²<br>÷[(a+b)(c+d)(a+c)(b+d)]</div></div>
+  <div class="card s3"><div class="num">3</div><h4>临界值与推断</h4><div class="v">3.841 / 6.635 / 10.828<br>对应 95% / 99% / 99.9%</div></div>
+  <div class="card s4"><div class="num">4</div><h4>应用四步法</h4><div class="v">列表→算χ²→比临界→推断<br>如吸烟与肺癌、运动与心脏病</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">独立性检验</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function drawGrid(){ctx.strokeStyle='rgba(36,58,94,0.25)';ctx.lineWidth=1;for(let x=0;x<cv.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();}for(let y=0;y<cv.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();}}
+function drawArrow(x1,y1,x2,y2,c){ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const ang=Math.atan2(y2-y1,x2-x1);ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-8*Math.cos(ang-0.4),y2-8*Math.sin(ang-0.4));ctx.lineTo(x2-8*Math.cos(ang+0.4),y2-8*Math.sin(ang+0.4));ctx.closePath();ctx.fill();}
+
+const STEPS=[
+  {tag:'基础',name:'分类变量与列联表',body:'<strong>分类变量</strong>：取值表现为不同类别的变量，如<strong>性别</strong>（男/女）、<strong>是否患病</strong>（是/否）、<strong>吸烟情况</strong>（吸烟/不吸烟）。<strong>2×2 列联表</strong>是两个分类变量各取两种类别的<strong>交叉频数表</strong>。',points:{title:'列联表结构',items:['<strong>行变量 A</strong>：A1、A2 两类','<strong>列变量 B</strong>：B1、B2 两类','<strong>四格</strong>：a、b、c、d 四个频数','<strong>合计</strong>：行和、列和、总数 n']}},
+  {tag:'基础',name:'独立性假设',body:'<strong>独立性检验</strong>核心思想：先假设 H₀: <strong>A 与 B 独立（无关）</strong>，然后看实际观测频数与"独立时应有的频数"差距有多大，差距越大越有理由<strong>拒绝 H₀</strong>。',points:{title:'假设检验思想',items:['<strong>H₀ 原假设</strong>：A、B 独立','<strong>H₁ 备择假设</strong>：A、B 相关','<strong>小概率反证</strong>：χ² 大到不可能','<strong>显著性水平 α</strong>：常用 0.05 / 0.01']}},
+  {tag:'公式',name:'卡方公式推导',body:'<strong>卡方统计量</strong>公式：<code>χ² = n(ad-bc)² / [(a+b)(c+d)(a+c)(b+d)]</code>。其中 <strong>ad-bc</strong> 衡量 A 与 B 的关联程度：若独立则 ad≈bc，χ² 接近 0；若相关则 |ad-bc| 大，χ² 大。',points:{title:'公式要点',items:['<strong>ad-bc</strong>：关联核心量','<strong>独立时</strong>：ad ≈ bc → χ² ≈ 0','<strong>相关时</strong>：|ad-bc| 大 → χ² 大','<strong>n</strong>：总样本量，越大越敏感']}},
+  {tag:'公式',name:'临界值表',body:'<strong>常用临界值</strong>（自由度=1 时）：P(χ² ≥ <code>3.841</code>) = 0.05；P(χ² ≥ <code>6.635</code>) = 0.01；P(χ² ≥ <code>10.828</code>) = 0.001。临界值越大，犯错概率越小，把握越高。',points:{title:'三个关键值',items:['<strong>3.841</strong>：α=0.05（95%把握）','<strong>6.635</strong>：α=0.01（99%把握）','<strong>10.828</strong>：α=0.001（99.9%把握）','<strong>查表判断</strong>：χ² 越过哪档就属于该档']}},
+  {tag:'推断',name:'推断规则',body:'根据计算的 χ² 值与临界值比较：<strong>χ² &lt; 3.841</strong>：没有充分证据拒绝 H₀，认为独立；<strong>χ² ≥ 3.841</strong>：有 <strong>95%</strong> 把握认为 A 与 B 有关；<strong>χ² ≥ 6.635</strong>：有 <strong>99%</strong> 把握；<strong>χ² ≥ 10.828</strong>：有 <strong>99.9%</strong> 把握。',points:{title:'四档判断',items:['<strong>χ² < 3.841</strong>：独立（无关联）','<strong>χ² ≥ 3.841</strong>：95% 把握相关','<strong>χ² ≥ 6.635</strong>：99% 把握相关','<strong>χ² ≥ 10.828</strong>：99.9% 把握相关']}},
+  {tag:'应用',name:'吸烟与肺癌实例',body:'<strong>经典案例</strong>：调查 n=100 人。吸烟患肺癌 a=20，吸烟未患 b=30，不吸烟患 c=10，不吸烟未患 d=40。算得 <code>ad-bc=20×40-30×10=500</code>，χ² ≈ <strong>4.76 &gt; 3.841</strong>，有 <strong>95% 把握</strong>认为吸烟与肺癌有关。',points:{title:'计算流程',items:['<strong>① 列表</strong>：a=20,b=30,c=10,d=40','<strong>② 代入</strong>：χ² = 100×500² / [(50)(50)(30)(70)]','<strong>③ 结果</strong>：χ² ≈ 4.76','<strong>④ 推断</strong>：>3.841，95% 把握相关']}},
+  {tag:'注意',name:'注意事项',body:'<strong>① 随机抽样</strong>：列联表数据必须来自<strong>随机抽样</strong>，否则推断无效。<strong>② 相关≠因果</strong>：χ² 显著只是统计相关，<strong>不能等同因果关系</strong>。<strong>③ 样本量足够</strong>：n 应足够大（一般各格期望频数 ≥5）。',points:{title:'三大陷阱',items:['<strong>抽样偏差</strong>：非随机抽样会失真','<strong>伪相关</strong>：相关不等于因果','<strong>样本太小</strong>：n 小则 χ² 不可靠','<strong>混杂因素</strong>：可能存在第三变量']}},
+  {tag:'应用',name:'四步法速记',body:'<strong>应用四步法</strong>：①列 2×2 表 → ②代公式算 χ² → ③查表比临界值 → ④下推断结论。典型应用：<strong>吸烟与肺癌</strong>、<strong>运动与心脏病</strong>、<strong>性别与偏好</strong>、<strong>用药与疗效</strong>。',points:{title:'流程总结',items:['<strong>① 列表</strong>：填 a、b、c、d','<strong>② 计算</strong>：χ² = n(ad-bc)²/[(a+b)(c+d)(a+c)(b+d)]','<strong>③ 查表</strong>：与 3.841 / 6.635 / 10.828 比','<strong>④ 推断</strong>：下"独立 / 相关"结论']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：分类变量 + 列联表 =====
+function drawTableScene(time){
+  const W=cv.width,H=cv.height;
+  drawGrid();
+  drawText('分类变量 · 2×2 列联表',W/2,30,'#fbbf24',16);
+  // 分类变量示例（轮换显示）
+  const vars=['性别 (男/女)','是否患病 (是/否)','吸烟情况 (吸烟/不吸烟)'];
+  vars.forEach((v,i)=>{
+    const x=120+i*(W-240)/3;
+    drawText(v,x,65,'#06b6d4',12);
+    ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+    roundRect(x-90,55,180,28,6);ctx.fill();ctx.stroke();
+  });
+  drawText('↓ 两两交叉 ↓',W/2,100,'#9ab0d0',12);
+  // 列联表
+  const cx=W/2,cy=H/2+30;
+  const cellW=80,cellH=42;
+  const sx=cx-cellW*2.5,sy=cy-cellH*1.5;
+  // 表头
+  drawText('A \\ B',sx+cellW/2,sy+cellH/2,'#9ab0d0',12);
+  drawText('B1',sx+cellW*1.5,sy+cellH/2,'#67e8f9',13);
+  drawText('B2',sx+cellW*2.5,sy+cellH/2,'#67e8f9',13);
+  drawText('合计',sx+cellW*3.5,sy+cellH/2,'#fbbf24',12);
+  drawText('A1',sx+cellW/2,sy+cellH*1.5,'#a78bfa',13);
+  drawText('A2',sx+cellW/2,sy+cellH*2.5,'#a78bfa',13);
+  drawText('合计',sx+cellW/2,sy+cellH*3.5,'#fbbf24',12);
+  // 闪烁值
+  const a=Math.floor(15+5*Math.sin(time));
+  const b=30,c=10,d=40;
+  const data=[[a,b,a+b],[c,d,c+d],[a+c,b+d,a+b+c+d]];
+  for(let r=0;r<3;r++)for(let c2=0;c2<3;c2++){
+    const x=sx+cellW*(c2+1),y=sy+cellH*(r+1);
+    const isHl=(r<2&&c2<2);
+    ctx.fillStyle=isHl?'rgba(251,191,36,0.1)':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=isHl?'#fbbf24':'#243a5e';
+    ctx.lineWidth=1.2;
+    roundRect(x-cellW/2,y-cellH/2,cellW,cellH,4);ctx.fill();ctx.stroke();
+    drawText(data[r][c2],x,y,isHl?'#fbbf24':'#e8eef8',13);
+  }
+  // 网格边框
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.strokeRect(sx,sy,cellW*4,cellH*4);
+  drawText('n = a+b+c+d',cx,H-50,'#34d399',13);
+  drawText('（a、b、c、d 为四格频数，n 为总样本量）',cx,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：独立性假设 =====
+function drawHypothesisScene(time){
+  const W=cv.width,H=cv.height;
+  drawGrid();
+  drawText('独立性假设 · H₀: A 与 B 独立',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 两变量圆圈
+  ctx.fillStyle='rgba(167,139,250,0.2)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx-120,cy,90,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(cx+120,cy,90,0,7);ctx.fill();ctx.stroke();
+  // 独立时圆分离（脉冲）
+  const sep=120+Math.sin(time*1.5)*8;
+  drawText('变量 A',cx-sep,cy,'#a78bfa',15);
+  drawText('变量 B',cx+sep,cy,'#a78bfa',15);
+  // 中间"独立"标记
+  drawText('⊥ 独立',cx,cy-20,'#34d399',18);
+  drawText('ad ≈ bc',cx,cy+10,'#9ab0d0',13);
+  drawText('χ² ≈ 0',cx,cy+32,'#34d399',13);
+  // H₀ 文字
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(cx-160,cy+70,320,50,8);ctx.fill();ctx.stroke();
+  drawText('H₀: A 与 B 独立（无关）',cx,cy+88,'#fbbf24',14);
+  drawText('H₁: A 与 B 相关',cx,cy+108,'#f87171',12);
+  // 反证说明
+  drawText('若 χ² 很大 → 小概率事件发生 → 拒绝 H₀',W/2,H-45,'#9ab0d0',12);
+  drawText('显著性水平 α：犯"弃真"错误的最大允许概率',W/2,H-25,'#67e8f9',11);
+  // 底部小图标：独立 vs 相关
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1;
+  roundRect(80,H-70,140,28,6);ctx.fill();ctx.stroke();
+  drawText('H₀ 成立 → χ² 小',150,H-56,'#34d399',11);
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=1;
+  roundRect(W-220,H-70,140,28,6);ctx.fill();ctx.stroke();
+  drawText('H₀ 不成立 → χ² 大',W-150,H-56,'#f87171',11);
+  drawArrow(230,H-56,W-230,H-56,'#9ab0d0');
+  drawText('显著性水平 α：犯"弃真"错误的最大允许概率',W/2,H-25,'#67e8f9',11);
+}
+
+// ===== 场景：卡方公式推导 =====
+function drawFormulaScene(time){
+  const W=cv.width,H=cv.height;
+  drawGrid();
+  drawText('卡方统计量公式',W/2,30,'#fbbf24',16);
+  // 公式（大字）
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('χ² = n (ad − bc)²',W/2,80);
+  ctx.font='bold 13px serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('────────────────────',W/2,95);
+  ctx.font='bold 13px serif';ctx.fillStyle='#fff';
+  ctx.fillText('(a+b)(c+d)(a+c)(b+d)',W/2,112);
+  // 部件高亮
+  const parts=[
+    {t:'n = 总样本量',d:'样本越大越敏感',c:'#a78bfa',y:150},
+    {t:'(ad − bc) = 关联核心',d:'独立时为 0，相关时大',c:'#fbbf24',y:188},
+    {t:'分母 = 行和列和',d:'标准化，消除规模影响',c:'#06b6d4',y:226},
+  ];
+  parts.forEach(p=>{
+    ctx.fillStyle=p.c+'22';ctx.strokeStyle=p.c;ctx.lineWidth=1.5;
+    roundRect(W/2-200,p.y-18,400,32,6);ctx.fill();ctx.stroke();
+    drawText(p.t,W/2-80,p.y-2,p.c,12,'left');
+    drawText(p.d,W/2+40,p.y-2,'#9ab0d0',11,'left');
+  });
+  // 推导动画：ad 与 bc 对比
+  drawText('关联性 = |ad − bc|',W/2,280,'#34d399',14);
+  const a=20,b=30,c=10,d=40;
+  const ad=a*d,bc=b*c,diff=ad-bc;
+  const pulse=Math.sin(time*2)*0.1+1;
+  // ad 方块
+  ctx.fillStyle='rgba(251,191,36,0.2)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2-220,310,140,80*pulse,8);ctx.fill();ctx.stroke();
+  drawText('ad = '+ad,W/2-150,340,'#fbbf24',15);
+  drawText('20×40',W/2-150,370,'#9ab0d0',11);
+  // 减号
+  drawText('−',W/2-60,350,'#fff',24);
+  // bc 方块
+  ctx.fillStyle='rgba(6,182,212,0.2)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(W/2-20,310,140,80,8);ctx.fill();ctx.stroke();
+  drawText('bc = '+bc,W/2+50,340,'#06b6d4',15);
+  drawText('30×10',W/2+50,370,'#9ab0d0',11);
+  // 等号
+  drawText('=',W/2+150,350,'#fff',24);
+  drawText(diff,W/2+230,350,'#34d399',18);
+  drawText('|ad−bc| = '+diff+' ≠ 0',W/2,420,'#34d399',14);
+  drawText('→ χ² 显著 → A、B 相关',W/2,H-40,'#fbbf24',13);
+}
+
+// ===== 场景：临界值表 =====
+function drawCriticalScene(time){
+  const W=cv.width,H=cv.height;
+  drawGrid();
+  drawText('卡方临界值表（自由度 = 1）',W/2,30,'#fbbf24',16);
+  // 表
+  const cx=W/2,sy=80,cellW=120,cellH=44;
+  // 表头
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(cx-cellW*1.5,sy,cellW*3,cellH,6);ctx.fill();ctx.stroke();
+  drawText('显著性 α',cx-cellW,sy+cellH/2,'#fbbf24',13);
+  drawText('临界值 χ²',cx,sy+cellH/2,'#fbbf24',13);
+  drawText('把握程度',cx+cellW,sy+cellH/2,'#fbbf24',13);
+  // 三行
+  const rows=[
+    {a:'0.05',v:'3.841',g:'95%',c:'#fbbf24'},
+    {a:'0.01',v:'6.635',g:'99%',c:'#34d399'},
+    {a:'0.001',v:'10.828',g:'99.9%',c:'#06b6d4'},
+  ];
+  rows.forEach((r,i)=>{
+    const y=sy+cellH*(i+1);
+    const hl=(Math.floor(time)%3===i);
+    ctx.fillStyle=hl?r.c+'33':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=hl?r.c:'#243a5e';ctx.lineWidth=hl?2:1;
+    roundRect(cx-cellW*1.5,y,cellW*3,cellH,6);ctx.fill();ctx.stroke();
+    drawText(r.a,cx-cellW,y+cellH/2,'#e8eef8',13);
+    drawText(r.v,cx,y+cellH/2,r.c,hl?16:14);
+    drawText(r.g,cx+cellW,y+cellH/2,'#34d399',13);
+  });
+  // 说明
+  drawText('查表规则：χ² 大于临界值 → 拒绝 H₀',W/2,H-70,'#9ab0d0',13);
+  drawText('把握程度越高（α 越小）→ 临界值越大',W/2,H-45,'#67e8f9',12);
+  drawText('常用 α=0.05：χ² ≥ 3.841 即 95% 把握相关',W/2,H-22,'#fbbf24',13);
+}
+
+// ===== 场景：推断规则（χ² 与临界值对比柱状图）=====
+function drawInferScene(time){
+  const W=cv.width,H=cv.height;
+  drawGrid();
+  drawText('推断规则 · χ² 值与临界值对比',W/2,30,'#fbbf24',16);
+  // 动态变化的 χ² 值
+  const chi=Math.abs(Math.sin(time*0.5))*12+0.5;
+  const cx=W/2,cy=H/2+30;
+  const baseY=cy+80;
+  const maxBar=200;
+  const maxVal=13;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(100,baseY);ctx.lineTo(W-100,baseY);ctx.stroke();
+  // X 轴刻度
+  for(let v=0;v<=13;v+=2){
+    const x=cx-260+v/maxVal*420;
+    ctx.beginPath();ctx.moveTo(x,baseY);ctx.lineTo(x,baseY+5);ctx.stroke();
+    drawText(v,x,baseY+18,'#5a6a8a',10);
+  }
+  drawText('χ² 值',W-80,baseY+18,'#9ab0d0',11);
+  // Y 轴
+  ctx.beginPath();ctx.moveTo(cx-260,baseY-maxBar-30);ctx.lineTo(cx-260,baseY);ctx.stroke();
+  drawText('证据强度',cx-275,baseY-maxBar/2,'#9ab0d0',11);
+  // 独立 / 相关分区背景
+  ctx.fillStyle='rgba(248,113,113,0.06)';
+  ctx.fillRect(cx-260,baseY-maxBar,3.841/maxVal*420,maxBar);
+  ctx.fillStyle='rgba(52,211,153,0.06)';
+  ctx.fillRect(cx-260+3.841/maxVal*420,baseY-maxBar,(13-3.841)/maxVal*420,maxBar);
+  drawText('独立区',cx-260+1.5/maxVal*420,baseY-maxBar-10,'#f87171',11);
+  drawText('相关区',cx-260+8/maxVal*420,baseY-maxBar-10,'#34d399',11);
+  // 三条临界值线
+  const crits=[
+    {v:3.841,label:'3.841',c:'#fbbf24',g:'95%'},
+    {v:6.635,label:'6.635',c:'#34d399',g:'99%'},
+    {v:10.828,label:'10.828',c:'#06b6d4',g:'99.9%'},
+  ];
+  crits.forEach(cr=>{
+    const x=cx-260+cr.v/maxVal*420;
+    ctx.strokeStyle=cr.c;ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(x,baseY-maxBar);ctx.lineTo(x,baseY);ctx.stroke();
+    ctx.setLineDash([]);
+    drawText(cr.label,x,baseY-maxBar-12,cr.c,11);
+    drawText(cr.g,x,baseY-maxBar-26,cr.c,10);
+  });
+  // χ² 柱状图
+  const barH=chi/maxVal*maxBar;
+  const barX=cx-30,barW=60;
+  // 渐变
+  let barColor=chi>=10.828?'#06b6d4':chi>=6.635?'#34d399':chi>=3.841?'#fbbf24':'#f87171';
+  ctx.fillStyle=barColor+'66';ctx.strokeStyle=barColor;ctx.lineWidth=2;
+  ctx.shadowColor=barColor;ctx.shadowBlur=12;
+  roundRect(barX,baseY-barH,barW,barH,4);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('χ² = '+chi.toFixed(2),cx,baseY-barH-15,barColor,16);
+  // 结论
+  let concl='';
+  if(chi<3.841)concl='χ² < 3.841：没有充分证据，认为独立';
+  else if(chi<6.635)concl='χ² ≥ 3.841：有 95% 把握认为相关';
+  else if(chi<10.828)concl='χ² ≥ 6.635：有 99% 把握认为相关';
+  else concl='χ² ≥ 10.828：有 99.9% 把握认为相关';
+  drawText(concl,W/2,H-40,barColor,14);
+  drawText('（χ² 越大，相关性证据越强）',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景：吸烟与肺癌实例 =====
+function drawExampleScene(time){
+  const W=cv.width,H=cv.height;
+  drawGrid();
+  drawText('实例 · 吸烟与肺癌',W/2,30,'#fbbf24',16);
+  // 列联表
+  const a=20,b=30,c=10,d=40,n=100;
+  const cx=W/2,cy=140;
+  const cellW=80,cellH=38;
+  const sx=cx-cellW*2,sy=cy-cellH*1.5;
+  // 表头
+  drawText('',sx+cellW/2,sy+cellH/2,'#9ab0d0',11);
+  drawText('患肺癌',sx+cellW*1.5,sy+cellH/2,'#67e8f9',12);
+  drawText('未患',sx+cellW*2.5,sy+cellH/2,'#67e8f9',12);
+  drawText('合计',sx+cellW*3.5,sy+cellH/2,'#fbbf24',11);
+  drawText('吸烟',sx+cellW/2,sy+cellH*1.5,'#a78bfa',12);
+  drawText('不吸烟',sx+cellW/2,sy+cellH*2.5,'#a78bfa',12);
+  const data=[[a,b,a+b],[c,d,c+d]];
+  for(let r=0;r<2;r++)for(let c2=0;c2<3;c2++){
+    const x=sx+cellW*(c2+1),y=sy+cellH*(r+1);
+    const isHl=(r<2&&c2<2);
+    ctx.fillStyle=isHl?'rgba(251,191,36,0.1)':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=isHl?'#fbbf24':'#243a5e';ctx.lineWidth=1;
+    roundRect(x-cellW/2,y-cellH/2,cellW,cellH,4);ctx.fill();ctx.stroke();
+    drawText(data[r][c2],x,y,'#fff',13);
+  }
+  // 计算步骤（逐步显示）
+  const stepPhase=Math.floor(time*0.6)%4;
+  const steps=[
+    {t:'① ad − bc = 20×40 − 30×10',d:'= 800 − 300 = 500',c:'#fbbf24'},
+    {t:'② 代入公式',d:'χ² = 100 × 500² / [(50)(50)(30)(70)]',c:'#a78bfa'},
+    {t:'③ 化简',d:'= 100 × 250000 / 5250000',c:'#06b6d4'},
+    {t:'④ χ² ≈ 4.76',d:'> 3.841，95% 把握相关',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=310+i*38;
+    const show=(stepPhase>=i);
+    ctx.fillStyle=show?s.c+'22':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=show?s.c:'#243a5e';ctx.lineWidth=show?1.5:1;
+    roundRect(W/2-230,y-16,460,30,5);ctx.fill();ctx.stroke();
+    drawText(s.t,W/2-200,y,show?s.c:'#5a6a8a',12,'left');
+    drawText(s.d,W/2+10,y,show?'#fff':'#3a4a6a',12,'left');
+  });
+  drawText('结论：有 95% 把握认为吸烟与肺癌相关',W/2,H-25,'#34d399',14);
+}
+
+// ===== 场景：注意事项 =====
+function drawNoticeScene(time){
+  const W=cv.width,H=cv.height;
+  drawGrid();
+  drawText('独立性检验 · 注意事项',W/2,30,'#fbbf24',16);
+  const items=[
+    {t:'① 随机抽样',d:'数据必须来自随机抽样',sub:'非随机 → 推断无效',c:'#fbbf24',icon:'🎲'},
+    {t:'② 相关 ≠ 因果',d:'χ² 显著只是统计相关',sub:'不能等同因果',c:'#f87171',icon:'⚠'},
+    {t:'③ 样本量足够',d:'n 应足够大',sub:'各格期望 ≥ 5',c:'#06b6d4',icon:'📊'},
+    {t:'④ 混杂因素',d:'可能存在第三变量',sub:'如年龄、地区等',c:'#34d399',icon:'🔍'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=80+row*180;
+    const pulse=Math.sin(time*1.5+i)*0.05+1;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    ctx.save();ctx.translate(x+(W-160)/4,y+70);ctx.scale(pulse,pulse);
+    roundRect(-(W-160)/4+15,-70,(W-160)/2-30,140,10);ctx.fill();ctx.stroke();
+    ctx.restore();
+    drawText(m.t,x+(W-160)/4,y+30,m.c,15);
+    drawText(m.d,x+(W-160)/4,y+60,'#fff',12);
+    drawText(m.sub,x+(W-160)/4,y+85,'#9ab0d0',11);
+    drawText(m.icon,x+(W-160)/4-90,y+30,'#fff',20);
+  });
+  drawText('统计相关 ≠ 实际因果，需结合专业判断',W/2,H-25,'#fbbf24',13);
+  // 底部数据可靠性提示条
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=1;
+  roundRect(80,H-50,W-160,32,6);ctx.fill();ctx.stroke();
+  drawText('⚠ 警示：χ² 检验只回答"是否相关"，不回答"为何相关"',W/2,H-34,'#f87171',12);
+}
+
+// ===== 场景：四步法速记 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawGrid();
+  drawText('独立性检验 · 四步法速记',W/2,40,'#fbbf24',18);
+  const steps=[
+    {t:'① 列 2×2 表',d:'填 a、b、c、d 四格频数',c:'#a78bfa'},
+    {t:'② 代公式算 χ²',d:'χ² = n(ad−bc)² / [(a+b)(c+d)(a+c)(b+d)]',c:'#06b6d4'},
+    {t:'③ 查表比临界值',d:'与 3.841 / 6.635 / 10.828 比较',c:'#fbbf24'},
+    {t:'④ 下推断结论',d:'独立 / 95% / 99% / 99.9% 把握',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=90+i*100;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    roundRect(80,y,W-160,80,10);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+30,s.c,15,'left');
+    drawText(s.d,140,y+58,'#fff',12,'left');
+    // 箭头连接（除最后一个）
+    if(i<steps.length-1){
+      drawText('↓',W/2,y+88,'#9ab0d0',16);
+    }
+  });
+  // 应用领域
+  drawText('典型应用：吸烟与肺癌、运动与心脏病、性别与偏好、用药与疗效',W/2,H-30,'#67e8f9',12);
+  // 底部应用图标行
+  const apps=[
+    {t:'🚬 吸烟·肺癌',c:'#f87171'},
+    {t:'🏃 运动·心脏病',c:'#34d399'},
+    {t:'👤 性别·偏好',c:'#06b6d4'},
+    {t:'💊 用药·疗效',c:'#fbbf24'},
+  ];
+  apps.forEach((app,i)=>{
+    const x=80+i*(W-160)/4;
+    const ax=x+(W-160)/8;
+    ctx.fillStyle=app.c+'22';ctx.strokeStyle=app.c;ctx.lineWidth=1.5;
+    roundRect(x+15,H-95,(W-160)/4-30,28,6);ctx.fill();ctx.stroke();
+    drawText(app.t,ax,H-81,app.c,11);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawTableScene(t);
+  else if(stepIdx===1)drawHypothesisScene(t);
+  else if(stepIdx===2)drawFormulaScene(t);
+  else if(stepIdx===3)drawCriticalScene(t);
+  else if(stepIdx===4)drawInferScene(t);
+  else if(stepIdx===5)drawExampleScene(t);
+  else if(stepIdx===6)drawNoticeScene(t);
+  else if(stepIdx===7)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

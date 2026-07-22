@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>定积分与微积分基本定理 · 曲边梯形面积 · 牛顿-莱布尼茨公式</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">定积分与微积分基本定理</span><span class="subtitle">曲边梯形面积 · 牛顿-莱布尼茨公式</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>几何意义</h4><div class="v">∫f(x)dx = 曲边梯形面积<br>x轴上方为正，下方为负</div></div>
+  <div class="card s2"><div class="num">2</div><h4>四步法</h4><div class="v">分割 → 近似代替 → 求和<br>→ 取极限（n→∞）</div></div>
+  <div class="card s3"><div class="num">3</div><h4>牛顿-莱布尼茨</h4><div class="v">∫[a,b]f(x)dx = F(b)−F(a)<br>F 是 f 的原函数</div></div>
+  <div class="card s4"><div class="num">4</div><h4>常见原函数</h4><div class="v">xⁿ→xⁿ⁺¹/(n+1)<br>sinx→−cosx，1/x→lnx</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">定义</span><span id="stepTitle">定积分定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'定义',name:'定积分定义',body:'<strong>定积分</strong>是函数 f(x) 在区间 [a, b] 上的<strong>无穷小和的极限</strong>。记作 <code>∫[a,b] f(x) dx</code>。几何意义为<strong>曲线 y=f(x) 与 x 轴所围成的曲边梯形面积</strong>（x 轴上方为正，下方为负）。',points:{title:'核心要点',items:['<strong>记号</strong>：∫ 积分号，a 下限，b 上限','<strong>本质</strong>：分割求和取极限','<strong>几何</strong>：曲线与 x 轴围成面积','<strong>符号</strong>：上方为正面积，下方为负']}},
+  {tag:'定义',name:'几何意义演示',body:'<strong>曲边梯形</strong>：由曲线 y=f(x)、x 轴及直线 x=a、x=b 围成的图形。当 f(x)≥0 时，定积分值等于<strong>面积</strong>；f(x)≤0 时积分为<strong>负</strong>，面积取<strong>绝对值</strong>。',points:{title:'正负面积',items:['<strong>f(x)>0</strong>：积分=正面积','<strong>f(x)<0</strong>：积分=负值','<strong>面积</strong>：|∫| 才是几何面积','<strong>跨越 x 轴</strong>：分段积分再求和']}},
+  {tag:'四步法',name:'分割（n等分）',body:'<strong>第一步：分割</strong>。将区间 [a, b] 分成 n 个相等的小区间，每个小区间长度 Δx = (b−a)/n。分点为 x₀=a, x₁, x₂, …, xₙ=b。',points:{title:'分割要点',items:['<strong>等分</strong>：Δx = (b−a)/n','<strong>分点</strong>：xᵢ = a + i·Δx','<strong>n 越大</strong>：分割越细','<strong>目的</strong>：化整为零便于计算']}},
+  {tag:'四步法',name:'近似代替与求和',body:'<strong>第二步：近似代替</strong>。在每个小区间上用<strong>小矩形</strong>近似代替曲边梯形，高取 f(xᵢ) 或 f(xᵢ₋₁)。<strong>第三步：求和</strong>。所有小矩形面积相加：Sₙ = Σᵢ₌₁ⁿ f(xᵢ)·Δx。',points:{title:'近似与求和',items:['<strong>矩形高</strong>：取左端点或右端点值','<strong>面积</strong>：ΔSᵢ = f(xᵢ)·Δx','<strong>求和</strong>：Sₙ = Σ f(xᵢ)·Δx','<strong>黎曼和</strong>：近似积分值']}},
+  {tag:'四步法',name:'取极限 n→∞',body:'<strong>第四步：取极限</strong>。当 n→∞（即 Δx→0）时，黎曼和的极限就是定积分：<code>∫[a,b] f(x) dx = lim(n→∞) Σ f(xᵢ)·Δx</code>。矩形越细，越接近真实面积。',points:{title:'极限即积分',items:['<strong>极限</strong>：n → ∞','<strong>Δx → 0</strong>：分割无限细','<strong>矩形 → 曲边</strong>：精确化','<strong>收敛</strong>：和趋于定积分值']}},
+  {tag:'性质',name:'定积分性质',body:'<strong>线性性</strong>：∫[k₁f+k₂g]dx = k₁∫f dx + k₂∫g dx。<strong>可加性</strong>：∫[a,c]f dx = ∫[a,b]f dx + ∫[b,c]f dx。<strong>比较性质</strong>：f≥g ⇒ ∫f≥∫g。',points:{title:'四大性质',items:['<strong>线性性</strong>：可提取系数、分配','<strong>可加性</strong>：区间可拆分合并','<strong>比较</strong>：函数大积分大','<strong>中值定理</strong>：∫[a,b]f = f(ξ)(b−a)']}},
+  {tag:'定理',name:'牛顿-莱布尼茨公式',body:'<strong>微积分基本定理</strong>：若 F(x) 是 f(x) 在 [a,b] 上的<strong>原函数</strong>（即 F′(x)=f(x)），则 <code>∫[a,b] f(x) dx = F(b) − F(a)</code>。将定积分计算<strong>转化为求原函数</strong>。',points:{title:'核心公式',items:['<strong>条件</strong>：F 是 f 的原函数','<strong>结论</strong>：∫ = F(b) − F(a)','<strong>记号</strong>：F(x)|[a,b]','<strong>意义</strong>：微分与积分的桥梁']}},
+  {tag:'定理',name:'原函数概念',body:'<strong>原函数</strong>：若 F′(x) = f(x)，则 F(x) 是 f(x) 的原函数。原函数<strong>不唯一</strong>，相差一个常数 C（不定积分 ∫f dx = F(x)+C）。定积分只需任取一个原函数。',points:{title:'原函数要点',items:['<strong>定义</strong>：F′(x) = f(x)','<strong>不唯一</strong>：相差常数 C','<strong>不定积分</strong>：∫f dx = F+C','<strong>定积分</strong>：常数 C 自动消去']}},
+  {tag:'定理',name:'常见原函数表',body:'<strong>基本积分公式</strong>（求原函数）：xⁿ → xⁿ⁺¹/(n+1)；sinx → −cosx；cosx → sinx；1/x → ln|x|；eˣ → eˣ；sec²x → tanx。',points:{title:'积分表速记',items:['<strong>幂函数</strong>：∫xⁿdx = xⁿ⁺¹/(n+1)+C','<strong>正弦</strong>：∫sinx dx = −cosx+C','<strong>余弦</strong>：∫cosx dx = sinx+C','<strong>指数</strong>：∫eˣdx = eˣ+C']}},
+  {tag:'应用',name:'面积应用',body:'<strong>求平面图形面积</strong>：曲线 y=f(x)（≥0）与 x 轴在 [a,b] 围成面积 S = ∫[a,b] f(x) dx。两曲线之间：S = ∫[a,b] (f−g) dx（f≥g）。',points:{title:'面积公式',items:['<strong>单曲线</strong>：S = ∫f(x)dx','<strong>两曲线</strong>：S = ∫(f−g)dx','<strong>注意</strong>：上方减下方','<strong>跨越轴</strong>：分段处理取绝对']}},
+  {tag:'应用',name:'旋转体体积',body:'<strong>旋转体体积</strong>：曲线 y=f(x) 绕 x 轴旋转一周形成的立体，体积 V = π∫[a,b] [f(x)]² dx。每截面是半径为 f(x) 的圆。',points:{title:'体积公式',items:['<strong>绕 x 轴</strong>：V = π∫f²dx','<strong>截面</strong>：圆面积 πr²','<strong>r = f(x)</strong>：半径随 x 变化','<strong>应用</strong>：球、圆锥、圆台体积']}},
+  {tag:'应用',name:'物理应用',body:'<strong>变力做功</strong>：W = ∫[a,b] F(x) dx。<strong>变速运动路程</strong>：s = ∫[t₁,t₂] v(t) dt。物理中许多<strong>累积量</strong>都用定积分计算。',points:{title:'物理积分',items:['<strong>变力做功</strong>：W = ∫F(x)dx','<strong>路程</strong>：s = ∫v(t)dt','<strong>电荷量</strong>：Q = ∫I(t)dt','<strong>本质</strong>：瞬时量的累积']}},
+  {tag:'总结',name:'核心速记',body:'<strong>定积分</strong> = 分割求和取极限，几何意义为曲边梯形面积。<strong>牛顿-莱布尼茨公式</strong> ∫[a,b]f(x)dx = F(b)−F(a) 是<strong>微积分核心</strong>，连接微分与积分。应用广泛：面积、体积、变力做功。',points:{title:'三句话总结',items:['<strong>定义</strong>：无穷小和的极限','<strong>公式</strong>：∫ = F(b) − F(a)','<strong>关键</strong>：找到原函数 F','<strong>应用</strong>：面积、体积、物理']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// 使用的曲线：f(x) = 0.5x^2 + 0.3 (在 [0, 4] 上)，积分值 = (1/6)*4^3 + 0.3*4 ≈ 10.67 + 1.2 = 11.87
+function f(x){return 0.5*x*x + 0.3;}
+// 精确积分值（用于收敛对比）
+const A_RANGE=0, B_RANGE=4;
+const EXACT_INT = (1/6)*Math.pow(B_RANGE,3) + 0.3*B_RANGE; // ≈ 11.867
+// 坐标系参数
+function getPlotRect(){
+  const W=cv.width,H=cv.height;
+  return {x0:90,y0:60,x1:W-60,y1:H-90,cx:90,cy:H-90};
+}
+function toPx(x,y){
+  const r=getPlotRect();
+  const sx=(r.x1-r.x0)/B_RANGE;
+  const sy=(r.y1-r.y0)/16;
+  return {px:r.x0+x*sx, py:r.y1-y*sy};
+}
+
+// ===== 场景：定积分定义/几何意义 =====
+function drawDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('定积分的几何意义 · 曲边梯形面积',W/2,30,'#fbbf24',16);
+  const r=getPlotRect();
+  // 坐标轴
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(r.x0,r.y1);ctx.lineTo(r.x1,r.y1);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(r.x0,r.y0);ctx.lineTo(r.x0,r.y1);ctx.stroke();
+  drawText('x',r.x1+5,r.y1,'#9ab0d0',12);drawText('y',r.x0,r.y0-8,'#9ab0d0',12);
+  drawText('O',r.x0-12,r.y1+10,'#9ab0d0',11);
+  // x 刻度
+  for(let i=0;i<=4;i++){
+    const p=toPx(i,0);
+    drawText(i,p.px,r.y1+15,'#5a6a8a',10);
+    ctx.beginPath();ctx.moveTo(p.px,r.y1-3);ctx.lineTo(p.px,r.y1+3);ctx.stroke();
+  }
+  // 曲线 y=f(x)
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let x=0;x<=B_RANGE;x+=0.05){
+    const p=toPx(x,f(x));
+    if(x===0)ctx.moveTo(p.px,p.py);else ctx.lineTo(p.px,p.py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 填充曲边梯形（脉冲）
+  const pulse=0.3+0.2*Math.sin(time*1.5);
+  ctx.fillStyle='rgba(251,191,36,'+pulse+')';
+  ctx.beginPath();
+  const pa=toPx(A_RANGE,0);
+  ctx.moveTo(pa.px,pa.py);
+  for(let x=A_RANGE;x<=B_RANGE;x+=0.05){
+    const p=toPx(x,f(x));ctx.lineTo(p.px,p.py);
+  }
+  const pb=toPx(B_RANGE,0);
+  ctx.lineTo(pb.px,pb.py);ctx.closePath();ctx.fill();
+  // 边界线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(toPx(A_RANGE,0).px,toPx(A_RANGE,0).py);ctx.lineTo(toPx(A_RANGE,f(A_RANGE)).px,toPx(A_RANGE,f(A_RANGE)).py);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(toPx(B_RANGE,0).px,toPx(B_RANGE,0).py);ctx.lineTo(toPx(B_RANGE,f(B_RANGE)).px,toPx(B_RANGE,f(B_RANGE)).py);ctx.stroke();
+  drawText('a',toPx(A_RANGE,0).px,r.y1+28,'#fbbf24',12);
+  drawText('b',toPx(B_RANGE,0).px,r.y1+28,'#fbbf24',12);
+  drawText('y = f(x)',toPx(B_RANGE-0.5,f(B_RANGE-0.5)).px,toPx(B_RANGE-0.5,f(B_RANGE-0.5)).py-18,'#06b6d4',13);
+  // 公式
+  ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('S = ∫[a,b] f(x) dx',W/2,H-45);
+  drawText('x 轴上方：积分 > 0（正面积）',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景：四步法分割近似（黎曼和动画）=====
+function drawRiemannScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('四步法 · 分割→近似→求和→极限',W/2,30,'#fbbf24',16);
+  const r=getPlotRect();
+  // n 从 4 增加到 64 循环
+  const nList=[4,8,16,32,64];
+  const idx=Math.floor((time*0.4)%nList.length);
+  const n=nList[idx];
+  // 坐标轴
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(r.x0,r.y1);ctx.lineTo(r.x1,r.y1);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(r.x0,r.y0);ctx.lineTo(r.x0,r.y1);ctx.stroke();
+  drawText('O',r.x0-12,r.y1+10,'#9ab0d0',11);
+  const dx=B_RANGE/n;
+  // 矩形
+  let sn=0;
+  for(let i=0;i<n;i++){
+    const x=A_RANGE+i*dx;
+    const h=f(x+dx/2); // 取中点
+    sn+=h*dx;
+    const p1=toPx(x,0),p2=toPx(x+dx,h);
+    ctx.fillStyle='rgba(251,191,36,0.35)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+    ctx.fillRect(p1.px,p2.py,p2.px-p1.px,r.y1-p2.py);
+    ctx.strokeRect(p1.px,p2.py,p2.px-p1.px,r.y1-p2.py);
+  }
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let x=0;x<=B_RANGE;x+=0.05){
+    const p=toPx(x,f(x));
+    if(x===0)ctx.moveTo(p.px,p.py);else ctx.lineTo(p.px,p.py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('y = f(x)',toPx(B_RANGE-0.5,f(B_RANGE-0.5)).px,toPx(B_RANGE-0.5,f(B_RANGE-0.5)).py-18,'#06b6d4',12);
+  // 信息面板
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;
+  roundRect(r.x0+10,r.y0+5,200,80,6);ctx.fill();ctx.stroke();
+  drawText('分割数 n = '+n,r.x0+25,r.y0+22,'#a78bfa',13,'left');
+  drawText('Δx = (b−a)/n = '+(dx).toFixed(3),r.x0+25,r.y0+44,'#67e8f9',12,'left');
+  drawText('黎曼和 Sₙ = '+sn.toFixed(3),r.x0+25,r.y0+66,'#34d399',12,'left');
+  // 收敛指示
+  drawText('精确积分值 = '+EXACT_INT.toFixed(3),W/2,H-55,'#fbbf24',13);
+  drawText('误差 = '+Math.abs(sn-EXACT_INT).toFixed(3)+'  (n→∞ 时 → 0)',W/2,H-32,'#9ab0d0',12);
+  drawText('n 越大，矩形越细，和越接近真实面积',W/2,H-12,'#34d399',11);
+}
+
+// ===== 场景：定积分性质 =====
+function drawPropertyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('定积分的基本性质',W/2,30,'#fbbf24',16);
+  const props=[
+    {n:'线性性',f:'∫[a,b] [k₁f(x)+k₂g(x)]dx',s:'= k₁∫f dx + k₂∫g dx',c:'#fbbf24'},
+    {n:'可加性',f:'∫[a,c] f(x) dx',s:'= ∫[a,b]f dx + ∫[b,c]f dx',c:'#06b6d4'},
+    {n:'比较性质',f:'f(x) ≥ g(x) on [a,b]',s:'⇒ ∫f dx ≥ ∫g dx',c:'#34d399'},
+    {n:'积分中值定理',f:'∫[a,b] f(x) dx',s:'= f(ξ)·(b−a), ξ∈[a,b]',c:'#fb923c'},
+  ];
+  props.forEach((p,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const bw=(W-120)/2,bh=120;
+    const x=60+col*bw,y=80+row*(bh+20);
+    ctx.fillStyle=p.c+'22';ctx.strokeStyle=p.c;ctx.lineWidth=2;
+    roundRect(x+10,y,bw-20,bh,10);ctx.fill();ctx.stroke();
+    drawText((i+1)+'. '+p.n,x+bw/2,y+25,p.c,16);
+    ctx.font='15px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText(p.f,x+bw/2,y+60);
+    ctx.font='bold 15px serif';ctx.fillStyle=p.c;
+    ctx.fillText(p.s,x+bw/2,y+90);
+  });
+  // 中值定理可视化提示
+  drawText('★ 积分中值定理：连续函数必存在平均值 f(ξ)',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：牛顿-莱布尼茨公式 =====
+function drawNLFScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('微积分基本定理 · 牛顿-莱布尼茨公式',W/2,30,'#fbbf24',16);
+  // 大公式
+  const pulse=1+0.05*Math.sin(time*2);
+  ctx.save();
+  ctx.translate(W/2,H/2-30);
+  ctx.scale(pulse,pulse);
+  ctx.font='bold 28px serif';ctx.fillStyle='#fbbf24';ctx.textAlign='center';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.fillText('∫[a,b] f(x) dx = F(b) − F(a)',0,0);
+  ctx.shadowBlur=0;
+  ctx.restore();
+  // F 与 f 关系
+  ctx.font='15px serif';ctx.fillStyle='#06b6d4';
+  ctx.fillText("其中 F'(x) = f(x)，即 F 是 f 的原函数",W/2,H/2+20);
+  // 三步流程
+  const steps=[
+    {t:'① 求 f 的原函数 F',d:"F' = f",c:'#06b6d4'},
+    {t:'② 代入上限 b',d:'F(b)',c:'#a78bfa'},
+    {t:'③ 减去下限 a',d:'F(b) − F(a)',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=H/2+70+i*48;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(W/2-220,y,440,38,6);ctx.fill();ctx.stroke();
+    drawText(s.t,W/2-140,y+19,s.c,13,'left');
+    drawText(s.d,W/2+140,y+19,'#fff',13);
+  });
+  drawText('★ 微积分核心：连接微分（求导）与积分（求和）',W/2,H-25,'#fbbf24',12);
+}
+
+// ===== 场景：常见原函数表 =====
+function drawTableScene(){
+  const W=cv.width,H=cv.height;
+  drawText('常见原函数表 · 基本积分公式',W/2,30,'#fbbf24',16);
+  const rows=[
+    {f:'f(x) = xⁿ  (n≠−1)',F:'F(x) = xⁿ⁺¹/(n+1) + C',c:'#fbbf24'},
+    {f:'f(x) = 1/x',F:'F(x) = ln|x| + C',c:'#06b6d4'},
+    {f:'f(x) = eˣ',F:'F(x) = eˣ + C',c:'#34d399'},
+    {f:'f(x) = sinx',F:'F(x) = −cosx + C',c:'#fb923c'},
+    {f:'f(x) = cosx',F:'F(x) = sinx + C',c:'#ec4899'},
+    {f:'f(x) = sec²x',F:'F(x) = tanx + C',c:'#a78bfa'},
+  ];
+  // 表头
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+  roundRect(80,75,W-160,40,8);ctx.fill();ctx.stroke();
+  drawText('被积函数 f(x)',80+(W-160)*0.25,95,'#fbbf24',14);
+  drawText('原函数 F(x)（F′=f）',80+(W-160)*0.75,95,'#fbbf24',14);
+  // 分割线
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80+(W-160)*0.5,75);ctx.lineTo(80+(W-160)*0.5,H-60);ctx.stroke();
+  rows.forEach((r2,i)=>{
+    const y=130+i*55;
+    ctx.fillStyle=i%2?'rgba(255,255,255,0.02)':'rgba(255,255,255,0.05)';
+    ctx.fillRect(80,y,W-160,50);
+    ctx.font='15px serif';ctx.textAlign='center';
+    ctx.fillStyle=r2.c;ctx.fillText(r2.f,80+(W-160)*0.25,y+25);
+    ctx.fillStyle='#fff';ctx.fillText(r2.F,80+(W-160)*0.75,y+25);
+  });
+  drawText('★ C 为任意常数；定积分中 C 自动消去',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：面积应用 =====
+function drawAreaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('应用 · 求曲线下面积',W/2,30,'#fbbf24',16);
+  const r=getPlotRect();
+  // 坐标轴
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(r.x0,r.y1);ctx.lineTo(r.x1,r.y1);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(r.x0,r.y0);ctx.lineTo(r.x0,r.y1);ctx.stroke();
+  drawText('O',r.x0-12,r.y1+10,'#9ab0d0',11);
+  // 示例：求 y=0.5x²+0.3 在 [0,4] 的面积
+  const pulse=0.3+0.15*Math.sin(time*1.5);
+  ctx.fillStyle='rgba(52,211,153,'+pulse+')';
+  ctx.beginPath();
+  const pa=toPx(A_RANGE,0);
+  ctx.moveTo(pa.px,pa.py);
+  for(let x=A_RANGE;x<=B_RANGE;x+=0.05){
+    const p=toPx(x,f(x));ctx.lineTo(p.px,p.py);
+  }
+  const pb=toPx(B_RANGE,0);
+  ctx.lineTo(pb.px,pb.py);ctx.closePath();ctx.fill();
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let x=0;x<=B_RANGE;x+=0.05){
+    const p=toPx(x,f(x));
+    if(x===0)ctx.moveTo(p.px,p.py);else ctx.lineTo(p.px,p.py);
+  }
+  ctx.stroke();
+  drawText('y = ½x² + 0.3',toPx(3,f(3)).px-60,toPx(3,f(3)).py-15,'#06b6d4',12);
+  // 计算
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;
+  roundRect(r.x0+10,r.y0,240,110,6);ctx.fill();ctx.stroke();
+  drawText('【例】求 S',r.x0+25,r.y0+18,'#a78bfa',13,'left');
+  drawText('F(x) = x³/6 + 0.3x',r.x0+25,r.y0+42,'#fff',12,'left');
+  drawText('S = F(4) − F(0)',r.x0+25,r.y0+64,'#67e8f9',12,'left');
+  drawText('= 64/6 + 1.2',r.x0+25,r.y0+86,'#34d399',12,'left');
+  drawText('S ≈ '+EXACT_INT.toFixed(3),W/2,H-45,'#34d399',16);
+  drawText('面积 = 定积分值（f ≥ 0 时）',W/2,H-22,'#9ab0d0',12);
+}
+
+// ===== 场景：旋转体体积 =====
+function drawVolumeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('应用 · 旋转体体积  V = π∫f²(x)dx',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 旋转体（椭球状，绕 x 轴）
+  const rot=time*1.5;
+  ctx.save();
+  ctx.translate(cx,cy);
+  // 主体：椭圆
+  const grad=ctx.createLinearGradient(-150,0,150,0);
+  grad.addColorStop(0,'rgba(6,182,212,0.5)');
+  grad.addColorStop(0.5,'rgba(251,191,36,0.4)');
+  grad.addColorStop(1,'rgba(6,182,212,0.5)');
+  ctx.fillStyle=grad;ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(0,0,150,80,0,0,7);ctx.fill();ctx.stroke();
+  // 旋转条纹
+  for(let i=-3;i<=3;i++){
+    const off=i*40+Math.sin(rot+i)*5;
+    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;
+    ctx.beginPath();
+    const hh=Math.sqrt(Math.max(0,1-Math.pow(off/150,2)))*80;
+    ctx.ellipse(0,0,Math.abs(off),hh,0,0,7);
+    ctx.stroke();
+  }
+  ctx.restore();
+  // 轴
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(cx-180,cy);ctx.lineTo(cx+180,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('x 轴（旋转轴）',cx+160,cy-15,'#fbbf24',11);
+  drawText('y=f(x) 绕 x 轴旋转一周',cx,cy-110,'#06b6d4',13);
+  // 公式
+  ctx.font='bold 18px serif';ctx.fillStyle='#34d399';ctx.textAlign='center';
+  ctx.fillText('V = π ∫[a,b] [f(x)]² dx',W/2,H-60);
+  drawText('每一截面是半径为 f(x) 的圆，面积 πf²(x)',W/2,H-35,'#9ab0d0',12);
+  drawText('应用：球 V=4πr³/3，圆锥 V=πr²h/3',W/2,H-15,'#a78bfa',11);
+}
+
+// ===== 场景：物理应用 =====
+function drawPhysicsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('物理应用 · 变力做功 / 变速路程',W/2,30,'#fbbf24',16);
+  // 左：变力做功 F-v 图
+  const lx=120,ly=80,lw=W/2-160,lh=H-180;
+  drawText('变力做功  W = ∫F(x)dx',lx+lw/2,ly-15,'#06b6d4',14);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+  ctx.strokeRect(lx,ly,lw,lh);
+  // 坐标
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(lx,ly+lh);ctx.lineTo(lx+lw,ly+lh);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx,ly+lh);ctx.stroke();
+  drawText('x',lx+lw,ly+lh+15,'#9ab0d0',11);drawText('F',lx-12,ly,'#9ab0d0',11);
+  // 曲线 F(x)
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.shadowColor='#fbbf24';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let i=0;i<=lw;i+=3){
+    const x=i/lw;
+    const F=Math.sin(x*Math.PI)*0.8+0.2;
+    const py=ly+lh-F*lh*0.8;
+    if(i===0)ctx.moveTo(lx+i,py);else ctx.lineTo(lx+i,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 填充（做功）
+  const pulse=0.25+0.15*Math.sin(time*1.5);
+  ctx.fillStyle='rgba(251,191,36,'+pulse+')';
+  ctx.beginPath();ctx.moveTo(lx,ly+lh);
+  for(let i=0;i<=lw;i+=3){
+    const x=i/lw;
+    const F=Math.sin(x*Math.PI)*0.8+0.2;
+    ctx.lineTo(lx+i,ly+lh-F*lh*0.8);
+  }
+  ctx.lineTo(lx+lw,ly+lh);ctx.closePath();ctx.fill();
+  drawText('阴影面积 = 功 W',lx+lw/2,ly+lh+30,'#fbbf24',12);
+  // 右：变速运动 v-t 图
+  const rx=W/2+40,ry=80,rw=W/2-160,rh=H-180;
+  drawText('变速路程  s = ∫v(t)dt',rx+rw/2,ry-15,'#34d399',14);
+  ctx.strokeRect(rx,ry,rw,rh);
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(rx,ry+rh);ctx.lineTo(rx+rw,ry+rh);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(rx,ry);ctx.lineTo(rx,ry+rh);ctx.stroke();
+  drawText('t',rx+rw,ry+rh+15,'#9ab0d0',11);drawText('v',rx-12,ry,'#9ab0d0',11);
+  // v(t) 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let i=0;i<=rw;i+=3){
+    const x=i/rw;
+    const v=1-Math.exp(-3*x)+0.2;
+    const py=ry+rh-v*rh*0.8;
+    if(i===0)ctx.moveTo(rx+i,py);else ctx.lineTo(rx+i,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(6,182,212,'+pulse+')';
+  ctx.beginPath();ctx.moveTo(rx,ry+rh);
+  for(let i=0;i<=rw;i+=3){
+    const x=i/rw;
+    const v=1-Math.exp(-3*x)+0.2;
+    ctx.lineTo(rx+i,ry+rh-v*rh*0.8);
+  }
+  ctx.lineTo(rx+rw,ry+rh);ctx.closePath();ctx.fill();
+  drawText('阴影面积 = 路程 s',rx+rw/2,ry+rh+30,'#34d399',12);
+  // 总结
+  drawText('物理本质：定积分 = 瞬时量的累积',W/2,H-25,'#fbbf24',13);
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('定积分与微积分基本定理 · 总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'定积分定义',d:'无穷小和的极限',c:'#fbbf24'},
+    {t:'几何意义',d:'曲边梯形面积',c:'#06b6d4'},
+    {t:'四步法',d:'分割近似求和极限',c:'#a78bfa'},
+    {t:'牛顿-莱布尼茨',d:'∫=F(b)−F(a)',c:'#34d399'},
+    {t:'原函数',d:"F'(x)=f(x)",c:'#fb923c'},
+    {t:'应用',d:'面积体积变力做功',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawDefScene(t);
+  else if(stepIdx===1)drawDefScene(t);
+  else if(stepIdx===2)drawRiemannScene(t);
+  else if(stepIdx===3)drawRiemannScene(t);
+  else if(stepIdx===4)drawRiemannScene(t);
+  else if(stepIdx===5)drawPropertyScene(t);
+  else if(stepIdx===6)drawNLFScene(t);
+  else if(stepIdx===7)drawNLFScene(t);
+  else if(stepIdx===8)drawTableScene();
+  else if(stepIdx===9)drawAreaScene(t);
+  else if(stepIdx===10)drawVolumeScene(t);
+  else if(stepIdx===11)drawPhysicsScene(t);
+  else if(stepIdx===12)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

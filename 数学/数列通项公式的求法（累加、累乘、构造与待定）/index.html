@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数列通项公式 · 累加累乘构造待定</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">数列通项公式的求法</span><span class="subtitle">观察 · 公式 · 累加 · 累乘 · 构造 · 待定 · Sₙ-aₙ</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>五种方法概览</h4><div class="v">观察法 · 公式法<br>累加法 · 累乘法 · 构造法</div></div>
+  <div class="card s2"><div class="num">2</div><h4>累加与累乘</h4><div class="v">aₙ-aₙ₋₁=f(n) 累加<br>aₙ/aₙ₋₁=f(n) 累乘</div></div>
+  <div class="card s3"><div class="num">3</div><h4>构造法</h4><div class="v">aₙ₊₁=paₙ+q<br>设 aₙ₊₁+c=p(aₙ+c)</div></div>
+  <div class="card s4"><div class="num">4</div><h4>Sₙ 与 aₙ 关系</h4><div class="v">a₁=S₁<br>aₙ=Sₙ-Sₙ₋₁ (n≥2)</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">观察法与公式法</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+// ===== 基础工具 =====
+// 画布、上下文、状态文字节点；fit() 自适应父容器尺寸（520~1100 宽、400~600 高）
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(520,Math.min(1100,r.width-12));
+  cv.height=Math.max(400,Math.min(600,r.height-12));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+}
+function drawText(t,x,y,c,fs,a,b){
+  ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';
+  ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';
+  ctx.fillText(t,x,y);
+}
+function grid(){
+  ctx.strokeStyle='rgba(36,58,94,0.3)';ctx.lineWidth=1;
+  for(let x=0;x<cv.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();}
+  for(let y=0;y<cv.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();}
+}
+
+// ===== 步骤定义（共 8 步） =====
+const STEPS=[
+  {tag:'基础',name:'观察法与公式法',body:'<strong>观察法</strong>：直接观察数列前几项与项数 n 的对应规律，写出 <code>aₙ</code>。<strong>公式法</strong>：若已知是等差或等比数列，直接套用 <code>aₙ=a₁+(n-1)d</code> 或 <code>aₙ=a₁·q^(n-1)</code>。',points:{title:'两种基础方法',items:['<strong>观察法</strong>：看 aₙ 与 n 的倍数/乘方关系','<strong>例</strong>：2,4,6,8 → aₙ=2n','<strong>等差公式</strong>：aₙ=a₁+(n-1)d','<strong>等比公式</strong>：aₙ=a₁·q^(n-1)']}},
+  {tag:'累加',name:'累加法',body:'当递推式形如 <code>aₙ - aₙ₋₁ = f(n)</code>（n≥2）时用<strong>累加法</strong>。把 n=2..n 的式子相加，相邻项抵消得 <code>aₙ = a₁ + Σf(k)</code>。例：<code>aₙ-aₙ₋₁=2n-1</code>，累加得 <code>aₙ=n²</code>。',points:{title:'累加三步',items:['<strong>识别</strong>：aₙ-aₙ₋₁=f(n) 形式','<strong>累加</strong>：列 k=2..n 的差相加','<strong>抵消</strong>：相邻项中间抵消','<strong>结论</strong>：aₙ=a₁+Σf(k)']}},
+  {tag:'累乘',name:'累乘法',body:'当递推式形如 <code>aₙ/aₙ₋₁ = f(n)</code>（n≥2）时用<strong>累乘法</strong>。把 n=2..n 的式子相乘，中间项约分得 <code>aₙ = a₁·∏f(k)</code>。例：<code>aₙ/aₙ₋₁=n/(n+1)</code>，累乘得 <code>aₙ=2/(n+1)·a₁</code>。',points:{title:'累乘步骤',items:['<strong>识别</strong>：aₙ/aₙ₋₁=f(n) 形式','<strong>累乘</strong>：列 k=2..n 的比相乘','<strong>约分</strong>：分子分母交叉约分','<strong>结论</strong>：aₙ=a₁·∏f(k)']}},
+  {tag:'构造',name:'构造法·一次型',body:'形如 <code>aₙ₊₁ = p·aₙ + q</code> 的递推，设 <code>aₙ₊₁+c = p(aₙ+c)</code>，解出 <code>c = q/(p-1)</code>（p≠1），则 {aₙ+c} 是<strong>等比数列</strong>。例：<code>aₙ₊₁=2aₙ+1, a₁=1</code>，得 c=1，aₙ+1 为等比，aₙ=2ⁿ-1。',points:{title:'一次型构造',items:['<strong>形式</strong>：aₙ₊₁=p·aₙ+q','<strong>设</strong>：aₙ₊₁+c=p(aₙ+c)','<strong>解</strong>：c=q/(p-1)','<strong>{aₙ+c}</strong>：为等比数列']}},
+  {tag:'构造',name:'构造法·分式型',body:'形如 <code>aₙ₊₁ = (p·aₙ+q)/(r·aₙ+s)</code> 的分式递推，常取倒数构造新数列。设 <code>bₙ=1/aₙ</code>，化简为 bₙ 的等差/等比数列再求解。',points:{title:'分式型技巧',items:['<strong>识别</strong>：分式递推含 aₙ₊₁ 与 aₙ','<strong>取倒数</strong>：令 bₙ=1/aₙ','<strong>化简</strong>：得 bₙ 的线性递推','<strong>还原</strong>：aₙ=1/bₙ']}},
+  {tag:'关系',name:'Sₙ 与 aₙ 关系',body:'已知前 n 项和 <code>Sₙ</code> 求通项：<code>a₁=S₁</code>；当 <code>n≥2</code> 时，<code>aₙ=Sₙ-Sₙ₋₁</code>。注意：若两式结果不同需写成分段；常用此关系检验通项是否成立。',points:{title:'S-a 转换公式',items:['<strong>n=1</strong>：a₁=S₁','<strong>n≥2</strong>：aₙ=Sₙ-Sₙ₋₁','<strong>分段</strong>：两式不一致时写分段','<strong>检验</strong>：n=1 是否满足 n≥2 公式']}},
+  {tag:'待定',name:'待定系数法',body:'假设通项为<strong>多项式形式</strong>，由已知项列出方程组求解系数。如数列差为常数 → 设 aₙ=bn+c；二阶差为常数 → 设 aₙ=an²+bn+c，代入三项列方程。',points:{title:'待定系数步骤',items:['<strong>观察</strong>：看几阶差为常数','<strong>设式</strong>：相应次数多项式','<strong>代入</strong>：已知项列方程组','<strong>求解</strong>：解线性方程组']}},
+  {tag:'例题',name:'典型例题',body:'<strong>例1（构造法）</strong>：a₁=1, aₙ₊₁=2aₙ+1，构造 aₙ+1=2(aₙ₋₁+1)，得 aₙ=2ⁿ-1。<strong>例2（累加法）</strong>：a₁=1, aₙ-aₙ₋₁=2n-1，累加得 aₙ=1+3+5+…+(2n-1)=n²。',points:{title:'两道典型题',items:['<strong>例1</strong>：构造法 → aₙ=2ⁿ-1','<strong>例2</strong>：累加法 → aₙ=n²','<strong>关键</strong>：识别递推类型','<strong>验证</strong>：代入 n=1,2,3 检验']}},
+  {tag:'总结',name:'方法速记总览',body:'数列通项<strong>五大方法</strong>各有适用场景：观察/公式法适用于显式规律；累加法处理差式 f(n)；累乘法处理商式 f(n)；构造法把递推化为等差/等比；待定系数法假设多项式形式。',points:{title:'方法选择决策',items:['<strong>差式</strong>：aₙ-aₙ₋₁=f(n) → 累加','<strong>商式</strong>：aₙ/aₙ₋₁=f(n) → 累乘','<strong>线性递推</strong>：aₙ₊₁=paₙ+q → 构造','<strong>已知 Sₙ</strong>：用 Sₙ-Sₙ₋₁ 转换']}},
+];
+
+// ===== 状态变量 =====
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景1：观察法与公式法 =====
+function drawObserveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('观察法 · 公式法',W/2,30,'#fbbf24',16);
+  drawText('识别数列前几项与 n 的关系',W/2,55,'#9ab0d0',12);
+  // 数列：2,4,6,8,10
+  const seq=[2,4,6,8,10];
+  const startX=80,startY=130;
+  seq.forEach((v,i)=>{
+    const x=startX+i*(W-160)/(seq.length-1);
+    const pulse=Math.sin(time*2-i*0.5)*5;
+    ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    roundRect(x-45,startY-20+pulse,90,60,8);ctx.fill();ctx.stroke();
+    drawText('n='+(i+1),x,startY-5,'#9ab0d0',11);
+    drawText('a='+(i+1)*2,x,startY+18,'#67e8f9',18);
+  });
+  // 推导：aₙ=2n
+  drawText('观察规律：aₙ = 2n',W/2,startY+95,'#fbbf24',18);
+  // 等差/等比公式卡片
+  const cy=startY+155;
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(100,cy,(W-220)/2-10,110,10);ctx.fill();ctx.stroke();
+  drawText('等差数列',100+(W-220)/4,cy+25,'#34d399',14);
+  drawText('aₙ = a₁+(n-1)d',100+(W-220)/4,cy+58,'#fff',14);
+  drawText('例 3,7,11,15',100+(W-220)/4,cy+85,'#9ab0d0',11);
+  const cy2=cy;
+  ctx.fillStyle='#fbbf2422';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2+10,cy2,(W-220)/2-10,110,10);ctx.fill();ctx.stroke();
+  drawText('等比数列',W/2+10+(W-220)/4,cy2+25,'#fbbf24',14);
+  drawText('aₙ = a₁·q^(n-1)',W/2+10+(W-220)/4,cy2+58,'#fff',14);
+  drawText('例 2,6,18,54',W/2+10+(W-220)/4,cy2+85,'#9ab0d0',11);
+}
+
+// ===== 场景2：累加法（楼梯式动画） =====
+function drawAccumScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('累加法 · aₙ - aₙ₋₁ = f(n)',W/2,30,'#fbbf24',16);
+  drawText('例：a₁=1, aₙ-aₙ₋₁=2n-1 → aₙ=n²',W/2,55,'#9ab0d0',12);
+  const cx=120,cy=H-100;
+  const stepH=42,stepW=68;
+  const maxN=Math.min(6,Math.floor(time*1.2)+1);
+  // 楼梯
+  for(let i=0;i<maxN;i++){
+    const x=cx+i*stepW;
+    const y=cy-i*stepH;
+    ctx.fillStyle=i%2===0?'#06b6d433':'#06b6d422';
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(x,y);ctx.lineTo(x+stepW,y);ctx.lineTo(x+stepW,y-stepH);ctx.closePath();
+    ctx.fill();ctx.stroke();
+    drawText('a'+(i+1),x+stepW/2,y-12,'#67e8f9',12);
+    drawText('='+(i+1)*(i+1),x+stepW/2,y+5,'#fff',12);
+    if(i>0){
+      drawText('+'+(2*i+1),x+6,y+12,'#fbbf24',10,'left');
+    }
+  }
+  // 公式逐步
+  const fy=85;
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(W-280,fy,260,H-180,8);ctx.fill();ctx.stroke();
+  drawText('累加推导',W-150,fy+22,'#a78bfa',13);
+  const lines=[
+    'a₂-a₁=3',
+    'a₃-a₂=5',
+    'a₄-a₃=7',
+    '…',
+    'aₙ-aₙ₋₁=2n-1',
+    '———————',
+    '相加：',
+    'aₙ-a₁=3+5+…+(2n-1)',
+    'aₙ=1+Σ(2k-1)=n²'
+  ];
+  lines.forEach((l,i)=>{
+    const c=l==='———————'?'#5a6a8a':(l.includes('aₙ')?'#34d399':'#fff');
+    drawText(l,W-150,fy+50+i*24,c,11);
+  });
+  drawText('（共 n-1 个差式相加，中间项抵消）',W-150,fy+50+lines.length*24+8,'#5a6a8a',10);
+  drawText('相邻项中间抵消，得到通项',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景3：累乘法（约分动画） =====
+function drawMultiplyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('累乘法 · aₙ / aₙ₋₁ = f(n)',W/2,30,'#fbbf24',16);
+  drawText('例：a₁=1, aₙ/aₙ₋₁=n/(n+1)',W/2,55,'#9ab0d0',12);
+  // 累乘链：分子分母约分
+  const cy=H/2-40;
+  const factors=[['2','3'],['3','4'],['4','5'],['5','6']];
+  const startX=W/2-220;
+  // 第一个 a₁
+  drawText('a₁ = 1',startX-40,cy,'#fbbf24',14);
+  // 连乘
+  let curX=startX+60;
+  factors.forEach((f,i)=>{
+    const pulse=Math.sin(time*2-i*0.7)*0.08+1;
+    ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    roundRect(curX,cy-28,72*pulse,56*pulse,6);ctx.fill();ctx.stroke();
+    drawText(f[0],curX+36,cy-9,'#67e8f9',14);
+    drawText('—',curX+36,cy-1,'#9ab0d0',12);
+    drawText(f[1],curX+36,cy+13,'#67e8f9',14);
+    curX+=90;
+  });
+  drawText('=',curX-15,cy,'#fbbf24',18);
+  drawText('aₙ = 2/(n+1)',curX+60,cy,'#34d399',15);
+  // 约分说明
+  drawText('约分：分子2·3·4·5, 分母3·4·5·6 → 中间项约掉',W/2,cy+90,'#a78bfa',12);
+  // 公式
+  const fy=cy+135;
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(80,fy,W-160,60,8);ctx.fill();ctx.stroke();
+  drawText('累乘公式：aₙ = a₁ · ∏[k=2..n] f(k)',W/2,fy+20,'#34d399',14);
+  drawText('分子与分母交叉约分，剩首尾两项',W/2,fy+42,'#9ab0d0',11);
+}
+
+// ===== 场景4：构造法（一次型，分步动画） =====
+function drawConstructScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('构造法 · aₙ₊₁ = p·aₙ + q',W/2,30,'#fbbf24',16);
+  drawText('例：a₁=1, aₙ₊₁=2aₙ+1 → aₙ=2ⁿ-1',W/2,55,'#9ab0d0',12);
+  const cy=H/2-50;
+  const phase=(Math.floor(time/1.8)%5);
+  const steps=[
+    {t:'① 原递推',d:'aₙ₊₁ = 2aₙ + 1',c:'#06b6d4'},
+    {t:'② 设常数 c',d:'aₙ₊₁+c = 2(aₙ+c)',c:'#a78bfa'},
+    {t:'③ 展开',d:'2aₙ+1+c = 2aₙ+2c',c:'#67e8f9'},
+    {t:'④ 解得 c',d:'2c-c = 1 → c = 1',c:'#fbbf24'},
+    {t:'⑤ {aₙ+1}等比',d:'aₙ+1 = 2·2ⁿ⁻¹ = 2ⁿ',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=cy-100+i*55;
+    const active=i<=phase;
+    ctx.fillStyle=active?s.c+'33':s.c+'11';ctx.strokeStyle=s.c;ctx.lineWidth=active?2.5:1.2;
+    roundRect(90,y,W-180,44,8);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+22,s.c,13,'left');
+    drawText(s.d,290,y+22,active?'#fff':'#5a6a8a',13,'left');
+  });
+  // 结论
+  const fy=cy+185;
+  ctx.fillStyle='#fbbf2422';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  roundRect(150,fy,W-300,48,10);ctx.fill();ctx.stroke();
+  drawText('∴ aₙ = 2ⁿ - 1',W/2,fy+24,'#fbbf24',18);
+}
+
+// ===== 场景5：构造法（分式型·取倒数） =====
+function drawFractionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('构造法 · 分式型 · 取倒数',W/2,30,'#fbbf24',16);
+  const cy=H/2-70;
+  // 原递推
+  ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(80,cy,W-160,50,8);ctx.fill();ctx.stroke();
+  drawText('递推：aₙ₊₁ = 3aₙ / (2aₙ + 1)',W/2,cy+25,'#67e8f9',14);
+  // 取倒数
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(80,cy+75,W-160,50,8);ctx.fill();ctx.stroke();
+  drawText('取倒数：1/aₙ₊₁ = (2aₙ+1)/(3aₙ) = 2/3 + 1/(3aₙ)',W/2,cy+100,'#a78bfa',13);
+  // 设 bₙ
+  ctx.fillStyle='#fbbf2422';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(80,cy+150,W-160,50,8);ctx.fill();ctx.stroke();
+  drawText('设 bₙ=1/aₙ → bₙ₊₁ = (1/3)bₙ + 2/3（一次型递推）',W/2,cy+175,'#fbbf24',13);
+  // 动画箭头
+  const arrowY=cy+60;
+  const arrowX=150+Math.abs(Math.sin(time*2))*30;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(arrowX,arrowY);ctx.lineTo(arrowX+20,arrowY+25);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(arrowX+14,arrowY+15);ctx.lineTo(arrowX+20,arrowY+25);ctx.lineTo(arrowX+8,arrowY+22);ctx.stroke();
+  // 提示
+  drawText('取倒数后化简为一次型 → 再用一次构造法',W/2,cy+240,'#34d399',12);
+}
+
+// ===== 场景6：Sₙ 与 aₙ 关系 =====
+function drawSnScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('Sₙ 与 aₙ 的关系',W/2,30,'#fbbf24',16);
+  drawText('已知前 n 项和 Sₙ 反求通项 aₙ',W/2,55,'#9ab0d0',12);
+  const cy=H/2-50;
+  // 两大公式
+  const pulse=Math.sin(time*2)*0.04+1;
+  ctx.fillStyle='#06b6d433';ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  roundRect(80,cy-60,(W-200)/2-10,120*pulse,12);ctx.fill();ctx.stroke();
+  drawText('n = 1',80+(W-200)/4,cy-25,'#06b6d4',14);
+  drawText('a₁ = S₁',80+(W-200)/4,cy+18,'#fff',22);
+  ctx.fillStyle='#fbbf2433';ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  roundRect(W/2+10,cy-60,(W-200)/2-10,120*pulse,12);ctx.fill();ctx.stroke();
+  drawText('n ≥ 2',W/2+10+(W-200)/4,cy-25,'#fbbf24',14);
+  drawText('aₙ = Sₙ - Sₙ₋₁',W/2+10+(W-200)/4,cy+18,'#fff',18);
+  // 流程示意
+  const fy=cy+125;
+  drawText('已知 Sₙ  →  计算 Sₙ 与 Sₙ₋₁  →  作差得 aₙ  →  验证 n=1',W/2,fy,'#34d399',13);
+  // 检验提示
+  drawText('注意：n=1 不满足 n≥2 公式时，通项写成分段形式',W/2,fy+30,'#f87171',12);
+  drawText('检验方法：将 n=1 代入 n≥2 公式，看是否等于 S₁',W/2,fy+52,'#9ab0d0',11);
+  // 实例：Sₙ=n²+n
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(120,fy+70,W-240,46,8);ctx.fill();ctx.stroke();
+  drawText('例：Sₙ=n²+n → a₁=S₁=2, aₙ=Sₙ-Sₙ₋₁=2n（n≥2）',W/2,fy+93,'#a78bfa',12);
+}
+
+// ===== 场景7：待定系数法 =====
+function drawUndeterminedScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('待定系数法 · 设式求解',W/2,30,'#fbbf24',16);
+  drawText('数列 3,5,9,15,23（二阶差为常数）',W/2,55,'#9ab0d0',12);
+  const cy=H/2-80;
+  // 数列展示
+  const seq=[3,5,9,15,23];
+  const startX=W/2-160;
+  seq.forEach((v,i)=>{
+    const x=startX+i*80;
+    const pulse=Math.sin(time*2-i*0.5)*4;
+    ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    roundRect(x-32,cy-15+pulse,64,42,8);ctx.fill();ctx.stroke();
+    drawText(v,x,cy+6,'#67e8f9',15);
+  });
+  // 一阶差 / 二阶差
+  const diffs1=[2,4,6,8];
+  const diffs2=[2,2,2];
+  drawText('一阶差：'+diffs1.join(', '),W/2,cy+50,'#a78bfa',11);
+  drawText('二阶差：'+diffs2.join(', ')+'（常数）',W/2,cy+72,'#fbbf24',11);
+  // 设 aₙ=An²+Bn+C
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(90,cy+95,W-180,38,8);ctx.fill();ctx.stroke();
+  drawText('二阶差为常数 → 设 aₙ = An² + Bn + C',W/2,cy+114,'#a78bfa',13);
+  // 方程组
+  const eqs=['n=1: A+B+C=3','n=2: 4A+2B+C=5','n=3: 9A+3B+C=9'];
+  eqs.forEach((e,i)=>{
+    drawText(e,W/2,cy+155+i*26,'#fff',12);
+  });
+  // 解
+  drawText('解得：A=1, B=-1, C=3 → aₙ = n²-n+3',W/2,cy+245,'#34d399',15);
+  // 验证
+  drawText('验证：a₁=1-1+3=3 ✓   a₂=4-2+3=5 ✓   a₃=9-3+3=9 ✓',W/2,cy+270,'#34d399',11);
+}
+
+// ===== 场景8：典型例题 =====
+function drawExampleScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 构造法与累加法',W/2,30,'#fbbf24',16);
+  // 例1
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(60,65,W/2-80,190,10);ctx.fill();ctx.stroke();
+  drawText('【例1·构造法】',W/4-20,90,'#06b6d4',14);
+  drawText('a₁=1, aₙ₊₁=2aₙ+1',W/4-20,120,'#fff',13);
+  drawText('构造 aₙ+1 = 2(aₙ₋₁+1)',W/4-20,148,'#a78bfa',12);
+  drawText('{aₙ+1} 等比，公比2',W/4-20,174,'#9ab0d0',12);
+  drawText('aₙ+1 = 2·2ⁿ⁻¹ = 2ⁿ',W/4-20,200,'#34d399',12);
+  drawText('∴ aₙ = 2ⁿ - 1',W/4-20,228,'#fbbf24',15);
+  // 例2
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(W/2+20,65,W/2-80,190,10);ctx.fill();ctx.stroke();
+  drawText('【例2·累加法】',3*W/4+10,90,'#fbbf24',14);
+  drawText('a₁=1, aₙ-aₙ₋₁=2n-1',3*W/4+10,120,'#fff',13);
+  drawText('累加：a₂-a₁, a₃-a₂, …',3*W/4+10,148,'#a78bfa',12);
+  drawText('aₙ-a₁ = 3+5+…+(2n-1)',3*W/4+10,174,'#9ab0d0',12);
+  drawText('= 1+3+5+…+(2n-1)',3*W/4+10,200,'#34d399',12);
+  drawText('∴ aₙ = n²',3*W/4+10,228,'#fbbf24',15);
+  // 方法选择口诀
+  drawText('方法选择口诀',W/2,280,'#fbbf24',15);
+  const tips=[
+    '差式 f(n) → 累加法',
+    '商式 f(n) → 累乘法',
+    'aₙ₊₁=paₙ+q → 构造法',
+    '已知 Sₙ → 用 Sₙ-aₙ 关系'
+  ];
+  tips.forEach((s,i)=>{
+    const y=310+i*40;
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+    roundRect(x+10,y,(W-160)/2-20,32,6);ctx.fill();ctx.stroke();
+    drawText(s,x+(W-160)/4,y+16,'#fff',12);
+  });
+}
+
+// ===== 场景9：方法速记总览 =====
+function drawSummaryScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('五大方法 · 速记总览',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'观察法',d:'看 aₙ 与 n 关系',c:'#fbbf24',ex:'2,4,6,8→2n'},
+    {t:'公式法',d:'套等差/等比公式',c:'#06b6d4',ex:'aₙ=a₁+(n-1)d'},
+    {t:'累加法',d:'差式 f(n) 相加',c:'#34d399',ex:'aₙ-aₙ₋₁=f(n)'},
+    {t:'累乘法',d:'商式 f(n) 相乘',c:'#fb923c',ex:'aₙ/aₙ₋₁=f(n)'},
+    {t:'构造法',d:'化为等差/等比',c:'#a78bfa',ex:'aₙ₊₁=paₙ+q'},
+    {t:'待定系数',d:'设多项式求解',c:'#ec4899',ex:'aₙ=An²+Bn+C'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=70+col*(W-140)/3;
+    const y=90+row*200;
+    const pulse=Math.sin(time*1.5+i*0.5)*0.03+1;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-140)/3-20,160*pulse,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-140)/6,y+40,m.c,16);
+    drawText(m.d,x+(W-140)/6,y+85,'#fff',12);
+    drawText(m.ex,x+(W-140)/6,y+120,'#9ab0d0',11);
+  });
+  drawText('识别递推形式 → 选对方法 → 套用流程 → 验证 n=1',W/2,H-30,'#34d399',13);
+}
+
+// ===== 主绘制函数 =====
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawObserveScene(t);
+  else if(stepIdx===1)drawAccumScene(t);
+  else if(stepIdx===2)drawMultiplyScene(t);
+  else if(stepIdx===3)drawConstructScene(t);
+  else if(stepIdx===4)drawFractionScene(t);
+  else if(stepIdx===5)drawSnScene(t);
+  else if(stepIdx===6)drawUndeterminedScene(t);
+  else if(stepIdx===7)drawExampleScene();
+  else if(stepIdx===8)drawSummaryScene(t);
+}
+
+// ===== 同步详情面板 =====
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+// ===== 更新逻辑 =====
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+// ===== 主循环（requestAnimationFrame） =====
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+// ===== 控件绑定 =====
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+// ===== 构建步骤条 =====
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+// ===== 初始化启动 =====
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

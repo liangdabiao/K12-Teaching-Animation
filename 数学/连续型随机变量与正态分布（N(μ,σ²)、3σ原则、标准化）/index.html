@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>正态分布 · N(μ,σ²) · 3σ原则 · 标准化</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">正态分布</span><span class="subtitle">N(μ,σ²) · 3σ原则 · 标准化</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>N(μ,σ²)</h4><div class="v">X~N(μ,σ²)<br>μ为均值，σ²为方差</div></div>
+  <div class="card s2"><div class="num">2</div><h4>曲线三大性质</h4><div class="v">关于x=μ对称<br>峰值在μ处，面积为1</div></div>
+  <div class="card s3"><div class="num">3</div><h4>3σ 原则</h4><div class="v">68.27% · 95.45%<br>99.73%</div></div>
+  <div class="card s4"><div class="num">4</div><h4>标准化 Z 变换</h4><div class="v">Z=(X-μ)/σ<br>Z ~ N(0,1)</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">正态分布</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <label>μ <input id="muCtrl" type="range" min="-3" max="3" step="0.1" value="0"></label>
+  <label>σ <input id="sigmaCtrl" type="range" min="0.5" max="2.5" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+// 全局参数：均值 μ 与标准差 σ（受滑块控制）
+let mu=1.0*Math.PI*0,sigma=1.0;
+const muCtrl=document.getElementById('muCtrl'),sigmaCtrl=document.getElementById('sigmaCtrl');
+muCtrl.oninput=()=>{mu=parseFloat(muCtrl.value);draw();};
+sigmaCtrl.oninput=()=>{sigma=parseFloat(sigmaCtrl.value);draw();};
+
+// 正态密度函数 f(x) = (1/(σ√(2π))) * exp(-(x-μ)²/(2σ²))
+function pdf(x,m,s){return Math.exp(-((x-m)*(x-m))/(2*s*s))/(s*Math.sqrt(2*Math.PI));}
+
+// 通用：绘制钟形曲线坐标系（含网格、刻度、轴标签）
+function bellAxis(cx,cy,w,h,xmin,xmax){
+  // 背景网格（水平虚线）
+  ctx.strokeStyle='#1a2840';ctx.lineWidth=1;ctx.setLineDash([2,4]);
+  for(let g=1;g<=4;g++){
+    const gy=cy-g*h/10;
+    ctx.beginPath();ctx.moveTo(cx-w/2,gy);ctx.lineTo(cx+w/2,gy);ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-w/2,cy);ctx.lineTo(cx+w/2,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-w/2,cy-h/2);ctx.lineTo(cx-w/2,cy);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(cx+w/2,cy);ctx.lineTo(cx+w/2-6,cy-3);ctx.lineTo(cx+w/2-6,cy+3);ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx-w/2,cy-h/2);ctx.lineTo(cx-w/2-3,cy-h/2+6);ctx.lineTo(cx-w/2+3,cy-h/2+6);ctx.fill();
+  drawText('f(x)',cx-w/2-12,cy-h/2,'#9ab0d0',11,'center','bottom');
+  drawText('x',cx+w/2+10,cy,'#9ab0d0',11,'left');
+  drawText('O',cx-w/2-8,cy+10,'#5a6a8a',10,'center','top');
+  // x 轴刻度
+  for(let i=xmin;i<=xmax;i++){
+    const px=cx-w/2+(i-xmin)/(xmax-xmin)*w;
+    drawText(i,px,cy+15,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(px,cy);ctx.lineTo(px,cy+4);ctx.stroke();
+  }
+}
+// 把 x 映射到画布像素
+function mapX(cx,w,xmin,xmax,x){return cx-w/2+(x-xmin)/(xmax-xmin)*w;}
+function mapY(cy,h,ymax,f){return cy-(f/ymax)*h;}
+
+// 绘制钟形曲线（可选高亮区间 [a,b]，颜色 c）
+function drawBell(cx,cy,w,h,xmin,xmax,m,s,hi,fill){
+  const ymax=1.0/Math.sqrt(2*Math.PI)+0.05;
+  // 填充高亮区间
+  if(hi){
+    ctx.fillStyle=fill||'rgba(52,211,153,0.35)';
+    ctx.beginPath();ctx.moveTo(mapX(cx,w,xmin,xmax,hi[0]),cy);
+    for(let x=hi[0];x<=hi[1];x+=0.02){
+      const px=mapX(cx,w,xmin,xmax,x);
+      const py=mapY(cy,h,ymax,pdf(x,m,s));
+      ctx.lineTo(px,py);
+    }
+    ctx.lineTo(mapX(cx,w,xmin,xmax,hi[1]),cy);ctx.closePath();ctx.fill();
+  }
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=12;
+  ctx.beginPath();
+  for(let x=xmin;x<=xmax;x+=0.02){
+    const px=mapX(cx,w,xmin,xmax,x);
+    const py=mapY(cy,h,ymax,pdf(x,m,s));
+    if(x===xmin)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 中心线 μ
+  const muX=mapX(cx,w,xmin,xmax,m);
+  ctx.strokeStyle='#fbbf2466';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(muX,cy-h/2);ctx.lineTo(muX,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('μ='+m.toFixed(1),muX,cy+30,'#fbbf24',12);
+}
+
+// ===== 场景1：正态分布定义 =====
+function drawDefineScene(){
+  const W=cv.width,H=cv.height;
+  drawText('正态分布定义 · X ~ N(μ, σ²)',W/2,30,'#fbbf24',16);
+  drawText('连续型随机变量：取值充满区间，用概率密度函数 f(x) 描述',W/2,52,'#9ab0d0',12);
+  const cx=W/2,cy=H/2+50,w=W-160,h=220,xmin=-5,xmax=5;
+  bellAxis(cx,cy,w,h,xmin,xmax);
+  // 频率直方图背景（近似正态）
+  const ymax=1.0/Math.sqrt(2*Math.PI)+0.05;
+  ctx.fillStyle='rgba(167,139,250,0.25)';ctx.strokeStyle='rgba(167,139,250,0.6)';ctx.lineWidth=1;
+  for(let i=-45;i<=45;i++){
+    const xc=i*0.2;
+    const f=pdf(xc,mu,sigma);
+    const bw=w/50;
+    const px=cx-w/2+(xc+0.1-xmin)/(xmax-xmin)*w-bw/2;
+    const py=mapY(cy,h,ymax,f);
+    ctx.fillRect(px,py,bw,cy-py);
+  }
+  // 钟形曲线叠加
+  drawBell(cx,cy,w,h,xmin,xmax,mu,sigma,null,null);
+  // 关键点散点
+  ctx.fillStyle='rgba(251,191,36,0.7)';
+  for(let i=-4;i<=4;i++){
+    const f=pdf(i,mu,sigma);
+    const px=mapX(cx,w,xmin,xmax,i);
+    const py=mapY(cy,h,ymax,f);
+    ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
+  }
+  // 公式
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1;
+  roundRect(cx-w/2,cy+h/2+20,w,32,6);ctx.fill();ctx.stroke();
+  drawText('f(x) = 1/(σ√(2π)) · e^(-(x-μ)²/(2σ²))',cx,cy+h/2+36,'#34d399',13);
+}
+
+// ===== 场景2：密度函数与钟形曲线 =====
+function drawPdfScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('概率密度函数 · 钟形曲线',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40,w=W-160,h=220,xmin=-5,xmax=5;
+  bellAxis(cx,cy,w,h,xmin,xmax);
+  // 动画：曲线逐步画出
+  const ymax=1.0/Math.sqrt(2*Math.PI)+0.05;
+  const phase=Math.min(1,((time*0.6)%1.4)/1.4);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=12;
+  ctx.beginPath();
+  for(let x=xmin;x<=xmax;x+=0.02){
+    if(x-xmin>(xmax-xmin)*phase)break;
+    const px=mapX(cx,w,xmin,xmax,x);
+    const py=mapY(cy,h,ymax,pdf(x,mu,sigma));
+    if(x===xmin)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 标注峰值
+  const peakX=mapX(cx,w,xmin,xmax,mu);
+  const peakY=mapY(cy,h,ymax,pdf(mu,mu,sigma));
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(peakX,peakY,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('峰值 = '+pdf(mu,mu,sigma).toFixed(3),peakX,peakY-22,'#fbbf24',12);
+  drawText('在 x=μ 处取最大值；曲线关于 x=μ 对称',W/2,H-50,'#9ab0d0',12);
+  drawText('曲线与 x 轴所围成的面积 = 1',W/2,H-28,'#34d399',12);
+  drawText('（高斯曲线 / Gaussian curve）',W/2,H-8,'#a78bfa',11);
+}
+
+// ===== 场景3：曲线性质 =====
+function drawPropertyScene(){
+  const W=cv.width,H=cv.height;
+  drawText('正态曲线三大性质',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40,w=W-160,h=220,xmin=-5,xmax=5;
+  bellAxis(cx,cy,w,h,xmin,xmax);
+  drawBell(cx,cy,w,h,xmin,xmax,mu,sigma,null,null);
+  // 对称：左右两条竖线
+  const a=mu-1.5,b=mu+1.5;
+  const ax=mapX(cx,w,xmin,xmax,a),bx=mapX(cx,w,xmin,xmax,b);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(ax,cy);ctx.lineTo(ax,mapY(cy,h,1.0/Math.sqrt(2*Math.PI)+0.05,pdf(a,mu,sigma)));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(bx,cy);ctx.lineTo(bx,mapY(cy,h,1.0/Math.sqrt(2*Math.PI)+0.05,pdf(b,mu,sigma)));ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('a',ax,cy+30,'#34d399',11);
+  drawText('b=对称点',bx,cy+30,'#34d399',11);
+  // 对称符号
+  const muX=mapX(cx,w,xmin,xmax,mu);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ax,cy-10);ctx.lineTo(bx,cy-10);ctx.stroke();
+  // 说明文字三行
+  drawText('① 曲线关于直线 x = μ 对称',120,60,'#34d399',13,'left');
+  drawText('② 在 x = μ 处达到峰值（最高点）',120,82,'#06b6d4',13,'left');
+  drawText('③ 曲线与 x 轴所围面积 = 1',120,104,'#a78bfa',13,'left');
+  drawText('（两端无限延伸，以 x 轴为渐近线）',120,126,'#9ab0d0',11,'left');
+  drawText('即 P(-∞ < X < +∞) = 1',120,148,'#34d399',11,'left');
+}
+
+// ===== 场景4：σ 对曲线影响 =====
+function drawSigmaScene(){
+  const W=cv.width,H=cv.height;
+  drawText('σ 对曲线形状的影响',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40,w=W-160,h=240,xmin=-6,xmax=6;
+  bellAxis(cx,cy,w,h,xmin,xmax);
+  const ymax=1.0/Math.sqrt(2*Math.PI)+0.15;
+  const sigmas=[0.5,1.0,2.0];
+  const colors=['#f87171','#fbbf24','#34d399'];
+  sigmas.forEach((s,i)=>{
+    ctx.strokeStyle=colors[i];ctx.lineWidth=2.5;
+    ctx.shadowColor=colors[i];ctx.shadowBlur=8;
+    ctx.beginPath();
+    for(let x=xmin;x<=xmax;x+=0.02){
+      const px=mapX(cx,w,xmin,xmax,x);
+      const py=mapY(cy,h,ymax,pdf(x,0,s));
+      if(x===xmin)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+  });
+  // 图例
+  ctx.font='13px sans-serif';ctx.textAlign='left';
+  sigmas.forEach((s,i)=>{
+    const y=60+i*22;
+    ctx.fillStyle=colors[i];ctx.fillRect(80,y-7,18,4);
+    drawText('σ='+s.toFixed(1)+(s<0.8?'（陡峭）':s>1.5?'（平缓）':'（标准）'),110,y,colors[i],13,'left');
+  });
+  // 拐点说明：所有正态曲线在 x=μ±σ 处为拐点
+  drawText('★ 曲线在 x = μ ± σ 处为拐点（由凹变凸）',W/2,H-60,'#fbbf24',12);
+  drawText('σ 越小 → 曲线越陡峭；σ 越大 → 曲线越平缓',W/2,H-38,'#9ab0d0',12);
+  drawText('μ 决定曲线位置，σ 决定曲线形状',W/2,H-18,'#34d399',12);
+}
+
+// ===== 场景5：3σ 原则 =====
+function drawThreeSigmaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('3σ 原则 · 概率分布',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40,w=W-160,h=240,xmin=mu-5,xmax=mu+5;
+  // 动画轮播 1σ/2σ/3σ
+  const idx=Math.floor(time*0.4)%3;
+  const ranges=[[mu-sigma,mu+sigma,0.6827,'68.27%','#34d399'],
+                [mu-2*sigma,mu+2*sigma,0.9545,'95.45%','#06b6d4'],
+                [mu-3*sigma,mu+3*sigma,0.9973,'99.73%','#a78bfa']];
+  const r=ranges[idx];
+  bellAxis(cx,cy,w,h,xmin,xmax);
+  drawBell(cx,cy,w,h,xmin,xmax,mu,sigma,r,r[3]+'44');
+  // 边界线
+  const lx=mapX(cx,w,xmin,xmax,r[0]),rx=mapX(cx,w,xmin,xmax,r[1]);
+  ctx.strokeStyle=r[3];ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(lx,cy-h/2);ctx.lineTo(lx,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(rx,cy-h/2);ctx.lineTo(rx,cy);ctx.stroke();ctx.setLineDash([]);
+  drawText('μ-'+(idx+1)+'σ',lx,cy+15,r[3],11);
+  drawText('μ+'+(idx+1)+'σ',rx,cy+15,r[3],11);
+  // 概率标注
+  ctx.fillStyle=r[3]+'33';
+  roundRect(cx-100,cy-h/2-50,200,32,6);ctx.fill();
+  ctx.strokeStyle=r[3];ctx.lineWidth=1;ctx.stroke();
+  drawText('P(|X-μ|<'+(idx+1)+'σ) ≈ '+r[4],cx,cy-h/2-34,r[3],14);
+  // 累积概率条形指示
+  const barW=240,barX=cx-barW/2,barY=cy+h/2+15;
+  ctx.fillStyle='#243a5e';roundRect(barX,barY,barW,10,5);ctx.fill();
+  ctx.fillStyle=r[3];roundRect(barX,barY,barW*r[2],10,5);ctx.fill();
+  drawText('累积概率可视化',cx,barY+22,'#9ab0d0',11);
+  // 三档说明
+  drawText('68.27% 在 [μ-σ, μ+σ]',W/2-180,H-55,'#34d399',11);
+  drawText('95.45% 在 [μ-2σ, μ+2σ]',W/2,H-55,'#06b6d4',11);
+  drawText('99.73% 在 [μ-3σ, μ+3σ]',W/2+180,H-55,'#a78bfa',11);
+  drawText('小概率事件：|X-μ|>3σ 不到 0.3%',W/2,H-28,'#f87171',12);
+  drawText('工业上常用 3σ 作为质量控制界限',W/2,H-8,'#9ab0d0',11);
+}
+
+// ===== 场景6：标准化变换 =====
+function drawStandardizeScene(){
+  const W=cv.width,H=cv.height;
+  drawText('标准化变换 · Z = (X-μ)/σ ~ N(0,1)',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+50,w=W-200,h=200,xmin=-5,xmax=5;
+  bellAxis(cx,cy,w,h,xmin,xmax);
+  // 左侧：原分布 N(μ,σ²)
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();
+  const ymax=1.0/Math.sqrt(2*Math.PI)+0.1;
+  for(let x=xmin;x<=xmax;x+=0.02){
+    const px=mapX(cx,w,xmin,xmax,x);
+    const py=mapY(cy,h,ymax,pdf(x,mu,sigma));
+    if(x===xmin)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 右侧：标准正态 N(0,1)
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let x=xmin;x<=xmax;x+=0.02){
+    const px=mapX(cx,w,xmin,xmax,x);
+    const py=mapY(cy,h,ymax,pdf(x,0,1));
+    if(x===xmin)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 图例与说明
+  ctx.fillStyle='#fbbf24';ctx.fillRect(80,55,18,4);
+  drawText('原分布 N(μ='+mu.toFixed(1)+', σ²='+ (sigma*sigma).toFixed(2) +')',110,60,'#fbbf24',12,'left');
+  ctx.fillStyle='#06b6d4';ctx.fillRect(80,77,18,4);
+  drawText('标准正态 N(0,1)',110,82,'#06b6d4',12,'left');
+  // 变换箭头（从原分布 μ 指向标准分布 0）
+  const fromX=mapX(cx,w,xmin,xmax,mu);
+  const toX=mapX(cx,w,xmin,xmax,0);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([6,3]);
+  ctx.beginPath();ctx.moveTo(fromX,cy-h/2-50);ctx.lineTo(toX,cy-h/2-50);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(toX,cy-h/2-50);ctx.lineTo(toX-8,cy-h/2-54);ctx.lineTo(toX-8,cy-h/2-46);ctx.fill();
+  drawText('Z = (X - '+mu.toFixed(1)+') / '+sigma.toFixed(1),W/2,cy-h/2-68,'#34d399',14);
+  drawText('μ→0，σ→1；任何正态分布都可标准化',W/2,H-45,'#9ab0d0',12);
+  drawText('查标准正态分布表得概率，免去逐个分布列表',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景7：实际应用 =====
+function drawAppScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('正态分布的实际应用',W/2,30,'#fbbf24',16);
+  // 用考试成绩分布做演示
+  const cx=W/2,cy=H/2+50,w=W-160,h=200,xmin=40,xmax=100;
+  bellAxis(cx,cy,w,h,xmin,xmax);
+  // 成绩分布：μ=70, σ=10（用 mu=70/10 缩放）
+  const examMu=70,examSigma=10;
+  const ymax=1.0/(examSigma*Math.sqrt(2*Math.PI))+0.001;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let x=xmin;x<=xmax;x+=0.2){
+    const px=cx-w/2+(x-xmin)/(xmax-xmin)*w;
+    const py=cy-(pdf(x,examMu,examSigma)/ymax)*h;
+    if(x===xmin)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 高亮 60-80（μ±σ）
+  ctx.fillStyle='rgba(52,211,153,0.3)';
+  ctx.beginPath();ctx.moveTo(cx-w/2+(60-xmin)/(xmax-xmin)*w,cy);
+  for(let x=60;x<=80;x+=0.2){
+    const px=cx-w/2+(x-xmin)/(xmax-xmin)*w;
+    const py=cy-(pdf(x,examMu,examSigma)/ymax)*h;
+    ctx.lineTo(px,py);
+  }
+  ctx.lineTo(cx-w/2+(80-xmin)/(xmax-xmin)*w,cy);ctx.closePath();ctx.fill();
+  drawText('μ=70',cx-w/2+(70-xmin)/(xmax-xmin)*w,cy+30,'#fbbf24',12);
+  // 移动指针：随机抽样
+  const xs=Math.floor(60+Math.abs(Math.sin(time))*20);
+  const px=cx-w/2+(xs-xmin)/(xmax-xmin)*w;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,cy-(pdf(xs,examMu,examSigma)/ymax)*h,6,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('抽样='+xs,px,cy+45,'#fbbf24',12);
+  // 高亮区间标签
+  drawText('68%',cx-w/2+(70-xmin)/(xmax-xmin)*w,cy-h*0.45,'#34d399',13);
+  // 应用列表（四象限卡片）
+  const apps=[
+    {t:'考试成绩',d:'分数分布',c:'#fbbf24'},
+    {t:'人体身高',d:'人群分布',c:'#06b6d4'},
+    {t:'产品质量',d:'质量控制',c:'#34d399'},
+    {t:'测量误差',d:'误差分析',c:'#a78bfa'},
+  ];
+  apps.forEach((a,i)=>{
+    const ax=80+i*(W-160)/4;
+    ctx.fillStyle=a.c+'22';ctx.strokeStyle=a.c;ctx.lineWidth=1;
+    roundRect(ax+6,H-92,(W-160)/4-12,28,5);ctx.fill();ctx.stroke();
+    drawText(a.t+' · '+a.d,ax+(W-160)/8,H-78,a.c,11);
+  });
+  drawText('中心极限定理：大量独立随机因素叠加 → 近似正态分布',W/2,H-50,'#9ab0d0',12);
+}
+
+const STEPS=[
+  {tag:'定义',name:'正态分布定义',body:'<strong>连续型随机变量</strong>的取值不可一一列举，需用<strong>概率密度函数</strong>描述。最重要的连续分布是<strong>正态分布</strong>，记作 <code>X ~ N(μ, σ²)</code>，其中 <strong>μ 为均值（期望）</strong>，<strong>σ² 为方差</strong>，σ 为标准差。',points:{title:'核心要点',items:['<strong>连续型变量</strong>：取值充满区间','<strong>μ</strong>：均值（期望）','<strong>σ²</strong>：方差，σ 为标准差','<strong>记号</strong>：X ~ N(μ, σ²)']}},
+  {tag:'公式',name:'密度函数与曲线',body:'正态分布的<strong>概率密度函数</strong>：<code>f(x) = 1/(σ√2π) · e^(-(x-μ)²/(2σ²))</code>。其图像是<strong>钟形曲线</strong>（高斯曲线）。',points:{title:'密度函数',items:['<strong>钟形曲线</strong>：中间高、两端低','<strong>峰值</strong>：x=μ 处取最大','<strong>渐近</strong>：以 x 轴为渐近线','<strong>面积</strong>：曲线下总面积 = 1']}},
+  {tag:'性质',name:'曲线三大性质',body:'正态曲线具有三大重要性质：①<strong>关于直线 x=μ 对称</strong>；②<strong>在 x=μ 处达到峰值</strong>；③<strong>曲线与 x 轴所围面积为 1</strong>。',points:{title:'三大性质',items:['<strong>对称性</strong>：关于 x=μ 对称','<strong>峰值性</strong>：x=μ 处最高','<strong>归一性</strong>：总面积=1','<strong>渐近性</strong>：两端趋近 x 轴']}},
+  {tag:'参数',name:'σ 对曲线影响',body:'<strong>σ 越小</strong>，数据越集中，曲线越<strong>陡峭</strong>；<strong>σ 越大</strong>，数据越分散，曲线越<strong>平缓</strong>。μ 决定曲线<strong>位置</strong>，σ 决定曲线<strong>形状</strong>。',points:{title:'μ 与 σ 的作用',items:['<strong>μ</strong>：决定对称轴位置','<strong>σ</strong>：决定曲线胖瘦','<strong>σ↓</strong>：曲线陡峭','<strong>σ↑</strong>：曲线平缓']}},
+  {tag:'3σ',name:'3σ 原则',body:'正态分布的 <strong>3σ 原则</strong>（经验法则）：<code>P(μ-σ&lt;X&lt;μ+σ) ≈ 68.27%</code>；<code>P(μ-2σ&lt;X&lt;μ+2σ) ≈ 95.45%</code>；<code>P(μ-3σ&lt;X&lt;μ+3σ) ≈ 99.73%</code>。',points:{title:'3σ 概率',items:['<strong>±1σ</strong>：约 68.27%','<strong>±2σ</strong>：约 95.45%','<strong>±3σ</strong>：约 99.73%','<strong>|X-μ|&gt;3σ</strong>：小概率事件']}},
+  {tag:'标准化',name:'标准化 Z 变换',body:'对任意正态分布 X ~ N(μ,σ²)，令 <code>Z = (X-μ)/σ</code>，则 <strong>Z ~ N(0,1)</strong>（标准正态分布）。变换后 μ=0、σ=1，可查标准正态表求概率。',points:{title:'Z 变换',items:['<strong>公式</strong>：Z = (X-μ)/σ','<strong>结果</strong>：Z ~ N(0,1)','<strong>μ→0</strong>：均值归零','<strong>σ→1</strong>：标准差归一']}},
+  {tag:'应用',name:'实际应用',body:'正态分布广泛存在：考试<strong>成绩</strong>、人体<strong>身高</strong>、<strong>产品质量</strong>控制、测量<strong>误差</strong>分析等。自然界中大量独立随机因素的叠加近似服从正态分布（中心极限定理）。',points:{title:'四大应用',items:['<strong>考试成绩</strong>：分数分布','<strong>人体身高</strong>：人群分布','<strong>产品质量</strong>：质量控制','<strong>误差分析</strong>：测量误差']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawDefineScene();
+  else if(stepIdx===1)drawPdfScene(t);
+  else if(stepIdx===2)drawPropertyScene();
+  else if(stepIdx===3)drawSigmaScene();
+  else if(stepIdx===4)drawThreeSigmaScene(t);
+  else if(stepIdx===5)drawStandardizeScene();
+  else if(stepIdx===6)drawAppScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

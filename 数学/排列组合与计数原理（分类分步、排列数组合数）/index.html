@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>排列组合 · 计数原理 · 排列数组合数</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">排列组合与计数原理</span><span class="subtitle">分类分步 · 排列数 A(n,m) · 组合数 C(n,m)</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>两个基本原理</h4><div class="v">分类加法（或）<br>分步乘法（且）</div></div>
+  <div class="card s2"><div class="num">2</div><h4>排列 A(n,m)</h4><div class="v">有序选取<br>A(n,m)=n!/(n-m)!</div></div>
+  <div class="card s3"><div class="num">3</div><h4>组合 C(n,m)</h4><div class="v">无序选取<br>C(n,m)=n!/[m!(n-m)!]</div></div>
+  <div class="card s4"><div class="num">4</div><h4>捆绑与插空</h4><div class="v">相邻用捆绑<br>不相邻用插空</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">计数原理</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function arrow(x1,y1,x2,y2,c,w){ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=w||2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const a=Math.atan2(y2-y1,x2-x1);ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-10*Math.cos(a-0.4),y2-10*Math.sin(a-0.4));ctx.lineTo(x2-10*Math.cos(a+0.4),y2-10*Math.sin(a+0.4));ctx.fill();}
+
+const STEPS=[
+  {tag:'基础',name:'分类加法计数原理',body:'完成一件事有 <strong>n 类办法</strong>，第 1 类有 m₁ 种、第 2 类有 m₂ 种……第 n 类有 mₙ 种方法，那么完成这件事共有 <code>N = m₁+m₂+…+mₙ</code> 种方法。各类之间是<strong>"或"</strong>关系（任选一类即可完成）。',points:{title:'分类三要点',items:['<strong>关键词</strong>：或（任选其一）','<strong>运算</strong>：加法（Σmᵢ）','<strong>类与类互斥</strong>：每类都能独立完成','<strong>例</strong>：甲地去乙地，火车3班/汽车2班→5种']}},
+  {tag:'基础',name:'分步乘法计数原理',body:'完成一件事需 <strong>n 个步骤</strong>，第 1 步有 m₁ 种、第 2 步有 m₂ 种……第 n 步有 mₙ 种方法，那么完成这件事共有 <code>N = m₁×m₂×…×mₙ</code> 种方法。各步之间是<strong>"且"</strong>关系（必须依次完成）。',points:{title:'分步三要点',items:['<strong>关键词</strong>：且（缺一不可）','<strong>运算</strong>：乘法（Πmᵢ）','<strong>步与步相依</strong>：单步不能完成','<strong>例</strong>：上衣3件/裤子4条→12套搭配']}},
+  {tag:'排列',name:'排列的定义',body:'从 <strong>n 个不同元素</strong>中取出 <strong>m(m≤n) 个</strong>元素，按照<strong>一定的顺序</strong>排成一列，叫做从 n 中取 m 的一个<strong>排列</strong>。<strong>顺序不同</strong>则排列不同。',points:{title:'排列核心',items:['<strong>记号</strong>：A(n,m) 或 P(n,m)','<strong>关键</strong>：有序（顺序重要）','<strong>元素互异</strong>：n 个都不同','<strong>对比</strong>：AB ≠ BA（排列中）']}},
+  {tag:'排列',name:'排列数公式',body:'排列数 <code>A(n,m) = n!/(n-m)! = n(n-1)(n-2)…(n-m+1)</code>（共 m 个连续递减的因数）。<strong>全排列</strong> A(n,n) = n!。',points:{title:'公式细节',items:['<strong>连乘</strong>：从 n 开始连乘 m 个','<strong>阶乘</strong>：n! = n×(n-1)×…×2×1','<strong>规定</strong>：0! = 1','<strong>例</strong>：A(6,4) = 6×5×4×3 = 360']}},
+  {tag:'组合',name:'组合的定义',body:'从 <strong>n 个不同元素</strong>中取出 <strong>m(m≤n) 个</strong>元素<strong>不管顺序</strong>并成一组，叫做从 n 中取 m 的一个<strong>组合</strong>。<strong>顺序相同</strong>则组合相同。',points:{title:'组合核心',items:['<strong>记号</strong>：C(n,m) 或 Cₙᵐ','<strong>关键</strong>：无序（顺序无关）','<strong>对比</strong>：AB = BA（组合中）','<strong>与排列区别</strong>：少一个 m! 因子']}},
+  {tag:'组合',name:'组合数公式与性质',body:'组合数 <code>C(n,m) = A(n,m)/m! = n!/[m!(n-m)!]</code>。性质：<strong>C(n,m) = C(n,n-m)</strong>（对称性）；<strong>C(n,m) = C(n-1,m-1) + C(n-1,m)</strong>（递推，即杨辉三角）。',points:{title:'公式与性质',items:['<strong>公式</strong>：C(n,m) = n!/[m!(n-m)!]','<strong>对称性</strong>：C(n,m)=C(n,n-m)','<strong>递推</strong>：C(n,m)=C(n-1,m-1)+C(n-1,m)','<strong>规定</strong>：C(n,0) = C(n,n) = 1']}},
+  {tag:'组合',name:'排列与组合的对比',body:'<strong>相同</strong>：都从 n 个不同元素中取 m 个。<strong>不同</strong>：排列<strong>有序</strong>（AB≠BA），组合<strong>无序</strong>（AB=BA）。关系：<code>A(n,m) = C(n,m) × m!</code>（先选后排）。',points:{title:'辨别口诀',items:['<strong>有序排列</strong>：排队、排队、排名次','<strong>无序组合</strong>：抽样、分组、选代表','<strong>桥梁</strong>：A = C × m!','<strong>例</strong>：选3人当代表=C；选正副组长=A']}},
+  {tag:'技巧',name:'捆绑法（相邻问题）',body:'要求<strong>某几个元素必须相邻</strong>：把相邻元素<strong>捆绑成一个整体</strong>（注意内部也要全排列），再与其他元素一起全排列。例：5人排队，A、B 必相邻 = <code>A(2,2) × A(4,4) = 2×24 = 48</code>。',points:{title:'捆绑法步骤',items:['<strong>第1步</strong>：相邻元素看作一个整体','<strong>第2步</strong>：整体内部全排列','<strong>第3步</strong>：整体与其他元素全排列','<strong>口诀</strong>：先捆后排，乘在一起']}},
+  {tag:'技巧',name:'插空法（不相邻问题）',body:'要求<strong>某几个元素互不相邻</strong>：先排其他元素，再把不相邻元素<strong>插入到间隙</strong>中（含两端空位）。例：5人排队，A、B 不相邻 = <code>A(3,3) × A(4,2) = 6×12 = 72</code>。',points:{title:'插空法步骤',items:['<strong>第1步</strong>：先排无限制元素','<strong>第2步</strong>：数出空位数（n+1 个）','<strong>第3步</strong>：把受限元素插入空位','<strong>口诀</strong>：先排后插，间隙选位']}},
+  {tag:'综合',name:'典型例题精讲',body:'<strong>排列</strong>：4 人坐 6 个座位 = A(6,4)=360。<strong>组合</strong>：从 5 男 4 女中选 3 男 2 女 = C(5,3)·C(4,2)=10·6=60。',points:{title:'解题策略',items:['<strong>先选后排</strong>：组合选 + 排列排','<strong>分组问题</strong>：用组合数相乘','<strong>定序问题</strong>：除以同序的阶乘','<strong>分类要全</strong>：互不遗漏']}},
+  {tag:'综合',name:'核心总结',body:'计数原理是排列组合的基础：<strong>分类用加、分步用乘</strong>；<strong>有序排列、无序组合</strong>；相邻<strong>捆绑</strong>、不相邻<strong>插空</strong>。掌握公式与性质，结合题型灵活运用。',points:{title:'速记口诀',items:['<strong>分类加、分步乘</strong>','<strong>排列有序 A(n,m)</strong>','<strong>组合无序 C(n,m)</strong>','<strong>相邻捆绑、不相邻插空</strong>']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景1：分类加法原理（或关系，三类办法任选其一） =====
+function drawClassifyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('分类加法计数原理 · "或"关系',W/2,30,'#fbbf24',16);
+  const cy=H/2;
+  // 起点：从甲地出发
+  drawText('从甲到乙',80,cy,'#fff',14);
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(80,cy,22,0,7);ctx.stroke();
+  drawText('甲',80,cy,'#fbbf24',14);
+  // 三类办法：火车/汽车/飞机（每类独立完成）
+  const methods=[{n:'火车',c:'#06b6d4',k:3},{n:'汽车',c:'#34d399',k:2},{n:'飞机',c:'#a78bfa',k:1}];
+  methods.forEach((m,i)=>{
+    const x=240+i*(W-360)/3;
+    // 呼吸脉冲动画强调各类并列
+    const pulse=1+0.05*Math.sin(time*2+i);
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x-70,cy-50*pulse,140,100*pulse,10);ctx.fill();ctx.stroke();
+    drawText(m.n,x,cy-25,m.c,15);
+    drawText(m.k+' 班',x,cy,'#fff',18);
+    drawText('第'+(i+1)+'类',x,cy+28,'#9ab0d0',11);
+    // 箭头：从甲指向各类（或关系，任选一类）
+    arrow(110,cy,x-72,cy,m.c,2);
+  });
+  // 底部：加法公式与结论
+  drawText('N = 3 + 2 + 1',W/2,H-70,'#34d399',16);
+  drawText('= 6 种方法（任选一类即可完成）',W/2,H-40,'#fbbf24',14);
+  drawText('分类计数 · 加法',80,40,'#06b6d4',12,'left');
+}
+
+// ===== 场景2：分步乘法原理（且关系，依次完成各步） =====
+function drawStepScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('分步乘法计数原理 · "且"关系',W/2,30,'#fbbf24',16);
+  const cy=H/2;
+  // 三个步骤：上衣/裤子/鞋子（依次完成）
+  const steps=[{n:'选上衣',c:'#06b6d4',k:3},{n:'选裤子',c:'#34d399',k:4},{n:'选鞋子',c:'#a78bfa',k:2}];
+  const gap=(W-160)/3;
+  steps.forEach((s,i)=>{
+    const x=120+i*gap;
+    // 每步呼吸效果，箭头连接强调"依次"
+    const pulse=1+0.04*Math.sin(time*2+i*0.5);
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    roundRect(x-60,cy-40*pulse,120,80*pulse,10);ctx.fill();ctx.stroke();
+    drawText(s.n,x,cy-15,s.c,14);
+    drawText(s.k+' 种',x,cy+12,'#fff',16);
+    drawText('第'+(i+1)+'步',x,cy+32,'#9ab0d0',10);
+    // 箭头连接：必须依次完成（且关系）
+    if(i<2)arrow(x+62,cy,x+gap-62,cy,'#fbbf24',2);
+  });
+  // 底部：乘法公式与结论
+  drawText('N = 3 × 4 × 2',W/2,H-70,'#34d399',16);
+  drawText('= 24 套搭配（每步都做才完成）',W/2,H-40,'#fbbf24',14);
+  drawText('分步计数 · 乘法',80,40,'#34d399',12,'left');
+}
+
+// ===== 场景3：排列定义（抽取动画） =====
+function drawPermDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('排列 · 有序选取 (AB ≠ BA)',W/2,30,'#fbbf24',16);
+  const elems=['A','B','C','D'];
+  const cy=120;
+  // 原始4个元素
+  elems.forEach((e,i)=>{
+    const x=120+i*90;
+    ctx.fillStyle='#172a4a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    roundRect(x-30,cy-30,60,60,8);ctx.fill();ctx.stroke();
+    drawText(e,x,cy,'#67e8f9',22);
+  });
+  drawText('从 4 个元素中取 2 个排列',W/2,cy+55,'#9ab0d0',12);
+  // 展示部分排列
+  const perms=[['A','B'],['B','A'],['A','C'],['C','D'],['D','B']];
+  const startT=time*0.8;
+  perms.forEach((p,row)=>{
+    const y=230+row*52;
+    if((startT%5)<row*0.3)return;
+    p.forEach((e,col)=>{
+      const x=W/2-50+col*60+(row%2===0?0:0);
+      ctx.fillStyle='#fbbf2422';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+      roundRect(x-22,y-20,44,40,6);ctx.fill();ctx.stroke();
+      drawText(e,x,y,'#fde68a',18);
+    });
+    drawText((row%2===0?'顺序→':'换序→'),W/2-110,y,'#9ab0d0',11);
+  });
+  drawText('共 A(4,2) = 4×3 = 12 种排列',W/2,H-35,'#34d399',14);
+}
+
+// ===== 场景4：排列数公式（连乘动画演示） =====
+function drawPermFormulaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('排列数公式 A(n,m) = n!/(n-m)!',W/2,30,'#fbbf24',16);
+  // 顶部大公式
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('A(6,4) = 6 × 5 × 4 × 3 = 360',W/2,75);
+  // 6 个座位，依次填入数字动画
+  const cy=H/2+20;
+  const seats=6;
+  const offset=(W-seats*70)/2;
+  // 先画 6 个空座位
+  for(let i=0;i<seats;i++){
+    const x=offset+i*70;
+    ctx.fillStyle='#11203a';ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+    roundRect(x-28,cy-35,56,70,8);ctx.fill();ctx.stroke();
+    drawText('座位'+(i+1),x,cy+50,'#5a6a8a',10);
+  }
+  // 依次填入前 4 个座位：6,5,4,3（连乘因数）
+  const phase=time%4;
+  const fills=[6,5,4,3];
+  for(let i=0;i<4;i++){
+    if(phase<i+0.3)continue;
+    const x=offset+i*70;
+    // 弹出动画（缩放）
+    const pop=Math.min(1,(phase-i)*3);
+    ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fde68a';ctx.lineWidth=2;
+    ctx.save();
+    ctx.translate(x,cy);
+    ctx.scale(pop,pop);
+    roundRect(-24,-30,48,60,6);ctx.fill();ctx.stroke();
+    drawText(fills[i],0,0,'#1a1a1a',22);
+    ctx.restore();
+  }
+  // 说明连乘规律与全排列
+  drawText('第1步6选 → 第2步5选 → 第3步4选 → 第4步3选',W/2,H-70,'#06b6d4',12);
+  drawText('全排列 A(n,n) = n!',W/2,H-45,'#34d399',13);
+  drawText('4人选6座 = A(6,4) = 360',W/2,H-25,'#fbbf24',12);
+  drawText('连乘 m 个递减因数',80,40,'#a78bfa',12,'left');
+}
+
+// ===== 场景5：组合定义 =====
+function drawCombDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('组合 · 无序选取 (AB = BA)',W/2,30,'#fbbf24',16);
+  const elems=['A','B','C','D','E'];
+  const cy=110;
+  elems.forEach((e,i)=>{
+    const x=100+i*80;
+    ctx.fillStyle='#172a4a';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    roundRect(x-28,cy-28,56,56,8);ctx.fill();ctx.stroke();
+    drawText(e,x,cy,'#86efac',20);
+  });
+  drawText('从 5 个中取 2 个组合',W/2,cy+50,'#9ab0d0',12);
+  // 组合数列表（部分）
+  const combos=[['A','B'],['A','C'],['A','D'],['B','C'],['C','E'],['D','E']];
+  const phase=time%combos.length;
+  combos.forEach((c,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=140+col*(W-280)/3;
+    const y=240+row*60;
+    const active=(Math.floor(phase)===i);
+    c.forEach((e,j)=>{
+      const cx=x-25+j*50;
+      ctx.fillStyle=active?'#34d39922':'#11203a';
+      ctx.strokeStyle=active?'#34d399':'#243a5e';ctx.lineWidth=active?2:1;
+      roundRect(cx-20,y-18,40,36,6);ctx.fill();ctx.stroke();
+      drawText(e,cx,y,active?'#86efac':'#9ab0d0',16);
+    });
+  });
+  drawText('共 C(5,2) = 5!/[2!·3!] = 10 种组合',W/2,H-35,'#34d399',14);
+}
+
+// ===== 场景6：组合数公式与性质（杨辉三角演示递推） =====
+function drawCombFormulaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('组合数公式与性质',W/2,30,'#fbbf24',16);
+  // 顶部公式
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('C(n,m) = n! / [m!(n-m)!]',W/2,70);
+  // 杨辉三角：每一项 C(r,c)，演示递推性
+  const cx=W/2,topY=120;
+  const rows=5;
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<=r;c++){
+      const x=cx+(c-r/2)*56;
+      const y=topY+r*50;
+      const v=fact(r)/(fact(c)*fact(r-c));
+      // 节点呼吸，强调上下两层相加关系
+      const pulse=1+0.05*Math.sin(time*1.5+r+c);
+      ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+      roundRect(x-22*pulse,y-20*pulse,44*pulse,40*pulse,8);ctx.fill();ctx.stroke();
+      drawText(v,x,y,'#67e8f9',14);
+    }
+  }
+  // 递推连接线（提示上方两项之和）
+  ctx.strokeStyle='rgba(251,191,36,0.3)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  for(let r=1;r<rows;r++){
+    for(let c=0;c<=r;c++){
+      const x=cx+(c-r/2)*56,y=topY+r*50;
+      if(c<=r-1){
+        const px=cx+(c-(r-1)/2)*56,py=topY+(r-1)*50;
+        ctx.beginPath();ctx.moveTo(px,py+20);ctx.lineTo(x,y-20);ctx.stroke();
+      }
+    }
+  }
+  ctx.setLineDash([]);
+  drawText('↑ 杨辉三角：C(n,m)=C(n-1,m-1)+C(n-1,m)',W/2,topY+rows*50+20,'#a78bfa',12);
+  drawText('对称性：C(n,m) = C(n,n-m)',W/2,H-60,'#34d399',13);
+  drawText('例：C(5,2)=C(5,3)=10',W/2,H-35,'#fbbf24',12);
+}
+function fact(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+
+// ===== 场景7：排列 vs 组合对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('排列 vs 组合 · 有序 vs 无序',W/2,30,'#fbbf24',16);
+  const cy=H/2-20;
+  // 排列（左）
+  ctx.fillStyle='#fbbf2422';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(60,cy-90,(W-180)/2,180,10);ctx.fill();ctx.stroke();
+  drawText('排列 A(n,m) · 有序',60+(W-180)/4,cy-60,'#fbbf24',16);
+  ['AB','BA','AC','CA'].forEach((s,i)=>{
+    const x=60+30+i*((W-180)/2-60)/4;
+    ctx.fillStyle='#172a4a';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+    roundRect(x,cy-10,60,40,6);ctx.fill();ctx.stroke();
+    drawText(s,x+30,cy+10,'#fde68a',15);
+  });
+  drawText('AB ≠ BA（不同排列）',60+(W-180)/4,cy+60,'#fbbf24',12);
+  // 组合（右）
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W/2+30,cy-90,(W-180)/2,180,10);ctx.fill();ctx.stroke();
+  drawText('组合 C(n,m) · 无序',W/2+30+(W-180)/4,cy-60,'#34d399',16);
+  ['{A,B}','{A,C}','{B,C}','{A,D}'].forEach((s,i)=>{
+    const x=W/2+60+i*((W-180)/2-60)/4;
+    ctx.fillStyle='#172a4a';ctx.strokeStyle='#34d399';ctx.lineWidth=1;
+    roundRect(x,cy-10,70,40,6);ctx.fill();ctx.stroke();
+    drawText(s,x+35,cy+10,'#86efac',14);
+  });
+  drawText('AB = BA（同一组合）',W/2+30+(W-180)/4,cy+60,'#34d399',12);
+  // 关系
+  drawText('关系：A(n,m) = C(n,m) × m!',W/2,H-55,'#06b6d4',14);
+  drawText('先选（组合）后排（排列）',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景8：捆绑法 =====
+function drawBundleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('捆绑法 · 相邻问题',W/2,30,'#fbbf24',16);
+  const cy=H/2;
+  drawText('5人排队，A、B 必须相邻',W/2,cy-100,'#fff',14);
+  // 把 AB 捆成整体
+  const phase=time%3;
+  // 整体
+  ctx.fillStyle='#fbbf2433';ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  roundRect(W/2-160,cy-50,80,60,8);ctx.fill();ctx.stroke();
+  drawText('[AB]',W/2-120,cy-20,'#fde68a',18);
+  drawText('捆绑',W/2-120,cy+45,'#fbbf24',11);
+  // 其他元素
+  ['C','D','E'].forEach((e,i)=>{
+    const x=W/2-40+i*70;
+    ctx.fillStyle='#172a4a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    roundRect(x-25,cy-40,50,50,8);ctx.fill();ctx.stroke();
+    drawText(e,x,cy-15,'#67e8f9',18);
+  });
+  drawText('共4个整体全排列 + AB内部全排列',W/2,cy+70,'#34d399',13);
+  // 公式
+  drawText('A(4,4) × A(2,2) = 24 × 2 = 48 种',W/2,H-55,'#fbbf24',15);
+  drawText('口诀：先捆后排，乘在一起',W/2,H-30,'#06b6d4',12);
+}
+
+// ===== 场景9：插空法 =====
+function drawInsertScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('插空法 · 不相邻问题',W/2,30,'#fbbf24',16);
+  const cy=H/2;
+  drawText('5人排队，A、B 互不相邻',W/2,cy-100,'#fff',14);
+  // 先排 CDE
+  const others=['C','D','E'];
+  const ox=W/2-100;
+  others.forEach((e,i)=>{
+    const x=ox+i*100;
+    ctx.fillStyle='#172a4a';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    roundRect(x-25,cy-30,50,50,8);ctx.fill();ctx.stroke();
+    drawText(e,x,cy-5,'#86efac',18);
+  });
+  // 空位（含两端）
+  const gaps=4;
+  for(let i=0;i<gaps;i++){
+    const x=ox-50+i*100;
+    ctx.fillStyle='#fbbf2433';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    ctx.setLineDash([4,3]);
+    roundRect(x-18,cy+40,36,40,6);ctx.stroke();
+    ctx.setLineDash([]);
+    drawText('空',x,cy+60,'#fbbf24',13);
+    drawText('◯',x,cy+45,'#fbbf24',16);
+  }
+  // A、B 插入
+  const pulse=Math.abs(Math.sin(time*2));
+  ctx.fillStyle='rgba(251,191,36,'+(0.3+pulse*0.4)+')';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2+150,cy-30,40,40,6);ctx.fill();ctx.stroke();
+  drawText('A',W/2+170,cy-10,'#fde68a',16);
+  roundRect(W/2+200,cy-30,40,40,6);ctx.fill();ctx.stroke();
+  drawText('B',W/2+220,cy-10,'#fde68a',16);
+  drawText('待插入',W/2+180,cy-50,'#9ab0d0',11);
+  drawText('4 个空位中选 2 个插入 A、B',W/2,H-70,'#34d399',13);
+  drawText('A(3,3) × A(4,2) = 6 × 12 = 72 种',W/2,H-45,'#fbbf24',14);
+  drawText('口诀：先排后插，间隙选位',W/2,H-25,'#06b6d4',12);
+}
+
+// ===== 场景10：典型例题 =====
+function drawExampleScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题精讲',W/2,30,'#fbbf24',16);
+  // 题1
+  ctx.fillStyle='#fbbf2422';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(60,70,(W-180)/2,200,8);ctx.fill();ctx.stroke();
+  drawText('【排列】4人坐6座',(W-180)/4+60,95,'#fbbf24',14);
+  drawText('从 6 个座位选 4 个有序入座',(W-180)/4+60,125,'#fff',12);
+  drawText('A(6,4) = 6×5×4×3',(W-180)/4+60,160,'#06b6d4',13);
+  drawText('= 360 种',(W-180)/4+60,190,'#34d399',15);
+  drawText('有序 → 排列',(W-180)/4+60,225,'#9ab0d0',11);
+  drawText('（座位有编号，不同）',(W-180)/4+60,250,'#9ab0d0',11);
+  // 题2
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(W/2+30,70,(W-180)/2,200,8);ctx.fill();ctx.stroke();
+  drawText('【组合】5男4女选3男2女',W/2+30+(W-180)/4,95,'#34d399',14);
+  drawText('分两步选人（无序）',W/2+30+(W-180)/4,125,'#fff',12);
+  drawText('C(5,3)·C(4,2)',W/2+30+(W-180)/4,160,'#06b6d4',13);
+  drawText('= 10 × 6 = 60 种',W/2+30+(W-180)/4,190,'#34d399',15);
+  drawText('分步乘法 + 组合',W/2+30+(W-180)/4,225,'#9ab0d0',11);
+  drawText('（选人不排序）',W/2+30+(W-180)/4,250,'#9ab0d0',11);
+  // 解题策略
+  const tips=['① 判有序/无序 → 排列/组合','② 分类加法、分步乘法','③ 相邻捆绑、不相邻插空','④ 先选后排，验证结果'];
+  tips.forEach((s,i)=>{
+    const y=295+i*30;
+    ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+    roundRect(80,y,W-160,24,5);ctx.fill();ctx.stroke();
+    drawText(s,W/2,y+12,'#67e8f9',12);
+  });
+}
+
+// ===== 场景11：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('排列组合核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'分类加法',d:'N = m₁+m₂+…+mₙ（或）',c:'#fbbf24'},
+    {t:'分步乘法',d:'N = m₁×m₂×…×mₙ（且）',c:'#06b6d4'},
+    {t:'排列数',d:'A(n,m) = n!/(n-m)!',c:'#a78bfa'},
+    {t:'组合数',d:'C(n,m) = n!/[m!(n-m)!]',c:'#34d399'},
+    {t:'相邻问题',d:'捆绑法：先捆后排',c:'#fb923c'},
+    {t:'不相邻',d:'插空法：先排后插',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawClassifyScene(t);
+  else if(stepIdx===1)drawStepScene(t);
+  else if(stepIdx===2)drawPermDefScene(t);
+  else if(stepIdx===3)drawPermFormulaScene(t);
+  else if(stepIdx===4)drawCombDefScene(t);
+  else if(stepIdx===5)drawCombFormulaScene(t);
+  else if(stepIdx===6)drawCompareScene(t);
+  else if(stepIdx===7)drawBundleScene(t);
+  else if(stepIdx===8)drawInsertScene(t);
+  else if(stepIdx===9)drawExampleScene();
+  else if(stepIdx===10)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

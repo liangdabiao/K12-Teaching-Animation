@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>导数的应用 · 单调性 · 极值 · 最值 · 优化</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">导数的应用</span><span class="subtitle">单调性 · 极值 · 最值 · 优化问题</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>单调性判据</h4><div class="v">f'(x)&gt;0 递增<br>f'(x)&lt;0 递减</div></div>
+  <div class="card s2"><div class="num">2</div><h4>极值求法</h4><div class="v">令 f'(x)=0 求驻点<br>判两侧符号变化</div></div>
+  <div class="card s3"><div class="num">3</div><h4>最值比较</h4><div class="v">驻点 + 不可导点<br>+ 端点函数值</div></div>
+  <div class="card s4"><div class="num">4</div><h4>优化应用</h4><div class="v">最大利润<br>最小用料 · 最大容积</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">导数的应用</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'单调性',name:'单调性判定',body:'<strong>导数是函数单调性的钥匙</strong>：若在区间 I 上 <code>f′(x)&gt;0</code>，则 f 在 I 上<strong>单调递增</strong>；若 <code>f′(x)&lt;0</code>，则 f <strong>单调递减</strong>；<code>f′(x)=0</code> 的点称为<strong>驻点</strong>。',points:{title:'判据三句话',items:['<strong>f′(x)&gt;0</strong>：函数递增（上升）','<strong>f′(x)&lt;0</strong>：函数递减（下降）','<strong>f′(x)=0</strong>：驻点（可能是极值点）','<strong>注意</strong>：必须在区间上恒成立']}},
+  {tag:'极值',name:'极值定义',body:'<strong>极值</strong>是函数在某点附近（局部）的最大值或最小值。若 x₀ 附近所有 x 都满足 <code>f(x)&lt;f(x₀)</code>，则 f(x₀) 是<strong>极大值</strong>；反之是<strong>极小值</strong>。极值点是<strong>局部</strong>概念。',points:{title:'极值要点',items:['<strong>极大值</strong>：局部最高的"山峰"','<strong>极小值</strong>：局部最低的"谷底"','<strong>必要条件</strong>：f′(x₀)=0 或不可导','<strong>注意</strong>：极值≠最值（最值是整体）']}},
+  {tag:'极值',name:'极值求法步骤',body:'<strong>求极值三步法</strong>：① 求 <code>f′(x)</code>；② 令 f′(x)=0 求出所有<strong>驻点</strong>；③ 检查每个驻点<strong>两侧</strong> f′(x) 的符号变化：<strong>左正右负</strong>→极大值；<strong>左负右正</strong>→极小值；同号则<strong>非极值</strong>。',points:{title:'第一判别法',items:['<strong>左+右−</strong>：极大值点','<strong>左−右+</strong>：极小值点','<strong>左右同号</strong>：不是极值（如 x³ 的 x=0）','<strong>不可导点</strong>：也需检查（如 |x| 的 0）']}},
+  {tag:'极值',name:'二阶导数判定',body:'<strong>第二判别法</strong>（用二阶导数）：若 <code>f′(x₀)=0</code> 且 <code>f″(x₀)&gt;0</code>，则 f(x₀) 为<strong>极小值</strong>（凹谷）；若 <code>f″(x₀)&lt;0</code>，则 f(x₀) 为<strong>极大值</strong>（凸峰）；若 <code>f″(x₀)=0</code> 则<strong>无法判定</strong>，需用第一判别法。',points:{title:'二阶导数判据',items:['<strong>f″(x₀)&gt;0</strong>：极小值（曲线凹）','<strong>f″(x₀)&lt;0</strong>：极大值（曲线凸）','<strong>f″(x₀)=0</strong>：此法失效','<strong>口诀</strong>：正小负大（二阶正→极小）']}},
+  {tag:'最值',name:'闭区间最值',body:'在<strong>闭区间 [a,b]</strong> 上连续函数一定有<strong>最大值与最小值</strong>。求法：① 找出 [a,b] 内所有<strong>驻点</strong>和<strong>不可导点</strong>；② 计算<strong>这些点</strong>及<strong>两端点</strong> a、b 的函数值；③ <strong>比较</strong>大小，最大者即最大值，最小者即最小值。',points:{title:'最值三比较',items:['<strong>驻点函数值</strong>：f′(x)=0 的点','<strong>不可导点函数值</strong>：导数不存在的点','<strong>端点函数值</strong>：f(a) 与 f(b)','<strong>最大/最小</strong>：从候选中挑出']}},
+  {tag:'优化',name:'实际优化问题',body:'<strong>优化问题</strong>是导数最有价值的应用：把实际问题<strong>建模</strong>为目标函数，求其<strong>极值</strong>即得最优解。典型场景：最大利润、最小用料、最大容积、最短时间。关键：明确<strong>变量</strong>、列<strong>关系式</strong>、求<strong>驻点</strong>、检验实际意义。',points:{title:'优化四步走',items:['<strong>设变量</strong>：把待优化量表示成 x 的函数','<strong>列关系</strong>：f(x) = ...（注意定义域）','<strong>求驻点</strong>：解 f′(x)=0','<strong>验证</strong>：极值唯一时即为最值']}},
+  {tag:'例题',name:'典型例题',body:'<strong>例</strong>：求 <code>f(x)=x³−3x²+1</code> 在 [−2,3] 上的极值与最值。解：f′(x)=3x²−6x=3x(x−2)，令 f′=0 得 x=0、x=2。两侧判符号：x=0 左正右负→<strong>极大值 1</strong>；x=2 左负右正→<strong>极小值 −3</strong>。比较端点：f(−2)=−19，f(3)=1。<strong>最大值 1</strong>（x=0 或 x=3），<strong>最小值 −19</strong>（x=−2）。',points:{title:'解题全流程',items:['<strong>① 求导</strong>：f′(x)=3x²−6x','<strong>② 驻点</strong>：x=0 和 x=2','<strong>③ 极值</strong>：极大1，极小−3','<strong>④ 最值</strong>：比较端点 → max=1, min=−19']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+// 典型函数：f(x)=x^3-3x^2+1，定义域 [-2,3]
+function f(x){return x*x*x-3*x*x+1;}
+function df(x){return 3*x*x-6*x;}     // f'(x)=3x^2-6x
+function d2f(x){return 6*x-6;}        // f''(x)=6x-6
+
+// 坐标变换：x∈[-3,4] -> 画布；y∈[-22,4]
+function mapX(x,padL,padR){const W=cv.width;return padL+(x-(-3))/(4-(-3))*(W-padL-padR);}
+function mapY(y,padT,padB){const H=cv.height;return padT+(4-y)/(4-(-22))*(H-padT-padB);}
+
+// ===== 场景1：单调性判定（演示 f'(x) 符号） =====
+function drawMonotoneScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('单调性判据 · f′(x) 决定升降',W/2,28,'#fbbf24',16);
+  const padL=60,padR=30,padT=70,padB=H-130;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,padB);ctx.stroke();
+  const xZero=mapY(0,padT,padB);
+  ctx.beginPath();ctx.moveTo(padL,xZero);ctx.lineTo(W-padR,xZero);ctx.stroke();
+  drawText('x',W-padR,xZero+14,'#9ab0d0',12);
+  drawText('y',padL-15,padT,'#9ab0d0',12);
+  for(let xv=-2;xv<=3;xv++){
+    const px=mapX(xv,padL,padR);
+    drawText(xv,px,xZero+14,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(px,xZero-3);ctx.lineTo(px,xZero+3);ctx.stroke();
+  }
+  // 函数曲线 f(x)=x^3-3x^2+1
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let xv=-2;xv<=3;xv+=0.04){
+    const px=mapX(xv,padL,padR),py=mapY(f(xv),padT,padB);
+    if(xv===-2)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('f(x)=x³−3x²+1',W-150,padT+10,'#06b6d4',13);
+  // 高亮递增/递减区间
+  // f'(x)=3x(x-2): x<0 正(增)，0<x<2 负(减)，x>2 正(增)
+  // 用颜色填充区域
+  ctx.fillStyle='rgba(52,211,153,0.10)';
+  fillRegion(-2,0,padL,padR,padT,padB);
+  ctx.fillStyle='rgba(248,113,113,0.10)';
+  fillRegion(0,2,padL,padR,padT,padB);
+  ctx.fillStyle='rgba(52,211,153,0.10)';
+  fillRegion(2,3,padL,padR,padT,padB);
+  // 标注
+  drawText('↗ 递增',mapX(-1,padL,padR),padT+45,'#34d399',13);
+  drawText('↘ 递减',mapX(1,padL,padR),padT+45,'#f87171',13);
+  drawText('↗ 递增',mapX(2.5,padL,padR),padT+45,'#34d399',13);
+  // 动点演示切线斜率
+  const xv=-1.5+((time*0.5)%1)*4.5;
+  const px=mapX(xv,padL,padR),py=mapY(f(xv),padT,padB);
+  const slope=df(xv);
+  const col=slope>0?'#34d399':(slope<0?'#f87171':'#fbbf24');
+  // 切线
+  ctx.strokeStyle=col;ctx.lineWidth=2;ctx.globalAlpha=0.7;
+  ctx.beginPath();
+  const dx=0.6;
+  ctx.moveTo(mapX(xv-dx,padL,padR),mapY(f(xv)-slope*dx,padT,padB));
+  ctx.lineTo(mapX(xv+dx,padL,padR),mapY(f(xv)+slope*dx,padT,padB));
+  ctx.stroke();ctx.globalAlpha=1;
+  // 动点
+  ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('x='+xv.toFixed(2),px,py-18,col,12);
+  drawText('f′(x)='+slope.toFixed(2)+' '+(slope>0?'(增)':slope<0?'(减)':'(驻点)'),W/2,H-55,'#fff',13);
+  drawText('f′(x)>0↗增  ·  f′(x)<0↘减  ·  f′(x)=0 驻点',W/2,H-30,'#9ab0d0',12);
+}
+
+function fillRegion(x1,x2,padL,padR,padT,padB){
+  ctx.beginPath();
+  const xZero=mapY(0,padT,padB);
+  ctx.moveTo(mapX(x1,padL,padR),xZero);
+  for(let xv=x1;xv<=x2;xv+=0.05)ctx.lineTo(mapX(xv,padL,padR),mapY(f(xv),padT,padB));
+  ctx.lineTo(mapX(x2,padL,padR),xZero);
+  ctx.closePath();ctx.fill();
+}
+
+// ===== 场景2：极值定义（标注极大、极小点） =====
+function drawExtremaDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('极值定义 · 局部峰与谷',W/2,28,'#fbbf24',16);
+  const padL=60,padR=30,padT=70,padB=H-130;
+  drawAxes(padL,padR,padT,padB);
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let xv=-2;xv<=3;xv+=0.04){
+    const px=mapX(xv,padL,padR),py=mapY(f(xv),padT,padB);
+    if(xv===-2)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 极大值点 x=0, f(0)=1
+  const mx=mapX(0,padL,padR),my=mapY(f(0),padT,padB);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(mx,my,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('极大值 (0, 1)',mx,my-22,'#fbbf24',13);
+  drawText('局部最高',mx,my-38,'#fde68a',10);
+  // 极小值点 x=2, f(2)=-3
+  const nx=mapX(2,padL,padR),ny=mapY(f(2),padT,padB);
+  ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(nx,ny,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('极小值 (2, −3)',nx,ny+22,'#34d399',13);
+  drawText('局部最低',nx,ny+38,'#a7f3d0',10);
+  // 虚线连接到坐标轴
+  ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.setLineDash([4,4]);ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx,xZeroLine(padT,padB));ctx.stroke();
+  ctx.strokeStyle='rgba(52,211,153,0.4)';
+  ctx.beginPath();ctx.moveTo(nx,ny);ctx.lineTo(nx,xZeroLine(padT,padB));ctx.stroke();
+  ctx.setLineDash([]);
+  // 动画脉冲
+  const pulse=0.5+0.5*Math.sin(time*3);
+  ctx.strokeStyle='rgba(251,191,36,'+(0.6*pulse)+')';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(mx,my,12+pulse*8,0,7);ctx.stroke();
+  ctx.strokeStyle='rgba(52,211,153,'+(0.6*pulse)+')';
+  ctx.beginPath();ctx.arc(nx,ny,12+pulse*8,0,7);ctx.stroke();
+  drawText('极值 = 局部的峰或谷（不一定是最值）',W/2,H-55,'#9ab0d0',13);
+  drawText('必要条件：f′(x₀)=0 或导数不存在',W/2,H-30,'#34d399',12);
+}
+function xZeroLine(padT,padB){return mapY(0,padT,padB);}
+function drawAxes(padL,padR,padT,padB){
+  const W=cv.width;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,padB);ctx.stroke();
+  const xZero=mapY(0,padT,padB);
+  ctx.beginPath();ctx.moveTo(padL,xZero);ctx.lineTo(W-padR,xZero);ctx.stroke();
+  drawText('x',W-padR,xZero+14,'#9ab0d0',12);
+  drawText('y',padL-15,padT,'#9ab0d0',12);
+  for(let xv=-2;xv<=3;xv++){
+    const px=mapX(xv,padL,padR);
+    drawText(xv,px,xZero+14,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(px,xZero-3);ctx.lineTo(px,xZero+3);ctx.stroke();
+  }
+  for(let yv=-20;yv<=4;yv+=4){
+    if(yv===0)continue;
+    const py=mapY(yv,padT,padB);
+    drawText(yv,padL-20,py,'#5a6a8a',10,'right');
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(padL-3,py);ctx.lineTo(padL+3,py);ctx.stroke();
+  }
+}
+
+// ===== 场景3：极值求法步骤（含 f 和 f' 同步显示） =====
+function drawExtremaStepScene(time){
+  const W=cv.height>500?cv.width:cv.width,H=cv.height;
+  drawText('极值求法 · f(x) 与 f′(x) 同步对照',W/2,26,'#fbbf24',15);
+  const padL=55,padR=25,padT=55;
+  const midY=H/2;
+  // 上半区：f(x)
+  const padB1=midY-15;
+  drawText('f(x) = x³−3x²+1',W/2,padT+8,'#06b6d4',12);
+  drawAxes2(padL,padR,padT,padB1,-2,3,4,-10);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let xv=-2;xv<=3;xv+=0.03){
+    const px=mapX2(xv,padL,padR,-2,3),py=mapY2(f(xv),padT,padB1,4,-10);
+    if(xv===-2)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 标注驻点
+  drawStationaryDot(0,padL,padR,padT,padB1,'#fbbf24');
+  drawStationaryDot(2,padL,padR,padT,padB1,'#34d399');
+  // 下半区：f'(x)
+  const padT2=midY+15,padB2=H-55;
+  drawText('f′(x) = 3x²−6x = 3x(x−2)',W/2,padT2+8,'#a78bfa',12);
+  drawAxes2(padL,padR,padT2,padB2,-2,3,16,-8);
+  // f'=0 参考线
+  const yz=mapY2(0,padT2,padB2,16,-8);
+  // 填充 f'>0 / f'<0 区域
+  ctx.fillStyle='rgba(52,211,153,0.15)';
+  ctx.beginPath();ctx.moveTo(mapX2(-2,padL,padR,-2,3),yz);
+  for(let xv=-2;xv<=0;xv+=0.03)ctx.lineTo(mapX2(xv,padL,padR,-2,3),mapY2(df(xv),padT2,padB2,16,-8));
+  ctx.lineTo(mapX2(0,padL,padR,-2,3),yz);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(248,113,113,0.15)';
+  ctx.beginPath();ctx.moveTo(mapX2(0,padL,padR,-2,3),yz);
+  for(let xv=0;xv<=2;xv+=0.03)ctx.lineTo(mapX2(xv,padL,padR,-2,3),mapY2(df(xv),padT2,padB2,16,-8));
+  ctx.lineTo(mapX2(2,padL,padR,-2,3),yz);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(52,211,153,0.15)';
+  ctx.beginPath();ctx.moveTo(mapX2(2,padL,padR,-2,3),yz);
+  for(let xv=2;xv<=3;xv+=0.03)ctx.lineTo(mapX2(xv,padL,padR,-2,3),mapY2(df(xv),padT2,padB2,16,-8));
+  ctx.lineTo(mapX2(3,padL,padR,-2,3),yz);ctx.closePath();ctx.fill();
+  // f' 曲线
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2.5;ctx.shadowColor='#a78bfa';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let xv=-2;xv<=3;xv+=0.03){
+    const px=mapX2(xv,padL,padR,-2,3),py=mapY2(df(xv),padT2,padB2,16,-8);
+    if(xv===-2)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 驻点 x=0：f' 左+右- → 极大
+  drawStationaryDot2(0,padL,padR,padT2,padB2,'#fbbf24',16,-8,-2,3);
+  drawStationaryDot2(2,padL,padR,padT2,padB2,'#34d399',16,-8,-2,3);
+  drawText('x=0：f′ 左+右− → 极大值',mapX2(0,padL,padR,-2,3),padT2+30,'#fbbf24',11);
+  drawText('x=2：f′ 左−右+ → 极小值',mapX2(2,padL,padR,-2,3),padB2-12,'#34d399',11);
+  // 总结
+  drawText('①求 f′(x)  ②令 f′=0 求驻点  ③判两侧符号变化',W/2,H-25,'#fde68a',12);
+}
+function mapX2(x,padL,padR,xmin,xmax){return padL+(x-xmin)/(xmax-xmin)*(cv.width-padL-padR);}
+function mapY2(y,padT,padB,ymax,ymin){return padT+(ymax-y)/(ymax-ymin)*(padB-padT);}
+function drawAxes2(padL,padR,padT,padB,xmin,xmax,ymax,ymin){
+  const W=cv.width;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,padB);ctx.stroke();
+  const xZero=mapY2(0,padT,padB,ymax,ymin);
+  ctx.beginPath();ctx.moveTo(padL,xZero);ctx.lineTo(W-padR,xZero);ctx.stroke();
+}
+function drawStationaryDot(xv,padL,padR,padT,padB,col){
+  const px=mapX2(xv,padL,padR,-2,3),py=mapY2(f(xv),padT,padB,4,-10);
+  ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+}
+function drawStationaryDot2(xv,padL,padR,padT,padB,col,ymax,ymin,xmin,xmax){
+  const px=mapX2(xv,padL,padR,xmin,xmax),py=mapY2(0,padT,padB,ymax,ymin);
+  ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+}
+
+// ===== 场景4：二阶导数判定 =====
+function drawSecondDerivScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('二阶导数判定 · 凹凸与极值',W/2,28,'#fbbf24',16);
+  const padL=60,padR=30,padT=70,padB=H-150;
+  drawAxes(padL,padR,padT,padB);
+  // 凹凸分界：f''=0 即 x=1
+  const infl=mapX(1,padL,padR);
+  ctx.strokeStyle='rgba(251,113,133,0.3)';ctx.setLineDash([4,4]);ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(infl,padT);ctx.lineTo(infl,padB);ctx.stroke();ctx.setLineDash([]);
+  drawText('拐点 x=1',infl,padT+8,'#fb7185',11);
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let xv=-2;xv<=3;xv+=0.04){
+    const px=mapX(xv,padL,padR),py=mapY(f(xv),padT,padB);
+    if(xv===-2)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 极大值点 x=0：f''(0)=-6<0
+  const mx=mapX(0,padL,padR),my=mapY(f(0),padT,padB);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(mx,my,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('x=0, f″=−6<0',mx,my-22,'#fbbf24',12);
+  drawText('→ 极大值 1',mx,my-38,'#fde68a',11);
+  // 极小值点 x=2：f''(2)=6>0
+  const nx=mapX(2,padL,padR),ny=mapY(f(2),padT,padB);
+  ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(nx,ny,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('x=2, f″=6>0',nx,ny+22,'#34d399',12);
+  drawText('→ 极小值 −3',nx,ny+38,'#a7f3d0',11);
+  // 公式提示
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;
+  roundRect(W/2-220,padB+15,440,55,8);ctx.fill();ctx.stroke();
+  drawText('判据：f′(x₀)=0 时',W/2,padB+30,'#fff',13);
+  drawText('f″(x₀)>0 → 极小值    f″(x₀)<0 → 极大值',W/2,padB+55,'#fde68a',13);
+  drawText('口诀：正小负大（二阶正→极小）',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景5：闭区间最值 =====
+function drawMaxMinScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('闭区间 [−2,3] 最值 · 比较候选点',W/2,28,'#fbbf24',16);
+  const padL=60,padR=30,padT=70,padB=H-160;
+  drawAxes(padL,padR,padT,padB);
+  // 阴影区间
+  ctx.fillStyle='rgba(6,182,212,0.06)';
+  const xa=mapX(-2,padL,padR),xb=mapX(3,padL,padR);
+  ctx.fillRect(xa,padT,xb-xa,padB-padT);
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let xv=-2;xv<=3;xv+=0.04){
+    const px=mapX(xv,padL,padR),py=mapY(f(xv),padT,padB);
+    if(xv===-2)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 候选点：x=-2,0,2,3
+  const cands=[
+    {x:-2,y:f(-2),c:'#f87171',label:'端点 a'},
+    {x:0,y:f(0),c:'#fbbf24',label:'极大值'},
+    {x:2,y:f(2),c:'#34d399',label:'极小值'},
+    {x:3,y:f(3),c:'#f87171',label:'端点 b'},
+  ];
+  cands.forEach(cd=>{
+    const px=mapX(cd.x,padL,padR),py=mapY(cd.y,padT,padB);
+    ctx.fillStyle=cd.c;ctx.shadowColor=cd.c;ctx.shadowBlur=12;
+    ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();ctx.shadowBlur=0;
+    drawText('('+cd.x+', '+cd.y+')',px,py-15,cd.c,11);
+  });
+  // 标注最大、最小
+  const maxY=1,minY=-19;
+  const maxYpts=cands.filter(c=>c.y===maxY),minYpts=cands.filter(c=>c.y===minY);
+  drawText('最大值 = '+maxY+'（在 x=0 和 x=3 处）',W/2,padB+30,'#fbbf24',13);
+  drawText('最小值 = '+minY+'（在 x=−2 处）',W/2,padB+55,'#34d399',13);
+  // 表格
+  const tableY=padB+80;
+  cands.forEach((cd,i)=>{
+    const tx=padL+30+i*(W-padL-padR-60)/4;
+    ctx.fillStyle=cd.c+'22';ctx.strokeStyle=cd.c;ctx.lineWidth=1;
+    roundRect(tx,tableY,(W-padL-padR-60)/4-10,32,6);ctx.fill();ctx.stroke();
+    drawText(cd.label,tx+(W-padL-padR-60)/8-5,tableY+10,cd.c,10);
+    drawText('f='+cd.y,tx+(W-padL-padR-60)/8-5,tableY+23,'#fff',11);
+  });
+  drawText('比较所有驻点 + 端点的函数值，取最大/最小',W/2,H-22,'#9ab0d0',12);
+}
+
+// ===== 场景6：实际优化问题 =====
+function drawOptimizationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('优化问题 · 容积最大化示例',W/2,28,'#fbbf24',16);
+  // 例题：长方形纸板四角剪去小正方形折成无盖盒，求容积最大
+  // 设剪去边长 x，原纸板 12×12，则 V=x(12-2x)^2，0<x<6
+  // V'(x)=(12-2x)^2 - 4x(12-2x) = (12-2x)(12-6x)，令=0：x=2（x=6舍去）
+  // V(2)=2*8*8=128
+  drawText('纸板 12×12，四角剪 x，折成无盖盒',W/2,55,'#9ab0d0',12);
+  // 绘制容积函数 V(x)=x(12-2x)^2
+  const padL=55,padR=25,padT=85,padB=H-110;
+  const xmin=0,xmax=6,ymin=0,ymax=140;
+  // 坐标
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,padB);ctx.stroke();
+  const y0=padB;
+  ctx.beginPath();ctx.moveTo(padL,y0);ctx.lineTo(W-padR,y0);ctx.stroke();
+  for(let xv=0;xv<=6;xv++){
+    const px=padL+xv/6*(W-padL-padR);
+    drawText(xv,px,y0+14,'#5a6a8a',10);
+  }
+  for(let yv=0;yv<=140;yv+=40){
+    const py=padB-(yv-ymin)/(ymax-ymin)*(padB-padT);
+    drawText(yv,padL-20,py,'#5a6a8a',10,'right');
+  }
+  drawText('V = x(12−2x)²',W-padR-90,padT+12,'#06b6d4',13);
+  drawText('V（容积）',padL-30,padT-5,'#9ab0d0',10,'right');
+  drawText('x（剪角边长）',W-padR,y0+30,'#9ab0d0',10);
+  // V 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let xv=0.01;xv<=6;xv+=0.04){
+    const V=xv*Math.pow(12-2*xv,2);
+    const px=padL+xv/6*(W-padL-padR);
+    const py=padB-(V-ymin)/(ymax-ymin)*(padB-padT);
+    if(xv<=0.02)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 最优点 x=2, V=128
+  const optx=2,optV=128;
+  const opx=padL+optx/6*(W-padL-padR);
+  const opy=padB-(optV-ymin)/(ymax-ymin)*(padB-padT);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(opx,opy,9,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('最优解 x=2',opx,opy-20,'#fbbf24',12);
+  drawText('V_max = 128',opx,opy-35,'#fde68a',11);
+  // 虚线
+  ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(opx,opy);ctx.lineTo(opx,y0);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(opx,opy);ctx.lineTo(padL,opy);ctx.stroke();
+  ctx.setLineDash([]);
+  // 立体小盒示意（右侧）
+  const bx=W-padR-90,by=padT+50;
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  ctx.strokeRect(bx,by,50,30);
+  ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx+12,by-10);ctx.lineTo(bx+62,by-10);ctx.lineTo(bx+50,by);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(bx+50,by);ctx.lineTo(bx+62,by-10);ctx.lineTo(bx+62,by+20);ctx.lineTo(bx+50,by+30);ctx.stroke();
+  drawText('无盖盒',bx+25,by+50,'#a78bfa',11);
+  // 总结
+  drawText('设变量 → 列 V(x) → 求 V′=0 → 检验 → 得最优解',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景7：典型例题完整流程 =====
+function drawExampleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · f(x)=x³−3x²+1 在 [−2,3]',W/2,28,'#fbbf24',16);
+  const padL=55,padR=30,padT=65,padB=H-145;
+  drawAxes(padL,padR,padT,padB);
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let xv=-2;xv<=3;xv+=0.04){
+    const px=mapX(xv,padL,padR),py=mapY(f(xv),padT,padB);
+    if(xv===-2)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 关键点：极大(0,1) 极小(2,-3) 端点(-2,-19) 端点(3,1)
+  const pts=[
+    {x:-2,y:f(-2),c:'#f87171',t:'f(−2)=−19（最小）'},
+    {x:0,y:f(0),c:'#fbbf24',t:'f(0)=1（极大）'},
+    {x:2,y:f(2),c:'#34d399',t:'f(2)=−3（极小）'},
+    {x:3,y:f(3),c:'#fb923c',t:'f(3)=1（最大）'},
+  ];
+  // 循环高亮
+  const idx=Math.floor(time*0.7)%4;
+  pts.forEach((p,i)=>{
+    const px=mapX(p.x,padL,padR),py=mapY(p.y,padT,padB);
+    const r=i===idx?10:6;
+    ctx.fillStyle=p.c;ctx.shadowColor=p.c;ctx.shadowBlur=i===idx?18:8;
+    ctx.beginPath();ctx.arc(px,py,r,0,7);ctx.fill();ctx.shadowBlur=0;
+    if(i===idx){
+      drawText(p.t,px,py-25,p.c,13);
+      ctx.strokeStyle=p.c;ctx.setLineDash([3,3]);ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(px,py,16,0,7);ctx.stroke();ctx.setLineDash([]);
+    }
+  });
+  // 解答步骤
+  const steps=[
+    '① f′(x)=3x²−6x=3x(x−2)',
+    '② 令 f′=0：x=0, x=2',
+    '③ f(0)=1（极大），f(2)=−3（极小）',
+    '④ f(−2)=−19，f(3)=1',
+    '⑤ 最大值=1，最小值=−19',
+  ];
+  steps.forEach((s,i)=>{
+    const y=padB+15+i*18;
+    drawText(s,padL+15,y,'#fff',11,'left');
+  });
+  drawText('极值≠最值，端点也要比较',W/2,H-22,'#fde68a',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawMonotoneScene(t);
+  else if(stepIdx===1)drawExtremaDefScene(t);
+  else if(stepIdx===2)drawExtremaStepScene(t);
+  else if(stepIdx===3)drawSecondDerivScene(t);
+  else if(stepIdx===4)drawMaxMinScene(t);
+  else if(stepIdx===5)drawOptimizationScene(t);
+  else if(stepIdx===6)drawExampleScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

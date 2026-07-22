@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>解三角形 · 正弦定理 · 余弦定理 · 面积公式</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">解三角形</span><span class="subtitle">正弦定理 · 余弦定理 · 面积公式 · 多解判定</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>正弦定理</h4><div class="v">a/sinA=b/sinB=c/sinC=2R<br>两角一边、两边对角</div></div>
+  <div class="card s2"><div class="num">2</div><h4>余弦定理</h4><div class="v">a²=b²+c²-2bc·cosA<br>三边求角、两边夹角</div></div>
+  <div class="card s3"><div class="num">3</div><h4>面积公式</h4><div class="v">S=½ab·sinC<br>海伦公式 √[p(p-a)(p-b)(p-c)]</div></div>
+  <div class="card s4"><div class="num">4</div><h4>多解判定</h4><div class="v">大边对大角<br>SSA 可能一解/两解/无解</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">解三角形</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'推导',name:'正弦定理推导',body:'在三角形 ABC 中，<strong>正弦定理</strong>：<code>a/sinA = b/sinB = c/sinC = 2R</code>，其中 R 是<strong>外接圆半径</strong>。证明思路：作外接圆直径 2R，利用直径所对圆周角为直角，把边化为直角三角形斜边。',points:{title:'推导要点',items:['<strong>外接圆直径</strong>：2R 为公共比值','<strong>直径对圆周角</strong>：构造直角三角形','<strong>a = 2R·sinA</strong>：三边同理','<strong>比值统一</strong>：桥接边与角']}},
+  {tag:'应用',name:'正弦定理应用',body:'<strong>两类适用场景</strong>：① 已知<strong>两角和任一边</strong>，求其他边和角；② 已知<strong>两边和其中一边的对角</strong>，求另一对角（注意<strong>多解情况</strong>）。',points:{title:'解题口诀',items:['<strong>AAS/ASA</strong>：先由内角和180°求第三角','<strong>SSA</strong>：可能一解/两解/无解','<strong>正弦值&le;1</strong>：检验 sinB 是否成立','<strong>大边对大角</strong>：辅助判断']}},
+  {tag:'多解',name:'SSA 多解情况',body:'<strong>已知两边 a、b 和对角 A</strong>，求 B 时可能出现多解：当 a&lt;b·sinA 时<strong>无解</strong>；a=b·sinA 时<strong>一解（直角）</strong>；b·sinA&lt;a&lt;b 时<strong>两解</strong>；a&ge;b 时<strong>一解</strong>。',points:{title:'四种情况',items:['<strong>a &lt; b·sinA</strong>：无解','<strong>a = b·sinA</strong>：一解（直角）','<strong>b·sinA &lt; a &lt; b</strong>：两解（锐/钝）','<strong>a &ge; b</strong>：唯一解']}},
+  {tag:'推导',name:'余弦定理推导',body:'<strong>余弦定理</strong>：<code>a² = b² + c² - 2bc·cosA</code>（b²、c² 同理）。它是<strong>勾股定理的推广</strong>：当 A=90° 时 cosA=0，退化为 a²=b²+c²。推导可用向量法或坐标法。',points:{title:'核心公式',items:['<strong>a² = b²+c²-2bc·cosA</strong>','<strong>勾股推广</strong>：A=90° 即勾股定理','<strong>cosA 可正可负</strong>：锐角正、钝角负','<strong>对称性</strong>：三式可循环轮换']}},
+  {tag:'应用',name:'余弦定理应用',body:'<strong>两类适用场景</strong>：① 已知<strong>三边</strong>求角，用变形 <code>cosA = (b²+c²-a²)/(2bc)</code>；② 已知<strong>两边和夹角</strong>求第三边。',points:{title:'适用题型',items:['<strong>SSS</strong>：三边求三角（唯一解）','<strong>SAS</strong>：两边夹角求第三边','<strong>判断形状</strong>：cos&gt;0锐、=0直、&lt;0钝','<strong>优先选</strong>：避免多解困扰']}},
+  {tag:'面积',name:'三角形面积公式',body:'<strong>面积公式</strong>：<code>S = (1/2)·ab·sinC = (1/2)·bc·sinA = (1/2)·ac·sinB</code>。当已知三边时用<strong>海伦公式</strong>：<code>S = √[p(p-a)(p-b)(p-c)]</code>，其中 p=(a+b+c)/2。',points:{title:'三种面积公式',items:['<strong>两边夹角</strong>：S=½ab·sinC','<strong>海伦公式</strong>：S=√[p(p-a)(p-b)(p-c)]','<strong>p 为半周长</strong>：p=(a+b+c)/2','<strong>坐标法</strong>：S=½|x_A(y_B-y_C)+...|']}},
+  {tag:'应用',name:'实际测量应用',body:'<strong>解三角形的实际应用</strong>：测量不可达距离（<strong>两点间有障碍</strong>）、<strong>航海方位</strong>计算、<strong>立体几何</strong>求线面角、<strong>物理矢量分解</strong>。常用方法：基线测量 + 角度观测。',points:{title:'典型场景',items:['<strong>测不可达距离</strong>：构造三角形+测角','<strong>航海定位</strong>：方位角+三角计算','<strong>立几求角</strong>：线面角、二面角','<strong>测量学</strong>：三角网、导线测量']}},
+  {tag:'边角',name:'大边对大角',body:'<strong>边角关系</strong>：在同一三角形中，<strong>大边对大角，大角对大边</strong>。等边对等角，等角对等边。这是判断多解情况和验证答案合理性的重要依据。',points:{title:'边角对应',items:['<strong>大边 ↔ 大角</strong>：最长边对最大角','<strong>等边 ↔ 等角</strong>：等腰三角形','<strong>验证答案</strong>：边长顺序=角度顺序','<strong>辅助判断</strong>：避免多解错误']}},
+  {tag:'计算',name:'典型计算题',body:'例：△ABC 中 a=3, b=5, c=7，求角 A 和面积。解：cosA=(b²+c²-a²)/(2bc)=(25+49-9)/70=65/70，A≈21.8°；p=7.5，S=√[7.5×4.5×2.5×0.5]≈6.5。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：识别已知条件类型','<strong>步骤2</strong>：选公式（SSS用余弦）','<strong>步骤3</strong>：求出角或边','<strong>步骤4</strong>：用面积公式收尾']}},
+  {tag:'总结',name:'核心速记',body:'<strong>正弦定理</strong>处理 AAS、SSA；<strong>余弦定理</strong>处理 SSS、SAS；<strong>面积</strong>用 ½ab·sinC 或海伦公式。记住大边对大角，注意 SSA 多解。',points:{title:'三句话总结',items:['<strong>正弦</strong>：a/sinA=2R，处理两角一边','<strong>余弦</strong>：a²=b²+c²-2bc·cosA，处理三边/两边夹角','<strong>面积</strong>：½ab·sinC 或海伦公式','<strong>边角</strong>：大边对大角，SSA慎多解']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// 绘制带标注的三角形（参数：三顶点、边名、是否标注角）
+function drawTri(P,nameA,nameB,nameC,labelEdge,angAlpha){
+  ctx.lineWidth=2.5;ctx.strokeStyle='#67e8f9';
+  ctx.beginPath();ctx.moveTo(P[0].x,P[0].y);ctx.lineTo(P[1].x,P[1].y);ctx.lineTo(P[2].x,P[2].y);ctx.closePath();ctx.stroke();
+  // 顶点
+  P.forEach((p,i)=>{
+    ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(p.x,p.y,5,0,7);ctx.fill();
+    const off=[{x:-18,y:-12},{x:18,y:-12},{x:0,y:18}][i];
+    drawText(['A','B','C'][i],p.x+off.x,p.y+off.y,'#fbbf24',15);
+  });
+  // 边名
+  if(labelEdge){
+    const mid=[{x:(P[0].x+P[1].x)/2,y:(P[0].y+P[1].y)/2},{x:(P[1].x+P[2].x)/2,y:(P[1].y+P[2].y)/2},{x:(P[0].x+P[2].x)/2,y:(P[0].y+P[2].y)/2}];
+    // a对A(BC), b对B(AC), c对C(AB)
+    const off=[{x:0,y:-14},{x:14,y:0},{x:-14,y:0}];
+    drawText('c (AB)',mid[2].x+off[2].x,mid[2].y+off[2].y,'#a78bfa',12);
+    drawText('a (BC)',mid[1].x+off[1].x,mid[1].y+off[1].y,'#a78bfa',12);
+    drawText('b (AC)',mid[0].x+off[0].x,mid[0].y+off[0].y,'#a78bfa',12);
+  }
+}
+
+// 绘制角度弧
+function drawAngleArc(P,vertex,a,b,c,color){
+  const v=P[vertex],p1=P[a],p2=P[b];
+  const ang1=Math.atan2(p1.y-v.y,p1.x-v.x),ang2=Math.atan2(p2.y-v.y,p2.x-v.x);
+  ctx.strokeStyle=color||'#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(v.x,v.y,22,ang1,ang2);ctx.stroke();
+}
+
+// ===== 场景：正弦定理推导（外接圆） =====
+function drawSineDerive(time){
+  const W=cv.width,H=cv.height;
+  drawText('正弦定理推导 · 外接圆法',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,R=120;
+  // 外接圆
+  ctx.strokeStyle='#a78bfa55';ctx.lineWidth=1.5;
+  ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();ctx.setLineDash([]);
+  drawText('外接圆 (R)',cx+R*0.7,cy-R*0.7,'#a78bfa',11);
+  // 三角形顶点（在圆上）
+  const rot=time*0.3;
+  const A={x:cx+R*Math.cos(rot-Math.PI/2),y:cy+R*Math.sin(rot-Math.PI/2)};
+  const B={x:cx+R*Math.cos(rot-Math.PI/2+2.2),y:cy+R*Math.sin(rot-Math.PI/2+2.2)};
+  const C={x:cx+R*Math.cos(rot-Math.PI/2-2.0),y:cy+R*Math.sin(rot-Math.PI/2-2.0)};
+  drawTri([A,B,C],0,0,0,true,0);
+  // 直径演示：过A作直径
+  const A_opp={x:2*cx-A.x,y:2*cy-A.y};
+  ctx.strokeStyle='#fbbf2488';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(A_opp.x,A_opp.y);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(A_opp.x,A_opp.y,4,0,7);ctx.fill();
+  drawText('直径=2R',(A.x+A_opp.x)/2,(A.y+A_opp.y)/2-12,'#fbbf24',11);
+  // 圆心
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(cx,cy,4,0,7);ctx.fill();
+  drawText('O',cx+8,cy+8,'#f87171',12);
+  // 公式
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('a / sinA = 2R',W/2,H-60);
+  drawText('a = 2R·sinA（BC 边 = 外接圆直径 × sinA）',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：正弦定理应用 =====
+function drawSineApp(time){
+  const W=cv.width,H=cv.height;
+  drawText('正弦定理应用 · 已知两角一边',W/2,28,'#fbbf24',16);
+  // 例：A=45°, B=60°, a=5，求 b
+  const Aang=45,Bang=60,Cang=75;
+  const a_len=120,scale=1;
+  const cx=W/2-60,cy=H/2+50;
+  // 以 BC 为底
+  const B={x:cx,y:cy},C={x:cx+a_len,y:cy};
+  // A 位置
+  const Arad=Aang*Math.PI/180;
+  const b_len=a_len*Math.sin(Bang*Math.PI/180)/Math.sin(Aang*Math.PI/180);
+  const A={x:B.x+b_len*Math.cos(Arad),y:cy-b_len*Math.sin(Arad)};
+  drawTri([A,B,C],0,0,0,true,0);
+  drawAngleArc([A,B,C],0,1,2,'#fbbf24');
+  drawAngleArc([A,B,C],1,2,0,'#06b6d4');
+  drawAngleArc([A,B,C],2,0,1,'#34d399');
+  drawText('A=45°',A.x-40,A.y+25,'#fbbf24',12);
+  drawText('B=60°',B.x+30,B.y-25,'#06b6d4',12);
+  drawText('C=75°',C.x-30,C.y-25,'#34d399',12);
+  // 计算过程
+  const pulse=0.5+0.5*Math.sin(time*2);
+  ctx.fillStyle='rgba(251,191,36,'+(0.3+pulse*0.3)+')';
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(60,H-110,W-120,70,8);ctx.fill();ctx.stroke();
+  drawText('已知 A=45°, B=60°, a=5，求 b',W/2,H-85,'#fff',13);
+  drawText('b/sinB = a/sinA → b = 5×sin60°/sin45° ≈ 6.12',W/2,H-60,'#34d399',13);
+}
+
+// ===== 场景：SSA 多解 =====
+function drawSSA(time){
+  const W=cv.width,H=cv.height;
+  drawText('SSA 多解情况 · 两边一对角',W/2,28,'#fbbf24',16);
+  const phase=Math.floor(time/1.5)%4;
+  const labels=['无解 (a<b·sinA)','一解 直角 (a=b·sinA)','两解 (b·sinA<a<b)','一解 (a≥b)'];
+  const colors=['#f87171','#34d399','#06b6d4','#a78bfa'];
+  const cx=W/2,cy=H/2+30;
+  // 固定角 A 和边 c=AB
+  const Aang=40; // 度
+  const Arad=Aang*Math.PI/180;
+  const A={x:cx-100,y:cy+40},B={x:cx+60,y:cy+40};
+  // 根据 phase 改变 a=BC 长度
+  const c_len=160;
+  const bsinA=c_len*Math.sin(Arad);
+  let a_len;
+  if(phase===0)a_len=bsinA*0.5;
+  else if(phase===1)a_len=bsinA;
+  else if(phase===2)a_len=bsinA*1.3;
+  else a_len=c_len*1.1;
+  // 画 AC 方向（与 AB 成 A 角）
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  // 角度弧
+  drawAngleArc([A,B,{x:0,y:0}],0,1,1,'#fbbf24');
+  // AB 边
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();
+  drawText('A',A.x-15,A.y+12,'#fbbf24',13);
+  drawText('B',B.x+12,B.y+12,'#fbbf24',13);
+  drawText('c (已知)',(A.x+B.x)/2,A.y+15,'#a78bfa',11);
+  // AC 方向（射线）
+  const dirX=Math.cos(Arad),dirY=-Math.sin(Arad);
+  ctx.strokeStyle='#a78bfa66';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(A.x+200*dirX,A.y+200*dirY);ctx.stroke();ctx.setLineDash([]);
+  // 以 B 为圆心半径 a 画弧
+  ctx.strokeStyle='#f8717166';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.arc(B.x,B.y,a_len,0,7);ctx.stroke();ctx.setLineDash([]);
+  // 求交点
+  const dx=B.x-A.x,dy=B.y-A.y;
+  // 射线参数 t: |A+t*dir - B|^2 = a^2
+  const ex=dirX,fy=dirY;
+  const A1=ex*ex+fy*fy;
+  const B1=2*(ex*(A.x-B.x)+fy*(A.y-B.y));
+  const C1=(A.x-B.x)*(A.x-B.x)+(A.y-B.y)*(A.y-B.y)-a_len*a_len;
+  const disc=B1*B1-4*A1*C1;
+  let sols=[];
+  if(disc>=-0.001){
+    const sq=Math.sqrt(Math.max(0,disc));
+    const t1=(-B1+sq)/(2*A1),t2=(-B1-sq)/(2*A1);
+    if(t1>0)sols.push({x:A.x+t1*ex,y:A.y+t1*fy});
+    if(t2>0&&Math.abs(t1-t2)>1)sols.push({x:A.x+t2*ex,y:A.y+t2*fy});
+  }
+  // 画解
+  sols.forEach((C,i)=>{
+    ctx.strokeStyle=colors[phase];ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(C.x,C.y);ctx.lineTo(B.x,B.y);ctx.stroke();
+    drawText('C'+(sols.length>1?(i+1):''),C.x,C.y-12,'#fff',12);
+  });
+  if(sols.length===0){
+    drawText('弧与射线无交点 → 无解',cx,cy-60,'#f87171',14);
+  }
+  drawText('情况 '+(phase+1)+'：'+labels[phase],W/2,H-50,colors[phase],14);
+  drawText('a='+a_len.toFixed(0)+'，b·sinA='+bsinA.toFixed(0),W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景：余弦定理推导 =====
+function drawCosineDerive(time){
+  const W=cv.width,H=cv.height;
+  drawText('余弦定理推导 · 勾股定理的推广',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  const Aang=30+20*Math.sin(time*0.5); // 动态角度
+  const Arad=Aang*Math.PI/180;
+  const b=130,c=160;
+  const A={x:cx-c/2,y:cy+50};
+  const B={x:A.x+c,y:A.y};
+  const C={x:A.x+b*Math.cos(Arad),y:A.y-b*Math.sin(Arad)};
+  drawTri([A,B,C],0,0,0,true,0);
+  drawAngleArc([A,B,C],0,1,2,'#fbbf24');
+  drawText('A='+Aang.toFixed(0)+'°',A.x-30,A.y-20,'#fbbf24',13);
+  // 公式
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('a² = b² + c² − 2bc·cosA',W/2,H-70);
+  drawText('当 A=90° 时 cosA=0，退化为勾股定理 a²=b²+c²',W/2,H-45,'#34d399',12);
+  drawText('当 A<90° cosA>0，a²<b²+c²；A>90° cosA<0，a²>b²+c²',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：余弦定理应用 =====
+function drawCosineApp(time){
+  const W=cv.width,H=cv.height;
+  drawText('余弦定理应用 · SSS 求角',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // a=3,b=5,c=7 缩放
+  const k=22;
+  const a=3*k,b=5*k,c=7*k;
+  // 以 BC=a 为底
+  const B={x:cx-a/2,y:cy+40},C={x:cx+a/2,y:cy+40};
+  // 求 A 坐标
+  const cosA=(b*b+c*c-a*a)/(2*b*c);
+  const Arad=Math.acos(Math.max(-1,Math.min(1,cosA)));
+  const A={x:B.x+c*Math.cos(Arad),y:cy+40-c*Math.sin(Arad)};
+  drawTri([A,B,C],0,0,0,true,0);
+  drawAngleArc([A,B,C],0,1,2,'#fbbf24');
+  // 标注边长
+  drawText('a=3',(B.x+C.x)/2,C.y+18,'#a78bfa',13);
+  drawText('b=5',(A.x+B.x)/2-15,(A.y+B.y)/2,'#a78bfa',13);
+  drawText('c=7',(A.x+C.x)/2+15,(A.y+C.y)/2,'#a78bfa',13);
+  // 计算
+  const pulse=0.5+0.5*Math.sin(time*2);
+  ctx.fillStyle='rgba(251,191,36,'+(0.3+pulse*0.3)+')';
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(60,H-110,W-120,70,8);ctx.fill();ctx.stroke();
+  drawText('cosA = (b²+c²−a²)/(2bc) = (25+49−9)/70',W/2,H-85,'#fff',12);
+  drawText('A = arccos(65/70) ≈ 21.8°',W/2,H-60,'#34d399',13);
+}
+
+// ===== 场景：面积公式 =====
+function drawArea(time){
+  const W=cv.width,H=cv.height;
+  drawText('面积公式 · 两边夹角 与 海伦公式',W/2,28,'#fbbf24',16);
+  // 左：两边夹角三角形 + 高线
+  const cx1=W*0.28,cy=H/2+20;
+  const A={x:cx1-80,y:cy+50},B={x:cx1+80,y:cy+50};
+  const Cang=60;
+  const C={x:cx1-80+120*Math.cos(Cang*Math.PI/180)*0,y:cy+50};
+  // 重新构造：底 AB，C 在上方
+  const A2={x:cx1-90,y:cy+50},B2={x:cx1+90,y:cy+50};
+  const C2={x:cx1-30,y:cy+50-100};
+  drawTri([A2,B2,C2],0,0,0,true,0);
+  // 高线
+  ctx.strokeStyle='#f8717188';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(C2.x,C2.y);ctx.lineTo(C2.x,cy+50);ctx.stroke();ctx.setLineDash([]);
+  drawText('高 h',C2.x-25,(C2.y+cy+50)/2,'#f87171',11);
+  // 公式
+  drawText('S = ½·a·b·sinC',cx1,cy+90,'#34d399',14);
+  drawText('= ½·底·高',cx1,cy+110,'#9ab0d0',11);
+  // 右：海伦公式
+  const cx2=W*0.72;
+  drawText('海伦公式',cx2,cy-90,'#06b6d4',15);
+  drawText('p = (a+b+c)/2',cx2,cy-55,'#fff',14);
+  drawText('S = √[p(p−a)(p−b)(p−c)]',cx2,cy-25,'#34d399',14);
+  // 示例数值（动态）
+  const sw=time*0.5;
+  const aa=3+Math.sin(sw),bb=4+Math.cos(sw),cc=5;
+  const p=(aa+bb+cc)/2;
+  const S=Math.sqrt(Math.max(0,p*(p-aa)*(p-bb)*(p-cc)));
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(cx2-110,cy,220,100,8);ctx.fill();ctx.stroke();
+  drawText('a='+aa.toFixed(1)+', b='+bb.toFixed(1)+', c='+cc.toFixed(1),cx2,cy+25,'#fff',12);
+  drawText('p='+p.toFixed(2),cx2,cy+50,'#a78bfa',12);
+  drawText('S ≈ '+S.toFixed(2),cx2,cy+75,'#34d399',15);
+  drawText('（已知三边时优先用海伦公式）',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景：实际测量 =====
+function drawMeasure(time){
+  const W=cv.width,H=cv.height;
+  drawText('实际应用 · 测量不可达距离',W/2,28,'#fbbf24',16);
+  // 场景：A、B 两点在河两岸，C 在 A 岸可到达
+  const cx=W/2,cy=H/2+20;
+  // 河流（蓝色带）
+  ctx.fillStyle='rgba(6,182,212,0.12)';
+  ctx.fillRect(0,cy-30,W,80);
+  drawText('～ 河流 ～',60,cy+5,'#06b6d4',12,'left');
+  // A 点（左岸）
+  const A={x:cx-180,y:cy+55};
+  // C 点（左岸，可到达）
+  const C={x:cx-180+Math.sin(time*0.5)*30,y:cy+55};
+  // B 点（右岸，不可达）
+  const B={x:cx+150,y:cy-15};
+  drawTri([A,B,C],0,0,0,false,0);
+  // 标注
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(A.x,A.y,6,0,7);ctx.fill();
+  drawText('A (可达)',A.x,A.y+20,'#fbbf24',12);
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(C.x,C.y,6,0,7);ctx.fill();
+  drawText('C (基线端)',C.x,C.y+20,'#34d399',12);
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.arc(B.x,B.y,6,0,7);ctx.fill();
+  drawText('B (不可达)',B.x,B.y-18,'#f87171',12);
+  // 测量角
+  drawAngleArc([A,B,C],0,1,2,'#fbbf24');
+  drawAngleArc([A,B,C],2,0,1,'#34d399');
+  drawText('α',A.x+25,A.y-15,'#fbbf24',12);
+  drawText('β',C.x-25,C.y-15,'#34d399',12);
+  // 基线 AC
+  drawText('基线 AC (可量)',(A.x+C.x)/2,(A.y+C.y)/2+18,'#9ab0d0',11);
+  // 目标 AB
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();ctx.setLineDash([]);
+  drawText('求 AB = ?',(A.x+B.x)/2,(A.y+B.y)/2-15,'#f87171',13);
+  // 步骤
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(60,H-95,W-120,55,8);ctx.fill();ctx.stroke();
+  drawText('量基线 AC，测角 α、β → ∠B=180°−α−β',W/2,H-72,'#fff',12);
+  drawText('正弦定理：AB/sinβ = AC/sinB → AB = AC·sinβ/sinB',W/2,H-50,'#34d399',12);
+}
+
+// ===== 场景：大边对大角 =====
+function drawEdgeAngle(time){
+  const W=cv.width,H=cv.height;
+  drawText('边角关系 · 大边对大角',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 一个明显的钝角或锐角三角形
+  const A={x:cx-140,y:cy+50};
+  const B={x:cx+140,y:cy+50};
+  const tilt=Math.sin(time*0.6)*40;
+  const C={x:cx-60,y:cy-60+tilt};
+  drawTri([A,B,C],0,0,0,true,0);
+  // 角度弧（不同颜色突出大小）
+  drawAngleArc([A,B,C],0,1,2,'#34d399');
+  drawAngleArc([A,B,C],1,2,0,'#f87171');
+  drawAngleArc([A,B,C],2,0,1,'#fbbf24');
+  // 计算实际边长
+  const aL=Math.hypot(B.x-C.x,B.y-C.y);
+  const bL=Math.hypot(A.x-C.x,A.y-C.y);
+  const cL=Math.hypot(A.x-B.x,A.y-B.y);
+  // 最大边 → 最大角
+  const maxEdge=Math.max(aL,bL,cL);
+  ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  drawText('边长：a='+aL.toFixed(0)+'  b='+bL.toFixed(0)+'  c='+cL.toFixed(0),W/2,H-70,'#fff',13);
+  drawText('最长边 → 最大角（红弧）',W/2,H-45,'#f87171',13);
+  drawText('大边对大角，大角对大边',W/2,H-25,'#34d399',13);
+}
+
+// ===== 场景：典型计算 =====
+function drawCalc(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 三步法',W/2,28,'#fbbf24',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,100,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',100,80,'#a78bfa',13,'left');
+  drawText('△ABC 中 a=3, b=5, c=7，求最大角和面积 S。',100,105,'#fff',13,'left');
+  drawText('（最大角对最长边 c=7）',100,130,'#9ab0d0',12,'left');
+  const steps=[
+    {t:'① 识别',d:'SSS → 用余弦定理',c:'#06b6d4'},
+    {t:'② 求角',d:'cosC=(a²+b²−c²)/(2ab)=(9+25−49)/30=−0.5',c:'#a78bfa'},
+    {t:'③ C值',d:'C = arccos(−0.5) = 120°',c:'#67e8f9'},
+    {t:'④ 半周长',d:'p=(3+5+7)/2=7.5',c:'#fbbf24'},
+    {t:'⑤ 面积',d:'S=√[7.5×4.5×2.5×0.5]=√42.19≈6.50',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=185+i*52;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,40,6);ctx.fill();ctx.stroke();
+    drawText(s.t,130,y+20,s.c,13,'left');
+    drawText(s.d,260,y+20,'#fff',13,'left');
+  });
+  drawText('钝角三角形：最长边对应钝角，cosC<0',W/2,H-25,'#f87171',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummary(){
+  const W=cv.width,H=cv.height;
+  drawText('解三角形核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'正弦定理',d:'a/sinA=2R\nAAS / ASA / SSA',c:'#fbbf24'},
+    {t:'余弦定理',d:'a²=b²+c²−2bc·cosA\nSSS / SAS',c:'#06b6d4'},
+    {t:'面积公式',d:'S=½ab·sinC\n海伦公式',c:'#34d399'},
+    {t:'多解判定',d:'SSA 四情况\n大边对大角',c:'#f87171'},
+    {t:'边角关系',d:'大边↔大角\n等边↔等角',c:'#a78bfa'},
+    {t:'实际应用',d:'测量、航海\n立几求角',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+45,m.c,15);
+    m.d.split('\n').forEach((line,j)=>{
+      drawText(line,x+(W-160)/6,y+80+j*22,'#fff',12);
+    });
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawSineDerive(t);
+  else if(stepIdx===1)drawSineApp(t);
+  else if(stepIdx===2)drawSSA(t);
+  else if(stepIdx===3)drawCosineDerive(t);
+  else if(stepIdx===4)drawCosineApp(t);
+  else if(stepIdx===5)drawArea(t);
+  else if(stepIdx===6)drawMeasure(t);
+  else if(stepIdx===7)drawEdgeAngle(t);
+  else if(stepIdx===8)drawCalc();
+  else if(stepIdx===9)drawSummary();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

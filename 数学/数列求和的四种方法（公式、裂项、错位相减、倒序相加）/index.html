@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数列求和的四种方法 · 公式 · 裂项 · 错位相减 · 倒序相加</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">数列求和的四种方法</span><span class="subtitle">公式法 · 裂项相消 · 错位相减 · 倒序相加</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>四种方法概览</h4><div class="v">公式 · 分组 · 裂项<br>错位 · 倒序 · 并项</div></div>
+  <div class="card s2"><div class="num">2</div><h4>裂项相消法</h4><div class="v">1/[n(n+1)]=1/n−1/(n+1)<br>正负项抵消剩首尾</div></div>
+  <div class="card s3"><div class="num">3</div><h4>错位相减法</h4><div class="v">适用 aₙ=(an+b)·qⁿ<br>Sₙ 与 qSₙ 相减消项</div></div>
+  <div class="card s4"><div class="num">4</div><h4>倒序相加法</h4><div class="v">S 与倒序 S 相加<br>等差求和公式推导</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">数列求和</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'公式法',name:'等差等比求和公式',body:'<strong>公式法</strong>是最基本的方法：直接套用<strong>等差数列</strong>和<strong>等比数列</strong>的求和公式。等差：<code>Sₙ=na₁+n(n-1)d/2</code>；等比：<code>Sₙ=a₁(1-qⁿ)/(1-q)</code>（q≠1）。',points:{title:'核心公式',items:['<strong>等差</strong>：Sₙ = na₁ + n(n-1)d/2','<strong>等比(q≠1)</strong>：Sₙ = a₁(1-qⁿ)/(1-q)','<strong>等比(q=1)</strong>：Sₙ = na₁','<strong>前提</strong>：先判数列类型']}},
+  {tag:'分组法',name:'分组求和法',body:'<strong>分组求和</strong>：当数列可拆分为<strong>等差+等比</strong>等组合（如 aₙ=2n+3ⁿ），把原数列<strong>拆开</strong>分别求和再合并。',points:{title:'拆分要诀',items:['<strong>识别</strong>：aₙ = 等差部分 + 等比部分','<strong>拆分</strong>：{aₙ}={等差}∪{等比}','<strong>分别求和</strong>：S = S差 + S比','<strong>典型</strong>：aₙ=2n+3ⁿ']}},
+  {tag:'倒序法',name:'倒序相加法',body:'<strong>倒序相加法</strong>：把 Sₙ=a₁+a₂+...+aₙ <strong>倒着写一遍</strong>，两式<strong>对应项相加</strong>。若首末两项之和为定值（等差数列），可得 2Sₙ=n(a₁+aₙ)。这是<strong>等差求和公式</strong>的推导方法。',points:{title:'操作步骤',items:['<strong>步骤1</strong>：写出 Sₙ = a₁+...+aₙ','<strong>步骤2</strong>：倒写 Sₙ = aₙ+...+a₁','<strong>步骤3</strong>：两式相加得 2Sₙ','<strong>步骤4</strong>：若 a₁+aₙ 定值则化简']}},
+  {tag:'裂项法',name:'裂项相消法',body:'<strong>裂项相消法</strong>：把每一项拆成<strong>正负两项之差</strong>，相加时<strong>中间项相互抵消</strong>，只剩首尾少数项。典型：<code>1/[n(n+1)] = 1/n − 1/(n+1)</code>。',points:{title:'常见裂项',items:['<strong>分式型</strong>：1/[n(n+1)]=1/n−1/(n+1)','<strong>根式型</strong>：1/(√n+√(n+1))=√(n+1)−√n','<strong>通分逆用</strong>：把一项裂为两项差','<strong>结果</strong>：中间抵消，剩首尾']}},
+  {tag:'错位法',name:'错位相减法',body:'<strong>错位相减法</strong>：适用于 <code>aₙ=(an+b)·qⁿ</code> 型（等差×等比）。写 Sₙ，再写 qSₙ（整体右移一位），两式<strong>错位相减</strong>，中间项全部消去，只剩首末。典型：求 <code>Sₙ=1+2x+3x²+...+nxⁿ⁻¹</code>。',points:{title:'四步流程',items:['<strong>步骤1</strong>：写出 Sₙ','<strong>步骤2</strong>：两边乘 q 得 qSₙ','<strong>步骤3</strong>：两式错位相减','<strong>步骤4</strong>：化简求出 Sₙ']}},
+  {tag:'并项法',name:'并项求和法',body:'<strong>并项求和法</strong>：把<strong>相邻两项</strong>结合成一组求和，常用于 <code>(-1)ⁿ</code> 型交替数列，或项数较多的摆动数列。',points:{title:'并项技巧',items:['<strong>适用</strong>：(−1)ⁿ 型交替数列','<strong>做法</strong>：相邻两项合并','<strong>偶数项</strong>：两两配对','<strong>奇数项</strong>：单独处理末项']}},
+  {tag:'例题',name:'典型例题精讲',body:'<strong>例1（裂项）</strong>：求 1+1/(1+2)+1/(1+2+3)+...+1/(1+2+...+n)。因为 1+2+...+k=k(k+1)/2，所以第 k 项 = 2/[k(k+1)] = 2(1/k − 1/(k+1))，裂项相消得 2n/(n+1)。<br><strong>例2（错位）</strong>：Sₙ=1+2x+3x²+...+nxⁿ⁻¹，乘 x 后相减得 Sₙ=[1−(n+1)xⁿ+nxⁿ⁺¹]/(1−x)²。',points:{title:'解题套路',items:['<strong>裂项</strong>：先化简通项再裂项','<strong>错位</strong>：乘公比相减消中间','<strong>验证</strong>：n=1,2 代入检验','<strong>注意</strong>：讨论 q=1 的特殊情况']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// 颜色常量（与卡片配色保持一致）
+const C_ACCENT='#fbbf24',C_CYAN='#06b6d4',C_GOOD='#34d399',C_BAD='#f87171',C_MUTED='#9ab0d0',C_INK='#ffffff';
+
+// 辅助：绘制带阴影的强调文字
+function drawGlow(t,x,y,c,fs){
+  ctx.shadowColor=c;ctx.shadowBlur=12;
+  drawText(t,x,y,c,fs);
+  ctx.shadowBlur=0;
+}
+
+// 辅助：绘制数列项卡片（标签+数值）
+function drawTermCard(x,y,w,h,label,value,c,active){
+  ctx.fillStyle=active?(c+'33'):'rgba(120,140,170,0.08)';
+  ctx.strokeStyle=active?c:'#3a4a6a';ctx.lineWidth=1.5;
+  roundRect(x,y,w,h,6);ctx.fill();ctx.stroke();
+  drawText(label,x+w/2,y+h*0.35,'#9ab0d0',10);
+  drawText(value,x+w/2,y+h*0.68,active?c:'#5a6a8a',13);
+}
+
+// ===== 场景1：公式法（数轴累加等差数列） =====
+function drawFormulaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('公式法 · 等差数列求和 Sₙ=na₁+n(n-1)d/2',W/2,30,'#fbbf24',15);
+  const cx=W/2,cy=H/2+30;
+  const n=6,d=2,a1=3;
+  // 数轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(80,cy+40);ctx.lineTo(W-80,cy+40);ctx.stroke();
+  // 各项值 a_k = a1+(k-1)d
+  const terms=[];let sum=0;
+  for(let k=1;k<=n;k++){const v=a1+(k-1)*d;terms.push(v);sum+=v;}
+  const animK=Math.min(n,Math.floor((time*0.8)%(n+1.5))+1);
+  const colW=(W-160)/n;
+  for(let k=1;k<=n;k++){
+    const x=80+colW*(k-0.5);
+    const v=terms[k-1];
+    const barH=Math.min(180,v*8);
+    const active=k<=animK;
+    ctx.fillStyle=active?'rgba(251,191,36,0.55)':'rgba(251,191,36,0.12)';
+    ctx.strokeStyle=active?'#fbbf24':'#5a6a8a';ctx.lineWidth=1.5;
+    ctx.fillRect(x-18,cy+38-barH,36,barH);
+    ctx.strokeRect(x-18,cy+38-barH,36,barH);
+    drawText('a'+k,x,cy+58,'#9ab0d0',11);
+    drawText(v,x,cy+38-barH-12,active?'#fbbf24':'#5a6a8a',12);
+    // 数轴刻度
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,cy+36);ctx.lineTo(x,cy+44);ctx.stroke();
+  }
+  // 累加显示
+  let curSum=0;for(let k=1;k<=animK;k++)curSum+=terms[k-1];
+  ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W/2-130,H-110,260,70,10);ctx.fill();ctx.stroke();
+  drawText('前 '+animK+' 项和 = '+curSum,W/2,H-90,'#34d399',15);
+  drawText('公式验证：'+animK+'×'+a1+'+'+animK+'×'+(animK-1)+'×'+d+'/2 = '+(animK*a1+animK*(animK-1)*d/2),W/2,H-65,'#9ab0d0',11);
+  drawText('公差 d='+d+'，首项 a₁='+a1,W/2,H-25,'#06b6d4',12);
+}
+
+// ===== 场景2：分组求和法 =====
+function drawGroupScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('分组求和法 · aₙ=2n+3ⁿ 拆为等差+等比',W/2,30,'#fbbf24',15);
+  const n=5;
+  const colW=(W-160)/n;
+  for(let k=1;k<=n;k++){
+    const x=80+colW*(k-0.5);
+    const partA=2*k;          // 等差部分
+    const partB=Math.pow(3,k); // 等比部分
+    // 等差块（黄色）
+    const ah=Math.min(120,partA*10);
+    ctx.fillStyle='rgba(251,191,36,0.4)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    ctx.fillRect(x-30,H/2-ah-10,28,ah);ctx.strokeRect(x-30,H/2-ah-10,28,ah);
+    drawText('2×'+k,x-16,H/2-ah-22,'#fbbf24',10);
+    // 等比块（青色）
+    const bh=Math.min(160,Math.log(partB+1)*40);
+    ctx.fillStyle='rgba(6,182,212,0.4)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    ctx.fillRect(x+2,H/2-bh-10,28,bh);ctx.strokeRect(x+2,H/2-bh-10,28,bh);
+    drawText('3^'+k,x+16,H/2-bh-22,'#06b6d4',10);
+    // 合并箭头
+    ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(x,H/2+15);ctx.lineTo(x,H/2+45);ctx.stroke();
+    drawText('a'+k+'='+(partA+partB),x,H/2+60,'#fff',12);
+    drawText('= '+partA+' + '+partB,x,H/2+78,'#9ab0d0',10);
+  }
+  // 求和公式
+  let sA=0,sB=0;for(let k=1;k<=n;k++){sA+=2*k;sB+=Math.pow(3,k);}
+  ctx.fillStyle='rgba(52,211,153,0.12)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(80,H-90,W-160,65,10);ctx.fill();ctx.stroke();
+  drawText('Sₙ = (等差和) + (等比和)',W/2,H-72,'#34d399',13);
+  drawText('= n(n+1) + 3(3ⁿ−1)/2',W/2,H-50,'#fff',13);
+  drawText('当 n='+n+'：'+sA+' + '+sB+' = '+(sA+sB),W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景3：倒序相加法 =====
+function drawReverseScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('倒序相加法 · 等差求和公式推导',W/2,28,'#fbbf24',15);
+  const n=5,a1=2,d=3;
+  const terms=[];for(let k=1;k<=n;k++)terms.push(a1+(k-1)*d);
+  const animPhase=(time*0.6)%2;
+  const showReverse=animPhase>1;
+  // 正序行
+  drawText('Sₙ =',100,100,'#fbbf24',14);
+  // 倒序行
+  drawText('Sₙ =',100,H-100,'#06b6d4',14);
+  const colW=(W-220)/n;
+  const pairSum=terms[0]+terms[n-1];
+  for(let k=1;k<=n;k++){
+    const x=140+colW*(k-0.5);
+    // 正序项
+    ctx.fillStyle='rgba(251,191,36,0.25)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    roundRect(x-30,80,60,40,6);ctx.fill();ctx.stroke();
+    drawText('a'+k,x,93,'#9ab0d0',10);
+    drawText(terms[k-1],x,108,'#fbbf24',14);
+    // 倒序项（动画后显示）
+    if(showReverse){
+      const revK=n-k+1;
+      ctx.fillStyle='rgba(6,182,212,0.25)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+      roundRect(x-30,H-120,60,40,6);ctx.fill();ctx.stroke();
+      drawText('a'+revK,x,H-107,'#9ab0d0',10);
+      drawText(terms[revK-1],x,H-92,'#06b6d4',14);
+      // 连线 + 和
+      ctx.strokeStyle='rgba(52,211,153,0.6)';ctx.lineWidth=1.5;
+      ctx.setLineDash([4,4]);
+      ctx.beginPath();ctx.moveTo(x,120);ctx.lineTo(x,H-120);ctx.stroke();
+      ctx.setLineDash([]);
+      drawText('和='+pairSum,x,H/2,'#34d399',12);
+    }else{
+      drawText('?',x,H-100,'#5a6a8a',14);
+    }
+  }
+  // 加号和结果
+  drawText='+  ',W-90,100,'#9ab0d0',18;
+  if(showReverse){
+    drawText('+',W-90,H-100,'#9ab0d0',18);
+    drawText('2Sₙ = '+n+' × '+pairSum+' = '+n*pairSum,W/2,H/2-20,'#34d399',16);
+    drawText('∴ Sₙ = n(a₁+aₙ)/2 = '+n+'×'+pairSum+'/2 = '+n*pairSum/2,W/2,H/2+10,'#fbbf24',14);
+    drawText('（每对和都相等 = a₁+aₙ）',W/2,H/2+38,'#9ab0d0',11);
+  }else{
+    drawText('（倒着写一遍...）',W/2,H-100,'#5a6a8a',12);
+  }
+}
+
+// ===== 场景4：裂项相消法 =====
+function drawSplitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('裂项相消法 · 1/[n(n+1)] = 1/n − 1/(n+1)',W/2,28,'#fbbf24',14);
+  const n=6;
+  const animK=Math.min(n,Math.floor((time*0.7)%(n+1.5))+1);
+  // 公式行
+  drawText('Sₙ = 1/(1·2) + 1/(2·3) + ... + 1/[n(n+1)]',W/2,60,'#9ab0d0',12);
+  const yBase=130;
+  const colW=(W-160)/n;
+  // 上排 +1/k，下排 −1/(k+1)
+  for(let k=1;k<=n;k++){
+    const x=80+colW*(k-0.5);
+    const active=k<=animK;
+    // +1/k
+    ctx.fillStyle=active?'rgba(52,211,153,0.3)':'rgba(52,211,153,0.08)';
+    ctx.strokeStyle=active?'#34d399':'#3a4a6a';ctx.lineWidth=1.5;
+    roundRect(x-28,yBase,56,32,6);ctx.fill();ctx.stroke();
+    drawText('+1/'+k,x,yBase+16,active?'#34d399':'#5a6a8a',12);
+    // −1/(k+1)
+    ctx.fillStyle=active?'rgba(248,113,113,0.3)':'rgba(248,113,113,0.08)';
+    ctx.strokeStyle=active?'#f87171':'#3a4a6a';ctx.lineWidth=1.5;
+    roundRect(x-28,yBase+70,56,32,6);ctx.fill();ctx.stroke();
+    drawText('−1/'+(k+1),x,yBase+86,active?'#f87171':'#5a6a8a',12);
+    // 相消连线（绿色 +1/(k+1) 与红色 −1/(k+1) 连）
+    if(active&&k<n){
+      ctx.strokeStyle='rgba(251,191,36,0.7)';ctx.lineWidth=2;
+      ctx.setLineDash([5,4]);
+      ctx.beginPath();
+      ctx.moveTo(x+28,yBase+16);
+      ctx.lineTo(80+colW*(k+0.5)-28,yBase+86);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      drawText('相消',x+colW/2,yBase+50,'rgba(251,191,36,0.85)',10);
+    }
+  }
+  // 结果
+  drawText('中间项全部抵消，只剩 1/1 − 1/(n+1)',W/2,H-90,'#34d399',13);
+  drawText('∴ Sₙ = 1 − 1/(n+1) = n/(n+1)',W/2,H-62,'#fbbf24',16);
+  drawText('当 n='+animK+'：S = '+animK+'/'+(animK+1)+' = '+(animK/(animK+1)).toFixed(4),W/2,H-35,'#06b6d4',12);
+}
+
+// ===== 场景5：错位相减法 =====
+function drawShiftScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('错位相减法 · Sₙ=1+2x+3x²+...+nxⁿ⁻¹',W/2,28,'#fbbf24',14);
+  const x=2,n=5;
+  const animPhase=(time*0.5)%3;
+  const showQ=animPhase>1;
+  const showSub=animPhase>2;
+  // Sₙ 行
+  drawText('Sₙ =',90,110,'#fbbf24',14);
+  const terms=[];for(let k=1;k<=n;k++)terms.push(k*Math.pow(x,k-1));
+  const cw=70;
+  for(let k=1;k<=n;k++){
+    const px=140+cw*(k-1);
+    ctx.fillStyle='rgba(251,191,36,0.25)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    roundRect(px,90,60,40,6);ctx.fill();ctx.stroke();
+    drawText(k+'·'+x+'^'+(k-1),px+30,110,'#fbbf24',11);
+  }
+  // qSₙ 行（右移一位）
+  if(showQ){
+    drawText((x)+'Sₙ =',90,200,'#06b6d4',14);
+    for(let k=1;k<=n;k++){
+      const px=140+cw*k; // 右移一位
+      if(k<n){
+        ctx.fillStyle='rgba(6,182,212,0.25)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+        roundRect(px,180,60,40,6);ctx.fill();ctx.stroke();
+        drawText(k+'·'+x+'^'+(k-1),px+30,200,'#06b6d4',11);
+      }
+    }
+    drawText('+ 末项 '+n+'·'+x+'^'+(n-1),140+cw*n+10,200,'#f87171',11);
+    drawText('(整体右移一位)',W/2,235,'#9ab0d0',11);
+  }
+  // 相减行
+  if(showSub){
+    drawText('相减:',90,310,'#34d399',14);
+    drawText('(1−'+x+')Sₙ = 1 + (',140,310,'#34d399',11);
+    drawText('x + x² + ... + xⁿ⁻¹',W/2-40,310,'#fff',11);
+    drawText(') − '+n+'·'+x+'^'+(n-1),W/2+150,310,'#f87171',11);
+    // 中间项用虚线框（被消去）
+    ctx.strokeStyle='rgba(248,113,113,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    for(let k=2;k<n;k++){
+      const px=140+cw*(k-1);
+      roundRect(px,295,60,30,5);ctx.stroke();
+      drawText('消',px+30,310,'#f87171',10);
+    }
+    ctx.setLineDash([]);
+    // 最终结果
+    ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    roundRect(80,H-90,W-160,65,10);ctx.fill();ctx.stroke();
+    drawText('Sₙ = [1 − (n+1)xⁿ + nxⁿ⁺¹] / (1−x)²',W/2,H-68,'#34d399',14);
+    drawText('x='+x+', n='+n+'：S = '+terms.reduce((a,b)=>a+b,0),W/2,H-42,'#fbbf24',12);
+    drawText('（中间项全部抵消，只剩首末项）',W/2,H-22,'#9ab0d0',11);
+  }else if(showQ){
+    drawText('等待相减...',W/2,H-50,'#5a6a8a',12);
+  }else{
+    drawText('（两边乘公比 x='+x+'...）',W/2,H-50,'#5a6a8a',12);
+  }
+}
+
+// ===== 场景6：并项求和法 =====
+function drawMergeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('并项求和法 · (−1)ⁿ 型交替数列',W/2,30,'#fbbf24',15);
+  // 例：aₙ = (−1)^(n+1) · n  =>  1, -2, 3, -4, 5, -6 ...
+  const n=8;
+  const cw=(W-160)/n;
+  const animK=Math.min(n,Math.floor((time*0.6)%(n+2))+1);
+  for(let k=1;k<=n;k++){
+    const x=80+cw*(k-0.5);
+    const v=Math.pow(-1,k+1)*k;
+    const isPos=v>0;
+    const active=k<=animK;
+    const barH=Math.min(160,Math.abs(v)*16);
+    const baseY=H/2;
+    ctx.fillStyle=active?(isPos?'rgba(52,211,153,0.45)':'rgba(248,113,113,0.45)'):'rgba(120,140,170,0.1)';
+    ctx.strokeStyle=active?(isPos?'#34d399':'#f87171'):'#3a4a6a';ctx.lineWidth=1.5;
+    if(isPos){
+      ctx.fillRect(x-18,baseY-barH,36,barH);ctx.strokeRect(x-18,baseY-barH,36,barH);
+    }else{
+      ctx.fillRect(x-18,baseY,36,barH);ctx.strokeRect(x-18,baseY,36,barH);
+    }
+    drawText((isPos?'+':'')+v,x,baseY+(isPos?-barH-12:barH+12),active?(isPos?'#34d399':'#f87171'):'#5a6a8a',12);
+    drawText('a'+k,x,baseY+barH+30,'#9ab0d0',10);
+  }
+  // 0 轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,H/2);ctx.lineTo(W-80,H/2);ctx.stroke();
+  // 配对求和
+  const pairs=[];
+  for(let k=1;k+1<=animK;k+=2){
+    const v1=Math.pow(-1,k+1)*k;
+    const v2=Math.pow(-1,(k+1)+1)*(k+1);
+    pairs.push(v1+v2);
+  }
+  // 配对框
+  for(let i=0;i<pairs.length;i++){
+    const x1=80+cw*(i*2+0.5-0.5);
+    const x2=80+cw*(i*2+1+0.5-0.5);
+    ctx.strokeStyle='rgba(251,191,36,0.6)';ctx.lineWidth=1.5;
+    roundRect(x1+2,H/2-100,x2-x1+36-4,28,6);ctx.stroke();
+    drawText('和='+pairs[i],(x1+x2)/2+18,H/2-86,'#fbbf24',11);
+  }
+  // 结果
+  const total=pairs.reduce((a,b)=>a+b,0);
+  const oddExtra=(animK%2===1)?Math.pow(-1,animK+1)*animK:0;
+  ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W/2-150,H-85,300,60,10);ctx.fill();ctx.stroke();
+  drawText('相邻两项配对：每对和 = −1',W/2,H-67,'#34d399',12);
+  drawText('S_'+animK+' = '+total+(oddExtra?(' (+末项 '+oddExtra+')'):''),W/2,H-42,'#fbbf24',13);
+}
+
+// ===== 场景7：典型例题 =====
+function drawExampleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 裂项与错位',W/2,28,'#fbbf24',15);
+  // 左：裂项例题
+  ctx.fillStyle='rgba(52,211,153,0.08)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(40,55,W/2-60,280,10);ctx.fill();ctx.stroke();
+  drawText('【例1 · 裂项】',W/4,75,'#34d399',13);
+  drawText('求 1+1/(1+2)+1/(1+2+3)',W/4,98,'#fff',11);
+  drawText('+...+1/(1+2+...+n)',W/4,116,'#fff',11);
+  drawText('解：1+2+...+k = k(k+1)/2',W/4,142,'#9ab0d0',11);
+  drawText('第 k 项 = 2/[k(k+1)]',W/4,162,'#06b6d4',12);
+  drawText('     = 2(1/k − 1/(k+1))',W/4,182,'#fbbf24',11);
+  drawText('求和裂项相消：',W/4,208,'#9ab0d0',11);
+  drawText('Sₙ = 2[(1−1/2)+(1/2−1/3)',W/4,228,'#fff',11);
+  drawText('     +...+(1/n−1/(n+1))]',W/4,246,'#fff',11);
+  drawText('   = 2[1 − 1/(n+1)]',W/4,268,'#34d399',12);
+  drawText('   = 2n/(n+1)',W/4,290,'#fbbf24',14);
+  drawText('答案：2n/(n+1)',W/4,318,'#34d399',12);
+  // 右：错位例题
+  ctx.fillStyle='rgba(6,182,212,0.08)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(W/2+20,55,W/2-60,280,10);ctx.fill();ctx.stroke();
+  drawText('【例2 · 错位相减】',3*W/4,75,'#06b6d4',13);
+  drawText('Sₙ=1+2x+3x²+...+nxⁿ⁻¹',3*W/4,98,'#fff',11);
+  drawText('解：xSₙ = x+2x²+...+(n−1)xⁿ⁻¹',3*W/4,122,'#9ab0d0',11);
+  drawText('         +nxⁿ',3*W/4,140,'#9ab0d0',11);
+  drawText('两式相减：',3*W/4,164,'#9ab0d0',11);
+  drawText('(1−x)Sₙ = 1+x+x²+...+xⁿ⁻¹',3*W/4,184,'#fff',11);
+  drawText('         − nxⁿ',3*W/4,202,'#f87171',11);
+  drawText('  = [1−xⁿ]/(1−x) − nxⁿ',3*W/4,224,'#34d399',11);
+  drawText('∴ Sₙ =',3*W/4,250,'#fbbf24',12);
+  drawText('[1−(n+1)xⁿ+nxⁿ⁺¹]/(1−x)²',3*W/4,270,'#fbbf24',12);
+  drawText('（等差×等比型专属方法）',3*W/4,300,'#9ab0d0',10);
+  drawText('答案见左式',3*W/4,320,'#06b6d4',11);
+  // 底部总结
+  ctx.fillStyle='rgba(251,191,36,0.12)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(40,H-80,W-80,55,8);ctx.fill();ctx.stroke();
+  drawText('方法选择：通项含分式乘积→裂项；等差×等比→错位；等差数列→公式/倒序；交替→并项',W/2,H-58,'#fbbf24',12);
+  drawText('核心思想：把一般数列求和，转化为等差或等比求和',W/2,H-35,'#34d399',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawFormulaScene(t);
+  else if(stepIdx===1)drawGroupScene(t);
+  else if(stepIdx===2)drawReverseScene(t);
+  else if(stepIdx===3)drawSplitScene(t);
+  else if(stepIdx===4)drawShiftScene(t);
+  else if(stepIdx===5)drawMergeScene(t);
+  else if(stepIdx===6)drawExampleScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

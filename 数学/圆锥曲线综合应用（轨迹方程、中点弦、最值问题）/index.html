@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>圆锥曲线综合应用 · 轨迹方程 · 中点弦 · 最值问题</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">圆锥曲线综合应用</span><span class="subtitle">轨迹方程 · 中点弦 · 最值问题</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>统一定义</h4><div class="v">|PF|/d = e（离心率）<br>e&lt;1 椭圆；e=1 抛物线；e&gt;1 双曲线</div></div>
+  <div class="card s2"><div class="num">2</div><h4>轨迹方程四法</h4><div class="v">直接法 · 定义法<br>相关点法 · 参数法</div></div>
+  <div class="card s3"><div class="num">3</div><h4>中点弦点差法</h4><div class="v">椭圆 k = −b²x₀/(a²y₀)<br>两端点坐标相减</div></div>
+  <div class="card s4"><div class="num">4</div><h4>弦长公式</h4><div class="v">|AB|=√(1+k²)|x₁−x₂|<br>焦点弦 |AB|=2a/(1−e²cos²θ)</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">统一定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <label>离心率 e <input id="ecc" type="range" min="0.3" max="1.8" step="0.05" value="0.7"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+// ============================================================
+// 圆锥曲线综合应用 · 教学动画脚本
+// 内容：统一定义 / 轨迹方程四法 / 中点弦点差法 / 弦长公式 /
+//       焦点弦性质 / 最值问题
+// ============================================================
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+// 画布自适应（宽度 520~1100，高度 400~600）
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+// 通用：圆角矩形
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+// 通用：绘制文字（与模板签名一致：t,x,y,c,fs,align,baseline）
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+// 离心率滑块：控制统一定义场景中曲线类型（<1 椭圆 / =1 抛物线 / >1 双曲线）
+const eccEl=document.getElementById('ecc');
+function getE(){return Math.max(0.05,parseFloat(eccEl.value));}
+
+const STEPS=[
+  {tag:'基础',name:'圆锥曲线统一定义',body:'<strong>统一定义</strong>：平面上到<strong>定点 F（焦点）</strong>与<strong>定直线 l（准线）</strong>距离之比等于常数 <strong>e（离心率）</strong>的点的轨迹。比值 e 决定曲线类型。',points:{title:'三种曲线判定',items:['<strong>e &lt; 1</strong>：椭圆（闭合曲线）','<strong>e = 1</strong>：抛物线（开口曲线）','<strong>e &gt; 1</strong>：双曲线（两支）','<strong>F 不在 l 上</strong>：否则退化']}},
+  {tag:'轨迹',name:'直接法求轨迹',body:'<strong>直接法</strong>：根据题意<strong>直接列出</strong>动点 P(x,y) 满足的等式（如距离、斜率等），再化简得方程。最朴素但有时计算量大。',points:{title:'直接法步骤',items:['<strong>步骤1</strong>：设动点 P(x,y)','<strong>步骤2</strong>：翻译几何条件为等式','<strong>步骤3</strong>：坐标化并化简','<strong>步骤4</strong>：检验（去杂点 / 标范围）']}},
+  {tag:'轨迹',name:'定义法求轨迹',body:'<strong>定义法</strong>：先判定动点轨迹<strong>是某种圆锥曲线</strong>（用统一定义/标准定义），再写出其<strong>标准方程</strong>，最后定出 a、b、焦点位置。',points:{title:'定义法步骤',items:['<strong>判定</strong>：看 |PF|/d 是否为常数 e','<strong>定形</strong>：e&lt;1 椭圆、e=1 抛物线、e&gt;1 双曲线','<strong>定参</strong>：由条件求 a、b 或 p','<strong>定位</strong>：确定焦点 / 对称轴位置']}},
+  {tag:'弦',name:'中点弦点差法',body:'<strong>点差法</strong>：椭圆 x²/a²+y²/b²=1 中以 M(x₀,y₀) 为中点的弦，端点 A(x₁,y₁)、B(x₂,y₂)。两式相减整理得弦斜率 <code>k = −b²x₀ / (a²y₀)</code>。',points:{title:'点差法要点',items:['<strong>设端点</strong>：A(x₁,y₁), B(x₂,y₂)','<strong>代入</strong>：两式 x²/a²+y²/b²=1 相减','<strong>中点</strong>：x₀=(x₁+x₂)/2, y₀=(y₁+y₂)/2','<strong>结论</strong>：k = −b²x₀/(a²y₀)']}},
+  {tag:'弦',name:'弦长公式',body:'<strong>弦长公式</strong>：斜率为 k 的直线与曲线交于 A(x₁,y₁)、B(x₂,y₂)，则 <code>|AB| = √(1+k²)·|x₁−x₂|</code>，其中 <code>|x₁−x₂| = √[(x₁+x₂)²−4x₁x₂]</code>，借助韦达定理求。',points:{title:'弦长四步',items:['<strong>联立</strong>：直线 y=kx+m 与曲线方程','<strong>韦达</strong>：x₁+x₂、x₁x₂','<strong>代入</strong>：|AB| = √(1+k²)·√[(x₁+x₂)²−4x₁x₂]','<strong>斜率不存在</strong>：直接用 |y₁−y₂|']}},
+  {tag:'弦',name:'焦点弦性质',body:'<strong>焦点弦</strong>：过焦点 F 的弦。椭圆中焦点弦长 <code>|AB| = 2a / (1 − e²cos²θ)</code>，θ 为弦与长轴夹角。<strong>通径</strong>（垂直长轴）最短 <code>2b²/a</code>。',points:{title:'焦点弦要点',items:['<strong>过焦点</strong>：x = c 或 x = −c 时取','<strong>通径</strong>：θ=90°，|AB| = 2b²/a 最短','<strong>长轴端</strong>：θ=0°，|AB| = 2a 最长','<strong>双曲线</strong>：同理可推类似结论']}},
+  {tag:'最值',name:'椭圆上点到焦点最值',body:'<strong>椭圆</strong> x²/a²+y²/b²=1 (a&gt;b&gt;0) 上点 P 到焦点 F 的距离：<strong>最大</strong> a+c（长轴端点远侧），<strong>最小</strong> a−c（长轴端点近侧）。其中 c²=a²−b²。',points:{title:'最值速记',items:['<strong>|PF|最大</strong>：a + c','<strong>|PF|最小</strong>：a − c','<strong>两焦点</strong>：|PF₁|+|PF₂| = 2a','<strong>双曲线</strong>：一支上 |PF|min = c − a']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ============================================================
+// 坐标系辅助函数（绘制 x、y 轴 + 原点 O 标记）
+// ============================================================
+// ===== 坐标系辅助 =====
+function drawAxes(cx,cy,scale){
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-cv.width/2+40,cy);ctx.lineTo(cx+cv.width/2-40,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-cv.height/2+60);ctx.lineTo(cx,cy+cv.height/2-60);ctx.stroke();
+  drawText('x',cx+cv.width/2-50,cy+15,'#5a6a8a',12);
+  drawText('y',cx+12,cy-cv.height/2+70,'#5a6a8a',12);
+  drawText('O',cx-12,cy+12,'#5a6a8a',12);
+}
+
+// ============================================================
+// 场景1：圆锥曲线统一定义
+// 核心思想：|PF| / d(P, l) = e（离心率）
+// 极坐标方程：r = e·d₀ / (1 + e·cosθ)
+// ============================================================
+// ===== 场景1：统一定义 =====
+function drawUnifiedScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('圆锥曲线统一定义 · |PF|/d = e',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  drawAxes(cx,cy,1);
+  const e=getE();
+  // 准线 l（垂直线，x = -d0）
+  const d0=120;
+  const lx=cx-d0;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(lx,cy-200);ctx.lineTo(lx,cy+200);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('准线 l',lx,cy-215,'#34d399',13);
+  // 焦点 F（在原点）
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(cx,cy,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('F（焦点）',cx,cy+18,'#fbbf24',12);
+  // 动点 P 在曲线上滑动
+  const param=time*0.5;
+  // 由统一定义：|PF| = e * d(P,l)。取 P 极坐标 (r,θ) 相对 F
+  // r = e * (d0 - r*cosθ)  =>  r(1+e*cosθ) = e*d0  =>  r = e*d0/(1+e*cosθ)
+  const theta=param;
+  const r=Math.min(260,e*d0/(1+e*Math.cos(theta)));
+  const px=cx+r*Math.cos(theta),py=cy-r*Math.sin(theta);
+  // 绘制完整曲线（采样）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();
+  let first=true;
+  for(let a=0;a<Math.PI*2;a+=0.05){
+    const rr=e*d0/(1+e*Math.cos(a));
+    if(rr<0||rr>500)continue;
+    const x=cx+rr*Math.cos(a),y=cy-rr*Math.sin(a);
+    if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 动点 P
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('P',px+10,py-10,'#f87171',13);
+  // 连线 P-F
+  ctx.strokeStyle='rgba(251,191,36,.6)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+  // 垂线 P-准线
+  ctx.strokeStyle='rgba(52,211,153,.7)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(lx,py);ctx.stroke();ctx.setLineDash([]);
+  // 距离标注
+  drawText('|PF|='+r.toFixed(0),cx+r*Math.cos(theta)/2,cy-r*Math.sin(theta)/2-10,'#fbbf24',11);
+  drawText('d='+(px-lx).toFixed(0),(px+lx)/2,py-12,'#34d399',11);
+  // 类型显示
+  const type=e<1?'椭圆 (e<1)':(Math.abs(e-1)<0.05?'抛物线 (e=1)':'双曲线 (e>1)');
+  const tc=e<1?'#34d399':(Math.abs(e-1)<0.05?'#fbbf24':'#f87171');
+  drawText('e = '+e.toFixed(2)+' → '+type,W/2,H-50,tc,15);
+  drawText('调节下方"离心率 e"滑块切换三种曲线',W/2,H-25,'#9ab0d0',11);
+}
+
+// ============================================================
+// 场景2：直接法求轨迹
+// 示例：|PA| = 2|PB|，平方后化简得圆方程
+// 步骤：设点 → 列式 → 平方去根号 → 化简 → 检验
+// ============================================================
+// ===== 场景2：直接法（圆/距离条件示例） =====
+function drawDirectScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('直接法 · 列方程求轨迹',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  drawAxes(cx,cy,1);
+  // 例：动点 P 到定点 A(2,0) 距离 = 到定点 B(-2,0) 距离的 2 倍
+  // √((x-2)²+y²) = 2√((x+2)²+y²) => x²+y²-4x+4 = 4(x²+4x+4+y²)
+  // 化简：3x²+3y²+20x+12=0 -> 圆
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(cx+2*40,cy,5,0,7);ctx.fill();
+  drawText('A(2,0)',cx+2*40,cy+18,'#fbbf24',12);
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.arc(cx-2*40,cy,5,0,7);ctx.fill();
+  drawText('B(-2,0)',cx-2*40,cy+18,'#06b6d4',12);
+  // 动点 P 在轨迹上运动（圆 3x²+3y²+20x+12=0 => (x+10/3)²+y²=(8/3)²）
+  const a=time*0.6;
+  const px=cx+(-10/3)*40+Math.cos(a)*(8/3)*40;
+  const py=cy-Math.sin(a)*(8/3)*40;
+  // 轨迹圆
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(cx+(-10/3)*40,cy,(8/3)*40,0,7);ctx.stroke();ctx.shadowBlur=0;
+  // P 点
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('P',px+10,py-10,'#f87171',13);
+  // 连线 PA、PB
+  ctx.strokeStyle='rgba(251,191,36,.5)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(cx+2*40,cy);ctx.stroke();
+  ctx.strokeStyle='rgba(6,182,212,.5)';
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(cx-2*40,cy);ctx.stroke();
+  // 文字
+  drawText('条件：|PA| = 2|PB|',W/2,H-90,'#9ab0d0',13);
+  drawText('直接列方程 → 化简 → 圆',W/2,H-65,'#34d399',13);
+  drawText('3x²+3y²+20x+12 = 0',W/2,H-40,'#fde68a',13);
+}
+
+// ============================================================
+// 场景3：定义法求轨迹
+// 由离心率 e 判定曲线类型后直接写标准方程
+// 椭圆 x²/a²+y²/b²=1 ；双曲线 x²/a²−y²/b²=1 ；抛物线 y²=4cx
+// ============================================================
+// ===== 场景3：定义法 =====
+function drawDefinitionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('定义法 · 判定曲线类型后写标准方程',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  drawAxes(cx,cy,1);
+  const e=getE();
+  // 例：动点到 F(3,0) 距离 / 到准线 x=3+9/... = e，直接写标准方程
+  const a=80,b=a*Math.sqrt(Math.abs(1-e*e)),c=a*e;
+  const isEll=e<1,isPar=Math.abs(e-1)<0.05,isHyp=e>1;
+  // 椭圆/双曲线中心在原点（焦点在 (c,0)），抛物线顶点在原点
+  if(isPar){
+    // y² = 4cx（标准抛物线，焦点 (c,0)）
+    const p=c/40*40; // 简化
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+    ctx.beginPath();
+    let first=true;
+    for(let yy=-200;yy<=200;yy+=4){
+      const xx=(yy*yy)/(4*c)*40/40*40; // y²=4cx -> x=y²/(4c)
+      const px=cx+xx,py=cy-yy;
+      if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+    drawText('抛物线 y² = 4cx (p=2c)',W/2,H-50,'#fbbf24',13);
+  }else if(isEll){
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+    ctx.beginPath();ctx.ellipse(cx,cy,a,b,0,0,7);ctx.stroke();ctx.shadowBlur=0;
+    drawText('椭圆 x²/a² + y²/b² = 1',W/2,H-50,'#fbbf24',13);
+  }else{
+    ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.shadowColor='#f87171';ctx.shadowBlur=6;
+    ctx.beginPath();
+    // 双曲线右支
+    for(let xx=0;xx<=3.5;xx+=0.05){
+      const yy=Math.sqrt((xx*xx*e*e- a*a)*((b*b)/(a*a)));
+      const px=cx+xx*40,py1=cy-yy*40,py2=cy+yy*40;
+      if(xx===0)ctx.moveTo(px,py1);else ctx.lineTo(px,py1);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    for(let xx=0;xx<=3.5;xx+=0.05){
+      const yy=Math.sqrt((xx*xx*e*e-a*a)*(b*b/(a*a)));
+      const px=cx-xx*40,py1=cy-yy*40,py2=cy+yy*40;
+      if(xx===0)ctx.moveTo(px,py1);else ctx.lineTo(px,py1);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+    drawText('双曲线 x²/a² − y²/b² = 1',W/2,H-50,'#fbbf24',13);
+  }
+  // 焦点
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(cx+c,cy,5,0,7);ctx.fill();
+  drawText('F',cx+c,cy-15,'#fbbf24',12);
+  if(isEll){ctx.beginPath();ctx.arc(cx-c,cy,5,0,7);ctx.fill();drawText('F\'',cx-c,cy-15,'#fbbf24',12);}
+  drawText('e = '+e.toFixed(2),W/2,H-25,'#9ab0d0',12);
+}
+
+// ============================================================
+// 场景4：中点弦 · 点差法
+// 椭圆 x²/a²+y²/b²=1 中以 M(x₀,y₀) 为中点的弦斜率：
+//   k = − b²·x₀ / (a²·y₀)
+// 推导：A、B 代入方程后两式相减，再用 x₀=(x₁+x₂)/2
+// ============================================================
+// ===== 场景4：中点弦点差法 =====
+function drawChordScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('中点弦 · 点差法 k = −b²x₀/(a²y₀)',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  drawAxes(cx,cy,1);
+  // 椭圆 a=3, b=2
+  const a=120,b=80;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();ctx.ellipse(cx,cy,a,b,0,0,7);ctx.stroke();ctx.shadowBlur=0;
+  drawText('x²/9 + y²/4 = 1',cx+a-20,cy-b-10,'#06b6d4',12);
+  // 中点 M(x0,y0)，取 M(1,1)
+  const mx0=1,my0=1;
+  const Mx=cx+mx0*40,My=cy-my0*40;
+  // 弦斜率 k = -b² x0 / (a² y0) = -4*1/(9*1) = -4/9
+  const k=-4*mx0/(9*my0);
+  // 弦端点（解椭圆 + 直线方程）
+  // 直线 y - y0 = k(x - x0) 代入椭圆，求 A、B
+  // 简化数值：解方程 (1+k²)x² + ... 此处直接给出近似端点
+  const A={x:2.4,y:1+(-4/9)*(2.4-1)};
+  const B={x:-0.4,y:1+(-4/9)*(-0.4-1)};
+  // 检验 A 在椭圆上：2.4²/9 + 0.778²/4 ≈ 0.64+0.151=0.79（近似）此处仅作示意
+  // 改为精确解
+  // 9x² + (9/4)(k(x-1)+1)² = 9
+  // 数值求解（用对称性：中点已知，弦关于 M 对称）取参数 Δx 满足
+  // 9(x0+Δx)²/9 + (y0+kΔx)²/4 = 1
+  const eq=(dx)=>{const xx=mx0+dx,yy=my0+k*dx;return xx*xx/9+yy*yy/4-1;};
+  // 二分法求 dx>0
+  let lo=0,hi=3;
+  for(let i=0;i<30;i++){const mid=(lo+hi)/2;if(eq(mid)<0)lo=mid;else hi=mid;}
+  const dx=lo;
+  const Ax=cx+(mx0+dx)*40,Ay=cy-(my0+k*dx)*40;
+  const Bx=cx+(mx0-dx)*40,By=cy-(my0-k*dx)*40;
+  // 画弦
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(Ax,Ay);ctx.lineTo(Bx,By);ctx.stroke();ctx.shadowBlur=0;
+  // A、B、M
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.arc(Ax,Ay,5,0,7);ctx.fill();drawText('A',Ax+8,Ay-8,'#f87171',12);
+  ctx.beginPath();ctx.arc(Bx,By,5,0,7);ctx.fill();drawText('B',Bx+8,By-8,'#f87171',12);
+  ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(Mx,My,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('M(1,1)',Mx+12,My,'#34d399',12);
+  // 公式
+  drawText('k = −b²x₀/(a²y₀) = −4×1/(9×1) = −4/9 ≈ '+k.toFixed(3),W/2,H-55,'#fde68a',13);
+  drawText('点差法：A、B 代入椭圆方程后相减',W/2,H-30,'#9ab0d0',12);
+}
+
+// ============================================================
+// 场景5：弦长公式
+//   |AB| = √(1+k²) · |x₁−x₂|
+//        = √(1+k²) · √[(x₁+x₂)² − 4x₁x₂]
+// 借助韦达定理，无需显式求端点
+// ============================================================
+// ===== 场景5：弦长公式 =====
+function drawChordLenScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('弦长公式 |AB| = √(1+k²)·|x₁−x₂|',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  drawAxes(cx,cy,1);
+  // 椭圆
+  const a=140,b=90;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();ctx.ellipse(cx,cy,a,b,0,0,7);ctx.stroke();ctx.shadowBlur=0;
+  // 直线 y = kx + m，动画改变 m
+  const k=0.5;
+  const m=20+Math.sin(time*0.6)*30;
+  // 与椭圆交点（数值）
+  // b²x² + a²(kx+m)² = a²b²
+  // (b²+a²k²)x² + 2a²kmx + a²(m²-b²) = 0
+  const A_=b*b+a*a*k*k, B_=2*a*a*k*m/40, C_=a*a*(m*m-b*b)/(40*40);
+  // 注意单位换算：实际坐标除以 40，统一用像素坐标算更直观
+  // 这里直接用像素：椭圆参数 a=140 像素，b=90 像素，直线 y_px = cy - (k*x_real*40 + m*40)，
+  // 为简化，我们设直线斜率（像素）ks=0.5/1，截距 ms 用 m
+  const ks=0.4, ms=m;
+  // 与椭圆 (x/140)² + (y/90)² = 1 联立
+  // (1/140² + ks²/90²) x² + 2*ks*ms/90² x + (ms²/90² - 1) = 0
+  const P1=1/(a*a)+ks*ks/(b*b);
+  const P2=2*ks*ms/(b*b);
+  const P3=ms*ms/(b*b)-1;
+  const disc=P2*P2-4*P1*P3;
+  let Ax,Bx,Ay,By;
+  if(disc>=0){
+    const sd=Math.sqrt(disc);
+    const x1=(-P2+sd)/(2*P1), x2=(-P2-sd)/(2*P1);
+    // x 是椭圆中心坐标偏移（像素）
+    Ax=cx+x1; Ay=cy-(ks*x1+ms);
+    Bx=cx+x2; By=cy-(ks*x2+ms);
+    // 画弦
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.moveTo(Ax,Ay);ctx.lineTo(Bx,By);ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle='#f87171';
+    ctx.beginPath();ctx.arc(Ax,Ay,5,0,7);ctx.fill();drawText('A',Ax+8,Ay,'#f87171',12);
+    ctx.beginPath();ctx.arc(Bx,By,5,0,7);ctx.fill();drawText('B',Bx+8,By,'#f87171',12);
+    // 弦长
+    const LAB=Math.sqrt((Ax-Bx)*(Ax-Bx)+(Ay-By)*(Ay-By))/40;
+    drawText('|AB| ≈ '+LAB.toFixed(2),cx,cy-10,'#34d399',14);
+  }
+  // 直线
+  ctx.strokeStyle='rgba(251,191,36,.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-200,cy-(ks*-200+ms));ctx.lineTo(cx+200,cy-(ks*200+ms));ctx.stroke();
+  // 公式
+  drawText('|AB| = √(1+k²)·√[(x₁+x₂)²−4x₁x₂]',W/2,H-55,'#fde68a',13);
+  drawText('用韦达定理避免求端点',W/2,H-30,'#9ab0d0',12);
+}
+
+// ============================================================
+// 场景6：焦点弦性质
+// 过椭圆焦点的弦长：|AB| = 2a / (1 − e²·cos²θ)
+// 通径（θ=90°）最短 = 2b²/a ；长轴弦（θ=0°）最长 = 2a
+// ============================================================
+// ===== 场景6：焦点弦 =====
+function drawFocalScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('焦点弦 |AB| = 2a/(1−e²cos²θ)',W/2,30,'#fbbf24',16);
+  const cx=W/2-40,cy=H/2+10;
+  drawAxes(cx,cy,1);
+  const a=150,b=100;
+  const c=Math.sqrt(a*a-b*b);
+  const e=c/a;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();ctx.ellipse(cx,cy,a,b,0,0,7);ctx.stroke();ctx.shadowBlur=0;
+  // 焦点 F
+  const Fx=cx+c,Fy=cy;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(Fx,Fy,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('F',Fx+10,Fy,'#fbbf24',13);
+  // 焦点弦角度变化
+  const theta=time*0.5;
+  // 弦端点：在椭圆 (a*cosα, b*sinα) 上且过 F
+  // 用极坐标：r = a(1-e²)/(1+e cosθ)，从 F 出发
+  const r1=a*(1-e*e)/(1+e*Math.cos(theta));
+  const r2=a*(1-e*e)/(1-e*Math.cos(theta));
+  // 两个端点：F 向 θ 和 θ+π 方向
+  const Ax=Fx+r1*Math.cos(theta), Ay=Fy-r1*Math.sin(theta);
+  const Bx=Fx-r2*Math.cos(theta), By=Fy+r2*Math.sin(theta);
+  // 弦
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(Ax,Ay);ctx.lineTo(Bx,By);ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(Ax,Ay,5,0,7);ctx.fill();drawText('A',Ax+8,Ay,'#34d399',12);
+  ctx.beginPath();ctx.arc(Bx,By,5,0,7);ctx.fill();drawText('B',Bx+8,By,'#34d399',12);
+  // 通径标注
+  ctx.strokeStyle='rgba(251,191,36,.4)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(Fx,Fy-b*b/a);ctx.lineTo(Fx,Fy+b*b/a);ctx.stroke();ctx.setLineDash([]);
+  drawText('通径',Fx+8,Fy-b*b/a-8,'#9ab0d0',10);
+  // 弦长（公式）
+  const LAB=2*a/(1-e*e*Math.cos(theta)*Math.cos(theta))/40;
+  drawText('θ='+(theta*180/Math.PI%180).toFixed(0)+'°, |AB|≈'+LAB.toFixed(2),W/2,H-65,'#fde68a',13);
+  drawText('θ=90°（通径）最短 2b²/a='+(2*b*b/a/40).toFixed(2),W/2,H-40,'#34d399',12);
+  drawText('θ=0°（长轴）最长 2a='+(2*a/40).toFixed(2),W/2,H-20,'#f87171',12);
+}
+
+// ============================================================
+// 场景7：椭圆上点到焦点距离最值
+// |PF₁| 最大 = a + c（P 在长轴远端）
+// |PF₁| 最小 = a − c（P 在长轴近端）
+// 关系：|PF₁| + |PF₂| = 2a（椭圆第一定义）
+// ============================================================
+// ===== 场景7：最值问题 =====
+function drawExtremaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('椭圆上点到焦点距离最值',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  drawAxes(cx,cy,1);
+  const a=160,b=100;
+  const c=Math.sqrt(a*a-b*b);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();ctx.ellipse(cx,cy,a,b,0,0,7);ctx.stroke();ctx.shadowBlur=0;
+  // 焦点 F1, F2
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(cx+c,cy,5,0,7);ctx.fill();drawText('F₁',cx+c,cy+18,'#fbbf24',12);
+  ctx.beginPath();ctx.arc(cx-c,cy,5,0,7);ctx.fill();drawText('F₂',cx-c,cy+18,'#fbbf24',12);
+  // 动点 P
+  const ang=time*0.6;
+  const Px=cx+a*Math.cos(ang), Py=cy-b*Math.sin(ang);
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(Px,Py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('P',Px+10,Py-10,'#f87171',13);
+  // 连线 P-F1
+  ctx.strokeStyle='rgba(248,113,113,.6)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(Px,Py);ctx.lineTo(cx+c,cy);ctx.stroke();
+  const PF1=Math.sqrt((Px-cx-c)*(Px-cx-c)+(Py-cy)*(Py-cy))/40;
+  drawText('|PF₁|='+PF1.toFixed(2),(Px+cx+c)/2,(Py+cy)/2-10,'#f87171',11);
+  // 长轴端点（最大最小处）
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(cx+a,cy,5,0,7);ctx.fill();drawText('远端 (a,0)',cx+a,cy-15,'#34d399',11);
+  ctx.beginPath();ctx.arc(cx-a,cy,5,0,7);ctx.fill();drawText('近端 (-a,0)',cx-a,cy-15,'#34d399',11);
+  // 结论
+  drawText('|PF₁|最大 = a+c = '+((a+c)/40).toFixed(2)+'（P 在远端）',W/2,H-70,'#f87171',13);
+  drawText('|PF₁|最小 = a−c = '+((a-c)/40).toFixed(2)+'（P 在近端）',W/2,H-45,'#34d399',13);
+  drawText('c² = a² − b²',W/2,H-22,'#9ab0d0',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawUnifiedScene(t);
+  else if(stepIdx===1)drawDirectScene(t);
+  else if(stepIdx===2)drawDefinitionScene(t);
+  else if(stepIdx===3)drawChordScene(t);
+  else if(stepIdx===4)drawChordLenScene(t);
+  else if(stepIdx===5)drawFocalScene(t);
+  else if(stepIdx===6)drawExtremaScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+eccEl.oninput=()=>{draw();};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
