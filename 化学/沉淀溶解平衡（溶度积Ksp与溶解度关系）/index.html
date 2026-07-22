@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>沉淀溶解平衡 · Ksp · 溶度积规则 · 三大应用</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">沉淀溶解平衡</span><span class="subtitle">溶度积 Ksp · 溶度积规则 · 三大应用</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>溶解平衡建立</h4><div class="v">AgCl(s) ⇌ Ag⁺(aq)+Cl⁻(aq)<br>溶解速率=沉淀速率</div></div>
+  <div class="card s2"><div class="num">2</div><h4>Ksp 常数</h4><div class="v">Ksp = c(Ag⁺)·c(Cl⁻)<br>只随温度变化</div></div>
+  <div class="card s3"><div class="num">3</div><h4>溶度积规则</h4><div class="v">Qc vs Ksp<br>不饱和/平衡/过饱和</div></div>
+  <div class="card s4"><div class="num">4</div><h4>三大应用</h4><div class="v">生成·溶解·转化<br>同离子效应 AgCl→AgI→Ag₂S</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">沉淀溶解平衡</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'平衡建立',body:'<strong>沉淀溶解平衡</strong>：难溶电解质 AgCl 固体投入水中后，少量 <code>Ag⁺</code> 和 <code>Cl⁻</code> 进入溶液，同时溶液中离子又会回到固体表面。当<strong>溶解速率 = 沉淀速率</strong>时达到动态平衡：<code>AgCl(s) ⇌ Ag⁺(aq) + Cl⁻(aq)</code>',points:{title:'建立过程',items:['<strong>开始</strong>：v(溶解) > v(沉淀)','<strong>进行</strong>：v(沉淀) 逐渐增大','<strong>平衡</strong>：v(溶解) = v(沉淀)','<strong>本质</strong>：动态平衡，离子仍在交换']}},
+  {tag:'基础',name:'Ksp 定义',body:'<strong>溶度积常数 Ksp</strong>：一定温度下，难溶电解质的饱和溶液中，各离子浓度幂的乘积为常数。<code>Ksp = c(Ag⁺)·c(Cl⁻)</code>。Ksp <strong>只随温度变化</strong>，与浓度无关，反映物质溶解能力。',points:{title:'Ksp 关键',items:['<strong>表达式</strong>：Ksp = c(Ag⁺)·c(Cl⁻)','<strong>单位</strong>：mol²/L²（常省略）','<strong>Ksp(AgCl,25℃)</strong> ≈ 1.8×10⁻¹⁰','<strong>只随温度</strong>：浓度改变 Ksp 不变']}},
+  {tag:'规则',name:'溶度积规则',body:'<strong>离子积 Qc</strong>：任意时刻 <code>Qc = c(Ag⁺)·c(Cl⁻)</code>。将 Qc 与 Ksp 比较：<strong>Qc &lt; Ksp</strong> 不饱和（无沉淀）；<strong>Qc = Ksp</strong> 平衡；<strong>Qc &gt; Ksp</strong> 过饱和（生成沉淀）。',points:{title:'Qc vs Ksp',items:['<strong>Qc < Ksp</strong>：不饱和，继续溶解','<strong>Qc = Ksp</strong>：恰好饱和，平衡','<strong>Qc > Ksp</strong>：过饱和，析出沉淀','<strong>判断方向</strong>：预测沉淀生成/溶解']}},
+  {tag:'应用',name:'沉淀生成',body:'<strong>沉淀的生成</strong>：加入<strong>沉淀剂</strong>使 Qc &gt; Ksp 析出沉淀。例如在 AgNO₃ 溶液中加 NaCl，<code>Ag⁺ + Cl⁻ → AgCl↓</code>。<strong>同离子效应</strong>：向 AgCl 饱和溶液中再加 NaCl，c(Cl⁻) 增大使 Qc &gt; Ksp，析出更多 AgCl。',points:{title:'生成要点',items:['<strong>沉淀剂</strong>：Cl⁻、SO₄²⁻、S²⁻ 等','<strong>同离子效应</strong>：c(Cl⁻)↑ → AgCl 沉淀','<strong>除杂</strong>：使杂质离子沉淀完全','<strong>c &lt; 10⁻⁵ mol/L</strong>：认为沉淀完全']}},
+  {tag:'应用',name:'沉淀溶解',body:'<strong>沉淀的溶解</strong>：减小溶液中离子浓度，使 Qc &lt; Ksp，沉淀溶解。三种方法：<strong>(1) 加酸</strong>：CaCO₃ 加酸放出 CO₂ 消耗 CO₃²⁻；<strong>(2) 加络合剂</strong>：AgCl 加氨水生成 [Ag(NH₃)₂]⁺；<strong>(3) 氧化还原</strong>：CuS 用硝酸氧化 S²⁻。',points:{title:'三种方法',items:['<strong>加酸</strong>：CaCO₃ + 2H⁺ → Ca²⁺ + CO₂↑ + H₂O','<strong>络合</strong>：AgCl + 2NH₃ → [Ag(NH₃)₂]⁺ + Cl⁻','<strong>氧化还原</strong>：3CuS + 8HNO₃ → 3Cu²⁺+3S+2NO↑+4H₂O','<strong>本质</strong>：降低目标离子浓度']}},
+  {tag:'应用',name:'沉淀转化',body:'<strong>沉淀的转化</strong>：由溶解度小的沉淀转化为溶解度更小的沉淀。<code>AgCl → AgI → Ag₂S</code>。Ksp(AgCl)=1.8×10⁻¹⁰，Ksp(AgI)=8.5×10⁻¹⁷，Ksp(Ag₂S)=6.3×10⁻⁵⁰，越来越难溶，转化可自发进行。',points:{title:'转化规律',items:['<strong>AgCl + I⁻</strong> → AgI + Cl⁻','<strong>AgI + S²⁻</strong> → Ag₂S + I⁻','<strong>方向</strong>：Ksp 大 → Ksp 小','<strong>应用</strong>：锅炉除垢、硬水软化']}},
+  {tag:'关系',name:'Ksp 与溶解度',body:'<strong>Ksp 与溶解度 S 的关系</strong>：<strong>同类型</strong>（如 AB 型 AgCl vs AgBr）可直接比较 Ksp，Ksp 越大溶解度越大；<strong>不同类型</strong>（AB 型 vs A₂B 型）<strong>必须通过计算</strong>比较。<code>AgCl：S=√Ksp</code>，<code>Ag₂CrO₄：S=∛(Ksp/4)</code>',points:{title:'换算公式',items:['<strong>AB 型</strong>：S = √Ksp','<strong>AB₂ / A₂B 型</strong>：S = ∛(Ksp/4)','<strong>同类型</strong>：直接比 Ksp','<strong>不同类型</strong>：必须算 S 再比']}},
+  {tag:'总结',name:'核心速记',body:'<strong>沉淀溶解平衡</strong>是难溶电解质的<strong>动态平衡</strong>。Ksp 是常数只随温度变，Qc 与 Ksp 的比较判断沉淀方向。三大应用：生成（沉淀剂/同离子效应）、溶解（酸/络合/氧化还原）、转化（Ksp 大→小）。',points:{title:'三句话总结',items:['<strong>核心</strong>：AgCl(s) ⇌ Ag⁺ + Cl⁻','<strong>规则</strong>：Qc vs Ksp 定方向','<strong>应用</strong>：生成·溶解·转化','<strong>Ksp 比溶解度</strong>：同类型直接比，异类型算 S']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// 粒子系统：溶液中的 Ag⁺ / Cl⁻ 离子
+const ions=[];
+function initIons(){
+  ions.length=0;
+  for(let i=0;i<24;i++){
+    ions.push({x:120+Math.random()*600,y:200+Math.random()*260,vx:(Math.random()-0.5)*30,vy:(Math.random()-0.5)*30,type:Math.random()<0.5?'+':'-'});
+  }
+}
+initIons();
+
+// ===== 场景1：溶解平衡建立 =====
+function drawEquilibriumScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('AgCl 沉淀溶解平衡的建立',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 烧杯
+  ctx.fillStyle='rgba(6,182,212,0.06)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  roundRect(cx-220,cy-80,440,220,4);ctx.fill();ctx.stroke();
+  drawText('烧杯（含 AgCl 饱和溶液）',cx,cy+155,'#67e8f9',12);
+  // 底部 AgCl 沉淀（堆叠小方块）
+  ctx.fillStyle='#e8eef8';
+  for(let i=0;i<10;i++){
+    const px=cx-200+i*42+(i%2)*10;
+    const py=cy+100+Math.sin(i)*5;
+    ctx.fillStyle='#e8eef8';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;
+    roundRect(px,py,30,18,3);ctx.fill();ctx.stroke();
+  }
+  drawText('AgCl(s) 固体',cx,cy+85,'#e8eef8',12);
+  // 溶解的离子（动画上下浮动）
+  for(let i=0;i<ions.length;i++){
+    const ion=ions[i];
+    ion.x+=ion.vx*0.016;ion.y+=ion.vy*0.016;
+    if(ion.x<cx-200)ion.x=cx-200;if(ion.x>cx+200)ion.x=cx+200;
+    if(ion.y<cy-60)ion.y=cy-60;if(ion.y>cy+90)ion.y=cy+90;
+    if(Math.random()<0.02){ion.vx=(Math.random()-0.5)*30;ion.vy=(Math.random()-0.5)*30;}
+    const c=ion.type==='+'?'#fbbf24':'#06b6d4';
+    ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(ion.x+Math.sin(time+i)*3,ion.y,7,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText(ion.type,ion.x+Math.sin(time+i)*3,ion.y,'#1a1a1a',10);
+  }
+  // 速率箭头：固体→溶液（溶解）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-150,cy+90);ctx.lineTo(cx-150,cy-30);ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(cx-150,cy-40);ctx.lineTo(cx-156,cy-25);ctx.lineTo(cx-144,cy-25);ctx.fill();
+  drawText('v(溶解)',cx-175,cy,'#34d399',12);
+  // 速率箭头：溶液→固体（沉淀）
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx+150,cy-30);ctx.lineTo(cx+150,cy+90);ctx.stroke();
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.moveTo(cx+150,cy+100);ctx.lineTo(cx+144,cy+85);ctx.lineTo(cx+156,cy+85);ctx.fill();
+  drawText('v(沉淀)',cx+175,cy,'#f87171',12);
+  // 平衡标注
+  drawText('平衡时：v(溶解) = v(沉淀)，动态平衡',W/2,H-55,'#34d399',13);
+  drawText('AgCl(s) ⇌ Ag⁺(aq) + Cl⁻(aq)',W/2,H-30,'#fbbf24',14);
+}
+
+// ===== 场景2：Ksp 公式 =====
+function drawKspScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('溶度积常数 Ksp 定义',W/2,30,'#fbbf24',16);
+  // 大公式
+  ctx.font='bold 26px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Ksp = c(Ag⁺) · c(Cl⁻)',W/2,80);
+  // 三块说明卡
+  const blocks=[
+    {t:'温度',d:'只随温度变化',v:'25℃',c:'#fbbf24'},
+    {t:'数值',d:'Ksp(AgCl)',v:'1.8×10⁻¹⁰',c:'#06b6d4'},
+    {t:'意义',d:'反映溶解能力',v:'越小越难溶',c:'#34d399'},
+  ];
+  blocks.forEach((b,i)=>{
+    const x=80+i*(W-160)/3;
+    const w=(W-160)/3-20;
+    ctx.fillStyle=b.c+'22';ctx.strokeStyle=b.c;ctx.lineWidth=2;
+    roundRect(x,130,w,90,8);ctx.fill();ctx.stroke();
+    drawText(b.t,x+w/2,155,b.c,14);
+    drawText(b.d,x+w/2,180,'#fff',12);
+    drawText(b.v,x+w/2,205,b.c,13);
+  });
+  // 离子方块示意
+  const cx=W/2,cy=H/2+90;
+  ctx.fillStyle='#fbbf2422';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(cx-160,cy,80,40,6);ctx.fill();ctx.stroke();
+  drawText('c(Ag⁺)',cx-120,cy+20,'#fbbf24',13);
+  drawText('×',cx-50,cy+20,'#fff',18);
+  ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';
+  roundRect(cx-30,cy,80,40,6);ctx.fill();ctx.stroke();
+  drawText('c(Cl⁻)',cx+10,cy+20,'#06b6d4',13);
+  drawText('=',cx+70,cy+20,'#fff',18);
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';
+  roundRect(cx+90,cy,80,40,6);ctx.fill();ctx.stroke();
+  drawText('Ksp',cx+130,cy+20,'#34d399',14);
+  // 提示
+  drawText('温度不变时，加 Ag⁺ 或 Cl⁻，离子积改变但 Ksp 不变',W/2,H-40,'#9ab0d0',12);
+  drawText('Ksp 是平衡常数，反映难溶物的本征溶解能力',W/2,H-20,'#34d399',12);
+}
+
+// ===== 场景3：溶度积规则 Qc =====
+function drawRuleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('溶度积规则 · Qc vs Ksp',W/2,30,'#fbbf24',16);
+  // 数轴
+  const cy=H/2-10,axisL=120,axisR=W-120;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(axisL,cy);ctx.lineTo(axisR,cy);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#9ab0d0';
+  ctx.beginPath();ctx.moveTo(axisR,cy);ctx.lineTo(axisR-12,cy-6);ctx.lineTo(axisR-12,cy+6);ctx.fill();
+  drawText('Qc 增大 →',axisR+10,cy,'#9ab0d0',11);
+  // Ksp 标记点
+  const kspX=(axisL+axisR)/2;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(kspX,cy-25);ctx.lineTo(kspX,cy+25);ctx.stroke();
+  drawText('Ksp',kspX,cy-40,'#fbbf24',15);
+  // 三个区域
+  ctx.fillStyle='rgba(52,211,153,0.18)';
+  ctx.fillRect(axisL,cy-10,kspX-axisL,20);
+  ctx.fillStyle='rgba(251,191,36,0.18)';
+  ctx.fillRect(kspX-3,cy-10,6,20);
+  ctx.fillStyle='rgba(248,113,113,0.18)';
+  ctx.fillRect(kspX,cy-10,axisR-kspX,20);
+  // 三个 Qc 点（动态）
+  const phase=Math.floor(time/2)%3;
+  const qVal=[kspX-180,kspX,kspX+180][phase];
+  const qLabel=['Qc<Ksp','Qc=Ksp','Qc>Ksp'][phase];
+  const qColor=['#34d399','#fbbf24','#f87171'][phase];
+  ctx.fillStyle=qColor;ctx.shadowColor=qColor;ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(qVal,cy,10,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText(qLabel,qVal,cy-65,qColor,14);
+  // 三个说明框
+  const boxes=[
+    {x:axisL+30,t:'Qc < Ksp',d:'不饱和溶液\n继续溶解',c:'#34d399'},
+    {x:kspX,t:'Qc = Ksp',d:'恰好饱和\n处于平衡',c:'#fbbf24'},
+    {x:axisR-30,t:'Qc > Ksp',d:'过饱和\n析出沉淀',c:'#f87171'},
+  ];
+  boxes.forEach(b=>{
+    ctx.fillStyle=b.c+'22';ctx.strokeStyle=b.c;ctx.lineWidth=2;
+    roundRect(b.x-65,cy+70,130,70,8);ctx.fill();ctx.stroke();
+    drawText(b.t,b.x,cy+95,b.c,14);
+    drawText(b.d.split('\n')[0],b.x,cy+115,'#fff',11);
+    drawText(b.d.split('\n')[1],b.x,cy+130,'#9ab0d0',11);
+  });
+  drawText('判断口诀：小溶大沉等平衡',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景4：沉淀生成（同离子效应）=====
+function drawPrecipitateScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('沉淀生成 · 同离子效应（加 NaCl）',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 烧杯
+  ctx.fillStyle='rgba(6,182,212,0.06)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  roundRect(cx-200,cy-80,400,200,4);ctx.fill();ctx.stroke();
+  // 滴管
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(cx-15,cy-130,30,40,4);ctx.fill();ctx.stroke();
+  drawText('NaCl',cx,cy-145,'#fbbf24',12);
+  // 滴下的液滴
+  const dropY=cy-80+((time*80)%70);
+  ctx.fillStyle='rgba(6,182,212,0.8)';
+  ctx.beginPath();ctx.arc(cx,dropY,5,0,7);ctx.fill();
+  // 沉淀量随时间增加
+  const precip=Math.min(1,time*0.3);
+  const precipCount=Math.floor(8+precip*16);
+  ctx.fillStyle='#e8eef8';
+  for(let i=0;i<precipCount;i++){
+    const px=cx-180+(i*42)%360+Math.sin(i)*8;
+    const py=cy+80+Math.floor(i/9)*12;
+    ctx.fillStyle='#e8eef8';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;
+    roundRect(px,py,28,14,3);ctx.fill();ctx.stroke();
+  }
+  // 溶液中的离子
+  for(let i=0;i<ions.length;i++){
+    const ion=ions[i];
+    ion.x+=ion.vx*0.016;ion.y+=ion.vy*0.016;
+    if(ion.x<cx-180)ion.x=cx-180;if(ion.x>cx+180)ion.x=cx+180;
+    if(ion.y<cy-60)ion.y=cy-60;if(ion.y>cy+70)ion.y=cy+70;
+    if(Math.random()<0.02){ion.vx=(Math.random()-0.5)*30;ion.vy=(Math.random()-0.5)*30;}
+    const c=ion.type==='+'?'#fbbf24':'#06b6d4';
+    ctx.fillStyle=c;ctx.globalAlpha=0.6;
+    ctx.beginPath();ctx.arc(ion.x,ion.y,5,0,7);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+  // 反应方程
+  drawText('Ag⁺ + Cl⁻ → AgCl↓',cx,cy-50,'#fbbf24',13);
+  drawText('加 NaCl → c(Cl⁻)↑ → Qc > Ksp → 析出 AgCl 沉淀',W/2,H-50,'#f87171',13);
+  drawText('同离子效应：加入相同离子使沉淀更完全',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景5：沉淀溶解 =====
+function drawDissolveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('沉淀溶解 · 三种降低离子浓度的方法',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 三种方法卡
+  const methods=[
+    {t:'① 加酸',eq:'CaCO₃ + 2H⁺ → Ca²⁺ + CO₂↑ + H₂O',c:'#fbbf24',desc:'消耗 CO₃²⁻'},
+    {t:'② 络合剂',eq:'AgCl + 2NH₃ → [Ag(NH₃)₂]⁺ + Cl⁻',c:'#06b6d4',desc:'结合 Ag⁺'},
+    {t:'③ 氧化还原',eq:'3CuS + 8HNO₃ → 3Cu²⁺ + 3S + 2NO↑ + 4H₂O',c:'#34d399',desc:'氧化 S²⁻'},
+  ];
+  methods.forEach((m,i)=>{
+    const y=70+i*120;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(60,y,W-120,100,8);ctx.fill();ctx.stroke();
+    drawText(m.t,90,y+25,m.c,16,'left');
+    drawText(m.desc,W-100,y+25,m.c,12,'right');
+    // 方程式
+    ctx.font='bold 13px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText(m.eq,W/2,y+55);
+    ctx.font='12px sans-serif';
+    // 沉淀溶解动画：小方块逐渐消失
+    const dissolveT=(time+i*1.5)%4;
+    for(let k=0;k<5;k++){
+      const alpha=dissolveT<k?Math.max(0,1-(dissolveT-k)*0.3):1;
+      ctx.fillStyle='rgba(232,238,248,'+alpha+')';
+      ctx.strokeStyle='rgba(154,176,208,'+alpha+')';
+      const sx=120+k*40,sy=y+75;
+      roundRect(sx,sy,28,12,2);ctx.fill();ctx.stroke();
+    }
+    drawText('↓ 沉淀溶解',W-130,y+82,m.c,11,'right');
+  });
+  drawText('本质：降低目标离子浓度，使 Qc < Ksp，沉淀溶解',W/2,H-30,'#34d399',13);
+}
+
+// ===== 场景6：沉淀转化 =====
+function drawConvertScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('沉淀转化 · AgCl → AgI → Ag₂S',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 三个烧杯，依次转化
+  const stages=[
+    {t:'AgCl',ksp:'1.8×10⁻¹⁰',c:'#67e8f9',x:cx-260},
+    {t:'AgI',ksp:'8.5×10⁻¹⁷',c:'#a78bfa',x:cx},
+    {t:'Ag₂S',ksp:'6.3×10⁻⁵⁰',c:'#f87171',x:cx+260},
+  ];
+  stages.forEach((s,i)=>{
+    // 烧杯
+    ctx.fillStyle='rgba(6,182,212,0.06)';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    roundRect(s.x-60,cy-50,120,120,4);ctx.fill();ctx.stroke();
+    // 沉淀
+    ctx.fillStyle=s.c+'aa';ctx.strokeStyle=s.c;
+    for(let k=0;k<6;k++){
+      const px=s.x-50+(k*22)%100;
+      const py=cy+40+Math.floor(k/5)*8;
+      roundRect(px,py,20,10,2);ctx.fill();ctx.stroke();
+    }
+    // 标签
+    drawText(s.t,s.x,cy-65,s.c,16);
+    drawText('Ksp='+s.ksp,s.x,cy+85,s.c,11);
+  });
+  // 转化箭头（带动画）
+  const arrowProgress=(time*0.5)%1;
+  [0,1].forEach(i=>{
+    const sx=stages[i].x+65,ex=stages[i+1].x-65;
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(sx,cy);ctx.lineTo(ex,cy);ctx.stroke();
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.moveTo(ex,cy);ctx.lineTo(ex-10,cy-5);ctx.lineTo(ex-10,cy+5);ctx.fill();
+    // 流动的颗粒
+    const fx=sx+(ex-sx)*((arrowProgress+i*0.3)%1);
+    ctx.fillStyle=stages[i+1].c;ctx.shadowColor=stages[i+1].c;ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(fx,cy,5,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('加 '+(i===0?'NaI':'Na₂S'),(sx+ex)/2,cy-15,'#fbbf24',11);
+  });
+  drawText('规律：Ksp 大 → Ksp 小，转化自发',W/2,H-55,'#34d399',13);
+  drawText('难溶 → 更难溶 → 最难溶',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景7：Ksp 与溶解度换算 =====
+function drawRelationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('Ksp 与溶解度 S 的换算关系',W/2,30,'#fbbf24',16);
+  // 两类公式
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(60,70,(W-180)/2,140,10);ctx.fill();ctx.stroke();
+  drawText('AB 型（如 AgCl）',(W-180)/4+60,100,'#fbbf24',14);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('S = √Ksp',(W-180)/4+60,140);
+  ctx.font='12px sans-serif';
+  drawText('Ag⁺=Cl⁻=S',(W-180)/4+60,170,'#9ab0d0',12);
+  drawText('Ksp = S²',(W-180)/4+60,190,'#06b6d4',12);
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(W/2+30,70,(W-180)/2,140,10);ctx.fill();ctx.stroke();
+  drawText('A₂B 型（如 Ag₂CrO₄）',W/2+30+(W-180)/4,100,'#06b6d4',14);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('S = ∛(Ksp/4)',W/2+30+(W-180)/4,140);
+  ctx.font='12px sans-serif';
+  drawText('Ag⁺=2S, CrO₄²⁻=S',W/2+30+(W-180)/4,170,'#9ab0d0',12);
+  drawText('Ksp = (2S)²·S = 4S³',W/2+30+(W-180)/4,190,'#fbbf24',12);
+  // 比较规则
+  const rules=[
+    {t:'同类型比较',d:'AB vs AB → 直接比 Ksp',c:'#34d399',icon:'='},
+    {t:'不同类型比较',d:'AB vs A₂B → 必须算 S 再比',c:'#f87171',icon:'≠'},
+  ];
+  rules.forEach((r,i)=>{
+    const y=240+i*70;
+    ctx.fillStyle=r.c+'22';ctx.strokeStyle=r.c;ctx.lineWidth=2;
+    roundRect(100,y,W-200,55,8);ctx.fill();ctx.stroke();
+    drawText(r.icon,130,y+28,r.c,22);
+    drawText(r.t,180,y+22,r.c,14,'left');
+    drawText(r.d,180,y+42,'#fff',12,'left');
+  });
+  drawText('例：AgCl (Ksp=1.8e-10) vs Ag₂CrO₄ (Ksp=1.1e-12)',W/2,H-50,'#9ab0d0',12);
+  drawText('虽 Ag₂CrO₄ 的 Ksp 更小，但 S(Ag₂CrO₄) > S(AgCl)',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景8：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('沉淀溶解平衡 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'平衡方程',d:'AgCl(s) ⇌ Ag⁺ + Cl⁻',c:'#fbbf24'},
+    {t:'Ksp 常数',d:'只随温度变化',c:'#06b6d4'},
+    {t:'溶度积规则',d:'Qc vs Ksp 定方向',c:'#34d399'},
+    {t:'沉淀生成',d:'加沉淀剂/同离子效应',c:'#fb923c'},
+    {t:'沉淀溶解',d:'酸/络合/氧化还原',c:'#a78bfa'},
+    {t:'沉淀转化',d:'Ksp 大 → Ksp 小',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawEquilibriumScene(t);
+  else if(stepIdx===1)drawKspScene(t);
+  else if(stepIdx===2)drawRuleScene(t);
+  else if(stepIdx===3)drawPrecipitateScene(t);
+  else if(stepIdx===4)drawDissolveScene(t);
+  else if(stepIdx===5)drawConvertScene(t);
+  else if(stepIdx===6)drawRelationScene(t);
+  else if(stepIdx===7)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;t=0;initIons();syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

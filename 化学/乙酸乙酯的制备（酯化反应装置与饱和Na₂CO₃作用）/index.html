@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>乙酸乙酯的制备 · 酯化反应装置 · 饱和Na₂CO₃作用</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">乙酸乙酯的制备</span><span class="subtitle">酯化反应装置 · 浓硫酸双重作用 · 饱和Na₂CO₃三大作用</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>反应原理</h4><div class="v">CH₃COOH + CH₃CH₂OH<br>⇌ CH₃COOCH₂CH₃ + H₂O</div></div>
+  <div class="card s2"><div class="num">2</div><h4>浓硫酸双重作用</h4><div class="v">催化剂：加快反应速率<br>吸水剂：促平衡正向移动</div></div>
+  <div class="card s3"><div class="num">3</div><h4>装置要点</h4><div class="v">试管倾斜、碎瓷片防暴沸<br>长导管兼冷凝和导气</div></div>
+  <div class="card s4"><div class="num">4</div><h4>Na₂CO₃三大作用</h4><div class="v">中和乙酸、溶解乙醇<br>降低酯溶解度便于分层</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">原理</span><span id="stepTitle">反应原理</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'原理',name:'反应原理',body:'<strong>酯化反应</strong>：乙酸与乙醇在<strong>浓硫酸催化、加热</strong>条件下生成<strong>乙酸乙酯和水</strong>。属于<strong>可逆反应</strong>（ ⇌ ），正反应与逆反应同时进行。',points:{title:'核心要点',items:['<strong>反应物</strong>：CH₃COOH + CH₃CH₂OH','<strong>条件</strong>：浓H₂SO₄催化、Δ加热','<strong>产物</strong>：CH₃COOCH₂CH₃ + H₂O','<strong>可逆反应</strong>：生成物又能反应生成反应物']}},
+  {tag:'原理',name:'反应方程式',body:'<strong>化学方程式</strong>：<code>CH₃COOH + CH₃CH₂OH ⇌(浓H₂SO₄,Δ) CH₃COOCH₂CH₃ + H₂O</code>。浓硫酸写在箭头上方，加热符号 Δ 也标在箭头上方。',points:{title:'方程式细节',items:['<strong>条件</strong>：浓H₂SO₄、Δ','<strong>可逆符号</strong>：⇌','<strong>原子守恒</strong>：C 4 + 2 = 6','<strong>产物</strong>：酯 + 水（脱水产物）']}},
+  {tag:'原理',name:'酸脱羟基醇脱氢',body:'<strong>酯化反应机理</strong>：乙酸<strong>脱去羧基上的羟基（-OH）</strong>，乙醇<strong>脱去羟基上的氢（H）</strong>，二者结合生成水。即<strong>"酸脱羟基醇脱氢"</strong>。',points:{title:'键的断裂',items:['<strong>CH₃COOH</strong>：断 C-OH 键（脱 -OH）','<strong>CH₃CH₂OH</strong>：断 O-H 键（脱 H）','<strong>酯键</strong>：-COO- 形成新键','<strong>水来源</strong>：酸的-OH + 醇的-H']}},
+  {tag:'装置',name:'装置要点',body:'<strong>实验装置</strong>：试管<strong>略倾斜向下</strong>（便于液体流入接收管）；加入<strong>碎瓷片</strong>防止液体暴沸；<strong>酒精灯小火加热</strong>；<strong>长导管</strong>既冷凝酯蒸气又导气进入接收管。',points:{title:'装置核心',items:['<strong>试管倾斜</strong>：约 45° 向下','<strong>碎瓷片</strong>：防止暴沸','<strong>小火加热</strong>：避免剧烈沸腾','<strong>长导管</strong>：兼冷凝 + 导气双重作用']}},
+  {tag:'装置',name:'加热与冷凝',body:'<strong>加热</strong>：酒精灯小火加热试管中混合液（乙酸+乙醇+浓硫酸），液体沸腾生成乙酸乙酯蒸气。<strong>冷凝</strong>：蒸气经<strong>长导管</strong>（空气冷却）部分液化，进入接收试管。',points:{title:'相变过程',items:['<strong>液态混合物</strong>：加热沸腾','<strong>汽化</strong>：生成酯蒸气','<strong>冷凝</strong>：长导管空气冷却','<strong>液化</strong>：进入接收试管']}},
+  {tag:'分离',name:'饱和Na₂CO₃作用',body:'<strong>饱和Na₂CO₃溶液</strong>接收蒸出物，发挥<strong>三大作用</strong>：① <strong>中和乙酸</strong>（变成Na盐）；② <strong>溶解乙醇</strong>（与水互溶）；③ <strong>降低乙酸乙酯溶解度</strong>（盐析效应）便于分层。',points:{title:'三大作用',items:['<strong>① 中和乙酸</strong>：2CH₃COOH+Na₂CO₃→2CH₃COONa+H₂O+CO₂↑','<strong>② 溶解乙醇</strong>：乙醇与水互溶','<strong>③ 盐析</strong>：降低酯溶解度','<strong>结果</strong>：上层为酯，下层为水溶液']}},
+  {tag:'分离',name:'分液漏斗分离',body:'<strong>分液</strong>：静置后混合物<strong>分层</strong>，<strong>上层为乙酸乙酯</strong>（密度小于水），<strong>下层为水溶液</strong>（含Na₂CO₃、CH₃COONa、乙醇）。使用<strong>分液漏斗</strong>分离下层液体，保留上层酯。',points:{title:'分离要点',items:['<strong>静置分层</strong>：上层油状（酯）','<strong>密度</strong>：酯(0.9) < 水(1.0)','<strong>分液漏斗</strong>：下口放出下层','<strong>上层</strong>：保留乙酸乙酯产品']}},
+  {tag:'验证',name:'同位素示踪验证',body:'<strong>同位素示踪法</strong>：用 <strong>¹⁸O 标记乙醇的羟基氧</strong>（CH₃CH₂¹⁸OH），反应后<strong>¹⁸O 全部出现在酯中</strong>（CH₃CO¹⁸OCH₂CH₃），证明<strong>"酸脱羟基醇脱氢"</strong>机理正确，水中的氧来自乙酸。',points:{title:'同位素示踪',items:['<strong>标记物</strong>：CH₃CH₂¹⁸OH（用 ¹⁸O）','<strong>结果</strong>：¹⁸O 进入酯','<strong>水的氧</strong>：来自乙酸 -OH','<strong>结论</strong>：验证"酸脱-OH 醇脱-H"']}},
+  {tag:'总结',name:'实验总结',body:'<strong>乙酸乙酯制备</strong>核心：<strong>酯化反应</strong>是可逆反应，浓硫酸<strong>催化+吸水</strong>双作用，装置用<strong>长导管冷凝</strong>，<strong>饱和Na₂CO₃</strong>三作用（中和、溶解、盐析），分液得到上层酯。',points:{title:'核心速记',items:['<strong>反应</strong>：CH₃COOH + CH₃CH₂OH ⇌ 酯 + 水','<strong>双作用</strong>：浓H₂SO₄催化+吸水','<strong>装置</strong>：碎瓷片 + 长导管冷凝','<strong>分离</strong>：饱和Na₂CO₃ 三大作用 + 分液']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：反应原理（分子模型） =====
+function drawPrincipleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('酯化反应 · 分子重组',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 左侧乙酸
+  drawText('CH₃COOH',cx-180,cy-50,'#67e8f9',15);
+  drawText('(乙酸)',cx-180,cy-25,'#9ab0d0',11);
+  // 右侧乙醇
+  drawText('CH₃CH₂OH',cx+180,cy-50,'#a78bfa',15);
+  drawText('(乙醇)',cx+180,cy-25,'#9ab0d0',11);
+  // 中间加号与可逆箭头
+  drawText('+',cx,cy-50,'#fff',20);
+  // 可逆箭头
+  const pulse=Math.sin(time*2)*0.3+0.7;
+  ctx.strokeStyle='rgba(251,191,36,'+pulse+')';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-90,cy+20);ctx.lineTo(cx-15,cy+20);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-30,cy+15);ctx.lineTo(cx-15,cy+20);ctx.lineTo(cx-30,cy+25);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+15,cy+30);ctx.lineTo(cx+90,cy+30);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+75,cy+25);ctx.lineTo(cx+90,cy+30);ctx.lineTo(cx+75,cy+35);ctx.stroke();
+  drawText('浓H₂SO₄',cx,cy+5,'#fbbf24',12);
+  drawText('Δ',cx,cy+45,'#fbbf24',13);
+  // 产物
+  drawText('CH₃COOCH₂CH₃',cx-110,cy+95,'#34d399',14);
+  drawText('(乙酸乙酯)',cx-110,cy+118,'#9ab0d0',11);
+  drawText('+',cx,cy+95,'#fff',18);
+  drawText('H₂O',cx+110,cy+95,'#06b6d4',14);
+  drawText('(水)',cx+110,cy+118,'#9ab0d0',11);
+  // 高亮脱出的部分（动态闪烁）
+  const blink=Math.sin(time*4)>0;
+  if(blink){
+    drawText('← 酸脱-OH',cx-110,cy-75,'#f87171',11);
+    drawText('醇脱-H →',cx+110,cy-75,'#f87171',11);
+  }
+  drawText('可逆反应：正逆同时进行，加热促正向',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：浓硫酸双重作用 =====
+function drawSulfuricScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('浓硫酸 · 双重作用',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 中心浓硫酸
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(cx-80,cy-40,160,80,12);ctx.fill();ctx.stroke();
+  drawText('浓 H₂SO₄',cx,cy-10,'#fbbf24',16);
+  drawText('catalyst & absorbent',cx,cy+15,'#fde68a',11);
+  // 左侧：催化剂作用
+  const pulse1=0.4+0.4*Math.abs(Math.sin(time*1.5));
+  ctx.strokeStyle='rgba(52,211,153,'+pulse1+')';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-80,cy-15);ctx.lineTo(cx-220,cy-15);ctx.stroke();
+  ctx.fillStyle='rgba(52,211,153,'+pulse1+')';
+  ctx.beginPath();ctx.moveTo(cx-200,cy-22);ctx.lineTo(cx-185,cy-15);ctx.lineTo(cx-200,cy-8);ctx.fill();
+  drawText('① 催化剂',cx-280,cy-30,'#34d399',14);
+  drawText('加快反应速率',cx-280,cy-5,'#9ab0d0',11);
+  drawText('降低活化能',cx-280,cy+15,'#9ab0d0',11);
+  // 右侧：吸水剂作用
+  const pulse2=0.4+0.4*Math.abs(Math.sin(time*1.5+1));
+  ctx.strokeStyle='rgba(6,182,212,'+pulse2+')';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx+80,cy+15);ctx.lineTo(cx+220,cy+15);ctx.stroke();
+  ctx.fillStyle='rgba(6,182,212,'+pulse2+')';
+  ctx.beginPath();ctx.moveTo(cx+200,cy+8);ctx.lineTo(cx+215,cy+15);ctx.lineTo(cx+200,cy+22);ctx.fill();
+  drawText('② 吸水剂',cx+280,cy,'#06b6d4',14);
+  drawText('吸收生成水',cx+280,cy+25,'#9ab0d0',11);
+  drawText('促平衡正向移动',cx+280,cy+45,'#9ab0d0',11);
+  // 底部平衡
+  drawText('⇌ 平衡正向移动 → 更多酯生成',cx,H-50,'#34d399',13);
+  drawText('（勒夏特列原理：移除产物水）',cx,H-28,'#9ab0d0',11);
+}
+
+// ===== 场景：实验装置 =====
+function drawApparatusScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('实验装置 · 试管+长导管+接收试管',W/2,30,'#fbbf24',16);
+  const cx=W/2-100,cy=H/2+30;
+  // 反应试管（倾斜约 30°）
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(0.35);
+  // 试管壁
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  roundRect(-25,-130,50,180,18);ctx.fill();ctx.stroke();
+  // 试管底部圆头
+  ctx.beginPath();ctx.arc(0,50,25,0,Math.PI);ctx.fill();ctx.stroke();
+  // 液体（混合液：乙酸+乙醇+浓硫酸）
+  const wobble=Math.sin(time*3)*3;
+  ctx.fillStyle='rgba(167,139,250,0.55)';
+  ctx.beginPath();
+  ctx.moveTo(-23,-30+wobble);
+  ctx.lineTo(23,-30-wobble);
+  ctx.lineTo(23,45);
+  ctx.quadraticCurveTo(0,68,-23,45);
+  ctx.closePath();ctx.fill();
+  drawText('混合液',0,10,'#fff',11);
+  // 碎瓷片
+  ctx.fillStyle='#94a3b8';
+  for(let i=0;i<4;i++){
+    ctx.beginPath();ctx.arc(-12+i*8,40-Math.sin(time*2+i)*2,2.5,0,7);ctx.fill();
+  }
+  ctx.restore();
+  drawText('乙酸+乙醇',cx-50,cy-30,'#a78bfa',10);
+  drawText('+浓H₂SO₄',cx-50,cy-15,'#a78bfa',10);
+  drawText('碎瓷片',cx+40,cy+95,'#94a3b8',10);
+  // 气泡（沸腾）
+  for(let i=0;i<3;i++){
+    const bx=cx+Math.sin(time*2+i*2)*15-Math.sin(0.35)*40;
+    const by=cy-50-i*25+(time*40+i*15)%80;
+    ctx.fillStyle='rgba(255,255,255,0.5)';
+    ctx.beginPath();ctx.arc(bx,by,2.5,0,7);ctx.fill();
+  }
+  // 长导管（从试管口伸出，斜向下到接收试管）
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=4;
+  ctx.beginPath();
+  const sx=cx+Math.cos(0.35)*130;
+  const sy=cy-Math.sin(0.35)*130;
+  ctx.moveTo(sx,sy);
+  ctx.quadraticCurveTo(cx+100,cy-90,cx+200,cy-50);
+  ctx.stroke();
+  drawText('长导管（兼冷凝+导气）',cx+120,cy-110,'#67e8f9',11);
+  // 蒸气在导管中流动（动态点）
+  for(let i=0;i<5;i++){
+    const prog=((time*0.3+i*0.2)%1);
+    const px=sx+(cx+200-sx)*prog;
+    const py=sy+(cy-50-sy)*prog-Math.sin(prog*Math.PI)*40;
+    ctx.fillStyle='rgba(52,211,153,'+(1-prog*0.5)+')';
+    ctx.beginPath();ctx.arc(px,py,3,0,7);ctx.fill();
+  }
+  // 接收试管（垂直，含饱和Na₂CO₃）
+  const rx=cx+240,ry=cy-40;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(rx-30,ry,60,140,12);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(rx,ry+140,30,0,Math.PI);ctx.fill();ctx.stroke();
+  // Na₂CO₃ 溶液
+  ctx.fillStyle='rgba(52,211,153,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(rx-28,ry+30);
+  ctx.lineTo(rx+28,ry+30);
+  ctx.lineTo(rx+28,ry+135);
+  ctx.quadraticCurveTo(rx,ry+165,rx-28,ry+135);
+  ctx.closePath();ctx.fill();
+  drawText('饱和',rx,ry+70,'#fff',11);
+  drawText('Na₂CO₃',rx,ry+90,'#fff',11);
+  // 酒精灯
+  ctx.fillStyle='#fb923c';ctx.strokeStyle='#fb923c';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-25,cy+90);ctx.lineTo(cx-30,cy+115);ctx.lineTo(cx+30,cy+115);ctx.lineTo(cx+25,cy+90);ctx.closePath();ctx.fill();ctx.stroke();
+  // 火焰（动态）
+  const flameH=15+Math.abs(Math.sin(time*5))*8;
+  ctx.fillStyle='rgba(251,146,60,0.8)';
+  ctx.beginPath();ctx.moveTo(cx,cy+90);ctx.quadraticCurveTo(cx-12,cy+80,cx,cy+90-flameH);ctx.quadraticCurveTo(cx+12,cy+80,cx,cy+90);ctx.fill();
+  ctx.fillStyle='rgba(251,191,36,0.7)';
+  ctx.beginPath();ctx.moveTo(cx,cy+88);ctx.quadraticCurveTo(cx-6,cy+82,cx,cy+88-flameH*0.6);ctx.quadraticCurveTo(cx+6,cy+82,cx,cy+88);ctx.fill();
+  drawText('酒精灯小火加热',cx,cy+135,'#fb923c',11);
+}
+
+// ===== 场景：加热冷凝 =====
+function drawHeatCondenseScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('加热汽化 → 长导管冷凝 → 接收',W/2,30,'#fbbf24',16);
+  const cy=H/2;
+  // 阶段1：加热
+  drawText('① 加热',120,cy-110,'#fb923c',14);
+  ctx.fillStyle='rgba(167,139,250,0.3)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(70,cy-70,100,90,10);ctx.fill();ctx.stroke();
+  drawText('液态',120,cy-40,'#fff',12);
+  drawText('混合物',120,cy-22,'#fff',12);
+  // 气泡
+  for(let i=0;i<4;i++){
+    const by=cy-50+(time*30+i*15)%50;
+    ctx.fillStyle='rgba(255,255,255,0.6)';
+    ctx.beginPath();ctx.arc(100+(i%2)*40,by,3,0,7);ctx.fill();
+  }
+  // 阶段2：蒸气
+  drawText('② 蒸气',W/2,cy-110,'#34d399',14);
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W/2-70,cy-70,140,90,10);ctx.fill();ctx.stroke();
+  drawText('CH₃COOCH₂CH₃',W/2,cy-40,'#34d399',12);
+  drawText('(气态)',W/2,cy-22,'#9ab0d0',11);
+  // 流动的蒸气分子
+  for(let i=0;i<6;i++){
+    const px=W/2-50+i*20;
+    const py=cy-50+Math.sin(time*3+i)*15;
+    ctx.fillStyle='rgba(52,211,153,0.7)';
+    ctx.beginPath();ctx.arc(px,py,3,0,7);ctx.fill();
+  }
+  // 阶段3：冷凝
+  drawText('③ 冷凝液化',W-120,cy-110,'#06b6d4',14);
+  ctx.fillStyle='rgba(6,182,212,0.2)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(W-170,cy-70,100,90,10);ctx.fill();ctx.stroke();
+  drawText('液态酯',W-120,cy-40,'#fff',12);
+  // 液滴下落
+  const dropY=cy-20+(time*60)%40;
+  ctx.fillStyle='rgba(6,182,212,0.8)';
+  ctx.beginPath();ctx.arc(W-120,dropY,3,0,7);ctx.fill();
+  // 箭头连接
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(175,cy-25);ctx.lineTo(W/2-75,cy-25);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W/2-60,cy-30);ctx.lineTo(W/2-75,cy-25);ctx.lineTo(W/2-60,cy-20);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W/2+75,cy-25);ctx.lineTo(W-175,cy-25);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W/2+60,cy-30);ctx.lineTo(W/2+75,cy-25);ctx.lineTo(W/2+60,cy-20);ctx.stroke();
+  // 长导管示意（底部）
+  drawText('长导管（空气冷却）→ 蒸气部分液化',W/2,cy+60,'#67e8f9',13);
+  drawText('导管越长，冷凝效果越好',W/2,cy+85,'#9ab0d0',11);
+  drawText('提高产率的关键装置',W/2,cy+110,'#34d399',12);
+}
+
+// ===== 场景：饱和 Na₂CO₃ 三大作用 =====
+function drawNa2CO3Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('饱和 Na₂CO₃ 溶液 · 三大作用',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 中心：接收试管
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(cx-50,cy-90,100,180,12);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy+90,50,0,Math.PI);ctx.fill();ctx.stroke();
+  // 上层：乙酸乙酯（黄色油状）
+  ctx.fillStyle='rgba(251,191,36,0.55)';
+  ctx.fillRect(cx-48,cy-50+Math.sin(time*2)*1,96,30);
+  drawText('乙酸乙酯',cx,cy-35,'#fde68a',11);
+  // 分层线
+  ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(cx-48,cy-20);ctx.lineTo(cx+48,cy-20);ctx.stroke();
+  ctx.setLineDash([]);
+  // 下层：水溶液（绿色，含Na₂CO₃+CH₃COONa+乙醇）
+  ctx.fillStyle='rgba(52,211,153,0.35)';
+  ctx.beginPath();
+  ctx.moveTo(cx-48,cy-20);
+  ctx.lineTo(cx+48,cy-20);
+  ctx.lineTo(cx+48,cy+85);
+  ctx.quadraticCurveTo(cx,cy+135,cx-48,cy+85);
+  ctx.closePath();ctx.fill();
+  drawText('Na₂CO₃ 溶液',cx,cy+20,'#fff',11);
+  drawText('+CH₃COONa',cx,cy+40,'#fff',10);
+  drawText('+乙醇',cx,cy+58,'#fff',10);
+  // 三大作用标注
+  const labels=[
+    {x:cx-220,y:cy-70,t:'① 中和乙酸',d:'2CH₃COOH+Na₂CO₃',c:'#f87171'},
+    {x:cx-220,y:cy+30,t:'② 溶解乙醇',d:'乙醇与水互溶',c:'#06b6d4'},
+    {x:cx+220,y:cy-20,t:'③ 盐析分层',d:'降低酯溶解度',c:'#34d399'},
+  ];
+  labels.forEach(l=>{
+    ctx.fillStyle=l.c+'22';ctx.strokeStyle=l.c;ctx.lineWidth=1.5;
+    roundRect(l.x-90,l.y-22,180,44,8);ctx.fill();ctx.stroke();
+    drawText(l.t,l.x,l.y-6,l.c,12);
+    drawText(l.d,l.x,l.y+12,'#fff',10);
+    // 连接线
+    ctx.strokeStyle=l.c;ctx.lineWidth=1;ctx.setLineDash([2,2]);
+    ctx.beginPath();
+    if(l.x<cx)ctx.moveTo(l.x+90,l.y);else ctx.moveTo(l.x-90,l.y);
+    ctx.lineTo(l.x<cx?cx-50:cx+50,l.y);
+    ctx.stroke();ctx.setLineDash([]);
+  });
+  drawText('↑ 上层：乙酸乙酯（产品）',cx,H-60,'#fde68a',12);
+  drawText('↓ 下层：水溶液（弃去）',cx,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：分液漏斗分离 =====
+function drawSeparationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('分液漏斗 · 分离乙酸乙酯',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 分液漏斗（梨形）
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-8,cy-130);
+  ctx.lineTo(cx+8,cy-130);
+  ctx.lineTo(cx+8,cy-110);
+  ctx.quadraticCurveTo(cx+70,cy-70,cx+55,cy);
+  ctx.lineTo(cx+55,cy+50);
+  ctx.quadraticCurveTo(cx,cy+85,cx-55,cy+50);
+  ctx.lineTo(cx-55,cy);
+  ctx.quadraticCurveTo(cx-70,cy-70,cx-8,cy-110);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 上层：乙酸乙酯
+  const fillP=(Math.sin(time*1.2)+1)/2;
+  ctx.fillStyle='rgba(251,191,36,0.55)';
+  ctx.beginPath();
+  ctx.moveTo(cx-65+fillP*5,cy-50+fillP*10);
+  ctx.lineTo(cx+65-fillP*5,cy-50+fillP*10);
+  ctx.lineTo(cx+55,cy);
+  ctx.quadraticCurveTo(cx,cy+25,cx-55,cy);
+  ctx.closePath();ctx.fill();
+  drawText('乙酸乙酯',cx,cy-30,'#fde68a',12);
+  // 分层线
+  ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(cx-60,cy-50+fillP*10);ctx.lineTo(cx+60,cy-50+fillP*10);ctx.stroke();
+  ctx.setLineDash([]);
+  // 下层：水溶液（逐渐放出）
+  const drainY=cy+85;
+  const dropProgress=(time*0.6)%1;
+  ctx.fillStyle='rgba(52,211,153,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(cx-55,cy);
+  ctx.lineTo(cx+55,cy);
+  ctx.lineTo(cx+55,cy+50-fillP*30);
+  ctx.quadraticCurveTo(cx,cy+85-fillP*30,cx-55,cy+50-fillP*30);
+  ctx.closePath();ctx.fill();
+  drawText('水溶液',cx,cy+30,'#fff',11);
+  // 下口活塞
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy+85);ctx.lineTo(cx,cy+115);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-12,cy+100);ctx.lineTo(cx+12,cy+100);ctx.stroke();
+  // 液滴下落
+  ctx.fillStyle='rgba(52,211,153,0.7)';
+  ctx.beginPath();ctx.arc(cx,cy+115+dropProgress*30,3,0,7);ctx.fill();
+  drawText('活塞',cx+45,cy+100,'#67e8f9',10);
+  // 标签
+  drawText('↑ 上层保留（乙酸乙酯）',cx,cy-130,'#fde68a',13);
+  drawText('↓ 下层放出（弃去）',cx,cy+150,'#9ab0d0',12);
+  drawText('原理：密度 ρ(酯)≈0.9 < ρ(水)=1.0',cx,H-40,'#34d399',12);
+}
+
+// ===== 场景：同位素示踪 =====
+function drawIsotopeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('同位素示踪 · 验证"酸脱羟基醇脱氢"',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  const blink=Math.sin(time*3)>0;
+  // 反应物：标记的乙醇
+  drawText('反应物（标记 ¹⁸O）',cx-200,cy-100,'#a78bfa',13);
+  ctx.fillStyle='rgba(167,139,250,0.1)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-300,cy-80,200,50,8);ctx.fill();ctx.stroke();
+  drawText('CH₃COOH',cx-250,cy-55,'#67e8f9',14);
+  drawText('+ CH₃CH₂¹⁸OH',cx-150,cy-55,'#fbbf24',14);
+  // 标记的 ¹⁸O 高亮
+  if(blink){
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.arc(cx-180,cy-55,18,0,7);ctx.fill();
+    drawText('¹⁸O',cx-180,cy-55,'#1a1a1a',11);
+  }
+  // 箭头
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-80,cy-55);ctx.lineTo(cx+60,cy-55);ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(cx+45,cy-62);ctx.lineTo(cx+60,cy-55);ctx.lineTo(cx+45,cy-48);ctx.fill();
+  drawText('浓H₂SO₄,Δ',cx-10,cy-75,'#fbbf24',11);
+  // 产物：¹⁸O 在酯中
+  drawText('产物（¹⁸O 进入酯）',cx+180,cy-100,'#34d399',13);
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(cx+80,cy-80,260,50,8);ctx.fill();ctx.stroke();
+  drawText('CH₃CO¹⁸OCH₂CH₃',cx+140,cy-55,'#fbbf24',14);
+  drawText('+ H₂O',cx+280,cy-55,'#06b6d4',14);
+  if(blink){
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.arc(cx+150,cy-55,18,0,7);ctx.fill();
+    drawText('¹⁸O',cx+150,cy-55,'#1a1a1a',11);
+  }
+  // 结论
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(cx-260,cy+30,520,100,10);ctx.fill();ctx.stroke();
+  drawText('【结论】',cx,cy+50,'#f87171',14);
+  drawText('¹⁸O 全部出现在酯分子中，证明：',cx,cy+75,'#fff',13);
+  drawText('★ 酸脱去 -OH（羧基的羟基）',cx,cy+100,'#fde68a',13);
+  drawText('★ 醇脱去 -H（羟基上的氢原子）',cx,cy+120,'#fde68a',13);
+  drawText('水中的氧来自乙酸（CH₃COOH）',W/2,H-35,'#34d399',13);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('乙酸乙酯制备 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'反应原理',d:'CH₃COOH+CH₃CH₂OH⇌酯+H₂O',c:'#fbbf24'},
+    {t:'浓H₂SO₄',d:'催化 + 吸水双作用',c:'#06b6d4'},
+    {t:'装置要点',d:'碎瓷片 + 长导管冷凝',c:'#34d399'},
+    {t:'Na₂CO₃',d:'中和 + 溶解 + 盐析',c:'#f87171'},
+    {t:'分液分离',d:'上层酯 / 下层水',c:'#a78bfa'},
+    {t:'反应机理',d:'酸脱-OH 醇脱-H',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0||stepIdx===1)drawPrincipleScene(t);
+  else if(stepIdx===2)drawPrincipleScene(t);
+  else if(stepIdx===3)drawApparatusScene(t);
+  else if(stepIdx===4)drawHeatCondenseScene(t);
+  else if(stepIdx===5)drawNa2CO3Scene(t);
+  else if(stepIdx===6)drawSeparationScene(t);
+  else if(stepIdx===7)drawIsotopeScene(t);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

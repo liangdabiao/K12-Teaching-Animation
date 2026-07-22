@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>弱电解质的电离平衡 · Ka · 同离子效应</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">弱电解质的电离平衡</span><span class="subtitle">电离常数 Ka · 电离度 α · 同离子效应</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>强弱电解质</h4><div class="v">强酸强碱大多数盐完全电离<br>弱酸弱碱水部分电离</div></div>
+  <div class="card s2"><div class="num">2</div><h4>电离常数 Ka</h4><div class="v">Ka = c(H⁺)·c(A⁻)/c(HA)<br>只随温度变化</div></div>
+  <div class="card s3"><div class="num">3</div><h4>电离度 α</h4><div class="v">α = 已电离/总数<br>稀释促电离，α 增大</div></div>
+  <div class="card s4"><div class="num">4</div><h4>同离子效应</h4><div class="v">加 H⁺ 或 CH₃COO⁻<br>抑制弱酸电离</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">弱电解质</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'对比',name:'强弱电解质对比',body:'<strong>强电解质</strong>在水溶液中<strong>完全电离</strong>，如强酸（HCl、H₂SO₄、HNO₃）、强碱（NaOH、KOH、Ba(OH)₂）、大多数盐（NaCl、KNO₃）。<strong>弱电解质</strong>只有<strong>部分电离</strong>，存在电离平衡，如弱酸（CH₃COOH、HF、H₂CO₃）、弱碱（NH₃·H₂O）和水。',points:{title:'强弱分辨',items:['<strong>强电解质</strong>：完全电离，不可逆','<strong>弱电解质</strong>：部分电离，可逆平衡','<strong>共价强弱</strong>：键极性 + 键能决定','<strong>水</strong>：极弱电解质']}},
+  {tag:'对比',name:'电离方程式区别',body:'<strong>强电解质</strong>用 <code>=</code>（完全电离）：<code>HCl = H⁺ + Cl⁻</code>，<code>NaOH = Na⁺ + OH⁻</code>。<strong>弱电解质</strong>用 <code>⇌</code>（可逆）：<code>CH₃COOH ⇌ H⁺ + CH₃COO⁻</code>，<code>NH₃·H₂O ⇌ NH₄⁺ + OH⁻</code>。',points:{title:'方程式速写',items:['<strong>HCl = H⁺ + Cl⁻</strong>：单向','<strong>CH₃COOH ⇌ H⁺ + CH₃COO⁻</strong>：可逆','<strong>多元弱酸</strong>：分步电离','<strong>H₂CO₃ ⇌ H⁺ + HCO₃⁻</strong>（主）']}},
+  {tag:'平衡',name:'电离平衡的建立',body:'将 CH₃COOH 溶于水，<strong>起始正向电离</strong>速率最大，逆向结合速率为零。随着 c(H⁺)、c(CH₃COO⁻) 增大，<strong>逆反应速率增大</strong>；同时 c(CH₃COOH) 减小使正反应速率减小。当<strong>正反应速率 = 逆反应速率</strong>时，达到<strong>动态平衡</strong>。',points:{title:'平衡三特征',items:['<strong>动</strong>：v(正)=v(逆)≠0','<strong>等</strong>：浓度不再变化','<strong>定</strong>：c(H⁺) 保持恒定','<strong>同</strong>：条件相同结果相同']}},
+  {tag:'常数',name:'电离常数 Ka',body:'对于 <code>CH₃COOH ⇌ H⁺ + CH₃COO⁻</code>，电离常数 <code>Ka = c(H⁺)·c(CH₃COO⁻)/c(CH₃COOH)</code>。<strong>Ka 只随温度变化</strong>，与浓度无关。Ka 越大，弱酸性越强。25℃ 时醋酸 Ka ≈ 1.8×10⁻⁵。',points:{title:'Ka 的意义',items:['<strong>表达式</strong>：产物浓度积/反应物浓度','<strong>只随温度变</strong>：与浓度无关','<strong>Ka 越大</strong>：酸性越强','<strong>多元酸</strong>：Ka1 > Ka2 > Ka3']}},
+  {tag:'常数',name:'电离度 α',body:'<strong>电离度</strong> <code>α = 已电离分子数/总分子数 × 100%</code>，反映弱电解质的电离程度。与 Ka 不同，<strong>α 受浓度影响</strong>：溶液越稀，α 越大（稀释定律）。温度升高，α 也增大。',points:{title:'α 与 Ka 区别',items:['<strong>α</strong>：随浓度变化','<strong>Ka</strong>：只随温度变化','<strong>稀释</strong>：α 增大','<strong>升温</strong>：α 增大（电离吸热）']}},
+  {tag:'影响',name:'温度对电离的影响',body:'弱电解质电离是<strong>吸热过程</strong>。根据勒夏特列原理，<strong>升温</strong>平衡向电离方向（吸热方向）移动，Ka 增大，α 增大，c(H⁺) 增大。<strong>降温</strong>则相反。',points:{title:'温度规律',items:['<strong>电离吸热</strong>：ΔH > 0','<strong>升温</strong>：Ka ↑ α ↑','<strong>降温</strong>：Ka ↓ α ↓','<strong>恒温</strong>：Ka 保持恒定']}},
+  {tag:'影响',name:'浓度（稀释）的影响',body:'<strong>稀释</strong>弱电解质溶液时，虽然 Ka 不变，但电离度 α <strong>增大</strong>（稀释定律）。注意：稀释时 c(H⁺) 总体仍下降，但<strong>单位体积内电离比例</strong>增大。这是 α 与 Ka 的关键区别。',points:{title:'稀释规律',items:['<strong>稀释</strong>：α 增大','<strong>Ka</strong>：不变（恒温）','<strong>c(H⁺)</strong>：下降','<strong>越稀越电离</strong>']}},
+  {tag:'影响',name:'同离子效应',body:'在 CH₃COOH 溶液中加入<strong>少量</strong> CH₃COONa（强电解质）或通入 HCl，会引入大量 CH₃COO⁻ 或 H⁺。这些<strong>相同离子</strong>使平衡 <code>CH₃COOH ⇌ H⁺ + CH₃COO⁻</code> 向<strong>左移动</strong>，<strong>抑制</strong>醋酸电离，α 减小。',points:{title:'同离子效应',items:['<strong>加 CH₃COO⁻</strong>：抑制电离','<strong>加 H⁺</strong>：抑制电离','<strong>α 减小</strong>：电离被抑制','<strong>Ka 不变</strong>：温度不变']}},
+  {tag:'综合',name:'核心速记总结',body:'弱电解质在水溶液中<strong>部分电离</strong>建立动态平衡：<code>HA ⇌ H⁺ + A⁻</code>。Ka 只随温度变化；α 随浓度、温度变化；同离子效应抑制电离。',points:{title:'三句话总结',items:['<strong>Ka</strong>：只随温度','<strong>α</strong>：稀释促电离','<strong>同离子</strong>：抑制电离','<strong>升温</strong>：促电离']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景：强弱电解质对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('强弱电解质对比 · 完全 vs 部分电离',W/2,28,'#fbbf24',15);
+  // 左侧：强电解质（HCl）
+  const lx=W*0.27,rx=W*0.73,cy=H/2+10;
+  // 容器左
+  ctx.fillStyle='rgba(251,191,36,0.08)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(lx-110,cy-110,220,220,10);ctx.fill();ctx.stroke();
+  drawText('HCl（强酸）',lx,cy-130,'#fbbf24',14);
+  drawText('完全电离',lx,cy-112,'#34d399',11);
+  // 完全电离：全是离子
+  const ionColors=['#06b6d4','#a78bfa'];
+  for(let i=0;i<14;i++){
+    const ang=i*0.9+time*0.6;
+    const r=30+(i%3)*22;
+    const px=lx+Math.cos(ang)*r*(i%2?0.7:1);
+    const py=cy+Math.sin(ang*1.3)*r*0.7;
+    ctx.fillStyle=ionColors[i%2];
+    ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();
+    ctx.fillStyle='#1a1a1a';
+    drawText(i%2?'H⁺':'Cl⁻',px,py,'#1a1a1a',9);
+  }
+  // 容器右：弱电解质（醋酸）
+  ctx.fillStyle='rgba(6,182,212,0.08)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(rx-110,cy-110,220,220,10);ctx.fill();ctx.stroke();
+  drawText('CH₃COOH（弱酸）',rx,cy-130,'#06b6d4',14);
+  drawText('部分电离',rx,cy-112,'#fbbf24',11);
+  // 部分电离：多数分子，少数离子
+  for(let i=0;i<20;i++){
+    const ang=i*1.3+time*0.2;
+    const r=20+(i%4)*22;
+    const px=rx+Math.cos(ang)*r*0.8;
+    const py=cy+Math.sin(ang*1.1)*r*0.65;
+    const isIon=(i%5===0);
+    if(isIon){
+      ctx.fillStyle=i%2?'#06b6d4':'#a78bfa';
+      ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();
+      drawText(i%2?'H⁺':'Ac⁻',px,py,'#1a1a1a',8);
+    }else{
+      ctx.fillStyle='#67e8f9';
+      ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();
+      drawText('HA',px,py,'#0a1628',8);
+    }
+  }
+  // 中间说明
+  drawText('= 单向',W/2,cy-20,'#34d399',13);
+  drawText('⇌ 可逆',W/2,cy+10,'#fbbf24',13);
+  drawText('强电解质全部成离子',lx,H-50,'#9ab0d0',11);
+  drawText('弱电解质分子+离子共存',rx,H-50,'#9ab0d0',11);
+}
+
+// ===== 场景：平衡建立（v正=v逆） =====
+function drawBalanceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电离平衡的建立 · v(正) = v(逆)',W/2,28,'#fbbf24',15);
+  const cx=W/2,cy=H/2;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,cy+60);ctx.lineTo(W-80,cy+60);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(100,80);ctx.lineTo(100,cy+80);ctx.stroke();
+  drawText('时间 t',W-90,cy+75,'#9ab0d0',11);
+  drawText('速率 v',90,70,'#9ab0d0',11);
+  // v正 曲线（下降）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const x=100+i*(W-200)/200;
+    const v=180*Math.exp(-i*0.025);
+    const y=cy+60-v;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // v逆 曲线（上升）
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;ctx.shadowColor='#f87171';
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const x=100+i*(W-200)/200;
+    const v=180*(1-Math.exp(-i*0.025));
+    const y=cy+60-v;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 交点（平衡点）
+  const eqX=100+90*(W-200)/200;
+  const eqY=cy+60-180*(1-Math.exp(-90*0.025));
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(eqX,eqY,7,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('平衡点',eqX,eqY-18,'#fbbf24',12);
+  // 动态时间标记
+  const cur=(time*30)%200;
+  const cx2=100+cur*(W-200)/200;
+  ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(cx2,cy+60);ctx.lineTo(cx2,cy-100);ctx.stroke();
+  ctx.setLineDash([]);
+  // 图例
+  drawText('━ v(正)：电离速率',W/2,H-70,'#34d399',12);
+  drawText('━ v(逆)：结合速率',W/2,H-48,'#f87171',12);
+  drawText('v(正)=v(逆)：动态平衡，浓度不变',W/2,H-26,'#fbbf24',12);
+}
+
+// ===== 场景：电离常数 Ka =====
+function drawKaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电离常数 Ka · 只随温度变化',W/2,28,'#fbbf24',15);
+  const cx=W/2,cy=H/2-20;
+  // 方程式
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('CH₃COOH  ⇌  H⁺  +  CH₃COO⁻',cx,cy-80);
+  // Ka 公式
+  ctx.font='bold 22px serif';ctx.fillStyle='#fbbf24';
+  ctx.fillText('Ka = c(H⁺) · c(CH₃COO⁻) / c(CH₃COOH)',cx,cy-30);
+  // 浓度柱
+  const baseY=cy+60;
+  const labels=['c(HA)','c(H⁺)','c(A⁻)'];
+  const vals=[0.95+0.05*Math.sin(time),0.013,0.013];
+  const colors=['#06b6d4','#fbbf24','#a78bfa'];
+  const xs=[cx-140,cx,cx+140];
+  for(let i=0;i<3;i++){
+    const h=Math.max(8,vals[i]*220);
+    ctx.fillStyle=colors[i]+'44';ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+    roundRect(xs[i]-30,baseY-h,60,h,4);ctx.fill();ctx.stroke();
+    drawText(labels[i],xs[i],baseY+18,colors[i],12);
+    drawText(vals[i].toFixed(3)+' mol/L',xs[i],baseY+34,'#9ab0d0',10);
+  }
+  // 温度标注
+  const T=25+10*Math.sin(time*0.3);
+  drawText('温度 T = '+T.toFixed(1)+' ℃',cx,H-60,'#34d399',13);
+  drawText('Ka = (0.013 × 0.013) / 0.95 ≈ 1.8 × 10⁻⁵',cx,H-38,'#fbbf24',12);
+  drawText('Ka 只随温度变化，与浓度无关',cx,H-18,'#9ab0d0',11);
+}
+
+// ===== 场景：电离度 α =====
+function drawAlphaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电离度 α · 已电离分子数 / 总分子数',W/2,28,'#fbbf24',15);
+  const cx=W/2,cy=H/2+20;
+  // 公式
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('α = (已电离分子数 / 总分子数) × 100%',cx,cy-110);
+  // 分子方块
+  const total=20;
+  const ionized=Math.round(total*(0.1+0.04*Math.sin(time*0.5)));
+  const cols=10,rows=2;
+  const sw=22,gap=4;
+  const startX=cx-(cols*(sw+gap))/2;
+  const startY=cy-50;
+  for(let i=0;i<total;i++){
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=startX+col*(sw+gap);
+    const y=startY+row*(sw+gap);
+    const isIon=i<ionized;
+    ctx.fillStyle=isIon?'#fbbf24':'#06b6d4';
+    ctx.strokeStyle=isIon?'#fde68a':'#67e8f9';ctx.lineWidth=1.5;
+    roundRect(x,y,sw,sw,3);ctx.fill();ctx.stroke();
+    drawText(isIon?'HA→':isIon?'':'HA',x+sw/2,y+sw/2,isIon?'#1a1a1a':'#0a1628',9);
+  }
+  // α 值
+  const alpha=ionized/total*100;
+  ctx.font='bold 22px sans-serif';ctx.fillStyle='#34d399';
+  drawText('α = '+ionized+' / '+total+' = '+alpha.toFixed(1)+' %',cx,cy+50,'#34d399',18);
+  drawText('黄色=已电离分子，蓝色=未电离分子',cx,H-50,'#9ab0d0',12);
+  drawText('α 越大，电离程度越大',cx,H-28,'#fbbf24',12);
+}
+
+// ===== 场景：温度影响 =====
+function drawTempScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('温度对电离的影响 · 升温促电离',W/2,28,'#fbbf24',15);
+  const cx=W/2,cy=H/2+10;
+  // 烧杯
+  ctx.fillStyle='rgba(167,139,250,0.08)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-120,cy-100,240,180,8);ctx.fill();ctx.stroke();
+  drawText('CH₃COOH 溶液',cx,cy-118,'#a78bfa',12);
+  // 温度变化
+  const temp=25+20*Math.sin(time*0.5);
+  const hot=temp>35;
+  // 火焰
+  ctx.fillStyle=hot?'#f87171':'#fb923c';
+  ctx.beginPath();
+  for(let i=0;i<5;i++){
+    const fx=cx-50+i*25;
+    const fh=20+15*Math.abs(Math.sin(time*3+i));
+    ctx.moveTo(fx-8,cy+90);
+    ctx.quadraticCurveTo(fx,cy+90-fh,fx+8,cy+90);
+  }
+  ctx.fill();
+  drawText('加热',cx,cy+110,hot?'#f87171':'#fb923c',12);
+  // 分子（电离比例随温度）
+  const ionRatio=Math.min(0.6,(temp-20)/80);
+  for(let i=0;i<24;i++){
+    const ang=i*0.9+time*0.8;
+    const r=30+(i%4)*18;
+    const px=cx+Math.cos(ang)*r;
+    const py=cy+Math.sin(ang*1.1)*r*0.7-10;
+    const isIon=(i/24<ionRatio);
+    if(isIon){
+      ctx.fillStyle=i%2?'#06b6d4':'#a78bfa';
+      ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+    }else{
+      ctx.fillStyle='#67e8f9';
+      ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();
+    }
+  }
+  // 温度与Ka
+  drawText('T = '+temp.toFixed(0)+' ℃',cx,cy-70,'#34d399',14);
+  const Ka=(1.8*Math.pow(10,-5)*Math.pow(2,(temp-25)/10)).toExponential(2);
+  drawText('Ka ≈ '+Ka,cx,cy-50,'#fbbf24',13);
+  drawText('电离吸热，升温平衡右移 → Ka↑ α↑',cx,H-45,'#34d399',12);
+  drawText('降温则 Ka↓ α↓',cx,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：浓度（稀释）影响 =====
+function drawDiluteScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('稀释的影响 · 越稀越电离（α 增大）',W/2,28,'#fbbf24',15);
+  const cy=H/2;
+  // 三个烧杯：浓→中→稀
+  const beakers=[
+    {x:W*0.2,vol:0.4,c:1.0,alpha:0.013},
+    {x:W*0.5,vol:0.7,c:0.5,alpha:0.019},
+    {x:W*0.8,vol:1.0,c:0.25,alpha:0.027},
+  ];
+  beakers.forEach((b,i)=>{
+    const bh=160*b.vol;
+    // 烧杯外框
+    ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;ctx.fillStyle='rgba(6,182,212,0.05)';
+    roundRect(b.x-50,cy-90+bh*0+0,100,160,5);
+    ctx.stroke();
+    // 液面
+    ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+    ctx.fillRect(b.x-48,cy+70-bh,96,bh);
+    ctx.beginPath();ctx.moveTo(b.x-48,cy+70-bh);ctx.lineTo(b.x+48,cy+70-bh);ctx.stroke();
+    // 分子
+    const total=12;
+    const ionCount=Math.round(total*b.alpha*30);
+    for(let j=0;j<total;j++){
+      const px=b.x-40+(j%4)*22+5*Math.sin(time+i+j);
+      const py=cy+70-bh+10+Math.floor(j/4)*20;
+      const isIon=j<ionCount;
+      ctx.fillStyle=isIon?'#fbbf24':'#67e8f9';
+      ctx.beginPath();ctx.arc(px,py,isIon?4:6,0,7);ctx.fill();
+    }
+    drawText('稀释 '+(i+1),b.x,cy-110,'#9ab0d0',11);
+    drawText('c='+b.c.toFixed(2)+'mol/L',b.x,cy+90,'#06b6d4',10);
+    drawText('α='+(b.alpha*100).toFixed(1)+'%',b.x,cy+108,'#34d399',11);
+  });
+  // 箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  for(let i=0;i<2;i++){
+    const x1=W*0.2+i*W*0.3+55;
+    const x2=W*0.2+(i+1)*W*0.3-55;
+    ctx.beginPath();ctx.moveTo(x1,cy);ctx.lineTo(x2,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x2,cy);ctx.lineTo(x2-8,cy-5);ctx.lineTo(x2-8,cy+5);ctx.fill();
+  }
+  drawText('+ H₂O',W*0.35,cy-15,'#06b6d4',11);
+  drawText('+ H₂O',W*0.65,cy-15,'#06b6d4',11);
+  drawText('稀释时 Ka 不变（恒温），但 α 增大',W/2,H-40,'#fbbf24',12);
+  drawText('注意：c(H⁺) 总体下降，但电离比例上升',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景：同离子效应 =====
+function drawCommonIonScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('同离子效应 · 加 H⁺/CH₃COO⁻ 抑制电离',W/2,28,'#fbbf24',15);
+  const cx=W/2,cy=H/2+10;
+  // 烧杯
+  ctx.fillStyle='rgba(248,113,113,0.06)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(cx-130,cy-110,260,200,8);ctx.fill();ctx.stroke();
+  drawText('CH₃COOH + CH₃COONa',cx,cy-128,'#f87171',12);
+  // 平衡方程
+  ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('CH₃COOH ⇌ H⁺ + CH₃COO⁻',cx,cy-90);
+  // 加入的同离子（CH₃COO⁻）
+  const addCount=8;
+  for(let i=0;i<addCount;i++){
+    const px=cx-100+i*26+3*Math.sin(time+i);
+    const py=cy-50;
+    ctx.fillStyle='#a78bfa';
+    ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();
+    drawText('Ac⁻',px,py,'#1a1a1a',8);
+  }
+  // 加入提示箭头
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy-160);ctx.lineTo(cx,cy-135);ctx.stroke();
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.moveTo(cx,cy-135);ctx.lineTo(cx-6,cy-145);ctx.lineTo(cx+6,cy-145);ctx.fill();
+  drawText('加入 CH₃COONa',cx,cy-170,'#f87171',12);
+  // 原有分子（电离被抑制，HA 多）
+  for(let i=0;i<16;i++){
+    const ang=i*0.8+time*0.3;
+    const r=25+(i%4)*22;
+    const px=cx+Math.cos(ang)*r;
+    const py=cy+30+Math.sin(ang*1.2)*r*0.5;
+    const isIon=(i%6===0);
+    if(isIon){
+      ctx.fillStyle=i%2?'#06b6d4':'#a78bfa';
+      ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+    }else{
+      ctx.fillStyle='#67e8f9';
+      ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();
+      drawText('HA',px,py,'#0a1628',8);
+    }
+  }
+  // 平衡移动方向
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+  drawText('← 平衡左移（抑制电离）',cx,cy+85,'#34d399',14);
+  ctx.shadowBlur=0;
+  drawText('α 减小，但 Ka 不变（温度不变）',cx,H-40,'#fbbf24',12);
+  drawText('加 H⁺ 同理：也使平衡左移',cx,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('弱电解质电离平衡 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'强弱电解质',d:'强=完全电离\n弱=部分电离',c:'#fbbf24'},
+    {t:'电离常数 Ka',d:'Ka = c(H⁺)c(A⁻)/c(HA)\n只随温度变化',c:'#06b6d4'},
+    {t:'电离度 α',d:'α = 已电离/总数\n稀释促电离',c:'#34d399'},
+    {t:'温度影响',d:'升温促电离\nKa↑ α↑',c:'#a78bfa'},
+    {t:'浓度影响',d:'稀释 α↑\nKa 不变',c:'#fb923c'},
+    {t:'同离子效应',d:'加同离子抑制电离\nα↓ Ka 不变',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/6,y+35,m.c,15);
+    const lines=m.d.split('\n');
+    lines.forEach((ln,j)=>drawText(ln,x+(W-120)/6,y+75+j*22,'#fff',12));
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0||stepIdx===1)drawCompareScene(t);
+  else if(stepIdx===2)drawBalanceScene(t);
+  else if(stepIdx===3)drawKaScene(t);
+  else if(stepIdx===4)drawAlphaScene(t);
+  else if(stepIdx===5)drawTempScene(t);
+  else if(stepIdx===6)drawDiluteScene(t);
+  else if(stepIdx===7)drawCommonIonScene(t);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
