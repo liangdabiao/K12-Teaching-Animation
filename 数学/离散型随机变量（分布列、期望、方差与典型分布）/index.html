@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>离散型随机变量 · 分布列 · 期望 · 方差 · 典型分布</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">离散型随机变量</span><span class="subtitle">分布列 · 期望 · 方差 · 典型分布</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>分布列</h4><div class="v">P(ξ=xᵢ)=pᵢ<br>pᵢ≥0 且 Σpᵢ=1</div></div>
+  <div class="card s2"><div class="num">2</div><h4>期望公式</h4><div class="v">E(ξ)=Σ xᵢ·pᵢ<br>加权平均</div></div>
+  <div class="card s3"><div class="num">3</div><h4>方差公式</h4><div class="v">D(ξ)=Σ(xᵢ−E)²·pᵢ<br>=E(ξ²)−E²(ξ)</div></div>
+  <div class="card s4"><div class="num">4</div><h4>三大典型分布</h4><div class="v">两点 · 二项 B(n,p)<br>· 超几何分布</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">概念</span><span id="stepTitle">随机变量</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'概念',name:'随机变量概念',body:'<strong>随机变量</strong>：把随机试验的每一个结果对应到<strong>唯一的实数</strong>。常用希腊字母 <code>ξ</code>、<code>η</code> 或大写 <code>X</code> 表示。<strong>离散型</strong>随机变量的取值可以<strong>一一列举</strong>（如掷骰子的点数）。',points:{title:'核心要点',items:['<strong>变量 ξ</strong>：每个结果→一个数','<strong>离散型</strong>：取值可一一列举','<strong>连续型</strong>：取值充满区间','<strong>记号</strong>：ξ, η, X, Y']}},
+  {tag:'分布',name:'分布列与性质',body:'<strong>分布列</strong>：列出 ξ 的所有取值 xᵢ 及对应概率 pᵢ：<code>P(ξ=xᵢ)=pᵢ</code>，i=1,2,…,n。表格形式直观展示每个取值的概率分布。',points:{title:'分布列两性质',items:['<strong>非负性</strong>：pᵢ ≥ 0','<strong>归一性</strong>：Σpᵢ = 1','<strong>表格列</strong>：x₁,x₂,…,xₙ','<strong>下行</strong>：p₁,p₂,…,pₙ']}},
+  {tag:'期望',name:'期望定义',body:'<strong>数学期望</strong> E(ξ) 是随机变量的<strong>"加权平均"</strong>，反映取值的集中位置（平均水平）：<code>E(ξ) = Σ xᵢ·pᵢ</code>。概率 pᵢ 即权重。',points:{title:'期望要点',items:['<strong>公式</strong>：E(ξ) = Σ xᵢ·pᵢ','<strong>含义</strong>：加权平均','<strong>权重</strong>：概率 pᵢ','<strong>单位</strong>：与 xᵢ 相同']}},
+  {tag:'方差',name:'方差定义',body:'<strong>方差</strong> D(ξ) 描述 ξ 偏离期望的<strong>离散程度</strong>：<code>D(ξ) = Σ(xᵢ−Eξ)²·pᵢ</code>。方差的算术平方根叫<strong>标准差</strong> σ=√D(ξ)。',points:{title:'方差要点',items:['<strong>公式</strong>：D(ξ) = Σ(xᵢ−E)²·pᵢ','<strong>简化</strong>：D(ξ)=E(ξ²)−[E(ξ)]²','<strong>标准差</strong>：σ = √D(ξ)','<strong>意义</strong>：方差越小越稳定']}},
+  {tag:'性质',name:'期望方差性质',body:'<strong>期望线性性</strong>：<code>E(aξ+b) = aE(ξ)+b</code>、<code>E(ξ+η)=E(ξ)+E(η)</strong>。<strong>方差性质</strong>：<code>D(aξ+b) = a²D(ξ)</code>（加常数 b 不改变离散程度）。',points:{title:'五大性质',items:['<strong>E(aξ+b)</strong> = aE(ξ)+b','<strong>E(ξ+η)</strong> = E(ξ)+E(η)','<strong>D(aξ+b)</strong> = a²D(ξ)','<strong>σ</strong> = √D(ξ)']}},
+  {tag:'典型',name:'两点与二项分布',body:'<strong>两点分布</strong>(0-1 分布)：P(ξ=1)=p、P(ξ=0)=1−p；<code>E=p、D=p(1−p)</code>。<strong>二项分布</strong> X~B(n,p)：n 次独立试验恰成功 k 次的概率 <code>P(ξ=k)=C(n,k)·pᵏ·(1−p)ⁿ⁻ᵏ</code>；<code>E=np、D=np(1−p)</code>。',points:{title:'两大分布',items:['<strong>两点 E=p</strong>，D=p(1−p)','<strong>二项 E=np</strong>，D=np(1−p)','<strong>二项公式</strong>：C(n,k)pᵏ(1−p)ⁿ⁻ᵏ','<strong>背景</strong>：n 次独立重复试验']}},
+  {tag:'典型',name:'超几何分布',body:'<strong>超几何分布</strong>：N 件产品中有 M 件次品，<strong>无放回</strong>地抽取 n 件，其中次品数 ξ 服从超几何分布。区别于二项分布的关键：<strong>无放回</strong>（不独立）。',points:{title:'超几何要点',items:['<strong>总体</strong>：N 件，M 件次品','<strong>抽样</strong>：无放回取 n 件','<strong>研究对象</strong>：次品数 ξ','<strong>区别二项</strong>：试验不独立']}},
+  {tag:'总结',name:'核心速记',body:'<strong>离散型随机变量</strong>用<strong>分布列</strong>描述全部概率规律；<strong>期望</strong>刻画平均水平（集中位置），<strong>方差</strong>刻画离散程度。三大典型分布：两点、二项、超几何。',points:{title:'三句话总结',items:['<strong>分布列</strong>：P(ξ=xᵢ)=pᵢ','<strong>期望</strong>：E(ξ)=Σxᵢpᵢ','<strong>方差</strong>：D(ξ)=E(ξ²)−E²(ξ)','<strong>三分布</strong>：两点/二项/超几何']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// 示例分布列：掷骰子 ξ（1~6，均匀）
+const DICE=[{x:1,p:1/6},{x:2,p:1/6},{x:3,p:1/6},{x:4,p:1/6},{x:5,p:1/6},{x:6,p:1/6}];
+// 二项分布 B(10,0.4)
+function binomPMF(n,p,k){let c=1;for(let i=0;i<k;i++)c=c*(n-i)/(i+1);return c*Math.pow(p,k)*Math.pow(1-p,n-k);}
+function binomArr(n,p){const a=[];for(let k=0;k<=n;k++)a.push({x:k,p:binomPMF(n,p,k)});return a;}
+
+// ===== 场景：随机变量概念 =====
+function drawConceptScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('随机变量 ξ · 把结果映射成数',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 左：试验结果（掷骰子点）
+  drawText('试验结果',cx-180,cy-110,'#9ab0d0',13);
+  const faces=[1,2,3,4,5,6];
+  faces.forEach((f,i)=>{
+    const fx=cx-220+(i%3)*50,fy=cy-70+Math.floor(i/3)*55;
+    ctx.fillStyle='#172a4a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    roundRect(fx-20,fy-20,40,40,6);ctx.fill();ctx.stroke();
+    drawText(f,fx,fy,'#67e8f9',15);
+  });
+  // 右：ξ 取值（与结果同，因为是均匀映射）
+  drawText('ξ 取值',cx+180,cy-110,'#9ab0d0',13);
+  faces.forEach((f,i)=>{
+    const fx=cx+150+(i%3)*50,fy=cy-70+Math.floor(i/3)*55;
+    ctx.fillStyle='#172a4a';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    roundRect(fx-20,fy-20,40,40,6);ctx.fill();ctx.stroke();
+    drawText(f,fx,fy,'#fbbf24',15);
+  });
+  // 中间箭头（脉动）
+  const pulse=0.6+0.4*Math.sin(time*3);
+  ctx.strokeStyle='rgba(251,191,36,'+pulse+')';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-70,cy);ctx.lineTo(cx+120,cy);ctx.stroke();
+  ctx.fillStyle='rgba(251,191,36,'+pulse+')';
+  ctx.beginPath();ctx.moveTo(cx+120,cy);ctx.lineTo(cx+108,cy-7);ctx.lineTo(cx+108,cy+7);ctx.fill();
+  drawText('ξ',cx+25,cy-15,'#fbbf24',18);
+  // 连线（每个结果→对应数值）
+  ctx.strokeStyle='rgba(103,232,249,0.25)';ctx.lineWidth=1;
+  faces.forEach((f,i)=>{
+    const fx0=cx-220+(i%3)*50,fy0=cy-70+Math.floor(i/3)*55;
+    const fx1=cx+150+(i%3)*50,fy1=cy-70+Math.floor(i/3)*55;
+    ctx.beginPath();ctx.moveTo(fx0+20,fy0);ctx.lineTo(fx1-20,fy1);ctx.stroke();
+  });
+  drawText('每个结果对应一个数 → ξ 是随机变量',W/2,H-60,'#34d399',13);
+  drawText('取值可一一列举 → 离散型随机变量',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：分布列条形图 =====
+function drawDistributionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('分布列 · P(ξ=xᵢ)=pᵢ  (掷骰子)',W/2,30,'#fbbf24',16);
+  // 表格（左）
+  const tx=80,ty=80;
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+  roundRect(tx,ty,200,40,6);ctx.fill();ctx.stroke();
+  drawText('ξ',tx+50,ty+20,'#06b6d4',14);
+  drawText('P',tx+150,ty+20,'#fbbf24',14);
+  DICE.forEach((d,i)=>{
+    const y=ty+40+i*32;
+    ctx.strokeStyle='#243a5e';
+    ctx.beginPath();ctx.moveTo(tx,y);ctx.lineTo(tx+200,y);ctx.stroke();
+    drawText(d.x,tx+50,y+16,'#fff',13);
+    drawText(d.p.toFixed(4),tx+150,y+16,'#fde68a',12);
+  });
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(tx+100,ty);ctx.lineTo(tx+100,ty+40+DICE.length*32);ctx.stroke();
+  // 合计行
+  const sumY=ty+40+DICE.length*32;
+  ctx.fillStyle='rgba(52,211,153,0.1)';
+  roundRect(tx,sumY,200,28,6);ctx.fill();
+  drawText('Σ = 1.0000',tx+100,sumY+14,'#34d399',13);
+  // 条形图（右）
+  const bx=340,by=80,bw=W-400,bh=H-180;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx,by+bh);ctx.lineTo(bx+bw,by+bh);ctx.stroke();
+  drawText('概率 p',bx-25,by,'#9ab0d0',11);
+  // 条
+  const barW=(bw-20)/DICE.length;
+  const maxP=1/6;
+  DICE.forEach((d,i)=>{
+    const x=bx+10+i*barW;
+    const hAnim=Math.min(1,time*1.2-i*0.08);
+    if(hAnim<=0)return;
+    const h=d.p/maxP*(bh-50)*Math.max(0,hAnim);
+    ctx.fillStyle='rgba(251,191,36,0.75)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    roundRect(x+8,by+bh-h,barW-16,h,4);ctx.fill();ctx.stroke();
+    drawText(d.p.toFixed(3),x+barW/2,by+bh-h-12,'#fde68a',11);
+    drawText('ξ='+d.x,x+barW/2,by+bh+18,'#67e8f9',11);
+  });
+  drawText('性质：pᵢ ≥ 0 且 Σpᵢ = 1',W/2,H-50,'#34d399',13);
+}
+
+// ===== 场景：期望计算 =====
+function drawExpectationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('期望 E(ξ) = Σ xᵢ·pᵢ  (加权平均)',W/2,30,'#fbbf24',16);
+  // 使用不均匀分布更易理解期望
+  const DIST=[{x:0,p:0.1},{x:1,p:0.2},{x:2,p:0.3},{x:3,p:0.25},{x:4,p:0.15}];
+  const E=0*0.1+1*0.2+2*0.3+3*0.25+4*0.15; // =2.35
+  const cx=W/2,cy=H/2+30;
+  // 条形
+  const bw=Math.min(420,W-160),bx=cx-bw/2;
+  const maxP=0.3,barH=160;
+  DIST.forEach((d,i)=>{
+    const x=bx+i*(bw/DIST.length);
+    const w=bw/DIST.length-8;
+    const h=d.p/maxP*barH*Math.min(1,time*1.5-i*0.1);
+    ctx.fillStyle='rgba(6,182,212,0.65)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    roundRect(x+4,cy-h,w,h,4);ctx.fill();ctx.stroke();
+    drawText('x='+d.x,x+w/2+4,cy+18,'#67e8f9',12);
+    drawText(d.p.toFixed(2),x+w/2+4,cy-h-10,'#9ab0d0',10);
+    drawText(d.x+'·'+d.p.toFixed(2)+'='+(d.x*d.p).toFixed(2),x+w/2+4,cy-h-26,'#fde68a',10);
+  });
+  // 期望线
+  const ex=bx+(E/4)*bw;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(ex,cy-barH-30);ctx.lineTo(ex,cy+30);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('E(ξ)='+E.toFixed(2),ex,cy-barH-45,'#fbbf24',14);
+  // 公式
+  drawText('E(ξ) = 0·0.10 + 1·0.20 + 2·0.30 + 3·0.25 + 4·0.15',W/2,H-70,'#9ab0d0',12);
+  drawText('= '+E.toFixed(2)+'  (取值以概率为权重的加权平均)',W/2,H-45,'#34d399',13);
+}
+
+// ===== 场景：方差演示（散点偏离期望） =====
+function drawVarianceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('方差 D(ξ) · 描述偏离期望的离散程度',W/2,30,'#fbbf24',16);
+  // 两个分布对比：A 小方差（集中），B 大方差（分散）
+  const cx=W/2,cy=H/2+20;
+  // 公式
+  drawText('D(ξ) = Σ(xᵢ−Eξ)²·pᵢ = E(ξ²) − [E(ξ)]²',cx,60,'#fff',14);
+  // 分布 A：方差小（点集中在 E=3 附近）
+  const EA=3,ptsA=[{x:2.6,p:0.3},{x:3.0,p:0.4},{x:3.4,p:0.3}];
+  // 分布 B：方差大（点分散）
+  const EB=3,ptsB=[{x:1.0,p:0.2},{x:3.0,p:0.2},{x:5.0,p:0.2},{x:0.5,p:0.2},{x:5.5,p:0.2}];
+  // 画两个子区域
+  function drawDist(label,pts,E,x0,x1){
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x0,cy+30);ctx.lineTo(x1,cy+30);ctx.stroke();
+    drawText(label,x0+(x1-x0)/2,cy-130,'#06b6d4',13);
+    // 散点（脉动出现）
+    pts.forEach((p,i)=>{
+      const px=x0+(p.x/6)*(x1-x0);
+      const ph=p.p*200;
+      const anim=Math.min(1,Math.max(0,time*1.2-i*0.25));
+      const wob=Math.sin(time*4+i)*3*anim;
+      ctx.fillStyle='rgba(251,191,36,'+(0.7*anim)+')';
+      ctx.shadowColor='#fbbf24';ctx.shadowBlur=10*anim;
+      ctx.beginPath();ctx.arc(px,cy-ph+wob,7*anim,0,7);ctx.fill();
+      ctx.shadowBlur=0;
+    });
+    // E 线
+    const ex=x0+(E/6)*(x1-x0);
+    ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([5,3]);
+    ctx.beginPath();ctx.moveTo(ex,cy-110);ctx.lineTo(ex,cy+30);ctx.stroke();
+    ctx.setLineDash([]);
+    drawText('E='+E,ex,cy-120,'#34d399',11);
+    drawText('0',x0,cy+45,'#5a6a8a',10);
+    drawText('6',x1,cy+45,'#5a6a8a',10);
+  }
+  // 计算 D 值（演示）
+  const DA=ptsA.reduce((s,p)=>s+Math.pow(p.x-EA,2)*p.p,0);
+  const DB=ptsB.reduce((s,p)=>s+Math.pow(p.x-EB,2)*p.p,0);
+  drawDist('分布 A · 方差小（稳定）',ptsA,EA,80,W/2-20);
+  drawDist('分布 B · 方差大（分散）',ptsB,EB,W/2+20,W-80);
+  // 信息框：两个分布的方差对比
+  ctx.fillStyle='rgba(52,211,153,0.12)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(W/2-110,H-105,220,38,8);ctx.fill();ctx.stroke();
+  drawText('D(A)='+DA.toFixed(2),W/2-50,H-86,'#34d399',12);
+  drawText('D(B)='+DB.toFixed(2),W/2+50,H-86,'#f87171',12);
+  drawText('σ_A=√D='+Math.sqrt(DA).toFixed(2),W/2,H-72,'#9ab0d0',11);
+  drawText('方差越小 → 取值越集中在期望附近',W/2,H-55,'#34d399',13);
+  drawText('σ = √D(ξ) 为标准差',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：性质（线性变换） =====
+function drawPropertiesScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('期望与方差的性质 · 线性变换',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 左侧：原始分布条形（简单二点）
+  const x0=cx-200;
+  drawText('ξ',x0,cy-150,'#06b6d4',16);
+  [{x:1,p:0.5,h:80},{x:3,p:0.5,h:120}].forEach(d=>{
+    ctx.fillStyle='rgba(6,182,212,0.6)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    roundRect(x0+d.x*25-15,cy-d.h,30,d.h,4);ctx.fill();ctx.stroke();
+    drawText(d.x,x0+d.x*25,cy+15,'#67e8f9',12);
+  });
+  const Ex=2,Dx=1;
+  // Eξ 标线
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(x0+Ex*25,cy-130);ctx.lineTo(x0+Ex*25,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('E(ξ)='+Ex,x0+Ex*25,cy-140,'#34d399',12);
+  // 中间：箭头 + 公式（脉动）
+  const pulse=0.6+0.4*Math.sin(time*3);
+  ctx.strokeStyle='rgba(251,191,36,'+pulse+')';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-90,cy-60);ctx.lineTo(cx+60,cy-60);ctx.stroke();
+  ctx.fillStyle='rgba(251,191,36,'+pulse+')';
+  ctx.beginPath();ctx.moveTo(cx+60,cy-60);ctx.lineTo(cx+48,cy-67);ctx.lineTo(cx+48,cy-53);ctx.fill();
+  drawText('η = aξ + b',cx-15,cy-80,'#fbbf24',14);
+  drawText('取 a=2, b=5',cx-15,cy-40,'#9ab0d0',11);
+  // 右侧：变换后分布
+  const x1=cx+120;
+  drawText('η = 2ξ+5',x1,cy-150,'#fbbf24',16);
+  [{x:7,p:0.5,h:80},{x:11,p:0.5,h:120}].forEach(d=>{
+    ctx.fillStyle='rgba(251,191,36,0.6)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    roundRect(x1+(d.x-6)*25-15,cy-d.h,30,d.h,4);ctx.fill();ctx.stroke();
+    drawText(d.x,x1+(d.x-6)*25,cy+15,'#fde68a',12);
+  });
+  const Eeta=2*Ex+5,Deta=4*Dx;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(x1+(Eeta-6)*25,cy-130);ctx.lineTo(x1+(Eeta-6)*25,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('E(η)='+Eeta,x1+(Eeta-6)*25,cy-140,'#34d399',12);
+  // 性质列表
+  const lines=[
+    {t:'E(aξ+b) = a·E(ξ) + b',c:'#fbbf24'},
+    {t:'E(ξ+η) = E(ξ) + E(η)',c:'#06b6d4'},
+    {t:'D(aξ+b) = a²·D(ξ)',c:'#34d399'},
+    {t:'本例：E(η)='+Eeta+' , D(η)='+Deta+' (=a²D='+4+'×'+Dx+')',c:'#fde68a'},
+  ];
+  lines.forEach((l,i)=>{
+    const y=H-110+i*22;
+    drawText(l.t,W/2,y,l.c,13);
+  });
+}
+
+// ===== 场景：两点与二项分布 =====
+function drawBinomialScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('二项分布 X~B(n,p) · P(ξ=k)=C(n,k)pᵏ(1-p)ⁿ⁻ᵏ',W/2,30,'#fbbf24',15);
+  // 顶部两点分布小图
+  drawText('两点分布 (n=1)',180,75,'#06b6d4',13);
+  const p2=0.4;
+  [{k:0,p:1-p2},{k:1,p:p2}].forEach(d=>{
+    const x=120+d.k*120,h=d.p*100;
+    ctx.fillStyle='rgba(6,182,212,0.6)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    roundRect(x-25,200-h,50,h,4);ctx.fill();ctx.stroke();
+    drawText('k='+d.k,x,210,'#67e8f9',11);
+    drawText(d.p.toFixed(2),x,200-h-12,'#9ab0d0',10);
+  });
+  drawText('E=p='+p2.toFixed(1),180,240,'#34d399',11);
+  drawText('D=p(1-p)='+(p2*(1-p2)).toFixed(2),180,258,'#fde68a',11);
+  // 大图：二项分布 B(10, 0.4)
+  const n=10,p=0.4;
+  const arr=binomArr(n,p);
+  const bx=320,by=110,bw=W-380,bh=H-220;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(bx,by+bh);ctx.lineTo(bx+bw,by+bh);ctx.stroke();
+  drawText('二项分布 B(10, 0.4)',bx+bw/2,by-10,'#fbbf24',14);
+  const maxP=Math.max(...arr.map(a=>a.p));
+  const bw2=bw/arr.length;
+  arr.forEach((d,i)=>{
+    const x=bx+i*bw2;
+    const h=d.p/maxP*bh*Math.min(1,time*1.5-i*0.05);
+    if(h<=0)return;
+    ctx.fillStyle='rgba(251,191,36,0.75)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+    roundRect(x+4,by+bh-h,bw2-8,h,3);ctx.fill();ctx.stroke();
+    if(i%2===0)drawText(d.x,x+bw2/2,by+bh+15,'#67e8f9',10);
+  });
+  drawText('k（成功次数）',bx+bw/2,by+bh+35,'#9ab0d0',11);
+  // 标注 E、D
+  const Enp=n*p,Dnp=n*p*(1-p);
+  ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(bx+bw-180,by+10,170,60,8);ctx.fill();ctx.stroke();
+  drawText('E = np = '+Enp,bx+bw-95,by+28,'#34d399',13);
+  drawText('D = np(1-p) = '+Dnp.toFixed(2),bx+bw-95,by+52,'#fde68a',12);
+  // 试验序列动画（10 次独立伯努利试验）
+  drawText('一次试验序列（绿色=成功 / 红色=失败）',bx,by+bh+60,'#9ab0d0',11,'left');
+  for(let i=0;i<n;i++){
+    const sx=bx+i*((bw-20)/n)+8;
+    const success=(Math.sin(time*1.5+i*1.3)+1)/2<p;
+    ctx.fillStyle=success?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.6)';
+    ctx.strokeStyle=success?'#34d399':'#f87171';ctx.lineWidth=1;
+    roundRect(sx,by+bh+75,(bw-20)/n-4,18,3);ctx.fill();ctx.stroke();
+  }
+  drawText('n 次独立重复试验，每次成功概率 p',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景：超几何分布 =====
+function drawHyperScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('超几何分布 · 无放回抽样',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2-10;
+  // 总体 N=20，M=5 次品，15 正品
+  drawText('总体：N=20 件（M=5 次品 · 15 正品）',cx,70,'#06b6d4',13);
+  const items=[];
+  for(let i=0;i<20;i++)items.push({bad:i<5});
+  // 摆成 5x4 网格
+  const gridSize=42,startX=cx-2*gridSize-30,startY=cy-2*gridSize;
+  items.forEach((it,i)=>{
+    const r=Math.floor(i/5),c=i%5;
+    const x=startX+c*gridSize,y=startY+r*gridSize;
+    const anim=Math.min(1,Math.max(0,time*1.5-i*0.04));
+    if(anim<=0)return;
+    ctx.fillStyle=it.bad?'rgba(248,113,113,0.65)':'rgba(52,211,153,0.5)';
+    ctx.strokeStyle=it.bad?'#f87171':'#34d399';ctx.lineWidth=1.5;
+    roundRect(x-15,y-15,30,30,5);ctx.fill();ctx.stroke();
+    drawText(it.bad?'次':'正',x,y,it.bad?'#fecaca':'#a7f3d0',11);
+  });
+  // 抽样动画：n=4
+  const n=4;
+  drawText('无放回抽取 n='+n+' 件',cx,cy+130,'#fbbf24',13);
+  // 抽出的位置（动画显示当前抽到的次品数）
+  const phase=Math.floor(time*0.8)%5;
+  const sampleBad=[0,1,2,1,3][phase];
+  for(let i=0;i<n;i++){
+    const sx=cx-3*40+i*80,sy=cy+170;
+    const isBad=i<sampleBad;
+    ctx.fillStyle=isBad?'rgba(248,113,113,0.7)':'rgba(52,211,153,0.6)';
+    ctx.strokeStyle=isBad?'#f87171':'#34d399';ctx.lineWidth=2;
+    roundRect(sx-20,sy-20,40,40,6);ctx.fill();ctx.stroke();
+    drawText(isBad?'次':'正',sx,sy,isBad?'#fecaca':'#a7f3d0',13);
+  }
+  drawText('ξ = 抽到的次品数 = '+sampleBad,cx,cy+220,'#fbbf24',14);
+  // 关键性质 + 概率公式提示框
+  ctx.fillStyle='rgba(251,191,36,0.10)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.2;
+  roundRect(cx-180,H-95,360,30,6);ctx.fill();ctx.stroke();
+  drawText('P(ξ=k) = C(M,k)·C(N−M,n−k) / C(N,n)',cx,H-80,'#fde68a',12);
+  drawText('区别：无放回 → 各次抽取不独立（非二项分布）',cx,H-45,'#34d399',12);
+  drawText('ξ 服从超几何分布 H(N, M, n)',cx,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('离散型随机变量 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'分布列',d:'P(ξ=xᵢ)=pᵢ\nΣpᵢ=1, pᵢ≥0',c:'#fbbf24'},
+    {t:'期望',d:'E(ξ)=Σ xᵢ·pᵢ\n加权平均',c:'#06b6d4'},
+    {t:'方差',d:'D(ξ)=E(ξ²)−E²(ξ)\nσ=√D',c:'#34d399'},
+    {t:'两点分布',d:'E=p\nD=p(1−p)',c:'#a78bfa'},
+    {t:'二项分布',d:'B(n,p)\nE=np, D=np(1−p)',c:'#fb923c'},
+    {t:'超几何',d:'N件M次品无放回\n取n件',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,150,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+40,m.c,16);
+    const lines=m.d.split('\n');
+    lines.forEach((ln,j)=>drawText(ln,x+(W-160)/6,y+80+j*28,'#fff',12));
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawConceptScene(t);
+  else if(stepIdx===1)drawDistributionScene(t);
+  else if(stepIdx===2)drawExpectationScene(t);
+  else if(stepIdx===3)drawVarianceScene(t);
+  else if(stepIdx===4)drawPropertiesScene(t);
+  else if(stepIdx===5)drawBinomialScene(t);
+  else if(stepIdx===6)drawHyperScene(t);
+  else if(stepIdx===7)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+
+// ============================================================
+// 离散型随机变量教学动画 · 完
+// 涵盖：随机变量概念 / 分布列 / 期望 / 方差 / 性质 / 三大分布
+// ============================================================
+</script>
+</body>
+</html>

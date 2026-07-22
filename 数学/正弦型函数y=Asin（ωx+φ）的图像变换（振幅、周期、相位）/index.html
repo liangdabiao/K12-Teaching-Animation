@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>正弦型函数 · y=Asin(ωx+φ) · 图像变换</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">正弦型函数 y=Asin(ωx+φ)</span><span class="subtitle">振幅 · 周期 · 相位 · 图像变换</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>A 控振幅</h4><div class="v">y=Asin x<br>最大值 A、最小值 -A</div></div>
+  <div class="card s2"><div class="num">2</div><h4>ω 控周期</h4><div class="v">y=sin ωx<br>周期 T=2π/ω</div></div>
+  <div class="card s3"><div class="num">3</div><h4>φ 控相位</h4><div class="v">y=sin(x+φ)<br>φ&gt;0 左移、φ&lt;0 右移</div></div>
+  <div class="card s4"><div class="num">4</div><h4>五点法作图</h4><div class="v">五个关键点<br>描出完整一个周期</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">振幅变换</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <label>A=<input id="ampCtrl" type="range" min="0.3" max="2.5" step="0.1" value="1.5"></label>
+  <label>ω=<input id="omgCtrl" type="range" min="0.5" max="3" step="0.1" value="1.2"></label>
+  <label>φ=<input id="phsCtrl" type="range" min="-3.14" max="3.14" step="0.1" value="0.5"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'振幅',name:'振幅变换 A',body:'<strong>振幅变换</strong>：y=sin x → <code>y=Asin x</code>。A 决定<strong>振幅</strong>，即函数的最大值和最小值。|A| 越大，曲线被<strong>纵向拉伸</strong>；0&lt;|A|&lt;1 则<strong>纵向压缩</strong>。',points:{title:'A 的作用',items:['<strong>最大值</strong>：A','<strong>最小值</strong>：-A','<strong>A&gt;1</strong>：纵向拉伸','<strong>0&lt;A&lt;1</strong>：纵向压缩']}},
+  {tag:'周期',name:'周期变换 ω',body:'<strong>周期变换</strong>：y=sin x → <code>y=sin(ωx)</code>。ω 决定<strong>周期</strong> <code>T=2π/ω</code>。ω 越大，周期越短，曲线<strong>横向压缩</strong>；ω 越小，周期越长，<strong>横向拉伸</strong>。',points:{title:'ω 的作用',items:['<strong>周期</strong>：T = 2π/ω','<strong>频率</strong>：f = 1/T = ω/2π','<strong>ω&gt;1</strong>：横向压缩','<strong>0&lt;ω&lt;1</strong>：横向拉伸']}},
+  {tag:'相位',name:'相位变换 φ',body:'<strong>相位变换</strong>：y=sin x → <code>y=sin(x+φ)</code>。φ 决定<strong>相位</strong>。<strong>φ&gt;0</strong> 时图像<strong>左移</strong> |φ| 个单位；<strong>φ&lt;0</strong> 时图像<strong>右移</strong> |φ| 个单位。',points:{title:'φ 的作用',items:['<strong>φ&gt;0</strong>：图像左移 φ','<strong>φ&lt;0</strong>：图像右移 |φ|','<strong>ωx+φ</strong>：相位','<strong>φ</strong>：初相（x=0 时相位）']}},
+  {tag:'完整',name:'完整变换顺序',body:'<strong>由 y=sin x 变换到 y=Asin(ωx+φ)</strong>，推荐顺序：<strong>先相位后周期</strong>更简单。<code>y=sin x → y=sin(x+φ) → y=sin(ωx+φ) → y=Asin(ωx+φ)</code>',points:{title:'变换路径（推荐）',items:['<strong>步骤1</strong>：相位变换 sin x → sin(x+φ)','<strong>步骤2</strong>：周期变换 → sin(ωx+φ)','<strong>步骤3</strong>：振幅变换 → Asin(ωx+φ)','<strong>注意</strong>：先周期后相位更易出错']}},
+  {tag:'五点法',name:'五点法作图',body:'<strong>五点法</strong>：在一个周期内取 5 个关键点（零点、最值点）描点连线。令 ωx+φ 取 <code>0, π/2, π, 3π/2, 2π</code>，解出对应的 x 值即可。',points:{title:'五个关键点',items:['<strong>x₁</strong>：-φ/ω（起点，y=0）','<strong>x₂</strong>：(π/2-φ)/ω（最大值）','<strong>x₃</strong>：(π-φ)/ω（y=0）','<strong>x₄</strong>：(3π/2-φ)/ω（最小值）','<strong>x₅</strong>：(2π-φ)/ω（终点，y=0）']}},
+  {tag:'物理',name:'物理意义',body:'<strong>物理意义</strong>：正弦型函数描述<strong>简谐运动</strong>与<strong>交流电</strong>。<code>A</code>=振幅，<code>T=2π/ω</code>=周期，<code>f=1/T</code>=频率，<code>ωx+φ</code>=相位，<code>φ</code>=初相。',points:{title:'物理量对照',items:['<strong>A</strong>：振幅（最大位移）','<strong>T=2π/ω</strong>：周期（一次振动时间）','<strong>f=1/T</strong>：频率（单位时间振动次数）','<strong>ω=2πf</strong>：圆频率（角速度）','<strong>φ</strong>：初相（t=0 时相位）']}},
+  {tag:'实例',name:'实例求解',body:'<strong>例题</strong>：已知 y=2sin(2x+π/3)，求振幅、周期、频率、初相，并用五点法画出图像。',points:{title:'求解步骤',items:['<strong>振幅</strong>：A = 2','<strong>周期</strong>：T = 2π/2 = π','<strong>频率</strong>：f = 1/π','<strong>初相</strong>：φ = π/3','<strong>五点</strong>：x = -π/6, π/12, π/3, 7π/12, 5π/6']}},
+  {tag:'对比',name:'两种变换顺序',body:'<strong>对比两种变换顺序</strong>：<br>① <strong>先相位后周期</strong>（推荐）：y=sin x → y=sin(x+φ) → y=sin(ωx+φ)，每步清晰不易错。<br>② <strong>先周期后相位</strong>：y=sin x → y=sin(ωx) → y=sin(ωx+φ)，第二步要把 x 换成 <code>x+φ/ω</code>，容易出错。',points:{title:'易错点提示',items:['<strong>方法1</strong>：先φ后ω（左移φ，再ω缩放）','<strong>方法2</strong>：先ω后φ（横向ω倍，再左移φ/ω）','<strong>陷阱</strong>：先ω后φ时左移量是 φ/ω 不是 φ','<strong>结论</strong>：先相位后周期更直观、不易错']}},
+  {tag:'总结',name:'核心速记',body:'正弦型函数 <code>y=Asin(ωx+φ)</code> 是<strong>三角函数的一般形式</strong>，三个参数 A、ω、φ 分别控制<strong>振幅、周期、相位</strong>。掌握参数意义与五点法，即可快速画出任意正弦型函数图像。',points:{title:'三句话总结',items:['<strong>A</strong>：振幅，决定上下范围 [-A, A]','<strong>ω</strong>：频率因子，周期 T=2π/ω','<strong>φ</strong>：初相，决定左右平移','<strong>五点法</strong>：取 ωx+φ = 0,π/2,π,3π/2,2π','<strong>本质</strong>：描述一切周期性振动']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+// 全局参数：由滑块实时调节，在「完整变换」「五点法」「实例」等场景中复用
+let paramA=1.5,paramOmg=1.2,paramPhi=0.5;
+// 数学常量：方便后续公式中引用，避免魔法数字
+const PI=Math.PI;
+
+// ===== 坐标系绘制 =====
+function drawAxes(cx,cy,scale,xRange,yRange){
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-xRange*scale,cy);ctx.lineTo(cx+xRange*scale,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy+yRange*scale);ctx.lineTo(cx,cy-yRange*scale);ctx.stroke();
+  // 刻度
+  ctx.fillStyle='#5a6a8a';ctx.font='10px sans-serif';ctx.textAlign='center';
+  for(let i=-xRange;i<=xRange;i++){
+    if(i===0)continue;
+    const x=cx+i*Math.PI*scale/2;
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(x,cy-3);ctx.lineTo(x,cy+3);ctx.stroke();
+  }
+  drawText('π/2',cx+Math.PI*scale/2,cy+15,'#5a6a8a',9);
+  drawText('π',cx+Math.PI*scale,cy+15,'#5a6a8a',9);
+  drawText('3π/2',cx+3*Math.PI*scale/2,cy+15,'#5a6a8a',9);
+  drawText('-π/2',cx-Math.PI*scale/2,cy+15,'#5a6a8a',9);
+  drawText('-π',cx-Math.PI*scale,cy+15,'#5a6a8a',9);
+  for(let i=-yRange;i<=yRange;i++){
+    if(i===0)continue;
+    const y=cy-i*scale;
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(cx-3,y);ctx.lineTo(cx+3,y);ctx.stroke();
+    drawText(i,cx-15,y,'#5a6a8a',9);
+  }
+  drawText('x',cx+xRange*scale-5,cy-12,'#9ab0d0',12);
+  drawText('y',cx+12,cy-yRange*scale+5,'#9ab0d0',12);
+  drawText('O',cx-8,cy+12,'#9ab0d0',11);
+}
+
+// ===== 通用：绘制 y=Asin(ωx+φ) =====
+function drawSine(cx,cy,scale,A,omega,phi,color,xMin,xMax,glow){
+  ctx.strokeStyle=color;ctx.lineWidth=2.5;
+  if(glow){ctx.shadowColor=color;ctx.shadowBlur=10;}
+  ctx.beginPath();
+  let first=true;
+  for(let xv=xMin;xv<=xMax;xv+=0.02){
+    const yv=A*Math.sin(omega*xv+phi);
+    const px=cx+xv*scale;
+    const py=cy-yv*scale;
+    if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+}
+
+// ===== 场景：振幅变换 =====
+function drawAmpScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('振幅变换 · y=Asin x',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,scale=Math.min(40,H/7);
+  drawAxes(cx,cy,scale,3,3);
+  const A=1.2+0.8*Math.sin(time*0.6);
+  // 基准 sin x
+  drawSine(cx,cy,scale,1,1,0,'#3a4a6a',-3,3,false);
+  // Asin x
+  drawSine(cx,cy,scale,A,1,0,'#fbbf24',-3,3,true);
+  // 振幅标注
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(cx-A*scale,cy);ctx.lineTo(cx+A*scale,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#34d399';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('A='+A.toFixed(2),cx,cy-130);
+  drawText('sin x（基准，灰）',W-130,H-60,'#5a6a8a',11);
+  drawText('A·sin x（黄色）',W-130,H-40,'#fbbf24',11);
+  drawText('A 控制振幅：最大值=A，最小值=-A',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：周期变换 =====
+function drawPeriodScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('周期变换 · y=sin(ωx)',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,scale=Math.min(40,H/7);
+  drawAxes(cx,cy,scale,3,3);
+  const omega=1+0.8*Math.sin(time*0.5);
+  drawSine(cx,cy,scale,1,1,0,'#3a4a6a',-3,3,false);
+  drawSine(cx,cy,scale,1,omega,0,'#06b6d4',-3,3,true);
+  const T=2*Math.PI/omega;
+  drawText('ω='+omega.toFixed(2)+'  T=2π/ω='+(T).toFixed(2),W/2,cy+90,'#34d399',13);
+  drawText('sin x（灰）',W-130,H-60,'#5a6a8a',11);
+  drawText('sin(ωx)（青）',W-130,H-40,'#06b6d4',11);
+  drawText('ω 控制周期：ω 越大周期越短',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：相位变换 =====
+function drawPhaseScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('相位变换 · y=sin(x+φ)',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,scale=Math.min(40,H/7);
+  drawAxes(cx,cy,scale,3,3);
+  const phi=1.5*Math.sin(time*0.5);
+  drawSine(cx,cy,scale,1,1,0,'#3a4a6a',-3,3,false);
+  drawSine(cx,cy,scale,1,1,phi,'#34d399',-3,3,true);
+  // 平移箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  const arrX=cx-phi*scale;
+  ctx.beginPath();ctx.moveTo(cx-50,cy-60);ctx.lineTo(arrX-50,cy-60);ctx.stroke();
+  const dir=phi>0?-1:1;
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(arrX-50,cy-60);ctx.lineTo(arrX-50+dir*8,cy-65);ctx.lineTo(arrX-50+dir*8,cy-55);ctx.fill();
+  drawText('φ='+phi.toFixed(2)+(phi>0?'  左移':'  右移'),W/2,cy+90,'#fbbf24',13);
+  drawText('sin x（灰）',W-130,H-60,'#5a6a8a',11);
+  drawText('sin(x+φ)（绿）',W-130,H-40,'#34d399',11);
+  drawText('φ&gt;0 左移，φ&lt;0 右移',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：完整变换 =====
+function drawFullScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('完整变换 · y=sin x → y=Asin(ωx+φ)',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,scale=Math.min(38,H/8);
+  drawAxes(cx,cy,scale,3,3);
+  const stage=(time%6);
+  // 阶段展示
+  let A=1,omega=1,phi=0,active='#3a4a6a';
+  let label='y = sin x';
+  if(stage<1.5){A=1;omega=1;phi=0;active='#fbbf24';label='① y = sin x';}
+  else if(stage<3){A=1;omega=1;phi=paramPhi;active='#06b6d4';label='② y = sin(x+φ)';}
+  else if(stage<4.5){A=1;omega=paramOmg;phi=paramPhi;active='#34d399';label='③ y = sin(ωx+φ)';}
+  else{A=paramA;omega=paramOmg;phi=paramPhi;active='#fbbf24';label='④ y = Asin(ωx+φ)';}
+  // 基准灰线
+  drawSine(cx,cy,scale,1,1,0,'#3a4a6a',-3,3,false);
+  // 变换后曲线
+  drawSine(cx,cy,scale,A,omega,phi,active,-3,3,true);
+  drawText(label,W/2,cy+90,active,14);
+  drawText('推荐顺序：先相位 → 后周期 → 再振幅',W/2,H-40,'#9ab0d0',12);
+  drawText('A='+paramA.toFixed(1)+' ω='+paramOmg.toFixed(1)+' φ='+paramPhi.toFixed(2),W/2,H-22,'#34d399',11);
+}
+
+// ===== 场景：五点法 =====
+function drawFivePointScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('五点法作图 · 五个关键点',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,scale=Math.min(40,H/7);
+  drawAxes(cx,cy,scale,3,3);
+  const A=paramA,omega=paramOmg,phi=paramPhi;
+  // 完整曲线（淡）
+  drawSine(cx,cy,scale,A,omega,phi,'#3a4a6a',-3,3,false);
+  // 五个关键点
+  const phis=[0,Math.PI/2,Math.PI,3*Math.PI/2,2*Math.PI];
+  const labels=['(起点)','(最大值)','(中点)','(最小值)','(终点)'];
+  const colors=['#06b6d4','#fbbf24','#34d399','#f87171','#a78bfa'];
+  phis.forEach((ph,i)=>{
+    const xv=(ph-phi)/omega;
+    const yv=A*Math.sin(ph);
+    const px=cx+xv*scale,py=cy-yv*scale;
+    // 闪烁效果
+    const pulse=0.5+0.5*Math.sin(time*3+i);
+    ctx.fillStyle=colors[i];
+    ctx.shadowColor=colors[i];ctx.shadowBlur=8+pulse*8;
+    ctx.beginPath();ctx.arc(px,py,6+pulse*2,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('P'+(i+1),px,py-16,colors[i],11);
+    drawText('('+xv.toFixed(2)+','+yv.toFixed(2)+')',px,py+18,'#9ab0d0',9);
+  });
+  drawText('令 ωx+φ = 0, π/2, π, 3π/2, 2π 解出 x',W/2,H-40,'#9ab0d0',12);
+  drawText('五个点确定一个周期的图像形状',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景：物理意义 =====
+// 简谐运动：物体偏离平衡位置的位移随时间按正弦规律变化
+// 此场景同时展示「振动质点 + 单位圆投影」两种等价视角
+function drawPhysicsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('物理意义 · 简谐运动 y=Asin(ωt+φ)',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40,scale=Math.min(36,H/8);
+  // 振动参数：A 振幅，omega 圆频率（角速度），phi 初相
+  const A=1.5,omega=1.5,phi=0.5;
+  // 当前时刻质点的位移（偏离平衡位置的距离）
+  const pos=A*Math.sin(omega*time+phi);
+  // 平衡位置线
+  ctx.strokeStyle='#243a5e';ctx.setLineDash([4,4]);ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-200,cy);ctx.lineTo(cx+200,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  // 振幅范围
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-150,cy-A*scale);ctx.lineTo(cx+150,cy-A*scale);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-150,cy+A*scale);ctx.lineTo(cx+150,cy+A*scale);ctx.stroke();
+  drawText('+A',cx-170,cy-A*scale,'#34d399',11);
+  drawText('-A',cx-170,cy+A*scale,'#f87171',11);
+  drawText('平衡位置',cx+170,cy,'#9ab0d0',11);
+  // 弹簧（简化为弹簧线）
+  const ballX=cx,bally=cy-pos*scale;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  const topY=cy-A*scale-60;
+  for(let s=0;s<=10;s++){
+    const sy=topY+s*(bally-topY)/10;
+    const sx=cx+(s%2===0?-6:6);
+    if(s===0)ctx.moveTo(cx,topY);else ctx.lineTo(sx,sy);
+  }
+  ctx.lineTo(cx,bally);ctx.stroke();
+  // 振动球
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(ballX,bally,12,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 右侧相位圆
+  const rcx=cx+200,rcy=cy;
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(rcx,rcy,A*scale,0,7);ctx.stroke();
+  const angle=omega*time+phi;
+  const dotX=rcx+A*scale*Math.cos(angle-Math.PI/2);
+  const dotY=rcy-A*scale*Math.sin(angle-Math.PI/2);
+  ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(dotX,dotY,5,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('单位圆投影',rcx,rcy+A*scale+20,'#a78bfa',11);
+  // 参数表
+  drawText('A='+A+'  T='+(2*Math.PI/omega).toFixed(2)+'  f='+(omega/(2*Math.PI)).toFixed(3)+'  φ='+phi,W/2,H-50,'#fbbf24',13);
+  drawText('A=振幅  T=周期  f=频率  ω=圆频率  φ=初相',W/2,H-28,'#9ab0d0',11);
+}
+
+// ===== 场景：实例求解 =====
+function drawExampleScene(){
+  const W=cv.width,H=cv.height;
+  drawText('实例 · y=2sin(2x+π/3)',W/2,28,'#fbbf24',16);
+  // 题目卡片
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,55,W-120,80,8);ctx.fill();ctx.stroke();
+  drawText('【例题】求 y=2sin(2x+π/3) 的振幅、周期、频率、初相，并画图',W/2,80,'#fff',13);
+  drawText('解：A=2，T=2π/ω=2π/2=π，f=1/T=1/π，φ=π/3',W/2,108,'#34d399',12);
+  // 五点法坐标
+  const cx=W/2,cy=H/2+60,scale=Math.min(50,H/9);
+  drawAxes(cx,cy,scale,3,3);
+  // 例题固定参数（与滑块无关，独立演示）
+  const A=2,omega=2,phi=Math.PI/3;
+  drawSine(cx,cy,scale,A,omega,phi,'#fbbf24',-3,3,true);
+  // 五点：令 ωx+φ = 0, π/2, π, 3π/2, 2π，反解出 x
+  const phis=[0,Math.PI/2,Math.PI,3*Math.PI/2,2*Math.PI];
+  phis.forEach((ph,i)=>{
+    const xv=(ph-phi)/omega;
+    const yv=A*Math.sin(ph);
+    const px=cx+xv*scale,py=cy-yv*scale;
+    ctx.fillStyle='#06b6d4';
+    ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText(xv.toFixed(2),px,py+18,'#9ab0d0',9);
+  });
+  drawText('五点：x=-π/6, π/12, π/3, 7π/12, 5π/6',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：参数滑块实时演示 =====
+function drawSliderScene(){
+  const W=cv.width,H=cv.height;
+  drawText('参数实时调节 · y=Asin(ωx+φ)',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,scale=Math.min(40,H/7);
+  drawAxes(cx,cy,scale,3,3);
+  drawSine(cx,cy,scale,1,1,0,'#3a4a6a',-3,3,false);
+  drawSine(cx,cy,scale,paramA,paramOmg,paramPhi,'#fbbf24',-3,3,true);
+  drawText('A='+paramA.toFixed(2)+'  ω='+paramOmg.toFixed(2)+'  φ='+paramPhi.toFixed(2),W/2,cy+100,'#34d399',14);
+  drawText('T='+(2*Math.PI/paramOmg).toFixed(2)+'  f='+(paramOmg/(2*Math.PI)).toFixed(3),W/2,cy+122,'#06b6d4',12);
+  drawText('拖动下方 A、ω、φ 滑块查看变换效果',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：两种变换顺序对比 =====
+// 同一个目标函数 y=Asin(ωx+φ) 可由两种路径达到：
+//   方法①先相位后周期：sin x → sin(x+φ) → sin(ωx+φ) → Asin(ωx+φ)
+//   方法②先周期后相位：sin x → sin(ωx) → sin(ωx+φ) → Asin(ωx+φ)
+// 本场景左右对照展示两法的中间状态，突出方法②第二步需左移 φ/ω 而非 φ
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('两种变换顺序对比 · 推荐先相位后周期',W/2,28,'#fbbf24',16);
+  // 左右两半分屏，中间虚线分割
+  const splitX=W/2;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(splitX,60);ctx.lineTo(splitX,H-60);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('① 先相位后周期（推荐）',splitX/2,60,'#34d399',14);
+  drawText('② 先周期后相位（易错）',splitX+W/4,60,'#f87171',14);
+  // 公共目标参数
+  const A=1.5,omega=1.5,phi=0.8;
+  // 当前演示到第几步（共 4 步循环）
+  const step=Math.floor((time%4));
+  const cxL=splitX/2,cyL=H/2+30,scale=Math.min(28,H/11);
+  // 左侧坐标轴简化
+  drawAxes(cxL,cyL,scale,2,2);
+  drawSine(cxL,cyL,scale,1,1,0,'#3a4a6a',-2,2,false);
+  let curA=1,curW=1,curP=0,col='#3a4a6a';
+  if(step===0){curA=1;curW=1;curP=0;col='#3a4a6a';drawText('y=sin x',cxL,cyL+80,'#9ab0d0',11);}
+  else if(step===1){curA=1;curW=1;curP=phi;col='#06b6d4';drawText('y=sin(x+φ)',cxL,cyL+80,'#06b6d4',11);}
+  else if(step===2){curA=1;curW=omega;curP=phi;col='#34d399';drawText('y=sin(ωx+φ)',cxL,cyL+80,'#34d399',11);}
+  else{curA=A;curW=omega;curP=phi;col='#fbbf24';drawText('y=Asin(ωx+φ)',cxL,cyL+80,'#fbbf24',11);}
+  drawSine(cxL,cyL,scale,curA,curW,curP,col,-2,2,true);
+  // 右半图
+  const cxR=splitX+W/4,cyR=H/2+30;
+  drawAxes(cxR,cyR,scale,2,2);
+  drawSine(cxR,cyR,scale,1,1,0,'#3a4a6a',-2,2,false);
+  let rA=1,rW=1,rP=0,rcol='#3a4a6a';
+  if(step===0){rA=1;rW=1;rP=0;rcol='#3a4a6a';drawText('y=sin x',cxR,cyR+80,'#9ab0d0',11);}
+  else if(step===1){rA=1;rW=omega;rP=0;rcol='#06b6d4';drawText('y=sin(ωx)',cxR,cyR+80,'#06b6d4',11);}
+  else if(step===2){rA=1;rW=omega;rP=phi;rcol='#34d399';drawText('注意：左移 φ/ω 不是 φ',cxR,cyR+80,'#f87171',11);}
+  else{rA=A;rW=omega;rP=phi;rcol='#fbbf24';drawText('y=Asin(ωx+φ)',cxR,cyR+80,'#fbbf24',11);}
+  drawSine(cxR,cyR,scale,rA,rW,rP,rcol,-2,2,true);
+  drawText('步骤 '+(step+1)+'/4',W/2,H-40,'#fbbf24',12);
+  drawText('两种方法结果相同，但方法①思路更清晰',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景：核心总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('y=Asin(ωx+φ) 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'振幅 A',d:'决定上下范围 [-A, A]',c:'#fbbf24'},
+    {t:'周期 T',d:'T = 2π/ω',c:'#06b6d4'},
+    {t:'频率 f',d:'f = 1/T = ω/2π',c:'#67e8f9'},
+    {t:'相位',d:'ωx+φ（自变量的整体）',c:'#34d399'},
+    {t:'初相 φ',d:'x=0 时的相位',c:'#a78bfa'},
+    {t:'五点法',d:'关键点：0,π/2,π,3π/2,2π',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawAmpScene(t);
+  else if(stepIdx===1)drawPeriodScene(t);
+  else if(stepIdx===2)drawPhaseScene(t);
+  else if(stepIdx===3)drawFullScene(t);
+  else if(stepIdx===4)drawFivePointScene(t);
+  else if(stepIdx===5)drawPhysicsScene(t);
+  else if(stepIdx===6)drawExampleScene();
+  else if(stepIdx===7)drawCompareScene(t);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+const ampCtrl=document.getElementById('ampCtrl'),omgCtrl=document.getElementById('omgCtrl'),phsCtrl=document.getElementById('phsCtrl');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+ampCtrl.oninput=()=>{paramA=parseFloat(ampCtrl.value);};
+omgCtrl.oninput=()=>{paramOmg=parseFloat(omgCtrl.value);};
+phsCtrl.oninput=()=>{paramPhi=parseFloat(phsCtrl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

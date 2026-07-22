@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>平面向量的线性运算 · 加法 · 减法 · 数乘 · 坐标</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">平面向量的线性运算</span><span class="subtitle">加法 · 减法 · 数乘 · 坐标表示</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>向量基础概念</h4><div class="v">有大小有方向<br>零向量 / 单位向量 / 平行向量</div></div>
+  <div class="card s2"><div class="num">2</div><h4>加法两法则</h4><div class="v">三角形法则：首尾相接<br>平行四边形法则：同起点</div></div>
+  <div class="card s3"><div class="num">3</div><h4>数乘与共线</h4><div class="v">λa：伸缩+方向<br>a∥b ⇔ b=λa</div></div>
+  <div class="card s4"><div class="num">4</div><h4>坐标运算</h4><div class="v">a=(x,y)<br>加法/数乘按分量运算</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">向量概念</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+// 绘制带箭头的向量：从 (x1,y1) 到 (x2,y2)
+function drawVec(x1,y1,x2,y2,color,label,labelOffset){
+  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy);
+  if(len<1)return;
+  const ux=dx/len,uy=dy/len;
+  ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=3;
+  ctx.shadowColor=color;ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2-ux*12,y2-uy*12);ctx.stroke();
+  // 箭头三角
+  const px=-uy,py=ux;
+  ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-ux*14-px*7,y2-uy*14-py*7);ctx.lineTo(x2-ux*14+px*7,y2-uy*14+py*7);ctx.closePath();ctx.fill();
+  ctx.shadowBlur=0;
+  if(label){const off=labelOffset||18;drawText(label,x2+ux*off-uy*0,y2+uy*off,color,15);}
+}
+// 绘制坐标系
+function drawAxes(ox,oy,scale){
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;ctx.fillStyle='#243a5e';
+  // 网格
+  for(let i=-10;i<=10;i++){
+    ctx.beginPath();ctx.moveTo(ox+i*scale,oy-300);ctx.lineTo(ox+i*scale,oy+300);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ox-500,oy+i*scale);ctx.lineTo(ox+500,oy+i*scale);ctx.stroke();
+  }
+  // 轴
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox-400,oy);ctx.lineTo(ox+400,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy-260);ctx.lineTo(ox,oy+260);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#5a6a8a';
+  ctx.beginPath();ctx.moveTo(ox+400,oy);ctx.lineTo(ox+390,oy-5);ctx.lineTo(ox+390,oy+5);ctx.fill();
+  ctx.beginPath();ctx.moveTo(ox,oy-260);ctx.lineTo(ox-5,oy-250);ctx.lineTo(ox+5,oy-250);ctx.fill();
+  drawText('x',ox+410,oy,'#9ab0d0',13);drawText('y',ox,oy-275,'#9ab0d0',13);
+  drawText('O',ox-12,oy+12,'#9ab0d0',12);
+}
+
+const STEPS=[
+  {tag:'基础',name:'向量概念',body:'<strong>向量</strong>是<strong>既有大小又有方向</strong>的量。记为 <code>a</code> 或 <code>AB→</code>（从 A 指向 B）。大小叫<strong>模</strong>，记 <code>|a|</code>。',points:{title:'核心要点',items:['<strong>向量</strong>：有大小、有方向','<strong>零向量 0</strong>：模为 0，方向任意','<strong>单位向量</strong>：模为 1','<strong>平行向量</strong>：方向相同或相反（共线）']}},
+  {tag:'加法',name:'三角形法则',body:'<strong>向量加法的三角形法则</strong>：把向量 <code>b</code> 的起点接在 <code>a</code> 的终点，则<strong>从 a 的起点到 b 的终点</strong>的向量就是 <code>a+b</code>。多个向量首尾相接同样适用。',points:{title:'首尾相接',items:['<strong>移动 b</strong>：起点接到 a 的终点','<strong>和向量</strong>：起点→终点','<strong>交换律</strong>：a+b = b+a','<strong>多向量</strong>：依次首尾相接']}},
+  {tag:'加法',name:'平行四边形法则',body:'<strong>平行四边形法则</strong>：把两个向量 <code>a、b</code> 平移到<strong>同一起点</strong>，以它们为邻边作平行四边形，则<strong>对角线</strong>就是 <code>a+b</code>。适用于不共线的两向量。',points:{title:'同起点',items:['<strong>同起点</strong>：a 与 b 共起点','<strong>邻边</strong>：a、b 为平行四边形邻边','<strong>对角线</strong>：= a+b','<strong>模</strong>：|a+b| ≤ |a|+|b|']}},
+  {tag:'减法',name:'减法运算',body:'<strong>向量减法</strong>：<code>a - b = a + (-b)</strong></code>，把 <code>b</code> <strong>反向</strong>得到 <code>-b</code>，再用三角形法则与 <code>a</code> 相加。几何上 <code>a-b</strong></code> 是从 b 的终点指向 a 的终点的向量（同起点时）。',points:{title:'反向再相加',items:['<strong>反向量</strong>：-b 与 b 模等方向反','<strong>a-b</strong>：a + (-b)','<strong>同起点</strong>：a-b 从 b 终点指向 a 终点','<strong>模</strong>：|a-b| 与 a、b 夹角有关']}},
+  {tag:'数乘',name:'数乘运算',body:'<strong>实数 λ 与向量 a 的乘积 λa</strong> 仍是向量：<code>|λa| = |λ|·|a|</code>。当 <code>λ>0</code> 时<strong>同向</strong>；<code>λ<0</code> 时<strong>反向</strong>；<code>λ=0</code> 时为零向量。',points:{title:'数乘规律',items:['<strong>λ>0</strong>：同向，模放大/缩小','<strong>λ<0</strong>：反向，模放大/缩小','<strong>λ=0</strong>：λa = 0','<strong>|λa|</strong>：= |λ|·|a|']}},
+  {tag:'共线',name:'共线向量定理',body:'<strong>共线向量定理</strong>：向量 <code>a∥b（b≠0）</code> 当且仅当<strong>存在唯一实数 λ</strong>使 <code>b = λa</code>。这是判断向量平行的<strong>充要条件</strong>。',points:{title:'充要条件',items:['<strong>a∥b</strong> ⇔ b = λa（b≠0）','<strong>λ 唯一</strong>：由 a、b 确定','<strong>零向量</strong>：与任意向量共线','<strong>应用</strong>：判断三点共线']}},
+  {tag:'定理',name:'平面向量基本定理',body:'<strong>平面向量基本定理</strong>：若 <code>e₁、e₂</code> 是同一平面内<strong>不共线</strong>的两个向量，那么平面内<strong>任一向量 a</strong> 都可<strong>唯一</strong>分解为 <code>a = λ₁e₁ + λ₂e₂</code>。',points:{title:'基底分解',items:['<strong>基底</strong>：不共线的 e₁、e₂','<strong>分解式</strong>：a = λ₁e₁ + λ₂e₂','<strong>λ₁、λ₂</strong>：唯一确定','<strong>特殊基底</strong>：互相垂直=正交分解']}},
+  {tag:'坐标',name:'坐标表示',body:'在平面直角坐标系中，向量 <code>a</strong></code> 用<strong>有序数对</strong> <code>(x, y)</code> 表示，<strong>x、y 是 a 在两坐标轴上的投影</strong>（按单位基底分解）。',points:{title:'坐标定义',items:['<strong>a = (x, y)</strong>：有序数对','<strong>模</strong>：|a| = √(x²+y²)','<strong>起点在原点</strong>：终点坐标=向量坐标','<strong>相等</strong>：对应分量相等']}},
+  {tag:'坐标',name:'坐标加法',body:'<strong>向量坐标的加减法</strong>按<strong>分量分别运算</strong>：<code>(x₁,y₁) ± (x₂,y₂) = (x₁±x₂, y₁±y₂)</code>。这是代数形式下的三角形法则。',points:{title:'分量相加',items:['<strong>a+b</strong>：对应坐标相加','<strong>a-b</strong>：对应坐标相减','<strong>共线判定</strong>：x₁y₂=x₂y₁','<strong>本质</strong>：三角形法则的代数化']}},
+  {tag:'坐标',name:'坐标数乘',body:'<strong>向量数乘的坐标运算</strong>：<code>λ(x, y) = (λx, λy)</code>，每个分量都<strong>乘以同一个实数</strong>。配合加法可实现一切线性运算。',points:{title:'数乘坐标',items:['<strong>λa</strong>：λ·(x, y) = (λx, λy)','<strong>模</strong>：|λa| = |λ|·√(x²+y²)','<strong>中点公式</strong>：(a+b)/2','<strong>重心</strong>：(a+b+c)/3']}},
+  {tag:'总结',name:'核心速记',body:'平面向量线性运算的<strong>三大运算</strong>（加、减、数乘）有<strong>几何（法则）</strong>和<strong>代数（坐标）</strong>两套表示，可以互相转换。',points:{title:'两套表示',items:['<strong>几何</strong>：三角形/平行四边形法则','<strong>代数</strong>：按分量运算','<strong>共线</strong>：b=λa / x₁y₂=x₂y₁','<strong>基本定理</strong>：a=λ₁e₁+λ₂e₂']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景1：向量概念 =====
+function drawConceptScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('向量的概念 · 有大小有方向',W/2,30,'#fbbf24',16);
+  // 普通向量 a：起点 A 终点 B
+  const ax1=120,ay1=H/2+40,ax2=ax1+140,ay2=ay1-90;
+  drawVec(ax1,ay1,ax2,ay2,'#06b6d4','a',1);
+  drawText('A',ax1-12,ay1+12,'#9ab0d0',12);
+  drawText('B',ax2+12,ay2-12,'#9ab0d0',12);
+  const modA=Math.hypot(ax2-ax1,ay2-ay1);
+  drawText('|a| = '+modA.toFixed(0)+' （向量 a 的模）',ax1-20,ay1+30,'#67e8f9',12);
+  // 旋转方向指示
+  const ang=Math.atan2(ay2-ay1,ax2-ax1)*180/Math.PI;
+  drawText('方向角 ≈ '+ang.toFixed(0)+'°',ax1+50,ay2-20,'#06b6d4',11);
+  // 零向量
+  drawText('零向量 0：模=0，方向任意',260,90,'#a78bfa',13);
+  ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(280,110,5,0,7);ctx.fill();
+  drawText('0',280,128,'#a78bfa',12);
+  // 单位向量
+  drawText('单位向量：模=1',460,90,'#34d399',13);
+  drawVec(460,130,460+60,130,'#34d399','ê',1);
+  drawText('|ê|=1',460,150,'#34d399',11);
+  // 平行向量（共线）
+  drawText('平行向量（共线）',W-220,90,'#fbbf24',13);
+  drawVec(W-200,130,W-120,100,'#fbbf24','',1);
+  drawVec(W-200,150,W-160,170,'#fbbf24','',1);
+  drawText('同向/反向',W-170,200,'#fbbf24',11);
+  // 相等向量
+  drawText('相等向量：模等方向同',W/2,90,'#ec4899',13);
+  drawVec(W/2-30,130,W/2+30,110,'#ec4899','',1);
+  drawVec(W/2-50,150,W/2+10,130,'#ec4899','',1);
+  drawText('a = b',W/2,170,'#ec4899',11);
+  // 表示方法提示
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;
+  roundRect(60,H-110,W-120,70,8);ctx.fill();ctx.stroke();
+  drawText('表示方法：a（小写加粗） 或 AB→（起点→终点）',W/2,H-85,'#fff',13);
+  drawText('模 |a| = 向量长度；零向量记 0，单位向量模=1',W/2,H-60,'#9ab0d0',12);
+}
+
+// ===== 场景2：三角形法则（加法） =====
+function drawTriangleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('加法 · 三角形法则（首尾相接）',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  const p=0.5+0.5*Math.sin(time); // 0..1 b 移动进度
+  // a 起点 A
+  const Ax=cx-180,Ay=cy+60;
+  const Bx=Ax+160,By=Ay-80; // a 终点
+  drawVec(Ax,Ay,Bx,By,'#06b6d4','a',1);
+  drawText('A',Ax-12,Ay+12,'#9ab0d0',13);
+  drawText('B',Bx+12,By-12,'#9ab0d0',13);
+  // b 从 B 出发
+  const Cx=Bx+130,Cy=By+90;
+  const bx=Bx+(Cx-Bx)*p,by=By+(Cy-By)*p;
+  drawVec(Bx,By,bx,by,'#34d399','b',1);
+  // 和 a+b
+  if(p>0.5){
+    const sp=(p-0.5)*2;
+    drawVec(Ax,Ay,Ax+(Cx-Ax)*sp,Ay+(Cy-Ay)*sp,'#fbbf24','a+b',1);
+  }
+  drawText('C',Cx+12,Cy+12,'#9ab0d0',13);
+  // 公式
+  drawText('把 b 的起点接在 a 的终点 → 起点到终点 = a+b',W/2,H-55,'#9ab0d0',13);
+  drawText('交换律：a+b = b+a   结合律：(a+b)+c = a+(b+c)',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景3：平行四边形法则 =====
+function drawParallelogramScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('加法 · 平行四边形法则（同起点）',W/2,30,'#fbbf24',16);
+  const cx=W/2-80,cy=H/2+50;
+  const p=0.5+0.5*Math.sin(time);
+  // a, b 同起点
+  const ax2=cx+170,ay2=cy-90;
+  const bx2=cx+90,by2=cy-140;
+  drawVec(cx,cy,ax2,ay2,'#06b6d4','a',1);
+  drawVec(cx,cy,bx2,by2,'#34d399','b',1);
+  drawText('O（公共起点）',cx-15,cy+18,'#9ab0d0',11);
+  // 平行四边形对边（虚线）
+  ctx.strokeStyle='rgba(167,139,250,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(ax2,ay2);ctx.lineTo(ax2+(bx2-cx),ay2+(by2-cy));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(bx2,by2);ctx.lineTo(bx2+(ax2-cx),by2+(ay2-cy));ctx.stroke();
+  ctx.setLineDash([]);
+  // 对角线 = a+b
+  const sx=ax2+(bx2-cx),sy=ay2+(by2-cy);
+  if(p>0.4){
+    const sp=Math.min(1,(p-0.4)/0.6);
+    drawVec(cx,cy,cx+(sx-cx)*sp,cy+(sy-cy)*sp,'#fbbf24','a+b',1);
+  }
+  drawText('（平行四边形邻边）',sx+30,sy,'#a78bfa',11);
+  drawText('同起点 → 对角线 = a+b',W/2,H-50,'#9ab0d0',13);
+  drawText('适用条件：a、b 不共线',W/2,H-28,'#34d399',12);
+}
+
+// ===== 场景4：减法 =====
+function drawSubtractScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('减法 · a - b = a + (-b)',W/2,30,'#fbbf24',16);
+  const cx=W/2-60,cy=H/2+30;
+  // 同起点 a, b
+  const ax2=cx+170,ay2=cy-70;
+  const bx2=cx+60,by2=cy-150;
+  drawVec(cx,cy,ax2,ay2,'#06b6d4','a',1);
+  drawVec(cx,cy,bx2,by2,'#34d399','b',1);
+  drawText('O',cx-12,cy+12,'#9ab0d0',12);
+  drawText('A',ax2+12,ay2-12,'#9ab0d0',12);
+  drawText('B',bx2+12,by2-12,'#9ab0d0',12);
+  // 反向辅助虚线：从 A 到 B（即 -b+?），从 B 到 A（即 a-b）
+  ctx.strokeStyle='rgba(167,139,250,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(ax2,ay2);ctx.lineTo(bx2,by2);ctx.stroke();
+  ctx.setLineDash([]);
+  // -b：从 O 反向延伸
+  const p=0.5+0.5*Math.sin(time);
+  const mx2=cx-(bx2-cx),my2=cy-(by2-cy);
+  if(p>0.3){
+    drawVec(cx,cy,cx-(bx2-cx)*Math.min(1,(p-0.3)*1.4),cy-(by2-cy)*Math.min(1,(p-0.3)*1.4),'#f87171','-b',1);
+  }
+  // a - b = 从 B 终点指向 A 终点
+  if(p>0.6){
+    const sp=Math.min(1,(p-0.6)/0.4);
+    drawVec(bx2+(ax2-bx2)*0,by2+(ay2-by2)*0,bx2+(ax2-bx2)*sp,by2+(ay2-by2)*sp,'#fbbf24','a-b',1);
+  }
+  drawText('几何意义：a-b = 从 b 终点指向 a 终点的向量',W/2,H-65,'#9ab0d0',13);
+  drawText('代数：a-b = a+(-b)（先反向 b 再相加）',W/2,H-42,'#67e8f9',12);
+  drawText('模：|a-b| 反映 a、b 两端点距离',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景5：数乘 =====
+function drawScalarScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('数乘 · λa 的方向与模',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // λ 在 -2 ~ 3 之间变化
+  const lam=1.5*Math.sin(time*0.6)+0.5;
+  const aLen=70;
+  drawAxes(cx,cy,30);
+  // 原始单位向量 a
+  drawVec(cx,cy,cx+aLen,cy-20,'#5a6a8a','a',1);
+  // λa
+  drawVec(cx,cy,cx+aLen*lam,cy-20*lam,lam>=0?'#06b6d4':'#f87171',('λa (λ='+lam.toFixed(2)+')'),1);
+  // 提示
+  drawText('λ = '+lam.toFixed(2),cx,cy+200,'#fbbf24',15);
+  if(lam>0)drawText('λ>0：同向，模 = '+Math.abs(lam).toFixed(2)+'×|a|',W/2,H-55,'#34d399',13);
+  else if(lam<0)drawText('λ<0：反向，模 = '+Math.abs(lam).toFixed(2)+'×|a|',W/2,H-55,'#f87171',13);
+  else drawText('λ=0：λa = 0（零向量）',W/2,H-55,'#a78bfa',13);
+  drawText('|λa| = |λ|·|a|',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景6：共线定理 =====
+function drawCollinearScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('共线向量定理 · a∥b ⇔ b = λa',W/2,30,'#fbbf24',16);
+  const cx=W/2-100,cy=H/2+30;
+  // a 固定
+  drawVec(cx,cy,cx+120,cy-60,'#06b6d4','a',1);
+  // λ 变化，b = λa
+  const lam=1.5*Math.sin(time*0.5)+0.5; // -1 ~ 2
+  const bx=cx+120*lam,by=cy-60*lam;
+  if(Math.abs(lam)>0.05)drawVec(cx,cy,bx,by,lam>0?'#34d399':'#f87171','b=λa',1);
+  drawText('λ = '+lam.toFixed(2),W/2,cy+120,'#fbbf24',15);
+  // 共线判定（坐标形式）
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;
+  roundRect(60,H-110,W-120,70,8);ctx.fill();ctx.stroke();
+  drawText('坐标形式：若 a=(x₁,y₁), b=(x₂,y₂)',W/2,H-85,'#fff',13);
+  drawText('则 a∥b ⇔ x₁y₂ - x₂y₁ = 0',W/2,H-60,'#fde68a',14);
+}
+
+// ===== 场景7：基本定理 =====
+function drawBasisScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平面向量基本定理 · a = λ₁e₁ + λ₂e₂',W/2,30,'#fbbf24',16);
+  const cx=W/2-100,cy=H/2+60;
+  const p=0.5+0.5*Math.sin(time);
+  // 基底 e1, e2
+  drawVec(cx,cy,cx+150,cy-20,'#06b6d4','e₁',1);
+  drawVec(cx,cy,cx+40,cy-130,'#34d399','e₂',1);
+  // λ₁e₁
+  const l1=0.8,l2=0.9;
+  const ex=cx+150*l1,ey=cy-20*l1;
+  const exy=cx+40*l2,eyy=cy-130*l2;
+  // 平行四边形
+  ctx.strokeStyle='rgba(167,139,250,0.4)';ctx.lineWidth=1;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex+40*l2,ey-130*l2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(exy,eyy);ctx.lineTo(exy+150*l1,eyy-20*l1);ctx.stroke();
+  ctx.setLineDash([]);
+  // 合向量 a
+  const fx=ex+40*l2,fy=ey-130*l2;
+  const sp=Math.min(1,p*1.5);
+  drawVec(cx,cy,cx+(fx-cx)*sp,cy+(fy-cy)*sp,'#fbbf24','a',1);
+  drawText('a = '+l1.toFixed(1)+'e₁ + '+l2.toFixed(1)+'e₂',W/2,H-55,'#34d399',14);
+  drawText('条件：e₁、e₂ 不共线（基底）',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景8：坐标表示 =====
+function drawCoordScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('向量的坐标表示 · a = (x, y)',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30,scale=30;
+  drawAxes(cx,cy,scale);
+  // 在坐标轴上标注刻度
+  ctx.fillStyle='#5a6a8a';
+  for(let i=-8;i<=8;i++){
+    if(i===0)continue;
+    drawText(i,cx+i*scale,cy+12,'#5a6a8a',9);
+    drawText(i,cx-12,cy-i*scale,'#5a6a8a',9);
+  }
+  // a = (4, 3)
+  const dx=4,dy=-3; // y 屏幕向下为正，所以 y=3 屏幕上是 -3*scale
+  const ax2=cx+dx*scale,ay2=cy+dy*scale;
+  // 投影虚线
+  ctx.strokeStyle='rgba(167,139,250,0.5)';ctx.lineWidth=1;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(ax2,ay2);ctx.lineTo(ax2,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ax2,ay2);ctx.lineTo(cx,ay2);ctx.stroke();
+  ctx.setLineDash([]);
+  drawVec(cx,cy,ax2,ay2,'#fbbf24','a',1);
+  drawText('x=4',cx+ax2/2,cy+18,'#06b6d4',12);
+  drawText('y=3',cx-18,cy+(ay2-cy)/2,'#34d399',12);
+  drawText('(4, 3)',ax2+20,ay2-12,'#fff',12);
+  drawText('a = (4, 3)',W/2,H-90,'#fff',15);
+  drawText('|a| = √(4²+3²) = √25 = 5',W/2,H-65,'#fde68a',14);
+  drawText('起点在原点 → 终点坐标 = 向量坐标',W/2,H-42,'#9ab0d0',12);
+  drawText('两向量相等 ⇔ 对应坐标相等',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景9：坐标加法 =====
+function drawCoordAddScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('坐标加法 · 分量分别相加',W/2,30,'#fbbf24',16);
+  const cx=W/2-60,cy=H/2+40,scale=25;
+  drawAxes(cx,cy,scale);
+  // a=(3,2), b=(2,3) → a+b=(5,5)
+  const a2x=cx+3*scale,a2y=cy-2*scale;
+  const b2x=cx+2*scale,b2y=cy-3*scale;
+  const s2x=cx+5*scale,s2y=cy-5*scale;
+  // 平行四边形虚线辅助
+  ctx.strokeStyle='rgba(167,139,250,0.35)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(a2x,a2y);ctx.lineTo(s2x,s2y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(b2x,b2y);ctx.stroke();
+  ctx.setLineDash([]);
+  drawVec(cx,cy,a2x,a2y,'#06b6d4','a=(3,2)',1);
+  drawVec(a2x,a2y,s2x,s2y,'#34d399','b=(2,3)',1);
+  drawVec(cx,cy,s2x,s2y,'#fbbf24','a+b',1);
+  drawText('(5,5)',s2x+12,s2y-12,'#fbbf24',12);
+  // 公式
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;
+  roundRect(40,H-105,W-80,70,8);ctx.fill();ctx.stroke();
+  drawText('坐标加减：分量分别运算',W/2,H-88,'#a78bfa',12);
+  drawText('(x₁,y₁) ± (x₂,y₂) = (x₁±x₂, y₁±y₂)',W/2,H-68,'#fff',14);
+  drawText('(3,2) + (2,3) = (5, 5)',W/2,H-45,'#fde68a',13);
+}
+
+// ===== 场景10：坐标数乘 =====
+function drawCoordScalarScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('坐标数乘 · λ(x,y) = (λx, λy)',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30,scale=25;
+  drawAxes(cx,cy,scale);
+  const lam=1+0.8*Math.sin(time*0.5); // 0.2 ~ 1.8
+  const a2x=cx+3*scale,a2y=cy-2*scale;
+  drawVec(cx,cy,a2x,a2y,'#5a6a8a','a=(3,2)',1);
+  drawVec(cx,cy,cx+3*scale*lam,cy-2*scale*lam,lam>0?'#06b6d4':'#f87171',('λa, λ='+lam.toFixed(2)),1);
+  // 投影辅助
+  ctx.strokeStyle='rgba(167,139,250,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(cx+3*scale*lam,cy-2*scale*lam);ctx.lineTo(cx+3*scale*lam,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('λ·(3, 2) = ('+(3*lam).toFixed(2)+', '+(2*lam).toFixed(2)+')',W/2,H-65,'#fde68a',14);
+  drawText('每个分量都乘以 λ',W/2,H-42,'#9ab0d0',12);
+  drawText('应用：中点 = (a+b)/2，重心 = (a+b+c)/3',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景11：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('平面向量线性运算 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'向量概念',d:'有大小有方向 |AB|',c:'#06b6d4'},
+    {t:'加法',d:'三角形/平行四边形法则',c:'#34d399'},
+    {t:'减法',d:'a-b = a+(-b)',c:'#f87171'},
+    {t:'数乘',d:'λa：|λ|·|a|，方向随 λ',c:'#fbbf24'},
+    {t:'共线定理',d:'a∥b ⇔ b=λa',c:'#a78bfa'},
+    {t:'基本定理',d:'a = λ₁e₁+λ₂e₂',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawConceptScene(t);
+  else if(stepIdx===1)drawTriangleScene(t);
+  else if(stepIdx===2)drawParallelogramScene(t);
+  else if(stepIdx===3)drawSubtractScene(t);
+  else if(stepIdx===4)drawScalarScene(t);
+  else if(stepIdx===5)drawCollinearScene(t);
+  else if(stepIdx===6)drawBasisScene(t);
+  else if(stepIdx===7)drawCoordScene(t);
+  else if(stepIdx===8)drawCoordAddScene(t);
+  else if(stepIdx===9)drawCoordScalarScene(t);
+  else if(stepIdx===10)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

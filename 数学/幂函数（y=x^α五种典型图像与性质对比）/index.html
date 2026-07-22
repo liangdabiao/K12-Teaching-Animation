@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>幂函数 · y=x^α · 五种典型图像对比</title>
+<style>
+:root{
+  --bg:#0a1628;
+  --panel:#11203a;
+  --card:#172a4a;
+  --ink:#e8eef8;
+  --muted:#9ab0d0;
+  --accent:#fbbf24;
+  --accent2:#06b6d4;
+  --line:#243a5e;
+  --good:#34d399;
+  --warn:#fbbf24;
+  --bad:#f87171;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}
+.card.s3::before{background:var(--good)}
+.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}
+.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回数学目录</a>
+  <span class="title">幂函数</span>
+  <span class="subtitle">y = x^α · 五种典型图像与性质对比</span>
+</header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>幂函数定义</h4><div class="v">y = x^α<br>底数 x 自变量，指数 α 常数</div></div>
+  <div class="card s2"><div class="num">2</div><h4>五种典型</h4><div class="v">x¹ x² x³<br>√x（x^½） 1/x（x⁻¹）</div></div>
+  <div class="card s3"><div class="num">3</div><h4>奇偶性规律</h4><div class="v">α 奇数→奇函数<br>α 偶数→偶函数</div></div>
+  <div class="card s4"><div class="num">4</div><h4>幂 vs 指数</h4><div class="v">幂函数：底变指常<br>指数函数：底常指变</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">幂函数定义</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+  </aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <label>α 滑块 <input id="alpha" type="range" min="-3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(520,Math.min(1100,r.width-12));
+  cv.height=Math.max(400,Math.min(600,r.height-12));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function drawText(t,x,y,c,fs,a,b){
+  ctx.fillStyle=c||'#9ab0d0';
+  ctx.font=(fs||12)+'px sans-serif';
+  ctx.textAlign=a||'center';
+  ctx.textBaseline=b||'middle';
+  ctx.fillText(t,x,y);
+}
+
+// 七步教学流程：定义→五典型→共性→单调性→奇偶性→幂指对比→α滑块交互
+const STEPS=[
+  {tag:'基础',name:'幂函数定义',body:'<strong>幂函数</strong>形如 <code>y = x^α</code>，其中 <strong>x 是自变量</strong>（底数），<strong>α 是常数</strong>（指数）。α 取不同实数时得到不同的幂函数。<strong>底变指常</strong>是它的本质特征。',points:{title:'定义三要素',items:['<strong>形式</strong>：y = x^α','<strong>底数 x</strong>：自变量','<strong>指数 α</strong>：常数','<strong>恒过 (1,1)</strong>：x=1 时 y=1']}},
+  {tag:'典型',name:'五种典型函数',body:'最常考的五种幂函数：<code>y=x</code>（直线）、<code>y=x²</code>（抛物线）、<code>y=x³</code>（立方曲线）、<code>y=x^½</code>（平方根曲线）、<code>y=x⁻¹</code>（反比例双曲线）。它们的图像形状差异巨大，是必背内容。',points:{title:'五函数速记',items:['<strong>y=x</strong>：过原点直线','<strong>y=x²</strong>：开口向上抛物线','<strong>y=x³</strong>：过原点立方曲线','<strong>y=√x</strong>：第一象限增长缓慢','<strong>y=1/x</strong>：双曲线两支']}},
+  {tag:'性质',name:'共同特征',body:'所有幂函数 <code>y=x^α</code> 都<strong>恒过定点 (1,1)</strong>（因为 1 的任何次幂都是 1）；<strong>第一象限一定有图像</strong>；当 α>0 时图像还过原点 (0,0)；当 α<0 时 x=0 无意义。',points:{title:'三大共性',items:['<strong>(1,1)</strong>：恒过定点','<strong>第一象限</strong>：必有图像','<strong>α>0</strong>：过 (0,0)','<strong>α<0</strong>：不过原点（x=0 无定义）']}},
+  {tag:'性质',name:'第一象限单调性',body:'在<strong>第一象限</strong>（x>0）：当 <strong>α>0</strong> 时，y=x^α <strong>单调递增</strong>（如 x、x²、x³、√x）；当 <strong>α<0</strong> 时，y=x^α <strong>单调递减</strong>（如 1/x）；α=0 时 y=1 为水平线。',points:{title:'增减看 α 正负',items:['<strong>α>0</strong>：第一象限递增','<strong>α<0</strong>：第一象限递减','<strong>α=0</strong>：y=1 水平线','<strong>|α|越大</strong>：增长（衰减）越快']}},
+  {tag:'性质',name:'奇偶性分类',body:'幂函数的奇偶性由 α 决定：α 为<strong>奇数</strong>（如 1、3、-1）→ <strong>奇函数</strong>（关于原点对称）；α 为<strong>偶数</strong>（如 2、-2）→ <strong>偶函数</strong>（关于 y 轴对称）；α 为<strong>分数</strong>（如 ½）→ <strong>非奇非偶</strong>。',points:{title:'奇偶判定口诀',items:['<strong>α 奇数</strong>：奇函数（如 x³、1/x）','<strong>α 偶数</strong>：偶函数（如 x²）','<strong>α 分数</strong>：非奇非偶（如 √x）','<strong>判定法</strong>：看 f(-x) 与 f(x) 关系']}},
+  {tag:'对比',name:'幂函数 vs 指数函数',body:'<strong>幂函数</strong> y=x^α：<strong>底变指常</strong>（x 变，α 固定）；<strong>指数函数</strong> y=a^x（a>0, a≠1）：<strong>底常指变</strong>（a 固定，x 变）。两者变量位置相反，性质完全不同，是考试高频易混点。',points:{title:'易混点辨析',items:['<strong>幂函数</strong>：y=x^α，底变指常','<strong>指数函数</strong>：y=a^x，底常指变','<strong>幂过定点</strong>：(1,1)','<strong>指数过定点</strong>：(0,1)','<strong>口诀</strong>：幂底变，指底定']}},
+  {tag:'互动',name:'α 滑块实时演示',body:'拖动下方 <strong>α 滑块</strong>（范围 -3 到 3），实时观察 y=x^α 的图像变化。注意 <strong>(1,1)</strong> 点始终不变，奇偶性随 α 整数/分数性质切换，第一象限单调性随 α 正负切换。',points:{title:'观察要点',items:['<strong>α=1</strong>：直线 y=x','<strong>α=2</strong>：抛物线（偶函数）','<strong>α=3</strong>：立方曲线（奇函数）','<strong>α=-1</strong>：双曲线（奇函数）','<strong>α=0.5</strong>：平方根曲线']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+const alphaEl=document.getElementById('alpha');
+let userAlpha=1;
+
+// 五种典型幂函数：α、名称、颜色、描述、奇偶（1奇 0偶 -1非）
+const FIVES=[
+  {a:1,name:'y=x',color:'#06b6d4',desc:'直线',odd:1},
+  {a:2,name:'y=x²',color:'#34d399',desc:'抛物线',odd:0},
+  {a:3,name:'y=x³',color:'#fbbf24',desc:'立方曲线',odd:1},
+  {a:0.5,name:'y=√x',color:'#a78bfa',desc:'平方根',odd:-1},
+  {a:-1,name:'y=1/x',color:'#f87171',desc:'反比例',odd:1},
+];
+
+// 通用：画坐标系（含刻度、箭头）
+function drawAxes(cx,cy,scale){
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-scale*4,cy);ctx.lineTo(cx+scale*4,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-scale*3);ctx.lineTo(cx,cy+scale*3);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(cx+scale*4,cy);ctx.lineTo(cx+scale*4-8,cy-4);ctx.lineTo(cx+scale*4-8,cy+4);ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx,cy-scale*3);ctx.lineTo(cx-4,cy-scale*3+8);ctx.lineTo(cx+4,cy-scale*3+8);ctx.fill();
+  drawText('x',cx+scale*4+12,cy,'#9ab0d0',12);
+  drawText('y',cx,cy-scale*3-12,'#9ab0d0',12);
+  drawText('O',cx-10,cy+12,'#9ab0d0',11);
+  // 刻度
+  ctx.strokeStyle='#243a5e';
+  for(let i=-3;i<=3;i++){
+    if(i===0)continue;
+    const x=cx+i*scale;
+    ctx.beginPath();ctx.moveTo(x,cy-3);ctx.lineTo(x,cy+3);ctx.stroke();
+    drawText(i,x,cy+15,'#5a6a8a',10);
+    const y=cy-i*scale;
+    ctx.beginPath();ctx.moveTo(cx-3,y);ctx.lineTo(cx+3,y);ctx.stroke();
+    drawText(i,cx-15,y,'#5a6a8a',10);
+  }
+}
+
+// 安全计算 x^α（处理负底数与分数指数）
+function powSafe(x,a){
+  if(x<=0){
+    if(a===Math.floor(a)){
+      if(a<0)return x===0?NaN:(a%2===0?1/Math.pow(-x,a):-1/Math.pow(-x,a));
+      return -Math.pow(-x,a);
+    }
+    return NaN;
+  }
+  return Math.pow(x,a);
+}
+
+// ===== 场景1：定义 =====
+function drawDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('幂函数定义 · y = x^α',W/2,30,'#fbbf24',16);
+  // 大公式
+  ctx.font='bold 36px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('y = x ^ α',W/2,90);
+  drawText('↑ 自变量（底数）',W/2-60,125,'#06b6d4',13);
+  drawText('↑ 常数（指数）',W/2+50,125,'#fbbf24',13);
+  // 四个示例
+  const exs=[
+    {e:'y=x²',a:'α=2',c:'#34d399'},
+    {e:'y=x³',a:'α=3',c:'#fbbf24'},
+    {e:'y=√x',a:'α=½',c:'#a78bfa'},
+    {e:'y=1/x',a:'α=-1',c:'#f87171'},
+  ];
+  exs.forEach((x,i)=>{
+    const px=120+i*(W-240)/3;
+    const py=180;
+    ctx.fillStyle=x.c+'22';ctx.strokeStyle=x.c;ctx.lineWidth=2;
+    roundRect(px-70,py-22,140,50,8);ctx.fill();ctx.stroke();
+    drawText(x.e,px,py-5,'#fff',15);
+    drawText(x.a,px,py+13,x.c,11);
+  });
+  // 简图坐标系
+  const cx=W/2,cy=H/2+60;
+  drawAxes(cx,cy,40);
+  // α 随时间变的曲线
+  const a=1+Math.sin(time*0.6)*1.5;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();
+  let first=true;
+  for(let x=0.05;x<=3;x+=0.03){
+    const y=Math.pow(x,a);
+    if(y>0&&y<3){
+      const px=cx+x*40,py=cy-y*40;
+      if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+    }
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // (1,1) 点
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(cx+40,cy-40,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('(1,1)',cx+60,cy-55,'#f87171',12);
+  drawText('α = '+a.toFixed(2),W/2,H-30,'#fbbf24',14);
+}
+
+// ===== 场景2：五种典型 =====
+function drawFiveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('五种典型幂函数对比',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,scale=50;
+  drawAxes(cx,cy,scale);
+  // 逐条揭示
+  const reveal=Math.min(5,1+time*0.6);
+  FIVES.forEach((f,i)=>{
+    if(i>=Math.floor(reveal))return;
+    ctx.strokeStyle=f.color;ctx.lineWidth=2.5;
+    ctx.shadowColor=f.color;ctx.shadowBlur=8;
+    ctx.beginPath();
+    let first=true;
+    for(let x=-2.8;x<=2.8;x+=0.04){
+      const y=powSafe(x,f.a);
+      if(isNaN(y)||!isFinite(y)||Math.abs(y)>3.5)continue;
+      const px=cx+x*scale,py=cy-y*scale;
+      if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+  });
+  // 图例
+  FIVES.forEach((f,i)=>{
+    const lx=80,ly=70+i*22;
+    ctx.fillStyle=f.color;ctx.fillRect(lx,ly-5,16,3);
+    drawText(f.name+'  ('+f.desc+')',lx+22,ly,f.color,11,'left');
+  });
+  drawText('恒过 (1,1)：所有曲线都汇聚于此',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景3：共同特征 =====
+function drawCommonScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('幂函数的共同特征',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,scale=50;
+  drawAxes(cx,cy,scale);
+  // 多条幂函数都过(1,1)
+  const alphas=[-1,0.5,1,2,3];
+  const cols=['#f87171','#a78bfa','#06b6d4','#34d399','#fbbf24'];
+  alphas.forEach((a,i)=>{
+    ctx.strokeStyle=cols[i];ctx.lineWidth=2;ctx.globalAlpha=0.8;
+    ctx.beginPath();
+    let first=true;
+    for(let x=0.02;x<=2.8;x+=0.03){
+      const y=Math.pow(x,a);
+      if(y>3)continue;
+      const px=cx+x*scale,py=cy-y*scale;
+      if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+  });
+  ctx.globalAlpha=1;
+  // 高亮第一象限
+  ctx.fillStyle='rgba(52,211,153,0.08)';
+  ctx.fillRect(cx,cy-scale*3,scale*4,scale*3);
+  // (1,1) 脉冲点
+  const pulse=4+Math.sin(time*4)*2;
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx+scale,cy-scale,pulse,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('(1,1) 必过点',cx+scale+15,cy-scale,'#f87171',13,'left');
+  drawText('第一象限必有图像',cx+scale*1.8,cy-scale*2.5,'#34d399',13);
+  drawText('α>0 时都过 (0,0)',cx+20,cy+25,'#06b6d4',12,'left');
+}
+
+// ===== 场景4：第一象限单调性 =====
+function drawMonoScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('第一象限单调性 · 看 α 正负',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40,scale=50;
+  drawAxes(cx,cy,scale);
+  // α>0 递增（绿色族）
+  [1,2,3,0.5].forEach(a=>{
+    ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    ctx.beginPath();
+    let first=true;
+    for(let x=0.02;x<=2.8;x+=0.03){
+      const y=Math.pow(x,a);
+      const px=cx+x*scale,py=cy-y*scale;
+      if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+  });
+  // α<0 递减（红色族）
+  [-1,-2,-0.5].forEach(a=>{
+    ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+    ctx.beginPath();
+    let first=true;
+    for(let x=0.05;x<=2.8;x+=0.03){
+      const y=Math.pow(x,a);
+      if(y>3.5)continue;
+      const px=cx+x*scale,py=cy-y*scale;
+      if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+  });
+  drawText('α > 0 递增 ↑',cx+scale*1.8,cy-scale*2.7,'#34d399',13);
+  drawText('α < 0 递减 ↓',cx+scale*1.8,cy+scale*1.5,'#f87171',13);
+  // 动态点演示
+  const phase=(time*0.5)%1;
+  const xp=0.3+phase*2.2;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(cx+xp*scale,cy-Math.pow(xp,2)*scale,5,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+xp*scale,cy-Math.pow(xp,-1)*scale,5,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('x='+xp.toFixed(2)+' 随 x 增大：x²↑ 而 1/x↓',cx+xp*scale,cy+25,'#fbbf24',11);
+}
+
+// ===== 场景5：奇偶性 =====
+function drawParityScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('幂函数的奇偶性',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30,scale=45;
+  drawAxes(cx,cy,scale);
+  // 奇函数 y=x³
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let x=-2.5;x<=2.5;x+=0.03){
+    const y=x*x*x;
+    const px=cx+x*scale,py=cy-y*scale;
+    if(x===-2.5)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('y=x³ 奇函数（原点对称）',cx-160,cy-120,'#fbbf24',12,'left');
+  // 偶函数 y=x²
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let x=-2.5;x<=2.5;x+=0.03){
+    const y=x*x;
+    const px=cx+x*scale,py=cy-y*scale;
+    if(x===-2.5)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('y=x² 偶函数（y轴对称）',cx+80,cy-120,'#34d399',12,'left');
+  // y 轴对称虚线
+  ctx.strokeStyle='rgba(251,191,36,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(cx,cy-scale*3);ctx.lineTo(cx,cy+scale*3);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('判定：f(-x)=-f(x) → 奇 ; f(-x)=f(x) → 偶',W/2,H-45,'#06b6d4',12);
+  drawText('α 为奇数→奇函数；α 为偶数→偶函数；分数→非奇非偶',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景6：幂 vs 指数 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('幂函数 vs 指数函数',W/2,30,'#fbbf24',16);
+  // 左：幂函数
+  ctx.fillStyle='rgba(251,191,36,0.08)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(60,70,W/2-80,H-150,10);ctx.fill();ctx.stroke();
+  drawText('幂函数',W/4+10,95,'#fbbf24',16);
+  ctx.font='bold 26px serif';ctx.fillStyle='#fff';
+  ctx.fillText('y = x^α',W/4+10,135);
+  drawText('底变 · 指常',W/4+10,165,'#06b6d4',13);
+  drawText('x 自变量，α 常数',W/4+10,188,'#9ab0d0',12);
+  drawText('例：y=x²  y=x³  y=√x',W/4+10,212,'#34d399',12);
+  drawText('必过 (1,1)',W/4+10,235,'#f87171',12);
+  // 右：指数函数
+  ctx.fillStyle='rgba(52,211,153,0.08)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(W/2+20,70,W/2-80,H-150,10);ctx.fill();ctx.stroke();
+  drawText('指数函数',3*W/4,95,'#34d399',16);
+  ctx.font='bold 26px serif';ctx.fillStyle='#fff';
+  ctx.fillText('y = a^x',3*W/4,135);
+  drawText('底常 · 指变',3*W/4,165,'#06b6d4',13);
+  drawText('a 常数(a>0,a≠1)，x 自变量',3*W/4,188,'#9ab0d0',12);
+  drawText('例：y=2^x  y=(1/2)^x',3*W/4,212,'#34d399',12);
+  drawText('必过 (0,1)',3*W/4,235,'#f87171',12);
+  // 动态高亮
+  const blink=Math.sin(time*3)>0;
+  drawText(blink?'← 底在变 →':'（α 固定）',W/4+10,265,'#fbbf24',13);
+  drawText(blink?'（a 固定）':'← 指在变 →',3*W/4,265,'#34d399',13);
+  drawText('记忆口诀：幂底变，指底定',W/2,H-35,'#fbbf24',14);
+}
+
+// ===== 场景7：α 滑块交互 =====
+function drawSliderScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('α 滑块实时演示 · y = x^α',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30,scale=50;
+  drawAxes(cx,cy,scale);
+  const a=userAlpha;
+  // 主曲线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();
+  let first=true;
+  for(let x=-2.8;x<=2.8;x+=0.02){
+    const y=powSafe(x,a);
+    if(isNaN(y)||!isFinite(y)||Math.abs(y)>3.5){first=true;continue;}
+    const px=cx+x*scale,py=cy-y*scale;
+    if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // (1,1) 点
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(cx+scale,cy-scale,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('(1,1)',cx+scale+12,cy-scale,'#f87171',12,'left');
+  // 当前 α 信息
+  ctx.font='bold 20px sans-serif';ctx.fillStyle='#fff';
+  ctx.fillText('y = x^('+a.toFixed(2)+')',W/2,H-75);
+  let parity;
+  if(a===Math.floor(a)){
+    parity=(a%2===0)?'偶函数':'奇函数';
+  }else{parity='非奇非偶';}
+  const mono=a>0?'第一象限递增':(a<0?'第一象限递减':'常数');
+  drawText('奇偶性：'+parity+'   单调性：'+mono,W/2,H-50,'#34d399',12);
+  drawText('拖动下方 α 滑块（-3 到 3）实时观察图像变化',W/2,H-25,'#06b6d4',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawDefScene(t);
+  else if(stepIdx===1)drawFiveScene(t);
+  else if(stepIdx===2)drawCommonScene(t);
+  else if(stepIdx===3)drawMonoScene(t);
+  else if(stepIdx===4)drawParityScene(t);
+  else if(stepIdx===5)drawCompareScene(t);
+  else if(stepIdx===6)drawSliderScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx]||STEPS[0];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+alphaEl.oninput=()=>{userAlpha=parseFloat(alphaEl.value);if(stepIdx===6)draw();};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

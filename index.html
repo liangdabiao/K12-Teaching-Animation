@@ -451,6 +451,29 @@
             border-color: rgba(67, 233, 123, 0.5);
         }
 
+        .subject-card.math::before {
+            background: var(--primary-gradient);
+        }
+
+        .subject-card.math:hover {
+            border-color: rgba(102, 126, 234, 0.6);
+        }
+
+        .subject-card.math .subject-icon {
+            background: var(--primary-gradient);
+        }
+
+        .subject-card.math .subject-cta {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+            color: #667eea;
+        }
+
+        .subject-card.math:hover .subject-cta {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
         /* Features Section */
         .features {
             margin-bottom: 5rem;
@@ -658,7 +681,7 @@
             <h1>K12 Teaching Animation</h1>
             <p class="subtitle">中小学教学动画可视化平台</p>
             <p class="hero-description">
-                让抽象的算法和化学反应变得生动易懂<br>
+                让抽象的算法、化学反应与数学原理变得生动易懂<br>
                 通过精美的动画演示，帮助学生深入理解复杂概念
             </p>
         </div>
@@ -669,14 +692,14 @@
         <div class="stat-card">
             <div class="stat-content">
                 <div class="stat-icon">📚</div>
-                <div class="stat-number">284</div>
+                <div class="stat-number">326</div>
                 <div class="stat-label">教学动画</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-content">
                 <div class="stat-icon">🎯</div>
-                <div class="stat-number">4</div>
+                <div class="stat-number">5</div>
                 <div class="stat-label">学科领域</div>
             </div>
         </div>
@@ -791,6 +814,31 @@
                         <div class="subject-stat">
                             <span class="subject-stat-icon">🏷️</span>
                             <span>7 个分类</span>
+                        </div>
+                    </div>
+                    <div class="subject-cta">
+                        <span>开始学习</span>
+                        <span>→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Mathematics -->
+            <a href="./数学/index.html" class="subject-card math">
+                <div class="subject-content">
+                    <div class="subject-icon">📐</div>
+                    <h3 class="subject-title">数学</h3>
+                    <p class="subject-description">
+                        数与代数、图形与几何、统计与概率的可视化教学动画，涵盖方程、函数、几何证明、概率等核心概念，让数学思维可视可感。
+                    </p>
+                    <div class="subject-stats">
+                        <div class="subject-stat">
+                            <span class="subject-stat-icon">📊</span>
+                            <span>42 个动画</span>
+                        </div>
+                        <div class="subject-stat">
+                            <span class="subject-stat-icon">🏷️</span>
+                            <span>4 个分类</span>
                         </div>
                     </div>
                     <div class="subject-cta">

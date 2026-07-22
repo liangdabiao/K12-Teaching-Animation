@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>空间点线面位置关系 · 平行与垂直的判定与性质</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">空间点线面位置关系</span><span class="subtitle">平行与垂直的判定与性质 · 三条公理 · 三垂线定理</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>平面三公理</h4><div class="v">不共线三点确定平面<br>相交线/平行线确定平面</div></div>
+  <div class="card s2"><div class="num">2</div><h4>位置关系矩阵</h4><div class="v">线线：相交/平行/异面<br>线面：在面内/平行/相交</div></div>
+  <div class="card s3"><div class="num">3</div><h4>平行判定与性质</h4><div class="v">判定：线线平行→线面平行<br>性质：线面平行→交线平行</div></div>
+  <div class="card s4"><div class="num">4</div><h4>垂直判定与性质</h4><div class="v">判定：垂直两相交线→线面<br>面面：过垂线→面面垂直</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">公理</span><span id="stepTitle">平面三公理</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+// 3D 透视投影：把 (x,y,z) 投到屏幕。视角倾斜，z 向远处。
+function project(x,y,z,cx,cy,scale){
+  // 等距投影：x 轴水平，y 轴竖直，z 轴斜向右下
+  const ang=Math.PI/7; // z 轴倾斜角
+  const sx=cx+(x-z*Math.cos(ang))*scale;
+  const sy=cy+(-y+z*Math.sin(ang))*scale;
+  return {x:sx,y:sy};
+}
+// 绘制空间一点
+function drawPoint3D(p,c,r){ctx.fillStyle=c;ctx.beginPath();ctx.arc(p.x,p.y,r||5,0,7);ctx.fill();}
+// 绘制空间直线
+function line3D(a,b){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+// 绘制空间四边形平面（半透明填充）
+function fillFace3D(pts,color,stroke){
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);
+  ctx.closePath();
+  ctx.fillStyle=color;ctx.fill();
+  if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}
+}
+
+const STEPS=[
+  {tag:'公理',name:'平面三公理',body:'<strong>公理1</strong>：不共线的三点<strong>确定一个平面</strong>。<strong>公理2</strong>：两相交直线确定一个平面。<strong>公理3</strong>：两条平行直线确定一个平面。这是空间几何的基石。',points:{title:'三条公理',items:['<strong>公理1</strong>：不共线三点确定平面','<strong>公理2</strong>：相交两直线确定平面','<strong>公理3</strong>：平行两直线确定平面','<strong>推论</strong>：直线+线外一点确定平面']}},
+  {tag:'公理',name:'三点定面演示',body:'当三点<strong>不共线</strong>时，有且仅有一个平面经过这三点。若三点共线，则有<strong>无数个平面</strong>经过它们。',points:{title:'公理1详解',items:['<strong>不共线</strong>：唯一确定平面','<strong>共线</strong>：无数个平面','<strong>推论</strong>：直线+外一点定面','<strong>推论</strong>：两相交线定面']}},
+  {tag:'线线',name:'两直线位置关系',body:'空间两直线位置关系有三种：<strong>相交</strong>（共面、一个公共点）、<strong>平行</strong>（共面、无公共点）、<strong>异面</strong>（不共面、无公共点）。',points:{title:'三种关系',items:['<strong>相交</strong>：共面，1 个交点','<strong>平行</strong>：共面，0 个交点','<strong>异面</strong>：不同在任何平面内','<strong>异面判定</strong>：过平面外一点与平面内一点的直线']}},
+  {tag:'线面',name:'直线与平面位置关系',body:'直线与平面位置关系有三种：<strong>直线在平面内</strong>（无数公共点）、<strong>线面平行</strong>（无公共点）、<strong>线面相交</strong>（一个公共点，含垂直特例）。',points:{title:'三种关系',items:['<strong>在面内</strong>：无数公共点','<strong>平行</strong>：无公共点','<strong>相交</strong>：恰好一个公共点','<strong>垂直</strong>：相交且垂直于面内所有直线']}},
+  {tag:'面面',name:'平面与平面位置关系',body:'两平面位置关系有两种：<strong>平行</strong>（无公共点）、<strong>相交</strong>（交于一条直线）。垂直是相交的特殊情形。',points:{title:'两种关系',items:['<strong>平行</strong>：无公共点','<strong>相交</strong>：交于一条直线','<strong>垂直</strong>：相交且二面角为 90°','<strong>判定</strong>：面内有交线的垂线则垂直']}},
+  {tag:'平行',name:'线面平行判定',body:'<strong>判定定理</strong>：平面外一条直线与平面内一条直线<strong>平行</strong>，则该直线与此平面<strong>平行</strong>。即"线线平行 → 线面平行"。',points:{title:'判定口诀',items:['<strong>条件</strong>：a 在 α 外','<strong>条件</strong>：b 在 α 内','<strong>条件</strong>：a ∥ b','<strong>结论</strong>：a ∥ α']}},
+  {tag:'平行',name:'线面平行性质',body:'<strong>性质定理</strong>：一条直线与一个平面平行，则过这条直线的<strong>任一平面</strong>与此平面的<strong>交线</strong>与该直线<strong>平行</strong>。',points:{title:'性质口诀',items:['<strong>条件</strong>：a ∥ α','<strong>过 a</strong>：作平面 β 交 α 于 b','<strong>结论</strong>：a ∥ b','<strong>用途</strong>：由线面平行推线线平行']}},
+  {tag:'垂直',name:'线面垂直判定',body:'<strong>判定定理</strong>：一条直线与平面内<strong>两条相交直线</strong>都垂直，则该直线与此平面<strong>垂直</strong>。',points:{title:'判定口诀',items:['<strong>条件</strong>：l ⊥ m，l ⊥ n','<strong>条件</strong>：m、n 在 α 内','<strong>条件</strong>：m 与 n 相交','<strong>结论</strong>：l ⊥ α']}},
+  {tag:'垂直',name:'面面垂直判定',body:'<strong>判定定理</strong>：一个平面<strong>过另一个平面的垂线</strong>，则这两个平面<strong>垂直</strong>。',points:{title:'判定口诀',items:['<strong>条件</strong>：l ⊥ α','<strong>条件</strong>：l 在 β 内','<strong>结论</strong>：α ⊥ β','<strong>本质</strong>：二面角 = 90°']}},
+  {tag:'垂直',name:'三垂线定理',body:'<strong>三垂线定理</strong>：在平面内的一条直线，如果与该平面的一条斜线的<strong>射影垂直</strong>，则它也与此斜线垂直。<strong>逆定理</strong>同样成立。',points:{title:'三垂线定理',items:['<strong>射影垂直</strong>：⇒ 斜线垂直','<strong>逆定理</strong>：斜线垂直 ⇒ 射影垂直','<strong>关键</strong>：面内的线 vs 斜线','<strong>应用</strong>：求空间距离与夹角']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景1：平面三公理 =====
+function drawAxiomsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平面三公理 · 空间几何的基石',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40,scale=1;
+  // 三个子图
+  drawAxiom1(cx-W*0.28,cy,scale,time);
+  drawAxiom2(cx,cy,scale,time);
+  drawAxiom3(cx+W*0.28,cy,scale,time);
+  drawText('公理1',cx-W*0.28,cy-130,'#06b6d4',13);
+  drawText('公理2',cx,cy-130,'#34d399',13);
+  drawText('公理3',cx+W*0.28,cy-130,'#f87171',13);
+}
+function drawAxiom1(cx,cy,s,time){
+  // 不共线三点确定平面
+  const A=project(-60,0,0,cx,cy,1),B=project(60,-10,-30,cx,cy,1),C=project(0,40,40,cx,cy,1);
+  const p=2+Math.sin(s)*0.3;
+  fillFace3D([A,B,C],'rgba(6,182,212,0.15)','#06b6d4');
+  drawPoint3D(A,'#fbbf24',5);drawPoint3D(B,'#fbbf24',5);drawPoint3D(C,'#fbbf24',5);
+  drawText('A',A.x-10,A.y-8,'#fbbf24',12);
+  drawText('B',B.x+10,B.y,'#fbbf24',12);
+  drawText('C',C.x,C.y-12,'#fbbf24',12);
+  drawText('三点定面',cx,cy+90,'#9ab0d0',11);
+}
+function drawAxiom2(cx,cy,s,time){
+  // 两相交线确定平面
+  const O=project(0,0,0,cx,cy,1);
+  const pulse=0.7+0.3*Math.sin(time*2);
+  const ang=time*0.5;
+  const P=project(70*Math.cos(ang),70*Math.sin(ang),0,cx,cy,1);
+  const Q=project(70*Math.cos(ang+1.2),70*Math.sin(ang+1.2),0,cx,cy,1);
+  const M=project(-50*Math.cos(ang),-50*Math.sin(ang),0,cx,cy,1);
+  const N=project(-50*Math.cos(ang+1.2),-50*Math.sin(ang+1.2),0,cx,cy,1);
+  fillFace3D([M,P,Q,N],'rgba(52,211,153,0.12)','#34d399');
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  line3D(M,P);line3D(N,Q);
+  drawPoint3D(O,'#fbbf24',6*pulse+1);
+  drawText('相交点',cx,cy+90,'#9ab0d0',11);
+}
+function drawAxiom3(cx,cy,s,time){
+  // 两平行线确定平面
+  const shift=Math.sin(time)*8;
+  const A=project(-60,30,0,cx,cy,1),B=project(60,30,0,cx,cy,1);
+  const C=project(-60,-20,0+shift,cx,cy,1),D=project(60,-20,0+shift,cx,cy,1);
+  fillFace3D([A,B,D,C],'rgba(248,113,113,0.12)','#f87171');
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  line3D(A,B);line3D(C,D);
+  drawText('∥',cx,cy+5,'#fbbf24',14);
+  drawText('平行定面',cx,cy+90,'#9ab0d0',11);
+}
+
+// ===== 场景2：三点定面演示 =====
+function drawThreePointsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('公理1 · 不共线三点确定平面',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30,scale=1;
+  // 三点缓慢移动，演示不共线 vs 共线
+  const phase=time*0.3;
+  const off=Math.sin(phase)*30;
+  const A=project(-80,-20,0,cx,cy,scale);
+  const B=project(80,-20,0,cx,cy,scale);
+  const C=project(0+off,50+Math.cos(phase)*10,0,cx,cy,scale);
+  // 判断共线性（用三点是否在一条直线上）
+  const collinear=Math.abs(off)<8;
+  // 绘制平面
+  if(!collinear){
+    fillFace3D([A,B,C],'rgba(6,182,212,0.18)','#06b6d4');
+  }else{
+    // 共线时画多个可能的平面
+    for(let i=0;i<3;i++){
+      const tilt=i*0.5;
+      const A2=project(-80,-20,tilt*30,cx,cy,scale);
+      const B2=project(80,-20,tilt*30,cx,cy,scale);
+      const C2=project(0+off,50+Math.cos(phase)*10,tilt*30,cx,cy,scale);
+      ctx.globalAlpha=0.3;
+      fillFace3D([A2,B2,C2],'rgba(248,113,113,0.15)','#f87171');
+      ctx.globalAlpha=1;
+    }
+  }
+  drawPoint3D(A,'#fbbf24',6);drawPoint3D(B,'#fbbf24',6);drawPoint3D(C,'#fbbf24',6);
+  drawText('A',A.x-12,A.y-8,'#fbbf24',13);
+  drawText('B',B.x+12,B.y,'#fbbf24',13);
+  drawText('C',C.x,C.y-12,'#fbbf24',13);
+  drawText(collinear?'三点共线 → 无数个平面':'三点不共线 → 唯一平面',W/2,H-50,collinear?'#f87171':'#34d399',13);
+}
+
+// ===== 场景3：两直线位置关系 =====
+function drawLinesScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('空间两直线位置关系',W/2,30,'#fbbf24',16);
+  // 相交
+  const c1x=W*0.22,c2x=W*0.5,c3x=W*0.78,cy=H/2+20;
+  // 相交
+  ctx.save();ctx.translate(c1x,cy);ctx.rotate(time*0.3);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(-50,0);ctx.lineTo(50,0);ctx.stroke();
+  ctx.save();ctx.rotate(Math.PI/3);
+  ctx.beginPath();ctx.moveTo(-50,0);ctx.lineTo(50,0);ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(0,0,5,0,7);ctx.fill();
+  ctx.restore();
+  drawText('相交',c1x,cy+80,'#06b6d4',13);
+  drawText('共面·1 交点',c1x,cy+100,'#9ab0d0',11);
+  // 平行
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(c2x-50,cy-15);ctx.lineTo(c2x+50,cy-15);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(c2x-50,cy+15);ctx.lineTo(c2x+50,cy+15);ctx.stroke();
+  drawText('∥',c2x,cy,'#34d399',12);
+  drawText('平行',c2x,cy+80,'#34d399',13);
+  drawText('共面·0 交点',c2x,cy+100,'#9ab0d0',11);
+  // 异面（透视）
+  const A=project(-40,15,0,c3x,cy,1),B=project(40,15,0,c3x,cy,1);
+  const C=project(-30,-15,30,c3x,cy,1),D=project(50,-15,30,c3x,cy,1);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2.5;
+  line3D(A,B);line3D(C,D);
+  drawText('异面',c3x,cy+80,'#f87171',13);
+  drawText('不共面·0 交点',c3x,cy+100,'#9ab0d0',11);
+  drawText('注：平行与相交都"共面"，唯异面"不同在任一平面"',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景4：直线与平面位置关系 =====
+function drawLinePlaneScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('直线与平面的位置关系',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 三个并列展示
+  const sub=[W*0.22,W*0.5,W*0.78];
+  const labels=['在面内','平行','相交(垂直)'];
+  const colors=['#06b6d4','#34d399','#f87171'];
+  for(let k=0;k<3;k++){
+    const sx=sub[k];
+    // 画平面（平行四边形）
+    const P1=project(-55,-15,0,sx,cy,1),P2=project(55,-15,0,sx,cy,1);
+    const P3=project(55,15,30,sx,cy,1),P4=project(-55,15,30,sx,cy,1);
+    fillFace3D([P1,P2,P3,P4],'rgba(102,126,234,0.15)','#3a5a8a');
+    ctx.strokeStyle=colors[k];ctx.lineWidth=3;
+    if(k===0){
+      // 在面内
+      const a=project(-45,0,15,sx,cy,1),b=project(45,0,15,sx,cy,1);
+      line3D(a,b);
+    }else if(k===1){
+      // 平行
+      const a=project(-45,30,-20,sx,cy,1),b=project(45,30,-20,sx,cy,1);
+      line3D(a,b);
+      drawText('∥',sx,cy+5,'#fbbf24',11);
+    }else{
+      // 相交/垂直
+      const a=project(0,40,-20,sx,cy,1),b=project(0,-10,15,sx,cy,1);
+      line3D(a,b);
+      drawPoint3D(b,'#fbbf24',5);
+      drawText('⊥',sx+25,cy-30,'#fbbf24',11);
+    }
+    drawText(labels[k],sx,cy+85,colors[k],13);
+  }
+  drawText('面内：无数公共点 · 平行：无公共点 · 相交：一个公共点',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景5：面面位置关系 =====
+function drawPlanePlaneScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平面与平面的位置关系',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  const tilt=Math.sin(time*0.5)*0.3;
+  // 上平面（旋转）
+  const cx2=W*0.32,cx3=W*0.68;
+  // 平行情况
+  for(let layer=0;layer<2;layer++){
+    const z=layer*30-15;
+    const P1=project(-60,-25,z,cx2,cy,1),P2=project(60,-25,z,cx2,cy,1);
+    const P3=project(60,25,z+30,cx2,cy,1),P4=project(-60,25,z+30,cx2,cy,1);
+    fillFace3D([P1,P2,P3,P4],'rgba(52,211,153,0.18)','#34d399');
+  }
+  drawText('平行',cx2,cy+95,'#34d399',13);
+  drawText('无公共点',cx2,cy+115,'#9ab0d0',11);
+  // 相交情况
+  const ang=tilt;
+  for(let face=0;face<2;face++){
+    const sign=face===0?1:-1;
+    const P1=project(-60+sign*20,-25,0,cx3,cy,1);
+    const P2=project(60+sign*20,-25,0,cx3,cy,1);
+    const P3=project(60+sign*20+ang*40,25,30,cx3,cy,1);
+    const P4=project(-60+sign*20+ang*40,25,30,cx3,cy,1);
+    fillFace3D([P1,P2,P3,P4],face===0?'rgba(248,113,113,0.18)':'rgba(251,191,36,0.18)',face===0?'#f87171':'#fbbf24');
+  }
+  // 交线
+  ctx.strokeStyle='#fff';ctx.lineWidth=2;
+  const L1=project(0,-25,0,cx3,cy,1),L2=project(0+ang*40,25,30,cx3,cy,1);
+  line3D(L1,L2);
+  drawText('相交',cx3,cy+95,'#f87171',13);
+  drawText('交于一条直线',cx3,cy+115,'#9ab0d0',11);
+  drawText('二面角为 90° 时即为垂直',W/2,H-40,'#fbbf24',12);
+}
+
+// ===== 场景6：线面平行判定 =====
+function drawParallelJudgeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('线面平行判定 · 线线平行 → 线面平行',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 平面 α
+  const P1=project(-90,-25,0,cx,cy+20,1),P2=project(90,-25,0,cx,cy+20,1);
+  const P3=project(90,25,40,cx,cy+20,1),P4=project(-90,25,40,cx,cy+20,1);
+  fillFace3D([P1,P2,P3,P4],'rgba(102,126,234,0.18)','#3a5a8a');
+  drawText('α',P1.x-15,P1.y,'#9ab0d0',14);
+  // 平面内的线 b
+  const b1=project(-60,0,20,cx,cy+20,1),b2=project(60,0,20,cx,cy+20,1);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  line3D(b1,b2);
+  drawText('b（在 α 内）',b2.x+30,b2.y,'#34d399',12);
+  // 平面外的线 a，与 b 平行
+  const off=-40+Math.sin(time*0.8)*8;
+  const a1=project(-60,0,off,cx,cy+20,1),a2=project(60,0,off,cx,cy+20,1);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  line3D(a1,a2);
+  drawText('a（在 α 外）',a2.x+30,a2.y,'#06b6d4',12);
+  // 平行符号
+  drawText('a ∥ b',cx,cy-60,'#fbbf24',14);
+  // 结论
+  ctx.fillStyle='rgba(251,191,36,0.1)';
+  roundRect(cx-160,cy+90,320,32,8);ctx.fill();
+  drawText('⇒ a ∥ α（线面平行）',cx,cy+106,'#fbbf24',14);
+}
+
+// ===== 场景7：线面平行性质 =====
+function drawParallelPropScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('线面平行性质 · 交线与该直线平行',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 平面 α
+  const P1=project(-90,-20,0,cx,cy+30,1),P2=project(90,-20,0,cx,cy+30,1);
+  const P3=project(90,25,50,cx,cy+30,1),P4=project(-90,25,50,cx,cy+30,1);
+  fillFace3D([P1,P2,P3,P4],'rgba(102,126,234,0.15)','#3a5a8a');
+  drawText('α',P1.x-15,P1.y,'#9ab0d0',14);
+  // 平面 β（倾斜穿过）
+  const pulse=Math.sin(time*0.6)*0.1;
+  const Q1=project(-80,-20,10,cx,cy-30,1);
+  const Q2=project(80,-20,10,cx,cy-30,1);
+  const Q3=project(80,30,40,cx,cy-30,1);
+  const Q4=project(-80,30,40,cx,cy-30,1);
+  fillFace3D([Q1,Q2,Q3,Q4],'rgba(52,211,153,0.12)','#34d399');
+  drawText('β',Q1.x-15,Q1.y,'#34d399',14);
+  // 直线 a 在 β 内，平行于 α
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  line3D(Q1,Q2);
+  drawText('a',Q2.x+15,Q2.y,'#06b6d4',13);
+  // 交线 b = α ∩ β（在 α 内）
+  const b1=project(-50,-5,25,cx,cy,1),b2=project(50,-5,25,cx,cy,1);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  line3D(b1,b2);
+  drawText('b = α∩β',b2.x+30,b2.y,'#fbbf24',12);
+  drawText('a ∥ b',cx,cy-90,'#fbbf24',14);
+  drawText('过 a 的平面 β 交 α 于 b，则 a ∥ b',W/2,H-50,'#34d399',12);
+}
+
+// ===== 场景8：线面垂直判定 =====
+function drawPerpJudgeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('线面垂直判定 · 垂直两相交线 → 线面垂直',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40;
+  // 平面 α
+  const P1=project(-80,-25,0,cx,cy+30,1),P2=project(80,-25,0,cx,cy+30,1);
+  const P3=project(80,25,50,cx,cy+30,1),P4=project(-80,25,50,cx,cy+30,1);
+  fillFace3D([P1,P2,P3,P4],'rgba(102,126,234,0.18)','#3a5a8a');
+  drawText('α',P1.x-15,P1.y,'#9ab0d0',14);
+  // 垂足 O
+  const O=project(0,0,25,cx,cy+30,1);
+  drawPoint3D(O,'#fbbf24',6);
+  drawText('O',O.x-12,O.y,'#fbbf24',12);
+  // 面内两条相交线 m、n
+  const m1=project(-60,0,25,cx,cy+30,1),m2=project(60,0,25,cx,cy+30,1);
+  const n1=project(0,-20,15,cx,cy+30,1),n2=project(0,30,45,cx,cy+30,1);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;
+  line3D(m1,m2);line3D(n1,n2);
+  drawText('m',m2.x+12,m2.y,'#34d399',12);
+  drawText('n',n2.x+12,n2.y,'#34d399',12);
+  // 垂直符号
+  drawText('⊥',O.x-15,O.y-12,'#f87171',11);
+  drawText('⊥',O.x+12,O.y-12,'#f87171',11);
+  // 垂线 l
+  const lTop=project(0,30,-30+Math.sin(time)*5,cx,cy+30,1);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3.5;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  line3D(O,lTop);
+  ctx.shadowBlur=0;
+  drawText('l',lTop.x+12,lTop.y,'#f87171',14);
+  drawText('l ⊥ m 且 l ⊥ n（m、n 相交）⇒ l ⊥ α',W/2,H-50,'#fbbf24',13);
+}
+
+// ===== 场景9：面面垂直判定 =====
+function drawPlanePerpJudgeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('面面垂直判定 · 过垂线 → 面面垂直',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 平面 α（水平）
+  const P1=project(-90,-25,0,cx,cy+30,1),P2=project(90,-25,0,cx,cy+30,1);
+  const P3=project(90,25,60,cx,cy+30,1),P4=project(-90,25,60,cx,cy+30,1);
+  fillFace3D([P1,P2,P3,P4],'rgba(102,126,234,0.18)','#3a5a8a');
+  drawText('α',P1.x-15,P1.y,'#9ab0d0',14);
+  // 垂线 l（垂直于 α）
+  const O=project(-20,0,30,cx,cy+30,1);
+  drawPoint3D(O,'#fbbf24',6);
+  const lTop=project(-20,40,-10,cx,cy+30,1);
+  const lBot=project(-20,-15,50,cx,cy+30,1);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3.5;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  line3D(lBot,lTop);
+  ctx.shadowBlur=0;
+  drawText('l ⊥ α',lTop.x+25,lTop.y-10,'#f87171',12);
+  // 平面 β（包含 l，且与 α 相交）
+  const pulse=Math.sin(time*0.4)*0.05;
+  const Q1=project(-50,30,-20+pulse*40,cx,cy+30,1);
+  const Q2=project(20,30,-20+pulse*40,cx,cy+30,1);
+  const Q3=project(20,-20,40+pulse*40,cx,cy+30,1);
+  const Q4=project(-50,-20,40+pulse*40,cx,cy+30,1);
+  fillFace3D([Q1,Q2,Q3,Q4],'rgba(248,113,113,0.15)','#f87171');
+  drawText('β',Q1.x-15,Q1.y,'#f87171',14);
+  // 交线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  const I1=project(-40,-10,20,cx,cy+30,1),I2=project(10,-10,40,cx,cy+30,1);
+  line3D(I1,I2);
+  drawText('l 在 β 内，l ⊥ α ⇒ α ⊥ β',W/2,H-50,'#fbbf24',13);
+}
+
+// ===== 场景10：三垂线定理 =====
+function drawThreePerpScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('三垂线定理 · 射影垂直 ⇔ 斜线垂直',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40;
+  // 平面 α
+  const P1=project(-90,-30,0,cx,cy+30,1),P2=project(90,-30,0,cx,cy+30,1);
+  const P3=project(90,30,60,cx,cy+30,1),P4=project(-90,30,60,cx,cy+30,1);
+  fillFace3D([P1,P2,P3,P4],'rgba(102,126,234,0.15)','#3a5a8a');
+  drawText('α',P1.x-15,P1.y,'#9ab0d0',14);
+  // 斜足 A
+  const A=project(0,0,30,cx,cy+30,1);
+  drawPoint3D(A,'#fbbf24',6);
+  drawText('A',A.x-12,A.y,'#fbbf24',12);
+  // 面外点 P
+  const P=project(0,40,0,cx,cy+30,1);
+  drawPoint3D(P,'#06b6d4',6);
+  drawText('P',P.x+12,P.y-8,'#06b6d4',12);
+  // 斜线 PA
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  line3D(P,A);
+  drawText('斜线 PA',(P.x+A.x)/2+18,(P.y+A.y)/2,'#06b6d4',11);
+  // 垂足 B（PA 在 α 内的射影是 BA，其中 PB ⊥ α）
+  const B=project(0,-25,45,cx,cy+30,1);
+  drawPoint3D(B,'#34d399',6);
+  drawText('B',B.x-12,B.y,'#34d399',12);
+  // PB ⊥ α
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;
+  line3D(P,B);
+  // 射影 BA
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  line3D(B,A);
+  drawText('射影 BA',(B.x+A.x)/2-30,(B.y+A.y)/2,'#fbbf24',11);
+  // 面内直线 l，与 BA 垂直（旋转）
+  const ang=time*0.5;
+  const l1=project(50*Math.cos(ang)+0,0-30*Math.sin(ang),30-10*Math.sin(ang),cx,cy+30,1);
+  const l2=project(-50*Math.cos(ang)+0,0+30*Math.sin(ang),30+10*Math.sin(ang),cx,cy+30,1);
+  // 简化：让 l 横向且与 BA 垂直
+  const L1=project(-50,-5,55,cx,cy+30,1),L2=project(50,5,5,cx,cy+30,1);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+  line3D(L1,L2);
+  drawText('l（面内）',L2.x+30,L2.y,'#f87171',12);
+  drawText('⊥',A.x-20,A.y+15,'#f87171',12);
+  drawText('l ⊥ BA ⇒ l ⊥ PA',W/2,H-50,'#34d399',13);
+  drawText('逆定理：l ⊥ PA ⇒ l ⊥ BA',W/2,H-30,'#9ab0d0',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawAxiomsScene(t);
+  else if(stepIdx===1)drawThreePointsScene(t);
+  else if(stepIdx===2)drawLinesScene(t);
+  else if(stepIdx===3)drawLinePlaneScene(t);
+  else if(stepIdx===4)drawPlanePlaneScene(t);
+  else if(stepIdx===5)drawParallelJudgeScene(t);
+  else if(stepIdx===6)drawParallelPropScene(t);
+  else if(stepIdx===7)drawPerpJudgeScene(t);
+  else if(stepIdx===8)drawPlanePerpJudgeScene(t);
+  else if(stepIdx===9)drawThreePerpScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

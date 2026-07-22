@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三角恒等变换 · 两角和差 · 二倍角 · 辅助角</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">三角恒等变换</span><span class="subtitle">两角和差 · 二倍角 · 半角 · 辅助角公式</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>两角和差</h4><div class="v">sin(α±β)、cos(α±β)<br>tan(α±β) 展开公式</div></div>
+  <div class="card s2"><div class="num">2</div><h4>二倍角</h4><div class="v">sin2α=2sinα·cosα<br>cos2α 三种形式</div></div>
+  <div class="card s3"><div class="num">3</div><h4>半角降幂</h4><div class="v">sin²α=(1-cos2α)/2<br>cos²α=(1+cos2α)/2</div></div>
+  <div class="card s4"><div class="num">4</div><h4>辅助角公式</h4><div class="v">a·sin x+b·cos x<br>=√(a²+b²)·sin(x+φ)</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">两角和差余弦</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'两角和差余弦',body:'<strong>两角和与差的余弦</strong>是三角恒等变换的基础，由单位圆旋转矩阵几何推导。公式：<code>cos(α+β)=cosαcosβ−sinαsinβ</code>；<code>cos(α−β)=cosαcosβ+sinαsinβ</code>。注意符号<strong>相反</strong>。',points:{title:'记忆口诀',items:['<strong>C·C − S·S</strong>：cos·cos 减 sin·sin','<strong>和取负，差取正</strong>：符号与运算相反','<strong>几何来源</strong>：单位圆两点距离公式','<strong>推导核心</strong>：旋转矩阵正交']}},
+  {tag:'基础',name:'两角和差正弦',body:'<strong>正弦公式</strong>：把余弦公式中的 β 替换为 (π/2−β) 可得。<code>sin(α+β)=sinαcosβ+cosαsinβ</code>；<code>sin(α−β)=sinαcosβ−cosαsinβ</code>。符号与运算<strong>相同</strong>。',points:{title:'记忆口诀',items:['<strong>S·C + C·S</strong>：sin·cos 加 cos·sin','<strong>和取正，差取负</strong>：符号与运算一致','<strong>由 cos 推导</strong>：sin=cos(π/2−x)','<strong>常见变形</strong>：sinαcosβ=(1/2)[sin(α+β)+sin(α−β)]']}},
+  {tag:'基础',name:'两角和差正切',body:'<strong>正切公式</strong>：由 sin/cos 相除得到。<code>tan(α+β)=(tanα+tanβ)/(1−tanαtanβ)</code>；<code>tan(α−β)=(tanα−tanβ)/(1+tanαtanβ)</code>。要求 α、β、α±β≠π/2+kπ。',points:{title:'公式要点',items:['<strong>分子</strong>：tan 运算号同','<strong>分母</strong>：1 减/加 tan·tan','<strong>定义域</strong>：分母≠0，角≠π/2+kπ','<strong>特例 α=β</strong>：得二倍角正切']}},
+  {tag:'核心',name:'二倍角公式',body:'<strong>二倍角</strong>是和角公式的特例（α=β）。<code>sin2α=2sinαcosα</code>；<code>cos2α=cos²α−sin²α=2cos²α−1=1−2sin²α</code>；<code>tan2α=2tanα/(1−tan²α)</code>。',points:{title:'三组形式',items:['<strong>sin2α</strong>：2sinαcosα（唯一形式）','<strong>cos2α</strong>：三种等价形式','<strong>含 sin²</strong>：1−2sin²α（凑 sin 用）','<strong>含 cos²</strong>：2cos²α−1（凑 cos 用）']}},
+  {tag:'核心',name:'半角降幂公式',body:'<strong>降幂公式</strong>是 cos2α 形式的逆用：<code>sin²α=(1−cos2α)/2</code>；<code>cos²α=(1+cos2α)/2</code>。把<strong>二次幂降为一次</strong>，积分与化简常用。',points:{title:'降幂技巧',items:['<strong>sin²α</strong>：由 1−2sin²α=cos2α 反解','<strong>cos²α</strong>：由 2cos²α−1=cos2α 反解','<strong>用途</strong>：化二次为一次三角式','<strong>升降幂</strong>：与升幂（提取）配合']}},
+  {tag:'核心',name:'辅助角公式',body:'<strong>辅助角公式</strong>把 a·sin x+b·cos x 化为一个正弦：<code>a·sin x+b·cos x=√(a²+b²)·sin(x+φ)</code>，其中 <code>tan φ=b/a</code>，φ 称为<strong>辅助角</strong>。振幅为 √(a²+b²)。',points:{title:'化简步骤',items:['<strong>提 R</strong>：R=√(a²+b²)','<strong>构造角 φ</strong>：cos φ=a/R，sin φ=b/R','<strong>合成</strong>：R·sin(x+φ)','<strong>极值</strong>：max=R，min=−R']}},
+  {tag:'应用',name:'公式推导几何',body:'<strong>几何推导</strong>：单位圆上点 A(cosβ,−sinβ)、B(cosα,sinα)，由 |AB|² 等价于旋转后两点距离，得 <strong>cos(α−β)=cosαcosβ+sinαsinβ</strong>。α+β 用 −β 替换即得。',points:{title:'推导关键',items:['<strong>两点距离</strong>：|AB|² 坐标展开','<strong>旋转不变</strong>：两点同旋转距离不变','<strong>特殊角</strong>：令一点为 (1,0)','<strong>符号判定</strong>：和差公式差一个负号']}},
+  {tag:'应用',name:'应用求值化简',body:'<strong>典型应用</strong>：① 求非特殊角（如 sin75°=sin(45°+30°)）；② 化简（降幂合成）；③ 证明恒等式；④ 求 <code>f(x)=a sin x+b cos x</code> 的最值、周期、单调区间。',points:{title:'解题思路',items:['<strong>拆角</strong>：75°=45°+30°，15°=45°−30°','<strong>合成</strong>：用辅助角求最值','<strong>降幂</strong>：cos²x 化为 (1+cos2x)/2','<strong>换元</strong>：令 t=tan(x/2) 万能公式']}},
+  {tag:'总结',name:'公式网络与速记',body:'<strong>核心链条</strong>：和角公式 → 令 α=β 得二倍角 → 反解得半角降幂 → 配合辅助角处理 a·sin x+b·cos x。所有公式可由<strong>两角差余弦</strong>统一推导。',points:{title:'速记口诀',items:['<strong>和差</strong>：正同余反（sin 同号，cos 反号）','<strong>二倍</strong>：sin2α=2sinαcosα','<strong>降幂</strong>：sin²=(1−cos2)/2','<strong>辅助角</strong>：R sin(x+φ)，R=√(a²+b²)']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 工具：绘制单位圆 =====
+function drawUnitCircle(cx,cy,r,alpha,beta,opts){
+  opts=opts||{};
+  // 坐标轴
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-r-20,cy);ctx.lineTo(cx+r+20,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-r-20);ctx.lineTo(cx,cy+r+20);ctx.stroke();
+  drawText('x',cx+r+15,cy+10,'#5a6a8a',11);drawText('y',cx+12,cy-r-15,'#5a6a8a',11);
+  // 单位圆
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+  // 角度刻度
+  for(let d=0;d<360;d+=30){
+    const a=d*Math.PI/180;const x1=cx+r*Math.cos(a),y1=cy-r*Math.sin(a);
+    ctx.strokeStyle='#1e2c4a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx+r*0.97*Math.cos(a),cy-r*0.97*Math.sin(a));
+    ctx.lineTo(x1,y1);ctx.stroke();
+  }
+  // 点 A 角度 alpha
+  const ax=cx+r*Math.cos(alpha),ay=cy-r*Math.sin(alpha);
+  // 点 B 角度 beta
+  const bx=cx+r*Math.cos(beta),by=cy-r*Math.sin(beta);
+  // 角 alpha 扇形
+  ctx.fillStyle='rgba(251,191,36,0.12)';
+  ctx.beginPath();ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,r*0.35,0,-alpha,true);ctx.closePath();ctx.fill();
+  // 角 alpha 线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ax,ay);ctx.stroke();
+  drawText('α',cx+r*0.22*Math.cos(-alpha/2),cy+r*0.22*Math.sin(-alpha/2),'#fbbf24',12);
+  // 角 beta 线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(bx,by);ctx.stroke();
+  // 点 A
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(ax,ay,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('A(cosα,sinα)',ax+10,ay-12,'#fbbf24',11,'left');
+  // 点 B
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(bx,by,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('B(cosβ,sinβ)',bx+10,by+14,'#06b6d4',11,'left');
+  // 投影线
+  if(opts.proj){
+    ctx.strokeStyle='rgba(251,191,36,0.35)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx,cy);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  return {ax,ay,bx,by};
+}
+
+// ===== 场景：两角和差余弦 =====
+function drawCosScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('两角和与差 · 余弦公式',W/2,28,'#fbbf24',16);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('cos(α±β) = cosαcosβ ∓ sinαsinβ',W/2,62);
+  const cx=W/2-40,cy=H/2+30,r=120;
+  const alpha=(time*0.4)%(Math.PI*2);
+  const beta=(time*0.25+1)%(Math.PI*2);
+  drawUnitCircle(cx,cy,r,alpha,beta,{proj:true});
+  // 右侧数值
+  const ca=Math.cos(alpha),sa=Math.sin(alpha),cb=Math.cos(beta),sb=Math.sin(beta);
+  const csum=ca*cb-sa*sb,cdiff=ca*cb+sa*sb;
+  const rx=W-180;
+  drawText('当前角度',rx,90,'#34d399',13);
+  drawText('α='+(alpha*180/Math.PI).toFixed(0)+'°',rx,115,'#fbbf24',12);
+  drawText('β='+(beta*180/Math.PI).toFixed(0)+'°',rx,138,'#06b6d4',12);
+  drawText('计算',rx,170,'#34d399',13);
+  drawText('cos(α+β)='+csum.toFixed(3),rx,195,'#e8eef8',11);
+  drawText('cos(α−β)='+cdiff.toFixed(3),rx,218,'#e8eef8',11);
+  drawText('符号规则：和取负，差取正',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：两角和差正弦 =====
+function drawSinScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('两角和与差 · 正弦公式',W/2,28,'#fbbf24',16);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('sin(α±β) = sinαcosβ ± cosαsinβ',W/2,62);
+  const cx=W/2-40,cy=H/2+30,r=120;
+  const alpha=(time*0.4)%(Math.PI*2);
+  const beta=(time*0.3+0.8)%(Math.PI*2);
+  drawUnitCircle(cx,cy,r,alpha,beta,{proj:true});
+  const sa=Math.sin(alpha),ca=Math.cos(alpha),cb=Math.cos(beta),sb=Math.sin(beta);
+  const ssum=sa*cb+ca*sb,sdiff=sa*cb-ca*sb;
+  const rx=W-180;
+  drawText('当前角度',rx,90,'#34d399',13);
+  drawText('α='+(alpha*180/Math.PI).toFixed(0)+'°',rx,115,'#fbbf24',12);
+  drawText('β='+(beta*180/Math.PI).toFixed(0)+'°',rx,138,'#06b6d4',12);
+  drawText('计算',rx,170,'#34d399',13);
+  drawText('sin(α+β)='+ssum.toFixed(3),rx,195,'#e8eef8',11);
+  drawText('sin(α−β)='+sdiff.toFixed(3),rx,218,'#e8eef8',11);
+  drawText('记忆：正同余反（sin 符号同运算）',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：两角和差正切 =====
+function drawTanScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('两角和与差 · 正切公式',W/2,28,'#fbbf24',16);
+  ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('tan(α±β) = (tanα ± tanβ) / (1 ∓ tanα·tanβ)',W/2,60);
+  const cx=W/2-40,cy=H/2+30,r=120;
+  const alpha=(Math.sin(time*0.4)*0.4+0.5);
+  const beta=(Math.cos(time*0.3)*0.4+0.4);
+  drawUnitCircle(cx,cy,r,alpha,beta);
+  const ta=Math.tan(alpha),tb=Math.tan(beta);
+  const tsum=(ta+tb)/(1-ta*tb),tdiff=(ta-tb)/(1+ta*tb);
+  const rx=W-180;
+  drawText('参数',rx,90,'#34d399',13);
+  drawText('tan α='+ta.toFixed(3),rx,115,'#fbbf24',12);
+  drawText('tan β='+tb.toFixed(3),rx,138,'#06b6d4',12);
+  drawText('计算',rx,170,'#34d399',13);
+  drawText('tan(α+β)='+tsum.toFixed(3),rx,195,'#e8eef8',11);
+  drawText('tan(α−β)='+tdiff.toFixed(3),rx,218,'#e8eef8',11);
+  drawText('分子同号，分母反号',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：二倍角公式 =====
+function drawDoubleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('二倍角公式 · α=β 的特例',W/2,28,'#fbbf24',16);
+  const cx=W/2-60,cy=H/2+30,r=130;
+  const alpha=(time*0.4)%(Math.PI);
+  // 单位圆，画出 α 与 2α
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-r-20,cy);ctx.lineTo(cx+r+20,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-r-20);ctx.lineTo(cx,cy+r+20);ctx.stroke();
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+  // α 角线
+  const ax=cx+r*Math.cos(alpha),ay=cy-r*Math.sin(alpha);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ax,ay);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(ax,ay,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('α',cx+r*0.25,cy-r*0.15,'#fbbf24',12);
+  // 2α 角线
+  const a2x=cx+r*Math.cos(2*alpha),a2y=cy-r*Math.sin(2*alpha);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(a2x,a2y);ctx.stroke();
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(a2x,a2y,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('2α',cx+r*0.55*Math.cos(alpha),cy-r*0.55*Math.sin(alpha),'#06b6d4',12);
+  // 数值面板
+  const rx=W-200;
+  ctx.font='bold 14px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  drawText('二倍角三式',rx,80,'#34d399',14);
+  drawText('sin2α = 2sinαcosα',rx,108,'#fde68a',11);
+  drawText('cos2α = cos²α−sin²α',rx,130,'#fde68a',11);
+  drawText('     = 2cos²α−1',rx,150,'#9ab0d0',10);
+  drawText('     = 1−2sin²α',rx,168,'#9ab0d0',10);
+  drawText('tan2α = 2tanα/(1−tan²α)',rx,192,'#fde68a',11);
+  // 实时验证
+  const sa=Math.sin(alpha),ca=Math.cos(alpha),ta=sa/ca;
+  drawText('α='+(alpha*180/Math.PI).toFixed(0)+'°',rx,224,'#fbbf24',12);
+  drawText('sin2α='+(2*sa*ca).toFixed(3),rx,246,'#e8eef8',11);
+  drawText('cos2α='+(ca*ca-sa*sa).toFixed(3),rx,268,'#e8eef8',11);
+  drawText('tan2α='+(2*ta/(1-ta*ta)).toFixed(3),rx,290,'#e8eef8',11);
+  drawText('和角公式令 α=β 即得',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：半角降幂 =====
+function drawHalfScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('半角降幂公式 · 二倍角的逆用',W/2,28,'#fbbf24',16);
+  ctx.font='bold 15px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('sin²α = (1−cos2α)/2，cos²α = (1+cos2α)/2',W/2,58);
+  // 画 sin²α 与 (1−cos2α)/2 的曲线对比
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,H/2);ctx.lineTo(W-80,H/2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(80,80);ctx.lineTo(80,H-80);ctx.stroke();
+  drawText('sin²α',60,H/2-100,'#06b6d4',12);
+  drawText('α(rad)',W-90,H/2+25,'#9ab0d0',11);
+  // 刻度
+  for(let k=0;k<=6;k++){
+    const x=80+k*(W-160)/6.28;
+    drawText(k,x,H/2+18,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,H/2-3);ctx.lineTo(x,H/2+3);ctx.stroke();
+  }
+  // sin²α 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const a=i/200*6.28;
+    const x=80+a*(W-160)/6.28;
+    const y=H/2-Math.sin(a)*Math.sin(a)*180;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // (1−cos2α)/2 曲线（应完全重合）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const a=i/200*6.28;
+    const x=80+a*(W-160)/6.28;
+    const y=H/2-(1-Math.cos(2*a))/2*180;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.setLineDash([]);
+  // 移动点
+  const a=(time*0.6)%6.28;
+  const x=80+a*(W-160)/6.28;
+  const y=H/2-Math.sin(a)*Math.sin(a)*180;
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('α='+a.toFixed(2)+'  sin²α='+((Math.sin(a))**2).toFixed(3),x,y-22,'#f87171',12);
+  drawText('蓝实线 sin²α 与 黄虚线 (1−cos2α)/2 完全重合',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：辅助角公式 =====
+function drawAuxScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('辅助角公式 · a·sin x + b·cos x',W/2,28,'#fbbf24',16);
+  ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('= √(a²+b²) · sin(x + φ)，tan φ = b/a',W/2,58);
+  const a=1.5+0.6*Math.sin(time*0.3);
+  const b=1.0+0.5*Math.cos(time*0.4);
+  const R=Math.sqrt(a*a+b*b);
+  const phi=Math.atan2(b,a);
+  // 坐标系
+  const cx=80,cy=H/2+30,x0=80,x1=W-80,y0=80,y1=H-60;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(x0,cy);ctx.lineTo(x1,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,y0);ctx.lineTo(cx,y1);ctx.stroke();
+  drawText('x',x1-10,cy-12,'#5a6a8a',11);drawText('y',cx+12,y0+8,'#5a6a8a',11);
+  // 原 a sin x + b cos x 曲线
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=400;i++){
+    const xx=i/400*(x1-x0);
+    const tx=xx/40;
+    const yy=cy-(a*Math.sin(tx)+b*Math.cos(tx))*40;
+    if(i===0)ctx.moveTo(cx+xx,yy);else ctx.lineTo(cx+xx,yy);
+  }
+  ctx.stroke();
+  // R sin(x+φ) 曲线（应重合）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();
+  for(let i=0;i<=400;i++){
+    const xx=i/400*(x1-x0);
+    const tx=xx/40;
+    const yy=cy-R*Math.sin(tx+phi)*40;
+    if(i===0)ctx.moveTo(cx+xx,yy);else ctx.lineTo(cx+xx,yy);
+  }
+  ctx.stroke();ctx.setLineDash([]);
+  // 振幅标记
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(cx,cy-R*40);ctx.lineTo(x1,cy-R*40);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy+R*40);ctx.lineTo(x1,cy+R*40);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('R='+R.toFixed(2),x1-50,cy-R*40-10,'#34d399',11);
+  // 参数面板
+  drawText('a='+a.toFixed(2)+'  b='+b.toFixed(2),W/2,H-58,'#06b6d4',12);
+  drawText('R=√(a²+b²)='+R.toFixed(2)+'   φ='+(phi*180/Math.PI).toFixed(1)+'°',W/2,H-38,'#fbbf24',12);
+  drawText('紫实线 = 原式，黄虚线 = R·sin(x+φ)，两者重合',W/2,H-18,'#34d399',11);
+}
+
+// ===== 场景：公式推导 =====
+function drawDeriveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('几何推导 · 两角差余弦',W/2,28,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,r=130;
+  const alpha=(time*0.35+0.3)%(Math.PI*1.5);
+  const beta=(time*0.2+1.2)%(Math.PI*1.5);
+  // 单位圆
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-r-20,cy);ctx.lineTo(cx+r+20,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-r-20);ctx.lineTo(cx,cy+r+20);ctx.stroke();
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+  // 点 A：(1,0)
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(cx+r,cy,6,0,7);ctx.fill();
+  drawText('P(1,0)',cx+r,cy+18,'#34d399',11);
+  // 点 B：(cos(α-β), sin(α-β))
+  const diff=alpha-beta;
+  const bx=cx+r*Math.cos(diff),by=cy-r*Math.sin(diff);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(bx,by,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('Q(cos(α−β),sin(α−β))',bx+10,by-12,'#fbbf24',11,'left');
+  // 点 A2：(cos α, sin α)
+  const ax=cx+r*Math.cos(alpha),ay=cy-r*Math.sin(alpha);
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(ax,ay,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('(cosα,sinα)',ax+10,ay-12,'#06b6d4',11,'left');
+  // 点 B2：(cos β, sin β)
+  const a2x=cx+r*Math.cos(beta),a2y=cy-r*Math.sin(beta);
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(a2x,a2y,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('(cosβ,sinβ)',a2x+10,a2y+14,'#f87171',11,'left');
+  // 距离线
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(a2x,a2y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+r,cy);ctx.lineTo(bx,by);ctx.stroke();
+  // 说明
+  drawText('两点同旋转 α 角后距离不变 → |PQ|² = |AB|²',W/2,H-55,'#fff',12);
+  drawText('展开：2−2cos(α−β) = 2−2(cosαcosβ+sinαsinβ)',W/2,H-35,'#34d399',12);
+  drawText('∴ cos(α−β) = cosαcosβ + sinαsinβ',W/2,H-15,'#fbbf24',13);
+}
+
+// ===== 场景：应用计算 =====
+function drawAppScene(){
+  const W=cv.width,H=cv.height;
+  drawText('应用 · 求值化简典型题',W/2,28,'#fbbf24',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,60,W-160,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】求 sin75° 与 tan(α+β) 已知 tanα=1/2，tanβ=1/3',120,82,'#a78bfa',13,'left');
+  drawText('【化简】f(x)=sin x + √3 cos x 的最大值与周期',120,118,'#a78bfa',13,'left');
+  const steps=[
+    {t:'① sin75°',d:'=sin(45°+30°)=(√2/2)(√3/2)+(√2/2)(1/2)=(√6+√2)/4',c:'#06b6d4'},
+    {t:'② tan(α+β)',d:'=(1/2+1/3)/(1−1/6)=(5/6)/(5/6)=1，∴ α+β=45°',c:'#a78bfa'},
+    {t:'③ 辅助角',d:'R=√(1+3)=2，tan φ=√3，φ=60°，f=2sin(x+60°)',c:'#67e8f9'},
+    {t:'④ 最值/周期',d:'最大值 2，最小值 −2，周期 T=2π',c:'#34d399'},
+    {t:'⑤ 关键思路',d:'拆角 / 配辅助角 / 降幂合成是三大法宝',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=170+i*60;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,50,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,260,y+18,'#fff',12,'left');
+  });
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('三角恒等变换 · 公式网络总结',W/2,38,'#fbbf24',18);
+  const items=[
+    {t:'和角余弦',d:'cos(α±β)=cosαcosβ∓sinαsinβ',c:'#fbbf24'},
+    {t:'和角正弦',d:'sin(α±β)=sinαcosβ±cosαsinβ',c:'#06b6d4'},
+    {t:'和角正切',d:'tan(α±β)=(tanα±tanβ)/(1∓tanαtanβ)',c:'#34d399'},
+    {t:'二倍角',d:'sin2α=2sinαcosα',c:'#a78bfa'},
+    {t:'cos2α',d:'cos²α−sin²α=2cos²α−1=1−2sin²α',c:'#fb923c'},
+    {t:'降幂',d:'sin²α=(1−cos2α)/2',c:'#ec4899'},
+    {t:'辅助角',d:'a sinx+b cosx=√(a²+b²)sin(x+φ)',c:'#67e8f9'},
+    {t:'万能公式',d:'sinx=2t/(1+t²)，t=tan(x/2)',c:'#fde68a'},
+    {t:'速记',d:'正同余反 · 二倍三式 · 降幂逆用',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=80+row*150;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,120,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+40,m.c,14);
+    drawText(m.d,x+(W-160)/6,y+80,'#fff',11);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawCosScene(t);
+  else if(stepIdx===1)drawSinScene(t);
+  else if(stepIdx===2)drawTanScene(t);
+  else if(stepIdx===3)drawDoubleScene(t);
+  else if(stepIdx===4)drawHalfScene(t);
+  else if(stepIdx===5)drawAuxScene(t);
+  else if(stepIdx===6)drawDeriveScene(t);
+  else if(stepIdx===7)drawAppScene();
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

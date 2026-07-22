@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>平面向量的数量积 · 点乘 · 夹角 · 投影与应用</title>
+<style>
+:root{
+  --bg:#0a1628;
+  --panel:#11203a;
+  --card:#172a4a;
+  --ink:#e8eef8;
+  --muted:#9ab0d0;
+  --accent:#fbbf24;
+  --accent2:#06b6d4;
+  --line:#243a5e;
+  --good:#34d399;
+  --warn:#fbbf24;
+  --bad:#f87171;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}
+.card.s3::before{background:var(--good)}
+.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}
+.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回数学目录</a>
+  <span class="title">平面向量的数量积</span>
+  <span class="subtitle">点乘 · 夹角 · 投影 · 应用</span>
+</header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>点乘定义</h4><div class="v">a·b = |a||b|cosθ<br>结果为数量，非向量</div></div>
+  <div class="card s2"><div class="num">2</div><h4>坐标公式</h4><div class="v">a·b = x₁x₂ + y₁y₂<br>对应分量乘积之和</div></div>
+  <div class="card s3"><div class="num">3</div><h4>垂直判定</h4><div class="v">a⊥b ⇔ a·b = 0<br>θ = 90°</div></div>
+  <div class="card s4"><div class="num">4</div><h4>三大运算律</h4><div class="v">交换 / 分配 / 数乘<br>a·b=b·a 等</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">数量积定义</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+  </aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(520,Math.min(1100,r.width-12));
+  cv.height=Math.max(400,Math.min(600,r.height-12));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function drawText(t,x,y,c,fs,a,b){
+  ctx.fillStyle=c||'#9ab0d0';
+  ctx.font=(fs||12)+'px sans-serif';
+  ctx.textAlign=a||'center';
+  ctx.textBaseline=b||'middle';
+  ctx.fillText(t,x,y);
+}
+
+function arrow(x1,y1,x2,y2,color,w){
+  ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=w||3;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1),h=10;
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-h*Math.cos(ang-0.4),y2-h*Math.sin(ang-0.4));
+  ctx.lineTo(x2-h*Math.cos(ang+0.4),y2-h*Math.sin(ang+0.4));
+  ctx.closePath();ctx.fill();
+}
+
+const STEPS=[
+  {tag:'定义',name:'点乘定义',
+   body:'<strong>数量积（点乘）</strong>：两向量 <strong>a·b = |a||b|cosθ</strong>，其中 θ 为 a 与 b 的夹角（0 ≤ θ ≤ π）。<code>·</code> 结果是<strong>数量（实数）</strong>，不是向量，故又称"内积"或"标量积"。',
+   points:{title:'定义核心',items:[
+     '<strong>公式</strong>：a·b = |a||b|cosθ',
+     '<strong>结果</strong>：实数（可正、零、负）',
+     '<strong>θ 范围</strong>：0 ≤ θ ≤ π',
+     '<strong>θ=0</strong>：a·b = |a||b| 最大'
+   ]}},
+  {tag:'定义',name:'结果符号判定',
+   body:'点乘符号由 <strong>cosθ</strong> 决定：<strong>θ&lt;90° 时 a·b&gt;0</strong>（同向分量）；<strong>θ=90° 时 a·b=0</strong>；<strong>θ&gt;90° 时 a·b&lt;0</strong>（反向分量）。',
+   points:{title:'三种情形',items:[
+     '<strong>锐角(θ&lt;90°)</strong>：a·b &gt; 0',
+     '<strong>直角(θ=90°)</strong>：a·b = 0',
+     '<strong>钝角(θ&gt;90°)</strong>：a·b &lt; 0',
+     '<strong>共线(θ=180°)</strong>：a·b = -|a||b|'
+   ]}},
+  {tag:'几何',name:'几何意义-投影',
+   body:'<strong>几何意义</strong>：a·b 等于 <strong>|a| 与 b 在 a 方向上投影 |b|cosθ 的乘积</strong>，也等于 |b| 与 a 在 b 方向上投影的乘积。投影把"二维运算"降到"一维数乘"。',
+   points:{title:'投影解读',items:[
+     '<strong>b 在 a 上投影</strong>：|b|cosθ',
+     '<strong>对称式</strong>：a·b = |a|·(|b|cosθ)',
+     '<strong>另一形式</strong>：a·b = |b|·(|a|cosθ)',
+     '<strong>本质</strong>：一个向量在另一个上的"贡献"'
+   ]}},
+  {tag:'坐标',name:'坐标运算',
+   body:'若 <strong>a=(x₁,y₁), b=(x₂,y₂)</strong>，则 <code>a·b = x₁x₂ + y₁y₂</code>。这是<strong>最常用</strong>的计算方法：对应坐标相乘再相加，无需知道 θ。',
+   points:{title:'坐标公式',items:[
+     '<strong>公式</strong>：a·b = x₁x₂ + y₁y₂',
+     '<strong>计算顺序</strong>：先乘后加',
+     '<strong>无需 θ</strong>：坐标已知即可',
+     '<strong>示例</strong>：(1,2)·(3,4)=3+8=11'
+   ]}},
+  {tag:'坐标',name:'模长公式',
+   body:'<strong>模长</strong>：<code>|a| = √(x²+y²)</code>。由 <strong>a·a = |a|²</strong>（令 b=a，θ=0，cos0=1）得来，这是"自身点乘 = 模长平方"的核心关系。',
+   points:{title:'模长要点',items:[
+     '<strong>坐标</strong>：|a| = √(x²+y²)',
+     '<strong>点乘式</strong>：|a|² = a·a',
+     '<strong>求距离</strong>：|AB| = √((Δx)²+(Δy)²)',
+     '<strong>用途</strong>：证等长、求长度'
+   ]}},
+  {tag:'夹角',name:'夹角公式',
+   body:'<strong>夹角公式</strong>：<code>cosθ = (a·b) / (|a|·|b|)</code>。先用坐标求 a·b 和 |a|、|b|，再代入反解 θ。这是<strong>求夹角</strong>的标准流程。',
+   points:{title:'求 θ 三步',items:[
+     '<strong>步骤1</strong>：算 a·b = x₁x₂+y₁y₂',
+     '<strong>步骤2</strong>：算 |a|、|b|',
+     '<strong>步骤3</strong>：cosθ = a·b/(|a||b|)',
+     '<strong>关键</strong>：cos 值确定 → θ 唯一'
+   ]}},
+  {tag:'垂直',name:'垂直条件',
+   body:'<strong>重要性质</strong>：<code>a⊥b ⇔ a·b = 0</code>（即 θ=90°，cos90°=0）。这是<strong>证明两向量垂直</strong>的最常用方法，比判斜率乘积=-1 更通用。',
+   points:{title:'垂直判定',items:[
+     '<strong>充要条件</strong>：a⊥b ⇔ a·b=0',
+     '<strong>坐标形式</strong>：x₁x₂+y₁y₂=0',
+     '<strong>应用</strong>：证垂直、求参数',
+     '<strong>优势</strong>：非零向量皆可用'
+   ]}},
+  {tag:'运算律',name:'三大运算律',
+   body:'点乘满足：<strong>交换律</strong> <code>a·b = b·a</code>；<strong>分配律</strong> <code>(a+b)·c = a·c + b·c</code>；<strong>数乘结合</strong> <code>(λa)·b = λ(a·b)</code>。<strong>注意</strong>：点乘<strong>不满足结合律</strong>，(a·b)·c 是"数·向量"运算，性质已变。',
+   points:{title:'律与禁忌',items:[
+     '<strong>交换律</strong>：a·b = b·a',
+     '<strong>分配律</strong>：(a+b)·c = a·c+b·c',
+     '<strong>数乘</strong>：(λa)·b = λ(a·b)',
+     '<strong>禁忌</strong>：(a·b)·c 不是点乘'
+   ]}},
+  {tag:'应用',name:'物理做功 W=F·s',
+   body:'<strong>恒力做功</strong>：<code>W = F·s = |F||s|cosθ</code>，θ 为力 F 与位移 s 的夹角。力在位移方向的<strong>有效分量</strong>才做功，这正是点乘的<strong>投影意义</strong>。',
+   points:{title:'做功要点',items:[
+     '<strong>公式</strong>：W = F·s = Fs cosθ',
+     '<strong>θ=0</strong>：W=Fs（全力做功）',
+     '<strong>θ=90°</strong>：W=0（垂直不做功）',
+     '<strong>θ=180°</strong>：W=-Fs（阻力做负功）'
+   ]}},
+  {tag:'应用',name:'综合应用总结',
+   body:'<strong>四大应用</strong>：(1) <strong>证垂直</strong>：算 a·b=0；(2) <strong>求夹角</strong>：用 cosθ 公式；(3) <strong>求长度</strong>：|a|=√(a·a)；(4) <strong>物理做功</strong>：W=F·s。点乘是连接代数与几何的桥梁。',
+   points:{title:'应用速查',items:[
+     '<strong>证垂直</strong>：a·b=0',
+     '<strong>求夹角</strong>：cosθ=a·b/(|a||b|)',
+     '<strong>求长度</strong>：|a|²=a·a',
+     '<strong>做功</strong>：W=F·s'
+   ]}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景1：点乘定义 a·b=|a||b|cosθ =====
+function drawDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('点乘定义 · a·b = |a||b|cosθ',W/2,30,'#fbbf24',16);
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('a · b = |a| · |b| · cosθ',W/2,65);
+  const cx=W*0.42,cy=H/2+30;
+  const theta=(Math.sin(time*0.5)*0.5+0.75)*Math.PI;
+  const aLen=130,bLen=120;
+  // 向量 a（水平向右）
+  arrow(cx,cy,cx+aLen,cy,'#06b6d4',3);
+  drawText('a',cx+aLen+15,cy,'#06b6d4',15);
+  // 向量 b（与 a 成 θ 角）
+  const bx=cx+bLen*Math.cos(theta),by=cy-bLen*Math.sin(theta);
+  arrow(cx,cy,bx,by,'#fbbf24',3);
+  drawText('b',bx+15,by-8,'#fbbf24',15);
+  // 夹角弧
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,30,0,-theta,true);ctx.stroke();
+  drawText('θ',cx+42,cy-22,'#34d399',14);
+  // 原点
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx,cy,4,0,7);ctx.fill();
+  drawText('O',cx-12,cy+12,'#9ab0d0',11);
+  // 实时结果
+  const prod=aLen*bLen/100;
+  const res=prod*Math.cos(theta);
+  drawText('|a|='+aLen+'  |b|='+bLen+'  θ='+(theta*180/Math.PI).toFixed(0)+'°',W/2,H-90,'#9ab0d0',12);
+  drawText('cosθ = '+Math.cos(theta).toFixed(3),W/2,H-65,'#67e8f9',13);
+  ctx.font='bold 17px sans-serif';
+  drawText('a·b = '+res.toFixed(1)+'（'+(res>=0?'正':'负')+'）',W/2,H-35,res>=0?'#34d399':'#f87171',17);
+}
+
+// ===== 场景2：投影几何意义 =====
+function drawProjScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('几何意义 · b 在 a 方向上的投影',W/2,30,'#fbbf24',16);
+  const cx=W*0.3,cy=H/2+40;
+  const theta=(Math.sin(time*0.4)*0.4+0.6)*Math.PI;
+  const aLen=240,bLen=140;
+  // 向量 a
+  arrow(cx,cy,cx+aLen,cy,'#06b6d4',3);
+  drawText('a',cx+aLen+15,cy,'#06b6d4',15);
+  // 向量 b
+  const bx=cx+bLen*Math.cos(theta),by=cy-bLen*Math.sin(theta);
+  arrow(cx,cy,bx,by,'#fbbf24',3);
+  drawText('b',bx+15,by-8,'#fbbf24',15);
+  // 投影线（从 b 端点垂直下落到 a 所在直线）
+  const projLen=bLen*Math.cos(theta);
+  const projX=cx+projLen;
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(projX,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('|b|cosθ',bx+(projX-bx)/2+8,by+(cy-by)/2,'#f87171',12);
+  // 投影段（粗线在 a 上）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=6;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(projX,cy);ctx.stroke();
+  drawText('投影长度 = |b|cosθ',cx+aLen/2,cy+30,'#34d399',13);
+  // 夹角弧
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,26,0,-theta,true);ctx.stroke();
+  drawText('θ',cx+38,cy-18,'#67e8f9',13);
+  // 直角标记
+  if(Math.abs(projLen)>5){
+    ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;
+    ctx.strokeRect(Math.min(bx,projX),Math.min(by,cy),Math.abs(bx-projX),8);
+  }
+  // 说明
+  drawText('a·b = |a| × (|b|cosθ)',W/2,H-70,'#fbbf24',14);
+  drawText('点乘 = 模长 × 投影，把向量运算降为一维数乘',W/2,H-40,'#34d399',12);
+}
+
+// ===== 场景3：坐标运算 =====
+function drawCoordScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('坐标运算 · a·b = x₁x₂ + y₁y₂',W/2,30,'#fbbf24',16);
+  // 示例坐标（动态变化）
+  const a={x:3+Math.sin(time)*0.5,y:2};
+  const b={x:1,y:2+Math.cos(time*0.8)*0.6};
+  const dot=a.x*b.x+a.y*b.y;
+  // 左侧：坐标系和向量
+  const ox=120,oy=H-100,scale=38;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ox,60);ctx.lineTo(ox,oy);ctx.lineTo(W*0.55,oy);ctx.stroke();
+  drawText('x',W*0.55+10,oy,'#9ab0d0',11);
+  drawText('y',ox,50,'#9ab0d0',11);
+  for(let i=1;i<=4;i++){
+    drawText(i,ox+i*scale,oy+15,'#5a6a8a',10);
+    drawText(i,ox-15,oy-i*scale,'#5a6a8a',10);
+  }
+  // 画 a
+  arrow(ox,oy,ox+a.x*scale,oy-a.y*scale,'#06b6d4',3);
+  drawText('a('+a.x.toFixed(1)+','+a.y.toFixed(1)+')',ox+a.x*scale+15,oy-a.y*scale-10,'#06b6d4',12,'left');
+  // 画 b
+  arrow(ox,oy,ox+b.x*scale,oy-b.y*scale,'#fbbf24',3);
+  drawText('b('+b.x.toFixed(1)+','+b.y.toFixed(1)+')',ox+b.x*scale+15,oy-b.y*scale+8,'#fbbf24',12,'left');
+  // 右侧：计算过程
+  const px=W*0.6;
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  roundRect(px-10,90,W-px-20,260,10);ctx.fill();ctx.stroke();
+  drawText('点乘计算',px+120,110,'#fbbf24',14);
+  drawText('a·b = x₁x₂ + y₁y₂',px+120,145,'#fff',13);
+  drawText('= ('+a.x.toFixed(1)+')('+b.x.toFixed(1)+') + ('+a.y.toFixed(1)+')('+b.y.toFixed(1)+')',px+120,175,'#9ab0d0',12);
+  const p1=a.x*b.x,p2=a.y*b.y;
+  drawText('= '+p1.toFixed(2)+' + '+p2.toFixed(2),px+120,205,'#67e8f9',13);
+  ctx.font='bold 18px sans-serif';ctx.fillStyle='#34d399';
+  drawText('= '+dot.toFixed(2),px+120,240,'#34d399',18);
+  drawText('对应坐标相乘再相加，无需 θ',px+120,H-60,'#9ab0d0',11);
+  drawText('|a|² = a·a = '+a.x.toFixed(1)+'²+'+a.y.toFixed(1)+'² = '+(a.x*a.x+a.y*a.y).toFixed(2),px+120,H-35,'#a78bfa',11);
+}
+
+// ===== 场景4：夹角公式 =====
+function drawAngleFormulaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('夹角公式 · cosθ = (a·b)/(|a||b|)',W/2,30,'#fbbf24',16);
+  const a={x:4,y:1},b={x:1,y:3+Math.sin(time)*0.8};
+  const dot=a.x*b.x+a.y*b.y;
+  const ma=Math.sqrt(a.x*a.x+a.y*a.y),mb=Math.sqrt(b.x*b.x+b.y*b.y);
+  const cosT=dot/(ma*mb);
+  const theta=Math.acos(Math.max(-1,Math.min(1,cosT)));
+  const ox=140,oy=H-100,scale=32;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ox,70);ctx.lineTo(ox,oy);ctx.lineTo(W*0.55,oy);ctx.stroke();
+  drawText('x',W*0.55+10,oy,'#9ab0d0',11);drawText('y',ox,60,'#9ab0d0',11);
+  arrow(ox,oy,ox+a.x*scale,oy-a.y*scale,'#06b6d4',3);
+  drawText('a',ox+a.x*scale+12,oy-a.y*scale,'#06b6d4',14);
+  arrow(ox,oy,ox+b.x*scale,oy-b.y*scale,'#fbbf24',3);
+  drawText('b',ox+b.x*scale+12,oy-b.y*scale,'#fbbf24',14);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(ox,oy,28,0,-theta,true);ctx.stroke();
+  drawText('θ',ox+40,oy-22,'#34d399',13);
+  const px=W*0.6;
+  drawText('步骤1 · a·b = '+a.x+'·'+b.x+' + '+a.y+'·'+b.y.toFixed(1)+' = '+dot.toFixed(2),px+100,110,'#67e8f9',12);
+  drawText('步骤2 · |a| = √('+a.x+'²+'+a.y+'²) = '+ma.toFixed(2),px+100,140,'#a78bfa',12);
+  drawText('步骤3 · |b| = √('+b.x.toFixed(1)+'²+'+b.y.toFixed(1)+'²) = '+mb.toFixed(2),px+100,170,'#a78bfa',12);
+  drawText('步骤4 · cosθ = '+dot.toFixed(2)+'/('+ma.toFixed(2)+'×'+mb.toFixed(2)+')',px+100,200,'#fff',12);
+  drawText('        = '+cosT.toFixed(3),px+100,225,'#06b6d4',12);
+  ctx.font='bold 17px sans-serif';ctx.fillStyle='#fbbf24';
+  drawText('θ ≈ '+(theta*180/Math.PI).toFixed(1)+'°',px+100,265,'#fbbf24',17);
+  drawText('锐角 a·b>0；直角 a·b=0；钝角 a·b<0',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景5：垂直条件 =====
+function drawPerpScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('垂直条件 · a⊥b ⇔ a·b = 0',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // θ 在 90°附近摆动
+  const wob=Math.sin(time*1.2)*0.18;
+  const theta=Math.PI/2+wob;
+  const aLen=130,bLen=130;
+  arrow(cx,cy,cx+aLen,cy,'#06b6d4',3);
+  drawText('a',cx+aLen+15,cy,'#06b6d4',15);
+  const bx=cx+bLen*Math.cos(theta),by=cy-bLen*Math.sin(theta);
+  arrow(cx,cy,bx,by,'#fbbf24',3);
+  drawText('b',bx+15,by,'#fbbf24',15);
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx,cy,4,0,7);ctx.fill();
+  // 直角标记
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  if(Math.abs(wob)<0.05){
+    ctx.strokeRect(cx+18,cy-18,18,18);
+    drawText('90°',cx+45,cy-25,'#34d399',12);
+  }
+  // 实时计算
+  const dot=aLen*bLen*Math.cos(theta);
+  drawText('θ = '+(theta*180/Math.PI).toFixed(1)+'°',W/2,H-100,'#67e8f9',14);
+  drawText('cosθ = '+Math.cos(theta).toFixed(3),W/2,H-75,'#9ab0d0',13);
+  const isPerp=Math.abs(dot)<1500;
+  ctx.font='bold 18px sans-serif';
+  drawText('a·b = '+dot.toFixed(0)+(isPerp?' ≈ 0  →  a⊥b ✓':' ≠ 0  →  不垂直'),W/2,H-40,isPerp?'#34d399':'#f87171',17);
+  drawText('坐标法：x₁x₂ + y₁y₂ = 0 ⟺ 垂直',W/2,H-15,'#fbbf24',12);
+}
+
+// ===== 场景6：三大运算律 =====
+function drawLawScene(){
+  const W=cv.width,H=cv.height;
+  drawText('三大运算律 · 交换 / 分配 / 数乘',W/2,30,'#fbbf24',16);
+  const laws=[
+    {t:'交换律',f:'a·b = b·a',d:'两向量点乘顺序可换',c:'#06b6d4'},
+    {t:'分配律',f:'(a+b)·c = a·c + b·c',d:'可先加后乘或先乘后加',c:'#fbbf24'},
+    {t:'数乘结合',f:'(λa)·b = λ(a·b)',d:'实数 λ 可提到点乘外',c:'#34d399'},
+    {t:'禁忌',f:'(a·b)·c  无意义',d:'数·向量 ≠ 向量·向量',c:'#f87171'},
+  ];
+  laws.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=80+row*(H-160)/2;
+    ctx.fillStyle=m.c+'1a';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+12,y,(W-160)/2-24,(H-160)/2-20,12);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/4,y+45,m.c,16);
+    ctx.font='bold 15px serif';
+    drawText(m.f,x+(W-160)/4,y+85,'#fff',15);
+    drawText(m.d,x+(W-160)/4,y+120,'#9ab0d0',12);
+  });
+}
+
+// ===== 场景7：物理做功 W=F·s =====
+function drawWorkScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('物理应用 · 恒力做功 W = F·s = Fs cosθ',W/2,30,'#fbbf24',16);
+  const cx=W*0.3,cy=H/2+30;
+  const theta=(Math.sin(time*0.5)*0.45+0.45)*Math.PI;
+  const Fmag=5,smag=200;
+  // 地面（位移 s 水平向右）
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-20,cy);ctx.lineTo(cx+smag+20,cy);ctx.stroke();
+  arrow(cx,cy,cx+smag,cy,'#67e8f9',3);
+  drawText('s（位移）',cx+smag+15,cy,'#67e8f9',14);
+  // 物体（方块）
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+  ctx.fillRect(cx-16,cy-16,32,32);ctx.strokeRect(cx-16,cy-16,32,32);
+  // 力 F（与位移成 θ）
+  const Flen=90;
+  const fx=cx+Flen*Math.cos(theta),fy=cy-Flen*Math.sin(theta);
+  arrow(cx,cy,fx,fy,'#f87171',3);
+  drawText('F',fx+15,fy-8,'#f87171',15);
+  // 力的水平分量（有效做功部分）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(cx+Flen*Math.cos(theta),cy);ctx.stroke();
+  ctx.setLineDash([]);
+  arrow(cx,cy,cx+Flen*Math.cos(theta),cy,'#34d399',3);
+  drawText('Fcosθ',cx+Flen*Math.cos(theta)/2,cy+20,'#34d399',12);
+  // 夹角弧
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,24,0,-theta,true);ctx.stroke();
+  drawText('θ',cx+36,cy-18,'#fbbf24',13);
+  // 做功计算
+  const work=Fmag*smag/40*Math.cos(theta);
+  const px=W*0.6;
+  drawText('W = F·s = |F||s|cosθ',px+100,90,'#fbbf24',14);
+  drawText('θ = '+(theta*180/Math.PI).toFixed(0)+'°',px+100,125,'#67e8f9',13);
+  drawText('cosθ = '+Math.cos(theta).toFixed(3),px+100,150,'#9ab0d0',13);
+  ctx.font='bold 18px sans-serif';
+  drawText('W = '+work.toFixed(2)+' J',px+100,190,work>=0?'#34d399':'#f87171',18);
+  drawText('θ=0 全力做正功；θ=90° 不做功；θ=180° 做负功',px+100,225,'#9ab0d0',11);
+  drawText('力在位移方向的有效分量才做功 = 投影意义',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景8：综合应用总结 =====
+function drawAppScene(){
+  const W=cv.width,H=cv.height;
+  drawText('四大应用 · 证垂直 / 求夹角 / 求长度 / 做功',W/2,30,'#fbbf24',16);
+  const apps=[
+    {t:'证垂直',f:'a·b = 0',d:'最常用，代数化判垂直',c:'#34d399'},
+    {t:'求夹角',f:'cosθ = (a·b)/(|a||b|)',d:'坐标已知即可求 θ',c:'#06b6d4'},
+    {t:'求长度',f:'|a|² = a·a',d:'即 √(x²+y²)，证等长',c:'#fbbf24'},
+    {t:'物理做功',f:'W = F·s = Fs cosθ',d:'有效分量做功',c:'#f87171'},
+  ];
+  apps.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=80+row*(H-160)/2;
+    ctx.fillStyle=m.c+'1a';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+12,y,(W-160)/2-24,(H-160)/2-20,12);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/4,y+45,m.c,16);
+    ctx.font='bold 14px serif';
+    drawText(m.f,x+(W-160)/4,y+85,'#fff',14);
+    drawText(m.d,x+(W-160)/4,y+120,'#9ab0d0',12);
+  });
+}
+
+// ===== 主绘制调度 =====
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawDefScene(t);
+  else if(stepIdx===1)drawDefScene(t);
+  else if(stepIdx===2)drawProjScene(t);
+  else if(stepIdx===3)drawCoordScene(t);
+  else if(stepIdx===4)drawCoordScene(t);
+  else if(stepIdx===5)drawAngleFormulaScene(t);
+  else if(stepIdx===6)drawPerpScene(t);
+  else if(stepIdx===7)drawLawScene();
+  else if(stepIdx===8)drawWorkScene(t);
+  else if(stepIdx===9)drawAppScene();
+}
+
+// ===== 同步详情面板 =====
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+// ===== 每帧更新（计时推进） =====
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+// ===== requestAnimationFrame 主循环 =====
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+// ===== 控件绑定 =====
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+// ===== 步骤条构建 =====
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

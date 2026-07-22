@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>导数的概念与几何意义 · 平均变化率 · 瞬时变化率 · 切线</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">导数的概念与几何意义</span><span class="subtitle">平均变化率 · 瞬时变化率 · 切线斜率</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>导数定义</h4><div class="v">f'(x)=lim(Δx→0)<br>[f(x+Δx)-f(x)]/Δx</div></div>
+  <div class="card s2"><div class="num">2</div><h4>几何意义</h4><div class="v">f'(x₀)=切线斜率<br>点 (x₀,f(x₀)) 处的切线</div></div>
+  <div class="card s3"><div class="num">3</div><h4>基本求导公式</h4><div class="v">(xⁿ)'=nxⁿ⁻¹<br>(sin x)'=cos x, (eˣ)'=eˣ</div></div>
+  <div class="card s4"><div class="num">4</div><h4>四则运算法则</h4><div class="v">(u±v)'=u'±v'<br>(uv)'=u'v+uv', (u/v)'=(u'v-uv')/v²</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">导数定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+// 绘制坐标网格（在主轴范围内）
+function drawGrid(ox,oy,ex,ey,stepX,stepY){
+  ctx.strokeStyle='#1b2a44';ctx.lineWidth=1;
+  for(let x=ox;x<=ex;x+=stepX){ctx.beginPath();ctx.moveTo(x,oy-(oy-60));ctx.lineTo(x,oy);ctx.stroke();}
+  for(let y=oy;y>=ey;y-=stepY){ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+ (ex-ox),y);ctx.stroke();}
+}
+// 绘制箭头
+function drawArrow(x1,y1,x2,y2,c){
+  ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1);
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-8*Math.cos(ang-0.4),y2-8*Math.sin(ang-0.4));
+  ctx.lineTo(x2-8*Math.cos(ang+0.4),y2-8*Math.sin(ang+0.4));
+  ctx.closePath();ctx.fill();
+}
+
+// 演示用的目标函数：f(x) = 0.15*x^2 （开口向上抛物线）
+const FN=function(x){return 0.15*x*x;};
+const FN_DERIV=function(x){return 0.3*x;};
+
+const STEPS=[
+  {tag:'概念',name:'平均变化率',body:'<strong>平均变化率</strong>描述函数在某区间内变化的<strong>平均快慢</strong>：<code>[f(x+Δx)-f(x)]/Δx</code>。几何上等于<strong>割线斜率</strong>（P、Q 两点连线）。',points:{title:'核心要点',items:['<strong>公式</strong>：k = [f(x+Δx)-f(x)]/Δx','<strong>几何意义</strong>：割线 PQ 斜率','<strong>Δx&gt;0</strong>：从 P 向右取 Q','<strong>数值</strong>：区间内平均变化']}},
+  {tag:'概念',name:'瞬时变化率',body:'让 Δx → 0，平均变化率的<strong>极限</strong>就是<strong>瞬时变化率</strong>（导数）：<code>f\'(x) = lim(Δx→0) [f(x+Δx)-f(x)]/Δx</code>。描述某一时刻的变化快慢。',points:{title:'导数定义',items:['<strong>极限过程</strong>：Δx → 0','<strong>记号</strong>：f\'(x) 或 dy/dx','<strong>存在条件</strong>：极限必须存在','<strong>本质</strong>：瞬时变化率']}},
+  {tag:'几何',name:'割线到切线',body:'<strong>当 Δx → 0</strong>，Q 沿曲线无限逼近 P，割线 PQ 的<strong>极限位置</strong>就是<strong>切线</strong>。切线斜率 = f\'(x₀)。这是导数<strong>几何意义</strong>的直观来源。',points:{title:'极限过程',items:['<strong>P 点固定</strong>：(x₀, f(x₀))','<strong>Q 点逼近</strong>：沿曲线靠近 P','<strong>割线斜率</strong> → 切线斜率','<strong>结论</strong>：k_切 = f\'(x₀)']}},
+  {tag:'几何',name:'切线方程',body:'过点 (x₀, f(x₀)) 的切线方程：<code>y - f(x₀) = f\'(x₀)(x - x₀)</code>，即 <code>y = f\'(x₀)·x + [f(x₀) - f\'(x₀)x₀]</code>。',points:{title:'点斜式',items:['<strong>斜率</strong>：k = f\'(x₀)','<strong>切点</strong>：(x₀, f(x₀))','<strong>方程</strong>：y-f(x₀)=f\'(x₀)(x-x₀)','<strong>法线</strong>：斜率 -1/f\'(x₀)']}},
+  {tag:'公式',name:'基本求导公式',body:'常用<strong>求导公式</strong>：<code>(C)\'=0</code>、<code>(xⁿ)\'=nxⁿ⁻¹</code>、<code>(sin x)\'=cos x</code>、<code>(cos x)\'=-sin x</code>、<code>(eˣ)\'=eˣ</code>、<code>(ln x)\'=1/x</code>。',points:{title:'六大公式',items:['<strong>常数</strong>：(C)\' = 0','<strong>幂函数</strong>：(xⁿ)\' = nxⁿ⁻¹','<strong>三角</strong>：(sinx)\'=cosx, (cosx)\'=-sinx','<strong>指数对数</strong>：(eˣ)\'=eˣ, (lnx)\'=1/x']}},
+  {tag:'法则',name:'四则运算法则',body:'<strong>和差</strong>：<code>(u±v)\'=u\'±v\'</code>；<strong>积</strong>：<code>(uv)\'=u\'v+uv\'</code>；<strong>商</strong>：<code>(u/v)\'=(u\'v-uv\')/v²</code>。注意<strong>乘积法则</strong>和<strong>商法则</strong>不是简单的"分别求导"。',points:{title:'三大法则',items:['<strong>和差</strong>：分别求导后相加减','<strong>乘积</strong>：(uv)\'=u\'v+uv\'','<strong>商</strong>：(u/v)\'=(u\'v-uv\')/v²','<strong>链式</strong>：(f(g))\'=f\'(g)·g\'']}},
+  {tag:'物理',name:'物理意义',body:'<strong>位移</strong>对时间的导数是<strong>速度</strong>：<code>v=s\'(t)</code>；<strong>速度</strong>对时间的导数是<strong>加速度</strong>：<code>a=v\'(t)=s\'\'(t)</code>。导数刻画瞬时变化率。',points:{title:'运动学应用',items:['<strong>速度</strong>：v = s\'(t)','<strong>加速度</strong>：a = v\'(t)','<strong>电流</strong>：i = q\'(t)（电量导数）','<strong>二阶导</strong>：s\'\'(t) = a']}},
+  {tag:'计算',name:'典型计算',body:'例：f(x)=x² 在 x=2 处的切线。f\'(x)=2x，f\'(2)=4，f(2)=4。切线方程：y-4=4(x-2)，即 <code>y=4x-4</code>。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：求 f\'(x)','<strong>步骤2</strong>：代入 x₀ 得斜率','<strong>步骤3</strong>：算 f(x₀)','<strong>步骤4</strong>：写出点斜式方程']}},
+  {tag:'总结',name:'核心速记',body:'导数是<strong>瞬时变化率</strong>，几何意义是<strong>切线斜率</strong>。通过割线极限得到切线，是微积分的核心思想。掌握基本公式与四则运算法则即可求解大部分导数问题。',points:{title:'三句话总结',items:['<strong>定义</strong>：f\'(x)=lim(Δx→0)Δy/Δx','<strong>几何</strong>：切线斜率','<strong>物理</strong>：瞬时变化率','<strong>工具</strong>：公式 + 四则法则']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：平均变化率（割线） =====
+function drawSecantScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平均变化率 · 割线 PQ',W/2,30,'#fbbf24',16);
+  const ox=100,oy=H-80,ux=70,uy=70;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(W-40,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,60);ctx.stroke();
+  drawText('x',W-40,oy+15,'#9ab0d0',12);drawText('y',ox-15,60,'#9ab0d0',12);
+  // 坐标范围：x in [-1, 6]
+  function px(x){return ox+x*ux;}
+  function py(y){return oy-y*uy;}
+  // 函数曲线 f(x)=0.15x^2
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let xi=-1;xi<=6;xi+=0.05){
+    const pxv=px(xi),pyv=py(FN(xi));
+    if(xi===-1)ctx.moveTo(pxv,pyv);else ctx.lineTo(pxv,pyv);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('y = f(x)',W-90,90,'#06b6d4',13);
+  // P 点 x=2, Q 点 Δx 随时间变化（不取极限，演示平均）
+  const x0=2;
+  const dx=0.6+0.5*Math.abs(Math.sin(time*0.8));
+  const xp=x0,xq=x0+dx;
+  const yp=FN(xp),yq=FN(xq);
+  const slope=(yq-yp)/dx;
+  // 割线（延长）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.setLineDash([6,4]);
+  const x1=-0.5,x2=6;
+  const y1=yp+slope*(x1-xp),y2=yp+slope*(x2-xp);
+  ctx.beginPath();ctx.moveTo(px(x1),py(y1));ctx.lineTo(px(x2),py(y2));ctx.stroke();
+  ctx.setLineDash([]);
+  // P、Q 点
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(px(xp),py(yp),6,0,7);ctx.fill();
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';
+  ctx.beginPath();ctx.arc(px(xq),py(yq),6,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('P('+xp+','+yp.toFixed(2)+')',px(xp),py(yp)-18,'#fbbf24',11);
+  drawText('Q('+xq.toFixed(2)+','+yq.toFixed(2)+')',px(xq)+30,py(yq)-12,'#f87171',11);
+  // 数值显示
+  drawText('Δx = '+dx.toFixed(2),W/2,H-100,'#67e8f9',13);
+  drawText('Δy = f(x+Δx)-f(x) = '+(yq-yp).toFixed(2),W/2,H-75,'#34d399',13);
+  drawText('割线斜率 k = Δy/Δx = '+slope.toFixed(3),W/2,H-50,'#fbbf24',14);
+  drawText('平均变化率 = 区间内变化的"平均快慢"',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：割线 → 切线（Δx→0 动画） =====
+function drawLimitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('割线 → 切线 · Δx → 0',W/2,30,'#fbbf24',16);
+  const ox=100,oy=H-80,ux=70,uy=70;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(W-40,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,60);ctx.stroke();
+  drawText('x',W-40,oy+15,'#9ab0d0',12);drawText('y',ox-15,60,'#9ab0d0',12);
+  function px(x){return ox+x*ux;}
+  function py(y){return oy-y*uy;}
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let xi=-1;xi<=6;xi+=0.05){
+    if(xi===-1)ctx.moveTo(px(xi),py(FN(xi)));else ctx.lineTo(px(xi),py(FN(xi)));
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('y = f(x)',W-90,90,'#06b6d4',13);
+  const x0=2,yp=FN(x0);
+  // Δx 振荡从大到小（趋近 0）
+  const phase=(Math.sin(time*0.6)*0.5+0.5); // 0~1
+  const dx=Math.max(0.02,phase*1.8);
+  const xq=x0+dx,yq=FN(xq);
+  const slope=(yq-yp)/dx;
+  // 切线（理论值，f'(x0)=0.3*2=0.6）
+  const trueSlope=FN_DERIV(x0);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.setLineDash([3,3]);
+  const tx1=-0.3,tx2=5.5;
+  const ty1=yp+trueSlope*(tx1-x0),ty2=yp+trueSlope*(tx2-x0);
+  ctx.beginPath();ctx.moveTo(px(tx1),py(ty1));ctx.lineTo(px(tx2),py(ty2));ctx.stroke();
+  ctx.setLineDash([]);
+  // 当前割线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  const sx1=-0.3,sx2=5.5;
+  const sy1=yp+slope*(sx1-x0),sy2=yp+slope*(sx2-x0);
+  ctx.beginPath();ctx.moveTo(px(sx1),py(sy1));ctx.lineTo(px(sx2),py(sy2));ctx.stroke();
+  // P 点
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px(x0),py(yp),7,0,7);ctx.fill();
+  // Q 点
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';
+  ctx.beginPath();ctx.arc(px(xq),py(yq),6,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('P',px(x0)-18,py(yp),'#fbbf24',13);
+  drawText('Q',px(xq)+15,py(yq)-5,'#f87171',13);
+  // 图例
+  drawText('━━ 黄线：当前割线',W-180,140,'#fbbf24',11,'left');
+  drawText('-- 绿线：极限切线',W-180,160,'#34d399',11,'left');
+  // Δx 数值
+  drawText('Δx = '+dx.toFixed(3)+'  →  0',W/2,H-95,'#67e8f9',13);
+  drawText('割线斜率 = '+slope.toFixed(3),W/2,H-70,'#fbbf24',13);
+  drawText('切线斜率 f\'(2) = '+trueSlope.toFixed(3),W/2,H-45,'#34d399',14);
+  // Δx 趋近表
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  roundRect(20,80,150,160,6);ctx.fill();ctx.stroke();
+  drawText('Δx → 0 过程',95,95,'#fbbf24',11);
+  const dxList=[1.0,0.5,0.1,0.01,0.001];
+  dxList.forEach((d,i)=>{
+    const sl=(FN(x0+d)-FN(x0))/d;
+    drawText(d.toFixed(3)+' → '+sl.toFixed(3),95,118+i*22,'#9ab0d0',10);
+  });
+}
+
+// ===== 场景：切线方程 =====
+function drawTangentScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('切线方程 · y-f(x₀)=f\'(x₀)(x-x₀)',W/2,30,'#fbbf24',16);
+  const ox=100,oy=H-80,ux=70,uy=70;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(W-40,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,60);ctx.stroke();
+  function px(x){return ox+x*ux;}
+  function py(y){return oy-y*uy;}
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let xi=-1;xi<=6;xi+=0.05){
+    if(xi===-1)ctx.moveTo(px(xi),py(FN(xi)));else ctx.lineTo(px(xi),py(FN(xi)));
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 切点 x0 随时间变化
+  const x0=1.5+1.5*(Math.sin(time*0.5)*0.5+0.5);
+  const yp=FN(x0),slope=FN_DERIV(x0);
+  // 切线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  const tx1=-0.3,tx2=5.5;
+  const ty1=yp+slope*(tx1-x0),ty2=yp+slope*(tx2-x0);
+  ctx.beginPath();ctx.moveTo(px(tx1),py(ty1));ctx.lineTo(px(tx2),py(ty2));ctx.stroke();
+  ctx.shadowBlur=0;
+  // 切点
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px(x0),py(yp),7,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('(x₀, f(x₀))',px(x0),py(yp)-18,'#f87171',12);
+  // 方程显示
+  drawText('x₀ = '+x0.toFixed(2)+',  f(x₀) = '+yp.toFixed(2),W/2,H-105,'#67e8f9',13);
+  drawText('f\'(x₀) = '+slope.toFixed(3)+'（切线斜率）',W/2,H-80,'#34d399',13);
+  const intercept=yp-slope*x0;
+  drawText('y = '+slope.toFixed(2)+'x + ('+intercept.toFixed(2)+')',W/2,H-50,'#fbbf24',15);
+  drawText('点斜式：y - f(x₀) = f\'(x₀)(x - x₀)',W/2,H-25,'#9ab0d0',12);
+  // 法线（斜率 -1/slope）
+  ctx.strokeStyle='#f8717199';ctx.lineWidth=1.5;ctx.setLineDash([2,3]);
+  const nslope=-1/slope;
+  const ny1=yp+nslope*(tx1-x0),ny2=yp+nslope*(tx2-x0);
+  ctx.beginPath();ctx.moveTo(px(tx1),py(ny1));ctx.lineTo(px(tx2),py(ny2));ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('━━ 切线   ┄┄ 法线（⊥切线）',W/2,H-105,'#fbbf24',11);
+}
+
+// ===== 场景：基本求导公式 =====
+function drawFormulaScene(){
+  const W=cv.width,H=cv.height;
+  drawText('基本求导公式',W/2,30,'#fbbf24',16);
+  const items=[
+    {f:'(C)\'',d:'0',c:'#a78bfa'},
+    {f:'(xⁿ)\'',d:'n·xⁿ⁻¹',c:'#06b6d4'},
+    {f:'(sin x)\'',d:'cos x',c:'#34d399'},
+    {f:'(cos x)\'',d:'-sin x',c:'#f87171'},
+    {f:'(eˣ)\'',d:'eˣ',c:'#fbbf24'},
+    {f:'(ln x)\'',d:'1/x',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=80+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.f,x+(W-120)/6,y+55,m.c,18);
+    drawText('=',x+(W-120)/6,y+88,'#fff',16);
+    drawText(m.d,x+(W-120)/6,y+115,'#fff',15);
+  });
+  drawText('记忆口诀：幂函数降次乘指数；指数对数各自不变或倒数',W/2,H-40,'#34d399',12);
+}
+
+// ===== 场景：四则运算法则 =====
+function drawRulesScene(){
+  const W=cv.width,H=cv.height;
+  drawText('导数四则运算法则',W/2,30,'#fbbf24',16);
+  const rules=[
+    {t:'和差法则',f:'(u ± v)\'',d:'u\' ± v\'',c:'#06b6d4',n:'分别求导后加减'},
+    {t:'乘积法则',f:'(u · v)\'',d:'u\'·v + u·v\'',c:'#fbbf24',n:'交叉相乘再相加'},
+    {t:'商法则',f:'(u / v)\'',d:'(u\'·v - u·v\') / v²',c:'#f87171',n:'分子交叉，分母平方'},
+  ];
+  rules.forEach((m,i)=>{
+    const x=50+i*(W-100)/3;
+    const y=90;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+5,y,(W-100)/3-10,H-200,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-100)/6,y+40,m.c,15);
+    drawText(m.f,x+(W-100)/6,y+90,'#fff',14);
+    drawText('=',x+(W-100)/6,y+125,'#9ab0d0',14);
+    drawText(m.d,x+(W-100)/6,y+160,'#fff',13);
+    drawText(m.n,x+(W-100)/6,y+200,'#9ab0d0',11);
+  });
+  drawText('提示：和差可"分别求导"；乘积用"交叉相加"；商法则分子顺序不可颠倒',W/2,H-50,'#34d399',12);
+  drawText('链式法则（复合函数）：[f(g(x))]" = f\'(g(x)) · g\'(x)',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景：物理意义 =====
+function drawPhysicsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('物理意义 · 导数 = 瞬时变化率',W/2,30,'#fbbf24',16);
+  // 位移-时间曲线 s(t)=0.5*t^2（加速运动）
+  const ox=80,oy=H-80,ux=80,uy=40;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(W-40,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,60);ctx.stroke();
+  drawText('t (时间)',W-50,oy+15,'#9ab0d0',12);
+  drawText('s (位移)',ox-20,60,'#9ab0d0',12,'right');
+  function pt(t){return ox+t*ux;}
+  function ps(s){return oy-s*uy;}
+  // 位移曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let ti=0;ti<=5;ti+=0.05){
+    const s=0.5*ti*ti;
+    if(ti===0)ctx.moveTo(pt(ti),ps(s));else ctx.lineTo(pt(ti),ps(s));
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('s(t) = ½t²',W-150,100,'#06b6d4',13);
+  // 当前时刻
+  const tcur=1+3*(Math.sin(time*0.5)*0.5+0.5);
+  const scur=0.5*tcur*tcur;
+  const vcur=tcur;
+  const acur=1;
+  // 切线（速度）
+  const slope=vcur;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  const tt1=0,tt2=5;
+  const ss1=scur+slope*(tt1-tcur),ss2=scur+slope*(tt2-tcur);
+  ctx.beginPath();ctx.moveTo(pt(tt1),ps(ss1));ctx.lineTo(pt(tt2),ps(ss2));ctx.stroke();
+  ctx.shadowBlur=0;
+  // 当前点
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(pt(tcur),ps(scur),7,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 显示
+  drawText('t = '+tcur.toFixed(2),W/2,H-110,'#67e8f9',13);
+  drawText('s(t) = '+scur.toFixed(2),W/2,H-85,'#06b6d4',13);
+  drawText('v = s\'(t) = '+vcur.toFixed(2)+'（切线斜率=速度）',W/2,H-60,'#fbbf24',13);
+  drawText('a = v\'(t) = s\'\'(t) = '+acur.toFixed(2)+'（加速度）',W/2,H-35,'#34d399',13);
+  // 物理意义对比小卡片
+  drawText('位移 s → 一阶导 → 速度 v → 二阶导 → 加速度 a',W/2,55,'#a78bfa',12);
+}
+
+// ===== 场景：典型计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 求切线方程',W/2,30,'#fbbf24',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,65,W-160,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,85,'#a78bfa',13,'left');
+  drawText('求 f(x)=x² 在 x=2 处的切线方程。',120,112,'#fff',13,'left');
+  drawText('写出切线方程并验证。',120,135,'#fff',13,'left');
+  const steps=[
+    {t:'① 求导',d:"f'(x) = 2x",c:'#06b6d4'},
+    {t:'② 斜率',d:"f'(2) = 4",c:'#a78bfa'},
+    {t:'③ 切点',d:'f(2) = 4，切点 (2, 4)',c:'#67e8f9'},
+    {t:'④ 方程',d:'y - 4 = 4(x - 2)',c:'#34d399'},
+    {t:'⑤ 化简',d:'y = 4x - 4',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=180+i*55;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,150,y+21,s.c,13,'left');
+    drawText(s.d,290,y+21,'#fff',13,'left');
+  });
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('导数核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'定义',d:"f'(x)=lim Δy/Δx",c:'#fbbf24'},
+    {t:'几何意义',d:'切线斜率',c:'#06b6d4'},
+    {t:'物理意义',d:'瞬时变化率',c:'#a78bfa'},
+    {t:'割线极限',d:'Δx→0 PQ→切线',c:'#34d399'},
+    {t:'切线方程',d:'y-f(x₀)=f\'(x₀)(x-x₀)',c:'#fb923c'},
+    {t:'基本公式',d:'xⁿ→nxⁿ⁻¹ 等',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawSecantScene(t);
+  else if(stepIdx===1)drawLimitScene(t);
+  else if(stepIdx===2)drawLimitScene(t);
+  else if(stepIdx===3)drawTangentScene(t);
+  else if(stepIdx===4)drawFormulaScene();
+  else if(stepIdx===5)drawRulesScene();
+  else if(stepIdx===6)drawPhysicsScene(t);
+  else if(stepIdx===7)drawCalcScene();
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

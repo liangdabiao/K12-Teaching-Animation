@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>函数零点与方程的根 · 二分法求近似解</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">函数零点与二分法</span><span class="subtitle">零点定义 · 存在定理 · 二分法求近似解</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>零点概念</h4><div class="v">f(x)=0 的实数根<br>图像与 x 轴交点横坐标</div></div>
+  <div class="card s2"><div class="num">2</div><h4>零点存在定理</h4><div class="v">f(a)·f(b)＜0 且连续<br>(a,b) 内至少有一个零点</div></div>
+  <div class="card s3"><div class="num">3</div><h4>二分法步骤</h4><div class="v">取中点 c=(a+b)/2<br>比较 f(c) 符号缩小区间</div></div>
+  <div class="card s4"><div class="num">4</div><h4>精度与迭代</h4><div class="v">|b-a|＜ε 停止<br>n ≥ log₂((b-a)/ε)</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">概念</span><span id="stepTitle">函数零点定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'概念',name:'零点定义',body:'<strong>函数零点</strong>：使 <code>f(x)=0</code> 的实数 x 称为函数 y=f(x) 的<strong>零点</strong>。从几何上看，零点就是<strong>函数图像与 x 轴交点的横坐标</strong>。',points:{title:'三句话理解零点',items:['<strong>代数</strong>：f(x)=0 的实数根','<strong>几何</strong>：图像与 x 轴交点的横坐标','<strong>本质</strong>：函数值由正变负（或反之）经过 0','<strong>注意</strong>：零点是 x 值，不是点 (x,0)']}},
+  {tag:'概念',name:'等价关系',body:'对方程 f(x)=0 与函数 y=f(x)：<strong>方程有实根 ⇔ 函数有零点 ⇔ 图像与 x 轴有交点</strong>。这三件事是<strong>等价</strong>的。',points:{title:'三者等价',items:['<strong>方程 f(x)=0 有实根</strong>','<strong>函数 y=f(x) 有零点</strong>','<strong>图像与 x 轴相交</strong>','<strong>求根⇔求零点⇔求交点</strong>']}},
+  {tag:'定理',name:'零点存在定理',body:'若函数 f 在闭区间 [a,b] 上<strong>连续</strong>，且 <code>f(a)·f(b)＜0</code>（端点值异号），则 f 在<strong>开区间 (a,b) 内至少有一个零点</strong>。',points:{title:'两个必要条件',items:['<strong>连续</strong>：f 在 [a,b] 上不间断','<strong>异号</strong>：f(a)·f(b)＜0','<strong>结论</strong>：(a,b) 内至少一个零点','<strong>注意</strong>：可能不止一个，无法定位精确位置']}},
+  {tag:'定理',name:'二分法原理',body:'<strong>二分法</strong>：在零点存在定理基础上，反复把区间<strong>对半分</strong>，根据中点函数值符号判断零点所在半区，使区间不断缩小、逼近零点。',points:{title:'核心思想',items:['<strong>前提</strong>：f 连续且 f(a)·f(b)＜0','<strong>操作</strong>：每次取中点 c=(a+b)/2','<strong>判据</strong>：看 f(a)·f(c) 的符号','<strong>效果</strong>：区间长度每次减半']}},
+  {tag:'方法',name:'二分法步骤',body:'<strong>四步循环</strong>：①确定 [a,b]，验证 f(a)·f(b)＜0 ②取中点 <code>c=(a+b)/2</code> ③若 f(c)=0 则 c 即零点；若 f(a)·f(c)＜0，零点在 [a,c]；否则在 [c,b] ④重复直到 <code>|b-a|＜ε</code>。',points:{title:'迭代流程',items:['<strong>① 建区间</strong>：[a,b] 且端点异号','<strong>② 求中点</strong>：c=(a+b)/2','<strong>③ 选半区</strong>：比较 f(a)·f(c) 符号','<strong>④ 控精度</strong>：|b-a|＜ε 时停止']}},
+  {tag:'方法',name:'精度控制',body:'给定精度 ε，迭代终止条件为 <code>|b-a|＜ε</code>。所需迭代次数 n 满足：<code>(b-a)/2ⁿ ＜ ε</code>，即 <strong>n ≥ log₂((b-a)/ε)</strong>。',points:{title:'精度公式',items:['<strong>终止</strong>：|b-a|＜ε','<strong>次数</strong>：n ≥ log₂((b-a)/ε)','<strong>例</strong>：(1,0.001) → n≥10','<strong>每多 1 次</strong>：精度提升 2 倍']}},
+  {tag:'实例',name:'实例求解 x³-x-1=0',body:'求 <code>x³-x-1=0</code> 在 [1,1.5] 上的近似解（ε=0.1）。f(1)=-1＜0，f(1.5)=0.875＞0，端点异号，可用二分法。',points:{title:'实例数据',items:['<strong>f(x)</strong>：x³-x-1','<strong>区间</strong>：[1, 1.5]','<strong>精度</strong>：ε=0.1','<strong>目标</strong>：求近似根']}},
+  {tag:'实例',name:'迭代过程',body:'每次迭代中点 c、函数值 f(c)、新区间 [a,b] 都会更新。观察下表：中点序列不断逼近真实零点 ≈ 1.3247。',points:{title:'迭代记录（动态）',items:['<strong>第1次</strong>：c=1.25, f(c)=-0.30','<strong>第2次</strong>：c=1.375, f(c)=0.22','<strong>第3次</strong>：c=1.3125, f(c)=-0.05','<strong>第4次</strong>：c=1.34375, f(c)=0.08']}},
+  {tag:'总结',name:'核心速记',body:'<strong>零点 = 方程根 = 图像与 x 轴交点横坐标</strong>。端点异号 + 连续 → 存在零点。二分法反复对半缩区间，<strong>n ≥ log₂((b-a)/ε)</strong>。',points:{title:'三句话总结',items:['<strong>定义</strong>：f(x)=0 的实数 x','<strong>判定</strong>：f(a)·f(b)＜0 且连续','<strong>求法</strong>：二分法缩区间','<strong>精度</strong>：n ≥ log₂((b-a)/ε)']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// 实例函数
+function f(x){return x*x*x-x-1;}
+
+// 坐标系绘制：定义域 [0.6, 1.8]
+function drawAxes(){
+  const W=cv.width,H=cv.height;
+  const x0=80,y0=H-90;       // 原点像素
+  const xW=W-120,yH=H-160;   // 可用宽高
+  const xa=0.6,xb=1.8;       // x 范围
+  const ymin=-1.5,ymax=1.5;
+  // 网格
+  ctx.strokeStyle='#1a2a44';ctx.lineWidth=1;
+  for(let gx=0.6;gx<=1.8;gx+=0.2){
+    const px=x0+(gx-xa)*xW/(xb-xa);
+    ctx.beginPath();ctx.moveTo(px,y0-yH);ctx.lineTo(px,y0);ctx.stroke();
+  }
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0+xW,y0);ctx.stroke();   // x 轴
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,y0-yH);ctx.stroke();   // y 轴
+  // x 轴刻度
+  for(let gx=0.8;gx<=1.8;gx+=0.2){
+    const px=x0+(gx-xa)*xW/(xb-xa);
+    drawText(gx.toFixed(1),px,y0+16,'#5a6a8a',10);
+    ctx.strokeStyle='#3a4a6a';ctx.beginPath();ctx.moveTo(px,y0-3);ctx.lineTo(px,y0+3);ctx.stroke();
+  }
+  // y 轴刻度
+  for(let gy=-1;gy<=1;gy+=1){
+    const py=y0-(gy-ymin)/(ymax-ymin)*yH;
+    drawText(gy, x0-18, py,'#5a6a8a',10);
+    ctx.strokeStyle='#3a4a6a';ctx.beginPath();ctx.moveTo(x0-3,py);ctx.lineTo(x0+3,py);ctx.stroke();
+  }
+  drawText('x',x0+xW+8,y0,'#9ab0d0',12);
+  drawText('y',x0,y0-yH-12,'#9ab0d0',12);
+  return {x0,y0,xW,yH,xa,xb,ymin,ymax};
+}
+
+function xToPx(g,A){return A.x0+(g-A.xa)*A.xW/(A.xb-A.xa);}
+function yToPx(g,A){return A.y0-(g-A.ymin)/(A.ymax-A.ymin)*A.yH;}
+
+// 绘制函数曲线
+function drawCurve(A,hi){
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=hi?12:0;
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const x=A.xa+(A.xb-A.xa)*i/200;
+    const y=f(x);
+    const px=xToPx(x,A),py=yToPx(y,A);
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('y = x³ − x − 1',xToPx(1.75,A),yToPx(1.35,A),'#06b6d4',12,'left');
+}
+
+// ===== 场景1：零点定义 =====
+function drawDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('函数零点 · 图像与 x 轴的交点',W/2,30,'#fbbf24',16);
+  const A=drawAxes();
+  drawCurve(A,true);
+  // 标记零点 ≈1.3247
+  const root=1.3247;
+  const rx=xToPx(root,A),ry=yToPx(0,A);
+  const pulse=6+Math.sin(time*3)*2;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(rx,ry,pulse,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('零点 x≈1.325',rx,ry-22,'#fbbf24',13);
+  // 虚线
+  ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(rx,ry);ctx.lineTo(rx,A.y0-yH(A));ctx.stroke();
+  ctx.setLineDash([]);
+  function yH(A){return A.yH;}
+  drawText('定义：f(x)=0 的实数 x',W/2,H-50,'#34d399',13);
+  drawText('几何：图像与 x 轴交点的横坐标',W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景2：等价关系 =====
+function drawEquivScene(){
+  const W=cv.width,H=cv.height;
+  drawText('三者等价关系',W/2,30,'#fbbf24',16);
+  const cy=H/2;
+  const items=[
+    {t:'方程 f(x)=0',d:'有实数根',c:'#fbbf24',x:W*0.2},
+    {t:'函数 y=f(x)',d:'有零点',c:'#06b6d4',x:W*0.5},
+    {t:'函数图像',d:'与 x 轴有交点',c:'#34d399',x:W*0.8},
+  ];
+  items.forEach((m,i)=>{
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(m.x-110,cy-50,220,100,12);ctx.fill();ctx.stroke();
+    drawText(m.t,m.x,cy-15,m.c,15);
+    drawText(m.d,m.x,cy+18,'#fff',13);
+  });
+  // 等号箭头
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  [W*0.35,W*0.65].forEach(x=>{
+    ctx.beginPath();ctx.moveTo(x-20,cy);ctx.lineTo(x+20,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+20,cy);ctx.lineTo(x+12,cy-6);ctx.lineTo(x+12,cy+6);ctx.fill();
+    ctx.beginPath();ctx.moveTo(x-20,cy);ctx.lineTo(x-12,cy-6);ctx.lineTo(x-12,cy+6);ctx.fill();
+  });
+  drawText('求根 ⇔ 求零点 ⇔ 求交点',W/2,cy+90,'#fbbf24',14);
+  drawText('三种视角，同一个数学对象',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景3：零点存在定理 =====
+function drawExistScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('零点存在定理 · 端点异号必有零点',W/2,30,'#fbbf24',16);
+  const A=drawAxes();
+  drawCurve(A,true);
+  // 端点 a=1, b=1.5
+  const a=1,b=1.5;
+  const ax=xToPx(a,A),ay=yToPx(f(a),A);
+  const bx=xToPx(b,A),by=yToPx(f(b),A);
+  // 端点圆点
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(ax,ay,7,0,7);ctx.fill();
+  drawText('f(a)='+f(a).toFixed(2)+'＜0',ax,ay-18,'#f87171',12);
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(bx,by,7,0,7);ctx.fill();
+  drawText('f(b)='+f(b).toFixed(2)+'＞0',bx,by-18,'#34d399',12);
+  // 区间高亮
+  const pulse=0.15+Math.sin(time*3)*0.08;
+  ctx.fillStyle='rgba(251,191,36,'+pulse+')';
+  ctx.fillRect(ax,A.y0-yToPx(0,A)+0,bx-ax,Math.abs(by-ay));
+  // 标注
+  drawText('f(a)·f(b)＜0 且连续',W/2,H-60,'#fbbf24',13);
+  drawText('⇒ (a,b) 内至少存在一个零点',W/2,H-38,'#34d399',13);
+}
+
+// ===== 场景4：二分法原理 =====
+function drawPrincipleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('二分法 · 区间对半逐步逼近',W/2,30,'#fbbf24',16);
+  const A=drawAxes();
+  drawCurve(A,true);
+  const a=1,b=1.5,c=(a+b)/2;
+  // 高亮 [a,c] 与 [c,b]
+  const phase=(Math.sin(time*1.5)+1)/2;
+  ctx.fillStyle='rgba(52,211,153,0.18)';
+  ctx.fillRect(xToPx(a,A),A.y0-A.yH,xToPx(c,A)-xToPx(a,A),A.yH);
+  ctx.fillStyle='rgba(248,113,113,0.12)';
+  ctx.fillRect(xToPx(c,A),A.y0-A.yH,xToPx(b,A)-xToPx(c,A),A.yH);
+  // 中点 c 虚线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(xToPx(c,A),A.y0);ctx.lineTo(xToPx(c,A),A.y0-A.yH);ctx.stroke();
+  ctx.setLineDash([]);
+  // 标记 c 点（曲线上）
+  const cy=yToPx(f(c),A);
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(xToPx(c,A),cy,6,0,7);ctx.fill();
+  drawText('c=' +c.toFixed(3),xToPx(c,A),A.y0+18,'#fbbf24',12);
+  drawText('f(c)='+f(c).toFixed(3),xToPx(c,A),cy-16,'#fbbf24',11);
+  drawText('f(a)·f(c) 的符号决定保留哪一半',W/2,H-50,'#06b6d4',13);
+  drawText('每次区间长度减半',W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景5：二分法步骤（流程图）=====
+function drawStepsScene(){
+  const W=cv.width,H=cv.height;
+  drawText('二分法四步循环',W/2,30,'#fbbf24',16);
+  const steps=[
+    {t:'① 建区间',d:'确定 [a,b]，验证 f(a)·f(b)＜0',c:'#fbbf24'},
+    {t:'② 求中点',d:'c = (a+b) / 2',c:'#06b6d4'},
+    {t:'③ 选半区',d:'f(a)·f(c)＜0 → [a,c]；否则 [c,b]',c:'#34d399'},
+    {t:'④ 控精度',d:'|b-a|＜ε 停止，否则回到①',c:'#f87171'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=80+i*95;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    roundRect(100,y,W-200,76,10);ctx.fill();ctx.stroke();
+    drawText(s.t,150,y+28,s.c,15,'left');
+    drawText(s.d,150,y+54,'#fff',13,'left');
+    if(i<3){
+      ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(W/2,y+76);ctx.lineTo(W/2,y+90);ctx.stroke();
+      ctx.fillStyle='#9ab0d0';
+      ctx.beginPath();ctx.moveTo(W/2,y+90);ctx.lineTo(W/2-6,y+84);ctx.lineTo(W/2+6,y+84);ctx.fill();
+    }
+  });
+  drawText('每循环一次，区间长度减半',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景6：精度控制 =====
+function drawPrecisionScene(){
+  const W=cv.width,H=cv.height;
+  drawText('精度与迭代次数',W/2,30,'#fbbf24',16);
+  // 公式框
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,90,10);ctx.fill();ctx.stroke();
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('n ≥ log₂((b − a) / ε)',W/2,120);
+  // 表格
+  const rows=[
+    {e:0.1,n:'≥ 4',a:'(b-a)/2ⁿ'},
+    {e:0.01,n:'≥ 7',a:'精度提升'},
+    {e:0.001,n:'≥ 10',a:'10 次到千分位'},
+    {e:0.0001,n:'≥ 14',a:'高精度计算'},
+  ];
+  drawText('精度 ε',W*0.3,190,'#06b6d4',13);
+  drawText('最少迭代 n',W*0.55,190,'#06b6d4',13);
+  drawText('说明',W*0.8,190,'#06b6d4',13);
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,205);ctx.lineTo(W-80,205);ctx.stroke();
+  rows.forEach((r,i)=>{
+    const y=230+i*45;
+    drawText(r.e.toString(),W*0.3,y,'#fff',13);
+    drawText(r.n,W*0.55,y,'#34d399',13);
+    drawText(r.a,W*0.8,y,'#9ab0d0',12);
+    ctx.strokeStyle='#1a2a44';
+    ctx.beginPath();ctx.moveTo(80,y+20);ctx.lineTo(W-80,y+20);ctx.stroke();
+  });
+  drawText('每多迭代 1 次，精度提升 2 倍',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景7：实例 - 区间与曲线 =====
+function drawExampleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('实例 · x³−x−1=0 在 [1, 1.5]',W/2,30,'#fbbf24',16);
+  const A=drawAxes();
+  drawCurve(A,true);
+  const a=1,b=1.5;
+  // 区间 [a,b] 高亮
+  const pulse=0.2+Math.sin(time*2)*0.1;
+  ctx.fillStyle='rgba(251,191,36,'+pulse+')';
+  ctx.fillRect(xToPx(a,A),A.y0-A.yH,xToPx(b,A)-xToPx(a,A),A.yH);
+  // 端点
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(xToPx(a,A),yToPx(f(a),A),7,0,7);ctx.fill();
+  drawText('a=1, f(a)=-1',xToPx(a,A),yToPx(f(a),A)-18,'#f87171',12);
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(xToPx(b,A),yToPx(f(b),A),7,0,7);ctx.fill();
+  drawText('b=1.5, f(b)=0.875',xToPx(b,A),yToPx(f(b),A)-18,'#34d399',12);
+  // 端点竖虚线
+  ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(xToPx(a,A),A.y0);ctx.lineTo(xToPx(a,A),yToPx(f(a),A));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(xToPx(b,A),A.y0);ctx.lineTo(xToPx(b,A),yToPx(f(b),A));ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('f(1)·f(1.5)＜0，可用二分法',W/2,H-50,'#34d399',13);
+  drawText('精度 ε = 0.1，目标求近似根',W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景8：迭代过程（动态表格 + 区间）=====
+function drawIterScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('迭代过程 · 中点序列逼近零点',W/2,30,'#fbbf24',16);
+  // 预计算迭代
+  let a=1,b=1.5;
+  const recs=[];
+  for(let i=0;i<5;i++){
+    const c=(a+b)/2,fc=f(c);
+    recs.push({a:a,b:b,c:c,fc:fc});
+    if(fc===0)break;
+    if(f(a)*fc<0)b=c;else a=c;
+  }
+  // 左侧曲线 + 区间
+  const A={x0:60,y0:H-110,xW:W*0.5-80,yH:H-200,xa:1,xb:1.5,ymin:-1.2,ymax:1.0};
+  // 简化坐标
+  function xP(g){return A.x0+(g-A.xa)*A.xW/(A.xb-A.xa);}
+  function yP(g){return A.y0-(g-A.ymin)/(A.ymax-A.ymin)*A.yH;}
+  // 网格 + 轴
+  ctx.strokeStyle='#1a2a44';ctx.lineWidth=1;
+  for(let gx=1;gx<=1.5;gx+=0.1){
+    const px=xP(gx);
+    ctx.beginPath();ctx.moveTo(px,A.y0);ctx.lineTo(px,A.y0-A.yH);ctx.stroke();
+  }
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(A.x0,A.y0);ctx.lineTo(A.x0+A.xW,A.y0);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(A.x0,A.y0);ctx.lineTo(A.x0,A.y0-A.yH);ctx.stroke();
+  drawText('1.0',xP(1.0),A.y0+14,'#5a6a8a',10);
+  drawText('1.5',xP(1.5),A.y0+14,'#5a6a8a',10);
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=100;i++){
+    const x=1+0.5*i/100,y=f(x);
+    const px=xP(x),py=yP(y);
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  // 当前显示的迭代步
+  const idx=Math.floor(time*0.8)%recs.length;
+  const cur=recs[idx];
+  // 高亮当前区间
+  ctx.fillStyle='rgba(251,191,36,0.18)';
+  ctx.fillRect(xP(cur.a),A.y0-A.yH,xP(cur.b)-xP(cur.a),A.yH);
+  // 中点 c
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(xP(cur.c),A.y0);ctx.lineTo(xP(cur.c),yP(cur.fc));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(xP(cur.c),yP(cur.fc),6,0,7);ctx.fill();
+  drawText('第 '+(idx+1)+' 次  c='+cur.c.toFixed(4),A.x0+A.xW/2,40,'#fbbf24',12);
+  drawText('f(c)='+cur.fc.toFixed(4),A.x0+A.xW/2,58,'#06b6d4',11);
+  // 右侧表格
+  const tx=W*0.55;
+  drawText('迭代记录',tx+80,55,'#06b6d4',13);
+  drawText('次',tx+10,80,'#9ab0d0',11);
+  drawText('a',tx+50,80,'#9ab0d0',11);
+  drawText('b',tx+100,80,'#9ab0d0',11);
+  drawText('c',tx+150,80,'#9ab0d0',11);
+  drawText('f(c)',tx+210,80,'#9ab0d0',11);
+  ctx.strokeStyle='#243a5e';
+  ctx.beginPath();ctx.moveTo(tx,90);ctx.lineTo(tx+260,90);ctx.stroke();
+  recs.forEach((r,i)=>{
+    const y=110+i*32;
+    const hi=i===idx;
+    if(hi){ctx.fillStyle='rgba(251,191,36,0.15)';ctx.fillRect(tx-4,y-14,268,28);}
+    drawText((i+1).toString(),tx+10,y,hi?'#fbbf24':'#fff',11);
+    drawText(r.a.toFixed(3),tx+50,y,'#67e8f9',10);
+    drawText(r.b.toFixed(3),tx+100,y,'#67e8f9',10);
+    drawText(r.c.toFixed(3),tx+150,y,'#34d399',10);
+    drawText(r.fc.toFixed(3),tx+210,y,r.fc<0?'#f87171':'#34d399',10);
+  });
+  drawText('真实零点 ≈ 1.3247，区间不断逼近',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景9：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('零点与二分法 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'零点定义',d:'f(x)=0 的实数根',c:'#fbbf24'},
+    {t:'等价关系',d:'根 ⇔ 零点 ⇔ 交点',c:'#06b6d4'},
+    {t:'存在定理',d:'f(a)·f(b)＜0 且连续',c:'#34d399'},
+    {t:'二分法',d:'取中点、缩区间',c:'#a78bfa'},
+    {t:'迭代次数',d:'n ≥ log₂((b-a)/ε)',c:'#fb923c'},
+    {t:'应用',d:'求方程近似解',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawDefScene(t);
+  else if(stepIdx===1)drawEquivScene();
+  else if(stepIdx===2)drawExistScene(t);
+  else if(stepIdx===3)drawPrincipleScene(t);
+  else if(stepIdx===4)drawStepsScene();
+  else if(stepIdx===5)drawPrecisionScene();
+  else if(stepIdx===6)drawExampleScene(t);
+  else if(stepIdx===7)drawIterScene(t);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

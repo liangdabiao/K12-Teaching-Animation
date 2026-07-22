@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>任意角的三角函数 · 单位圆定义 · 弧度制</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">任意角的三角函数</span><span class="subtitle">单位圆定义 · 弧度制</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>弧度制</h4><div class="v">l = |α|·r<br>1 弧度 ≈ 57.3°，π=180°</div></div>
+  <div class="card s2"><div class="num">2</div><h4>单位圆定义</h4><div class="v">sin α = y<br>cos α = x，tan α = y/x</div></div>
+  <div class="card s3"><div class="num">3</div><h4>同角关系</h4><div class="v">sin²α + cos²α = 1<br>tan α = sin α / cos α</div></div>
+  <div class="card s4"><div class="num">4</div><h4>特殊角值</h4><div class="v">0, π/6, π/4, π/3, π/2<br>对应 sin·cos·tan 表</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">任意角的三角函数</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+const QCOLORS=['#34d399','#fbbf24','#06b6d4','#f87171']; // 一二三四象限
+
+const STEPS=[
+  {tag:'概念',name:'任意角推广',body:'<strong>任意角</strong>是把角的概念推广到<strong>任意大小</strong>，包括<strong>正角</strong>（逆时针）、<strong>负角</strong>（顺时针）和<strong>零角</strong>。角由<strong>始边</strong>绕顶点旋转到<strong>终边</strong>形成。',points:{title:'角的推广',items:['<strong>正角</strong>：逆时针旋转','<strong>负角</strong>：顺时针旋转','<strong>零角</strong>：没有旋转','<strong>象限角</strong>：终边落在第几象限']}},
+  {tag:'概念',name:'象限角与终边',body:'角的<strong>终边</strong>位置决定它属于<strong>第几象限</strong>。第一象限角终边在右上，第二在左上，第三在左下，第四在右下。轴线角（0、π/2、π、3π/2）不属于任何象限。',points:{title:'象限判断',items:['<strong>第一象限</strong>：0 < α < π/2','<strong>第二象限</strong>：π/2 < α < π','<strong>第三象限</strong>：π < α < 3π/2','<strong>第四象限</strong>：3π/2 < α < 2π']}},
+  {tag:'弧度',name:'弧度制定义',body:'<strong>弧度制</strong>用<strong>弧长与半径之比</strong>度量角：<code>α = l / r</code>。长度等于半径的弧所对的圆心角为 <strong>1 弧度</strong>（约 57.3°）。<code>π 弧度 = 180°</code>。',points:{title:'弧度公式',items:['<strong>弧长公式</strong>：l = |α|·r','<strong>1 弧度</strong> ≈ 57.3°','<strong>π rad</strong> = 180°','<strong>2π rad</strong> = 360°（整圆）']}},
+  {tag:'弧度',name:'弧度与角度换算',body:'<strong>换算公式</strong>：<code>1° = π/180 rad</code>，<code>1 rad = 180°/π</code>。常用特殊值：<strong>30°=π/6，45°=π/4，60°=π/3，90°=π/2，180°=π，360°=2π</strong>。',points:{title:'常用换算',items:['<strong>30°</strong> = π/6','<strong>45°</strong> = π/4','<strong>60°</strong> = π/3','<strong>90°</strong> = π/2，180° = π']}},
+  {tag:'定义',name:'单位圆定义',body:'在<strong>单位圆</strong>（半径为 1 的圆）中，角 α 的终边与圆交点 P 的坐标为 <strong>(cos α, sin α)</strong>。<code>sin α = y 坐标</code>，<code>cos α = x 坐标</code>，<code>tan α = y/x = sin α / cos α</code>。',points:{title:'三个定义',items:['<strong>sin α</strong> = P 点的 y','<strong>cos α</strong> = P 点的 x','<strong>tan α</strong> = sin α / cos α','<strong>单位圆</strong>：r = 1']}},
+  {tag:'定义',name:'三角函数值符号',body:'由单位圆定义可知各象限三角函数的<strong>符号规律</strong>，口诀"<strong>一全二正弦，三切四余弦</strong>"：一象限全正，二象限 sin 正，三象限 tan 正，四象限 cos 正。',points:{title:'符号规律',items:['<strong>第一象限</strong>：sin、cos、tan 全正','<strong>第二象限</strong>：只有 sin 正','<strong>第三象限</strong>：只有 tan 正','<strong>第四象限</strong>：只有 cos 正']}},
+  {tag:'关系',name:'同角三角函数关系',body:'由单位圆定义 x²+y²=1 直接得到两个基本关系：<strong>平方关系</strong> <code>sin²α + cos²α = 1</code>，<strong>商数关系</strong> <code>tan α = sin α / cos α</code>。这是恒等变换的基础。',points:{title:'两大公式',items:['<strong>平方关系</strong>：sin²α + cos²α = 1','<strong>商数关系</strong>：tan α = sin α / cos α','<strong>推导</strong>：cot α = cos α / sin α','<strong>应用</strong>：知一求二']}},
+  {tag:'关系',name:'诱导公式',body:'<strong>诱导公式</strong>把任意角化为锐角三角函数。核心：<code>sin(-α) = -sin α</code>（奇函数），<code>cos(-α) = cos α</code>（偶函数）；<code>sin(π-α) = sin α</code>，<code>cos(π-α) = -cos α</code>。',points:{title:'常用诱导',items:['<strong>sin(-α)</strong> = -sin α','<strong>cos(-α)</strong> = cos α','<strong>sin(π-α)</strong> = sin α','<strong>cos(π-α)</strong> = -cos α']}},
+  {tag:'特殊值',name:'特殊角函数值',body:'<strong>特殊角</strong>（0、π/6、π/4、π/3、π/2）的函数值必须熟记。规律：sin 从 0 到 1 递增，cos 从 1 到 0 递减，tan 值为 <strong>0, √3/3, 1, √3, 不存在</strong>。',points:{title:'特殊值规律',items:['<strong>0</strong>: sin=0, cos=1, tan=0','<strong>π/6(30°)</strong>: sin=1/2, cos=√3/2','<strong>π/4(45°)</strong>: sin=cos=√2/2, tan=1','<strong>π/3(60°)</strong>: sin=√3/2, cos=1/2']}},
+  {tag:'总结',name:'核心速记',body:'任意角三角函数以<strong>单位圆</strong>为核心：<strong>sin=y, cos=x, tan=y/x</strong>；弧度制让角的度量与圆紧密结合；<strong>sin²α+cos²α=1</strong> 是基石；记忆特殊角值是基本功。',points:{title:'三句话总结',items:['<strong>定义</strong>：单位圆上 (cos α, sin α)','<strong>核心公式</strong>：sin²α + cos²α = 1','<strong>弧度</strong>：l = |α|·r','<strong>符号</strong>：一全二正弦三切四余弦']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：任意角与象限角 =====
+function drawAngleConceptScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('任意角 · 正角、负角、象限角',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,R=140;
+  // 四象限底色
+  const quads=[[-1,1],[1,1],[1,-1],[-1,-1]];
+  quads.forEach((q,i)=>{
+    ctx.fillStyle=QCOLORS[i]+'22';
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);ctx.lineTo(cx+q[0]*R,cy);ctx.lineTo(cx+q[0]*R,cy+q[1]*R);ctx.closePath();ctx.fill();
+    drawText('第'+['一','二','三','四'][i]+'象限',cx+q[0]*R*0.6,cy+q[1]*R*0.6,QCOLORS[i],12);
+  });
+  // 坐标轴
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-R-30,cy);ctx.lineTo(cx+R+30,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-R-30);ctx.lineTo(cx,cy+R+30);ctx.stroke();
+  drawText('x',cx+R+25,cy,'#9ab0d0',12);drawText('y',cx,cy-R-25,'#9ab0d0',12);
+  // 单位圆
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+  // 旋转的角（顺逆交替）
+  const phase=time*0.6;
+  const ang=phase*(Math.sin(time*0.3)>0?1:-1);
+  const ex=cx+R*Math.cos(ang),ey=cy-R*Math.sin(ang);
+  // 始边
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=2;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R+10,cy);ctx.stroke();ctx.setLineDash([]);
+  // 终边
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();ctx.shadowBlur=0;
+  // 角度弧
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(cx,cy,40,0,-ang,ang<0);ctx.stroke();
+  // 终点
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(ex,ey,7,0,7);ctx.fill();ctx.shadowBlur=0;
+  const deg=(ang*180/Math.PI).toFixed(0);
+  const rad=(ang).toFixed(2);
+  drawText('α = '+deg+'° ≈ '+rad+' rad',W/2,H-65,'#fbbf24',13);
+  drawText(ang>0?'逆时针为正角':(ang<0?'顺时针为负角':'零角'),W/2,H-40,'#34d399',12);
+  drawText('终边所在象限决定三角函数符号',W/2,H-20,'#9ab0d0',11);
+  // 图例
+  drawText('始边',cx+R+15,cy+5,'#5a6a8a',11,'left');
+  drawText('终边',(ex+cx)/2+10,(ey+cy)/2-8,'#fbbf24',11);
+}
+
+// ===== 场景：弧度制 =====
+function drawRadianScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('弧度制 · α = l / r',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30,r=120;
+  // 圆
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+  drawText('O',cx-12,cy+8,'#9ab0d0',12);
+  // 半径
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r,cy);ctx.stroke();
+  drawText('r',cx+r/2,cy-12,'#06b6d4',13);
+  // 弧 α 随时间变化
+  const ang=Math.abs(Math.sin(time*0.4))*Math.PI*1.5;
+  const arcLen=r*ang;
+  // 画弧（高亮）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,-ang,true);ctx.stroke();ctx.shadowBlur=0;
+  // 第二条半径
+  const ex=cx+r*Math.cos(-ang),ey=cy+r*Math.sin(-ang);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
+  // 弧长标注
+  drawText('弧长 l = '+arcLen.toFixed(1),cx,cy-r-30,'#fbbf24',13);
+  // 角度
+  ctx.fillStyle='rgba(251,191,36,0.15)';
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,35,0,-ang,true);ctx.closePath();ctx.fill();
+  // 公式与换算
+  ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('α = l / r  (弧度)',W/2,75);
+  drawText('当前 α = '+ang.toFixed(2)+' rad ≈ '+(ang*180/Math.PI).toFixed(0)+'°',cx,cy+50,'#34d399',13);
+  drawText('l = |α|·r = '+ang.toFixed(2)+' × '+r+' = '+arcLen.toFixed(1),cx,cy+75,'#06b6d4',12);
+  drawText('1 弧度 ≈ 57.3°    π rad = 180°',W/2,H-30,'#fbbf24',13);
+  drawText('弧度 = 弧长 ÷ 半径（与半径无关）',W/2,H-10,'#9ab0d0',11);
+}
+
+// ===== 场景：单位圆定义 =====
+function drawUnitCircleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('单位圆定义 · P(cos α, sin α)',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20,R=160;
+  // 四象限底色
+  for(let i=0;i<4;i++){
+    const sx=i<2?1:-1,sy=(i%2===0)?1:-1;
+    ctx.fillStyle=QCOLORS[i]+'18';
+    ctx.fillRect(cx+(sx>0?0:-R),cy+(sy>0?-R:0),R,R);
+  }
+  // 坐标轴
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-R-40,cy);ctx.lineTo(cx+R+40,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-R-40);ctx.lineTo(cx,cy+R+40);ctx.stroke();
+  // 刻度
+  [-1,1].forEach(v=>{
+    drawText(v,cx+v*R,cy+16,'#9ab0d0',11);
+    drawText(v,cx-16,cy-v*R,'#9ab0d0',11);
+  });
+  // 单位圆
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+  // 旋转角
+  const ang=time*0.8;
+  const px=cx+R*Math.cos(ang),py=cy-R*Math.sin(ang);
+  // 角的扇区
+  ctx.fillStyle='rgba(251,191,36,0.15)';
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,30,0,-ang,ang<0);ctx.closePath();ctx.fill();
+  // 终边
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+  // cos 投影（垂直线）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,cy);ctx.stroke();
+  // sin 投影（水平线）
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(cx,py);ctx.stroke();ctx.setLineDash([]);
+  // P 点
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  // cos cos
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(px,cy,5,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(cx,py,5,0,7);ctx.fill();
+  // 标签
+  const c=Math.cos(ang),s=Math.sin(ang);
+  drawText('P ('+c.toFixed(2)+', '+s.toFixed(2)+')',px,py-18,'#fbbf24',13);
+  drawText('cos α',cx+(px-cx)/2,cy+14,'#34d399',12);
+  drawText('sin α',cx-22,cy+(py-cy)/2,'#34d399',12);
+  // tan = sin/cos
+  const tanV=c!==0?s/c:NaN;
+  drawText('α = '+(ang*180/Math.PI%360).toFixed(0)+'°',cx-40,cy-40,'#9ab0d0',12);
+  drawText('sin α = '+s.toFixed(3),W/2,H-90,'#34d399',13);
+  drawText('cos α = '+c.toFixed(3),W/2,H-65,'#34d399',13);
+  drawText('tan α = '+(isNaN(tanV)?'不存在':tanV.toFixed(3)),W/2,H-40,'#fbbf24',13);
+  drawText('P 的横坐标 = cos α，纵坐标 = sin α',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景：符号规律 =====
+function drawSignScene(){
+  const W=cv.width,H=cv.height;
+  drawText('三角函数符号规律 · 一全二正弦三切四余弦',W/2,30,'#fbbf24',15);
+  const cx=W/2,cy=H/2+20,R=170;
+  const data=[
+    {q:'Ⅰ',c:QCOLORS[0],sin:'+',cos:'+',tan:'+'},
+    {q:'Ⅱ',c:QCOLORS[1],sin:'+',cos:'-',tan:'-'},
+    {q:'Ⅲ',c:QCOLORS[2],sin:'-',cos:'-',tan:'+'},
+    {q:'Ⅲ',c:QCOLORS[3],sin:'-',cos:'+',tan:'-'},
+  ];
+  const pos=[[-1,1],[1,1],[-1,-1],[1,-1]];
+  // 轴
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-R-30,cy);ctx.lineTo(cx+R+30,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-R-30);ctx.lineTo(cx,cy+R+30);ctx.stroke();
+  // 单位圆
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+  // 四象限
+  pos.forEach((p,i)=>{
+    const ax=cx+p[0]*R*0.5,ay=cy+p[1]*R*0.5;
+    const d=data[i];
+    ctx.fillStyle=d.c+'22';
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+p[0]*R,cy);ctx.lineTo(cx+p[0]*R,cy+p[1]*R);ctx.closePath();ctx.fill();
+    drawText('第'+['一','二','三','四'][i]+'象限',ax,ay-30,d.c,13);
+    drawText('sin '+d.sin,ax,ay-8,'#34d399',12);
+    drawText('cos '+d.cos,ax,ay+12,'#06b6d4',12);
+    drawText('tan '+d.tan,ax,ay+32,'#fbbf24',12);
+  });
+  // 口诀
+  ctx.fillStyle='rgba(251,191,36,0.08)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(60,H-90,W-120,50,8);ctx.fill();ctx.stroke();
+  drawText('口诀：一全正，二正弦，三正切，四余弦',W/2,H-65,'#fbbf24',15);
+}
+
+// ===== 场景：同角关系 =====
+function drawIdentityScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('同角三角函数关系',W/2,30,'#fbbf24',16);
+  const ang=time*0.8;
+  const s=Math.sin(ang),c=Math.cos(ang);
+  // 左侧：单位圆几何解释
+  const cx=W/2-80,cy=H/2+10,R=130;
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-R-20,cy);ctx.lineTo(cx+R+20,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-R-20);ctx.lineTo(cx,cy+R+20);ctx.stroke();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+  const px=cx+R*c,py=cy-R*s;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();
+  // sin cos 投影构成直角三角形
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,cy);ctx.lineTo(px,py);ctx.closePath();ctx.stroke();
+  drawText('sin',px+12,(cy+py)/2,'#34d399',12);
+  drawText('cos',(cx+px)/2,cy+16,'#34d399',12);
+  drawText('1 (半径)',(cx+px)/2-30,(cy+py)/2-15,'#06b6d4',11);
+  // 勾股说明
+  drawText('sin²α + cos²α = 1',cx,cy+R+35,'#fbbf24',14);
+  // 右侧公式
+  const fx=W/2+150;
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(fx,80,260,90,10);ctx.fill();ctx.stroke();
+  drawText('平方关系',fx+130,105,'#34d399',14);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('sin²α + cos²α = 1',fx+130,140);
+  drawText('当前: '+s.toFixed(2)+'² + '+c.toFixed(2)+'² = '+(s*s+c*c).toFixed(3),fx+130,160,'#9ab0d0',11);
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(fx,200,260,90,10);ctx.fill();ctx.stroke();
+  drawText('商数关系',fx+130,225,'#06b6d4',14);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';
+  ctx.fillText('tan α = sin α / cos α',fx+130,260);
+  const tv=c!==0?s/c:NaN;
+  drawText('当前: '+s.toFixed(2)+' / '+c.toFixed(2)+' = '+(isNaN(tv)?'∞':tv.toFixed(3)),fx+130,280,'#9ab0d0',11);
+  drawText('由 x²+y²=1（单位圆）直接得到',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：诱导公式 =====
+function drawInductionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('诱导公式 · sin/cos 的奇偶性与对称',W/2,30,'#fbbf24',15);
+  const cx=W/2,cy=H/2+20,R=150;
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-R-30,cy);ctx.lineTo(cx+R+30,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-R-30);ctx.lineTo(cx,cy+R+30);ctx.stroke();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+  const ang=Math.PI/4+Math.sin(time*0.6)*0.3;
+  // α 点
+  const pa={x:cx+R*Math.cos(ang),y:cy-R*Math.sin(ang)};
+  // -α 点
+  const pna={x:cx+R*Math.cos(-ang),y:cy-R*Math.sin(-ang)};
+  // π-α 点
+  const ppia={x:cx+R*Math.cos(Math.PI-ang),y:cy-R*Math.sin(Math.PI-ang)};
+  // π+α 点
+  const ppa={x:cx+R*Math.cos(Math.PI+ang),y:cy-R*Math.sin(Math.PI+ang)};
+  // 连接对角点
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  [[pa,pna],[pa,ppia],[pa,ppa]].forEach(p=>{ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);ctx.lineTo(p[1].x,p[1].y);ctx.stroke();});
+  ctx.setLineDash([]);
+  // 终边
+  const pts=[{p:pa,c:'#fbbf24',l:'α'},{p:pna,c:'#34d399',l:'-α'},{p:ppia,c:'#06b6d4',l:'π-α'},{p:ppa,c:'#f87171',l:'π+α'}];
+  pts.forEach(d=>{
+    ctx.strokeStyle=d.c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(d.p.x,d.p.y);ctx.stroke();
+    ctx.fillStyle=d.c;ctx.shadowColor=d.c;ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(d.p.x,d.p.y,6,0,7);ctx.fill();ctx.shadowBlur=0;
+    drawText(d.l,d.p.x+(d.p.x>cx?14:-14),d.p.y+(d.p.y>cy?14:-14),d.c,13);
+  });
+  // 公式
+  const fy=H-100;
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(60,fy,W-120,70,8);ctx.fill();ctx.stroke();
+  drawText('sin(-α) = -sin α    cos(-α) = cos α',W/2,fy+22,'#fff',13);
+  drawText('sin(π-α) = sin α    cos(π-α) = -cos α',W/2,fy+50,'#fff',13);
+  drawText('sin、cos、tan 都是关于 α 的对称变换',W/2,fy-12,'#9ab0d0',11);
+  drawText('π-α：关于 y 轴对称（sin 同、cos 反）',W/2,fy-30,'#a78bfa',11);
+}
+
+// ===== 场景：特殊角值表 =====
+function drawSpecialTableScene(){
+  const W=cv.width,H=cv.height;
+  drawText('特殊角三角函数值表',W/2,30,'#fbbf24',16);
+  const ang=['0','π/6','π/4','π/3','π/2','π'];
+  const deg=['0°','30°','45°','60°','90°','180°'];
+  const sinV=['0','1/2','√2/2','√3/2','1','0'];
+  const cosV=['1','√3/2','√2/2','1/2','0','-1'];
+  const tanV=['0','√3/3','1','√3','不存在','0'];
+  const x0=80,y0=90,cw=(W-160)/6,rh=42;
+  // 表头
+  ctx.fillStyle='rgba(251,191,36,0.2)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(x0-50,y0-32,cw*6+90,28,6);ctx.fill();ctx.stroke();
+  drawText('角度 α',x0-25,y0-18,'#fbbf24',12);
+  // 行
+  const rows=[{l:'sin α',v:sinV,c:'#34d399'},{l:'cos α',v:cosV,c:'#06b6d4'},{l:'tan α',v:tanV,c:'#fbbf24'}];
+  rows.forEach((r,ri)=>{
+    const y=y0+ri*rh;
+    ctx.fillStyle=r.c+'22';ctx.strokeStyle=r.c;ctx.lineWidth=1.5;
+    roundRect(x0-50,y,cw*6+90,rh-4,6);ctx.fill();ctx.stroke();
+    drawText(r.l,x0-25,y+(rh-4)/2,r.c,13);
+    r.v.forEach((val,ci)=>{
+      const x=x0+ci*cw;
+      drawText(val,x+cw/2,y+(rh-4)/2,'#fff',13);
+    });
+  });
+  // 顶部角度
+  ang.forEach((a,i)=>{
+    const x=x0+i*cw;
+    drawText(a,x+cw/2,y0-18,'#fff',12);
+    drawText(deg[i],x+cw/2,y0+rh*3+8,'#9ab0d0',11);
+  });
+  // 记忆口诀
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(80,y0+rh*3+40,W-160,80,8);ctx.fill();ctx.stroke();
+  drawText('记忆规律',W/2,y0+rh*3+58,'#06b6d4',13);
+  drawText('sin: 0 → 1/2 → √2/2 → √3/2 → 1（递增）',W/2,y0+rh*3+80,'#fff',12);
+  drawText('cos: 1 → √3/2 → √2/2 → 1/2 → 0（递减）',W/2,y0+rh*3+102,'#fff',12);
+  drawText('tan: 0 → √3/3 → 1 → √3 → 不存在',W/2,y0+rh*3+115,'#fbbf24',11);
+}
+
+// ===== 场景：综合演示 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('任意角三角函数 · 核心知识网络',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'任意角',d:'正/负/零 · 象限角',c:'#fbbf24'},
+    {t:'弧度制',d:'α=l/r · π=180°',c:'#06b6d4'},
+    {t:'单位圆定义',d:'sin=y, cos=x',c:'#34d399'},
+    {t:'符号规律',d:'一全二正弦三切四余弦',c:'#a78bfa'},
+    {t:'同角关系',d:'sin²+cos²=1',c:'#fb923c'},
+    {t:'诱导公式',d:'sin(-α)=-sinα 等',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawAngleConceptScene(t);
+  else if(stepIdx===1)drawAngleConceptScene(t);
+  else if(stepIdx===2)drawRadianScene(t);
+  else if(stepIdx===3)drawRadianScene(t);
+  else if(stepIdx===4)drawUnitCircleScene(t);
+  else if(stepIdx===5)drawSignScene();
+  else if(stepIdx===6)drawIdentityScene(t);
+  else if(stepIdx===7)drawInductionScene(t);
+  else if(stepIdx===8)drawSpecialTableScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

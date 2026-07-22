@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>空间向量与立体几何 · 建系 · 求角 · 求距离</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">空间向量与立体几何</span><span class="subtitle">建系 · 求角 · 求距离</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>空间向量运算</h4><div class="v">a·b=x₁x₂+y₁y₂+z₁z₂<br>|a|=√(x²+y²+z²)</div></div>
+  <div class="card s2"><div class="num">2</div><h4>法向量</h4><div class="v">平面内两不共线向量<br>列 a·n=0、b·n=0 解 n</div></div>
+  <div class="card s3"><div class="num">3</div><h4>三大空间角公式</h4><div class="v">线线/线面/二面角<br>cosθ=|a·b|/(|a||b|)</div></div>
+  <div class="card s4"><div class="num">4</div><h4>点到面距离</h4><div class="v">d=|AP·n|/|n|<br>A 在面上，P 在面外</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">空间向量</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+// 简易 3D：正方体顶点（单位 1），投影到 2D
+const CUBE_S=130; // 棱长（像素）
+const ISO={ex:0.62,ey:0.38}; // 等测投影系数（x右下，y左下，z上）
+function proj3(x,y,z,ox,oy){
+  return {x:ox+(x-y)*CUBE_S*ISO.ex, y:oy-(z)*CUBE_S+(x+y)*CUBE_S*ISO.ey*0.5};
+}
+// 8 顶点（原点 O 在一个顶点，三棱为坐标轴）
+function cubeVerts(ox,oy){
+  const P=[];
+  for(let z=0;z<=1;z++)for(let y=0;y<=1;y++)for(let x=0;x<=1;x++){
+    P.push({x,y,z,p:proj3(x,y,z,ox,oy)});
+  }
+  return P;
+}
+const idx=(x,y,z)=>z*4+y*2+x;
+function drawCube(ox,oy,opts){
+  opts=opts||{};
+  const V=cubeVerts(ox,oy);
+  // 12 条棱（隐藏后方的用浅色）
+  const edges=[
+    [0,1],[2,3],[4,5],[6,7], // x 方向
+    [0,2],[1,3],[4,6],[5,7], // y 方向
+    [0,4],[1,5],[2,6],[3,7]  // z 方向
+  ];
+  // 隐藏棱（从原点看背面的）：0,2,6 这三条最靠后
+  const hidden=new Set(['0-2','2-6','0-6']);
+  ctx.lineWidth=opts.edgeW||2;
+  edges.forEach(e=>{
+    const k=e[0]+'-'+e[1];
+    if(hidden.has(k)){
+      ctx.strokeStyle='rgba(154,176,208,0.22)';ctx.lineWidth=1.2;
+    }else{
+      ctx.strokeStyle=opts.edgeC||'#67e8f9';
+      ctx.lineWidth=opts.edgeW||2;
+    }
+    ctx.beginPath();ctx.moveTo(V[e[0]].p.x,V[e[0]].p.y);ctx.lineTo(V[e[1]].p.x,V[e[1]].p.y);ctx.stroke();
+  });
+  // 顶点
+  if(opts.showVerts!==false){
+    V.forEach((v,i)=>{
+      ctx.fillStyle=opts.vertC||'#fbbf24';
+      ctx.beginPath();ctx.arc(v.p.x,v.p.y,4,0,7);ctx.fill();
+    });
+  }
+  return V;
+}
+
+const STEPS=[
+  {tag:'基础',name:'空间向量概念',body:'<strong>空间向量</strong>是<strong>三维空间中既有大小又有方向的量</strong>，用坐标表示 <code>a = (x, y, z)</code>。其模（长度）<code>|a| = √(x²+y²+z²)</code>，起点为原点 O 时终点即 (x,y,z)。',points:{title:'核心要点',items:['<strong>表示</strong>：a = (x, y, z)','<strong>模长</strong>：|a| = √(x²+y²+z²)','<strong>零向量</strong>：0 = (0,0,0)','<strong>单位向量</strong>：|a| = 1']}},
+  {tag:'基础',name:'向量运算',body:'<strong>加减</strong>：对应坐标相加减。 <strong>数乘</strong>：λa = (λx,λy,λz)。 <strong>数量积</strong>：<code>a·b = x₁x₂+y₁y₂+z₁z₂</code> = |a||b|cosθ，结果是一个<strong>标量</strong>。',points:{title:'四种基本运算',items:['<strong>加法</strong>：a+b 对应分量相加','<strong>数乘</strong>：λa 每个分量乘 λ','<strong>数量积</strong>：a·b = |a||b|cosθ','<strong>垂直</strong>：a·b=0 ⇔ a⊥b']}},
+  {tag:'基础',name:'共线与共面',body:'<strong>共线（平行）</strong>：<code>a∥b ⇔ a = λb</code>（λ 为实数）。 <strong>共面</strong>：三个向量共面 ⇔ <code>c = λa+μb</code>，即其中一个可被另外两个线性表示。',points:{title:'位置关系判定',items:['<strong>共线</strong>：a = λb (b≠0)','<strong>共面</strong>：c = λa+μb','<strong>判定方法</strong>：坐标成比例即共线','<strong>基底</strong>：两不共线向量张成一个平面']}},
+  {tag:'建系',name:'建立空间直角坐标系',body:'解立体几何题的第一步是<strong>建系</strong>：选择合适的<strong>原点</strong>（常选正方体/长方体的某个顶点）和<strong>三条两两垂直的棱</strong>作为 x、y、z 轴，写出各顶点坐标。',points:{title:'建系三原则',items:['<strong>原点</strong>：选特殊点（顶点、中心）','<strong>坐标轴</strong>：选三条两两垂直的棱','<strong>右手系</strong>：拇指 x、食指 y、中指 z','<strong>正方体</strong>：棱长设为 1 或 a 最方便']}},
+  {tag:'法向量',name:'求平面法向量',body:'<strong>法向量 n</strong>垂直于平面内所有向量。求法：取平面内<strong>两不共线向量 a、b</strong>，设 n=(x,y,z)，列 <code>a·n=0</code>、<code>b·n=0</code>，解出 n（令某分量=1 即可）。',points:{title:'求法向量四步',items:['<strong>①</strong>：在面内取两向量 a、b','<strong>②</strong>：设 n=(x,y,z)','<strong>③</strong>：列 a·n=0、b·n=0','<strong>④</strong>：赋一分量值，解方程组']}},
+  {tag:'线线角',name:'线线角',body:'两条异面直线的夹角：取各自<strong>方向向量 a、b</strong>，<code>cosθ = |a·b| / (|a||b|)</code>，θ 为锐角（取绝对值保证）。',points:{title:'线线角公式',items:['<strong>方向向量</strong>：a、b','<strong>公式</strong>：cosθ = |a·b|/(|a||b|)','<strong>范围</strong>：θ ∈ [0°, 90°]','<strong>绝对值</strong>：保证取锐角']}},
+  {tag:'线面角',name:'线面角',body:'直线与平面所成角：直线<strong>方向向量 a</strong> 与平面<strong>法向量 n</strong>。<code>sinθ = |a·n| / (|a||n|)</code>，θ 为线面角（注意是 sin 不是 cos）。',points:{title:'线面角公式',items:['<strong>a</strong>：直线方向向量','<strong>n</strong>：平面法向量','<strong>公式</strong>：sinθ = |a·n|/(|a||n|)','<strong>范围</strong>：θ ∈ [0°, 90°]']}},
+  {tag:'二面角',name:'二面角',body:'两个半平面所成的角：分别求<strong>两平面的法向量 n₁、n₂</strong>，<code>cosθ = |n₁·n₂| / (|n₁||n₂|)</code>（结合图形判断锐/钝）。',points:{title:'二面角公式',items:['<strong>n₁、n₂</strong>：两平面法向量','<strong>公式</strong>：cosθ = |n₁·n₂|/(|n₁||n₂|)','<strong>判定</strong>：图形判断锐或钝','<strong>棱</strong>：两平面的交线']}},
+  {tag:'距离',name:'点到平面距离',body:'<strong>核心公式</strong>：<code>d = |AP·n| / |n|</code>，其中 P 为平面外一点，A 为平面内任意一点，n 为平面法向量。AP·n 表示 AP 在 n 方向上的投影。',points:{title:'距离公式推导',items:['<strong>P</strong>：平面外一点','<strong>A</strong>：平面内任一点','<strong>n</strong>：平面法向量','<strong>d = |AP·n| / |n|</strong>：投影长度']}},
+  {tag:'总结',name:'向量法速记',body:'用<strong>空间向量</strong>解立体几何：建系→写坐标→求法向量→套公式。<strong>三大角</strong>：线线用 cos、线面用 sin、二面用 cos。距离用投影。把几何问题<strong>代数化</strong>是核心思想。',points:{title:'向量法四步走',items:['<strong>①建系</strong>：写各点坐标','<strong>②求向量</strong>：方向向量、法向量','<strong>③套公式</strong>：cos/sin 角、d 距离','<strong>④几何代数化</strong>：避免繁杂推理']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景1：空间向量 a=(x,y,z) =====
+function drawVectorBasicScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('空间向量 a = (x, y, z)',W/2,32,'#fbbf24',16);
+  const cx=W/2-60,cy=H/2+50;
+  const V=drawCube(cx,cy,{edgeC:'#3a5a8a',vertC:'#5a7aaa',showVerts:false});
+  // 动态展示一个向量 a=(x,y,z)
+  const ph=time*0.5;
+  const ax=0.5+0.4*Math.sin(ph);
+  const ay=0.5+0.4*Math.sin(ph+1.5);
+  const az=0.5+0.4*Math.sin(ph+3);
+  const O=V[idx(0,0,0)].p, A=V[idx(0,0,0)].p;
+  const end=proj3(ax,ay,az,cx,cy);
+  // 分量虚线（投影到三轴）
+  const px=proj3(ax,0,0,cx,cy),py=proj3(0,ay,0,cx,cy),pz=proj3(0,0,az,cx,cy);
+  const pmid=proj3(ax,ay,0,cx,cy);
+  ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(154,176,208,0.4)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(O.x,O.y);ctx.lineTo(px.x,px.y);ctx.lineTo(pmid.x,pmid.y);
+  ctx.moveTo(end.x,end.y);ctx.lineTo(pmid.x,pmid.y);
+  ctx.moveTo(O.x,O.y);ctx.lineTo(pz.x,pz.y);
+  ctx.stroke();ctx.setLineDash([]);
+  // 主向量 a
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;ctx.shadowColor='#fbbf24';ctx.shadowBlur=14;
+  ctx.beginPath();ctx.moveTo(O.x,O.y);ctx.lineTo(end.x,end.y);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  const ang=Math.atan2(end.y-O.y,end.x-O.x);
+  ctx.beginPath();ctx.moveTo(end.x,end.y);
+  ctx.lineTo(end.x-14*Math.cos(ang-0.4),end.y-14*Math.sin(ang-0.4));
+  ctx.lineTo(end.x-14*Math.cos(ang+0.4),end.y-14*Math.sin(ang+0.4));ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('a',end.x+14,end.y-8,'#fbbf24',15);
+  // 三轴标注
+  const Xe=proj3(1,0,0,cx,cy),Ye=proj3(0,1,0,cx,cy),Ze=proj3(0,0,1,cx,cy);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(O.x,O.y);ctx.lineTo(Xe.x,Xe.y);ctx.stroke();
+  drawText('x',Xe.x+12,Xe.y,'#f87171',13);
+  ctx.strokeStyle='#34d399';ctx.beginPath();ctx.moveTo(O.x,O.y);ctx.lineTo(Ye.x,Ye.y);ctx.stroke();
+  drawText('y',Ye.x-14,Ye.y,'#34d399',13);
+  ctx.strokeStyle='#06b6d4';ctx.beginPath();ctx.moveTo(O.x,O.y);ctx.lineTo(Ze.x,Ze.y);ctx.stroke();
+  drawText('z',Ze.x,Ze.y-14,'#06b6d4',13);
+  drawText('O',O.x-12,O.y+8,'#9ab0d0',12);
+  // 信息
+  const mod=Math.sqrt(ax*ax+ay*ay+az*az);
+  drawText('a = ('+ax.toFixed(2)+', '+ay.toFixed(2)+', '+az.toFixed(2)+')',W/2,H-70,'#fff',13);
+  drawText('|a| = √(x²+y²+z²) = '+mod.toFixed(3),W/2,H-45,'#34d399',13);
+}
+
+// ===== 场景2：建立空间直角坐标系（正方体） =====
+function drawCoordSystemScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('建立空间直角坐标系 · 正方体建系',W/2,32,'#fbbf24',16);
+  const cx=W/2-50,cy=H/2+40;
+  const V=cubeVerts(cx,cy);
+  // 高亮三棱作为坐标轴
+  const O=V[idx(0,0,0)];
+  const edges=[
+    {a:idx(0,0,0),b:idx(1,0,0),c:'#f87171',lab:'x 轴'},
+    {a:idx(0,0,0),b:idx(0,1,0),c:'#34d399',lab:'y 轴'},
+    {a:idx(0,0,0),b:idx(0,0,1),c:'#06b6d4',lab:'z 轴'}
+  ];
+  // 先画整体淡色
+  ctx.strokeStyle='rgba(154,176,208,0.25)';ctx.lineWidth=1;
+  const alledges=[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
+  alledges.forEach(e=>{ctx.beginPath();ctx.moveTo(V[e[0]].p.x,V[e[0]].p.y);ctx.lineTo(V[e[1]].p.x,V[e[1]].p.y);ctx.stroke();});
+  // 高亮三轴（带动画箭头）
+  edges.forEach((e,i)=>{
+    const pulse=0.5+0.5*Math.sin(time*2+i*1.2);
+    ctx.strokeStyle=e.c;ctx.lineWidth=3+pulse*1.5;ctx.shadowColor=e.c;ctx.shadowBlur=10+pulse*8;
+    ctx.beginPath();ctx.moveTo(V[e.a].p.x,V[e.a].p.y);ctx.lineTo(V[e.b].p.x,V[e.b].p.y);ctx.stroke();
+    const dx=V[e.b].p.x-V[e.a].p.x,dy=V[e.b].p.y-V[e.a].p.y;
+    const an=Math.atan2(dy,dx);
+    ctx.fillStyle=e.c;
+    ctx.beginPath();ctx.moveTo(V[e.b].p.x,V[e.b].p.y);
+    ctx.lineTo(V[e.b].p.x-13*Math.cos(an-0.4),V[e.b].p.y-13*Math.sin(an-0.4));
+    ctx.lineTo(V[e.b].p.x-13*Math.cos(an+0.4),V[e.b].p.y-13*Math.sin(an+0.4));ctx.fill();
+    ctx.shadowBlur=0;
+    drawText(e.lab,V[e.b].p.x+(i===1?-22:i===2?0:14),V[e.b].p.y+(i===2?-14:8),e.c,13);
+  });
+  // 顶点坐标标注
+  drawText('O(0,0,0)',O.p.x-40,O.p.y+20,'#9ab0d0',11);
+  const labels=[
+    {i:idx(1,0,0),t:'A(1,0,0)',dx:14,dy:0},
+    {i:idx(0,1,0),t:'B(0,1,0)',dx:-18,dy:0},
+    {i:idx(0,0,1),t:'C(0,0,1)',dx:0,dy:-14},
+    {i:idx(1,1,1),t:'D(1,1,1)',dx:14,dy:-10}
+  ];
+  labels.forEach(l=>{
+    const v=V[l.i];
+    ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(v.p.x,v.p.y,4,0,7);ctx.fill();
+    drawText(l.t,v.p.x+l.dx,v.p.y+l.dy,'#fde68a',11);
+  });
+  drawText('选顶点 O 作原点，三条两两垂直的棱为 x、y、z 轴',W/2,H-45,'#34d399',12);
+}
+
+// ===== 场景3：法向量求解 =====
+function drawNormalVectorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平面法向量 · n ⊥ 平面',W/2,32,'#fbbf24',16);
+  const cx=W/2-50,cy=H/2+60;
+  // 画一个倾斜平面（顶面）
+  const V=cubeVerts(cx,cy);
+  const face=[V[idx(0,0,1)],V[idx(1,0,1)],V[idx(1,1,1)],V[idx(0,1,1)]];
+  ctx.fillStyle='rgba(6,182,212,0.18)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(face[0].p.x,face[0].p.y);
+  face.slice(1).forEach(v=>ctx.lineTo(v.p.x,v.p.y));ctx.closePath();ctx.fill();ctx.stroke();
+  drawText('平面 α（z=1 顶面）',face[2].p.x+60,face[2].p.y-10,'#06b6d4',12,'left');
+  // 面内两向量 a, b
+  const a=V[idx(1,0,1)],aO=V[idx(0,0,1)];
+  const b=V[idx(0,1,1)],bO=V[idx(0,0,1)];
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(aO.p.x,aO.p.y);ctx.lineTo(a.p.x,a.p.y);ctx.stroke();
+  drawText('a=(1,0,0)',(aO.p.x+a.p.x)/2,(aO.p.y+a.p.y)/2+14,'#f87171',11);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(bO.p.x,bO.p.y);ctx.lineTo(b.p.x,b.p.y);ctx.stroke();
+  drawText('b=(0,1,0)',(bO.p.x+b.p.x)/2-22,(bO.p.y+b.p.y)/2,'#34d399',11);
+  // 法向量 n（动画浮现，竖直向上）
+  const appear=Math.min(1,stepTime/1.2);
+  const center={x:(face[0].p.x+face[2].p.x)/2,y:(face[0].p.y+face[2].p.y)/2};
+  const len=90*appear;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(center.x,center.y);ctx.lineTo(center.x,center.y-len);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(center.x,center.y-len);
+  ctx.lineTo(center.x-8,center.y-len+14);ctx.lineTo(center.x+8,center.y-len+14);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('n=(0,0,1)',center.x+12,center.y-len/2,'#fbbf24',13);
+  // 求解过程
+  drawText('设 n=(x,y,z)，列方程组：',W/2,H-100,'#fff',12);
+  drawText('a·n = x = 0',W/2,H-78,'#f87171',12);
+  drawText('b·n = y = 0  →  令 z=1，得 n=(0,0,1)',W/2,H-58,'#34d399',12);
+}
+
+// ===== 场景4：线线角 =====
+function drawLineLineAngleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('线线角 · cosθ = |a·b|/(|a||b|)',W/2,32,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 两条方向向量从原点出发
+  const ang=time*0.4;
+  const a1=Math.cos(ang),a2=Math.sin(ang);
+  // a 沿某方向，b 沿另一方向
+  const a={x:Math.cos(ang),y:Math.sin(ang)};
+  const b={x:Math.cos(ang+1.0),y:Math.sin(ang+1.0)};
+  const L=130;
+  function arrow(v,col,lab){
+    const ex=cx+v.x*L,ey=cy+v.y*L;
+    ctx.strokeStyle=col;ctx.lineWidth=4;ctx.shadowColor=col;ctx.shadowBlur=10;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
+    const an=Math.atan2(v.y,v.x);
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.moveTo(ex,ey);
+    ctx.lineTo(ex-14*Math.cos(an-0.4),ey-14*Math.sin(an-0.4));
+    ctx.lineTo(ex-14*Math.cos(an+0.4),ey-14*Math.sin(an+0.4));ctx.fill();
+    ctx.shadowBlur=0;
+    drawText(lab,ex+16*Math.cos(an),ey+16*Math.sin(an),col,15);
+  }
+  arrow(a,'#f87171','a');
+  arrow(b,'#06b6d4','b');
+  // 夹角弧
+  const theta=Math.acos(Math.abs(a.x*b.x+a.y*b.y));
+  const startA=Math.atan2(a.y,a.x),endA=Math.atan2(b.y,b.x);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,40,Math.min(startA,endA),Math.max(startA,endA));ctx.stroke();
+  drawText('θ',(theta*180/Math.PI).toFixed(0)+'°',cx+48*Math.cos((startA+endA)/2),cy+48*Math.sin((startA+endA)/2),'#fbbf24',13);
+  // 计算
+  const dot=Math.abs(a.x*b.x+a.y*b.y);
+  drawText('a·b = '+dot.toFixed(3)+'    θ = '+((theta*180/Math.PI).toFixed(1))+'°',W/2,H-50,'#34d399',13);
+  drawText('cosθ = |a·b| / (|a||b|)',W/2,H-70,'#9ab0d0',12);
+}
+
+// ===== 场景5：线面角 =====
+function drawLinePlaneAngleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('线面角 · sinθ = |a·n|/(|a||n|)',W/2,32,'#fbbf24',16);
+  const cx=W/2-30,cy=H/2+40;
+  // 平面（地面）
+  const V=cubeVerts(cx,cy);
+  const face=[V[idx(0,0,0)],V[idx(1,0,0)],V[idx(1,1,0)],V[idx(0,1,0)]];
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(face[0].p.x,face[0].p.y);
+  face.slice(1).forEach(v=>ctx.lineTo(v.p.x,v.p.y));ctx.closePath();ctx.fill();ctx.stroke();
+  drawText('平面 α',face[3].p.x-30,face[3].p.y+18,'#06b6d4',12);
+  // 法向量 n（竖直向上）
+  const nBase=V[idx(0,0,0)].p;
+  const nTop=proj3(0,0,1,cx,cy);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(nBase.x,nBase.y);ctx.lineTo(nTop.x,nTop.y);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  const nan=Math.atan2(nTop.y-nBase.y,nTop.x-nBase.x);
+  ctx.beginPath();ctx.moveTo(nTop.x,nTop.y);
+  ctx.lineTo(nTop.x-13*Math.cos(nan-0.4),nTop.y-13*Math.sin(nan-0.4));
+  ctx.lineTo(nTop.x-13*Math.cos(nan+0.4),nTop.y-13*Math.sin(nan+0.4));ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('n',nTop.x+14,nTop.y,'#fbbf24',14);
+  // 倾斜直线 a（动画摆动）
+  const tilt=0.4+0.3*Math.sin(time*0.6);
+  const aEnd=proj3(tilt*0.7,tilt*0.7,1,cx,cy);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=4;ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(nBase.x,nBase.y);ctx.lineTo(aEnd.x,aEnd.y);ctx.stroke();
+  ctx.fillStyle='#f87171';
+  const aan=Math.atan2(aEnd.y-nBase.y,aEnd.x-nBase.x);
+  ctx.beginPath();ctx.moveTo(aEnd.x,aEnd.y);
+  ctx.lineTo(aEnd.x-14*Math.cos(aan-0.4),aEnd.y-14*Math.sin(aan-0.4));
+  ctx.lineTo(aEnd.x-14*Math.cos(aan+0.4),aEnd.y-14*Math.sin(aan+0.4));ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('a（直线方向）',aEnd.x+40,aEnd.y-8,'#f87171',12,'left');
+  // 投影线（垂足）
+  const foot=proj3(tilt*0.7,tilt*0.7,0,cx,cy);
+  ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(251,191,36,0.6)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(aEnd.x,aEnd.y);ctx.lineTo(foot.x,foot.y);ctx.stroke();
+  ctx.setLineDash([]);
+  // θ 角标注（线与投影）
+  drawText('θ（线面角）',foot.x+30,foot.y-20,'#fde68a',12,'left');
+  const theta=Math.atan2(Math.sqrt(2)*tilt*0.7,1)*180/Math.PI;
+  drawText('θ = 线与面夹角 = '+theta.toFixed(1)+'°',W/2,H-50,'#34d399',13);
+  drawText('sinθ = |a·n| / (|a||n|)（注意是 sin！）',W/2,H-72,'#fbbf24',12);
+}
+
+// ===== 场景6：二面角 =====
+function drawDihedralAngleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('二面角 · cosθ = |n₁·n₂|/(|n₁||n₂|)',W/2,32,'#fbbf24',16);
+  const cx=W/2-30,cy=H/2+30;
+  const V=cubeVerts(cx,cy);
+  // 两个半平面：前面和底面，交线为一条棱
+  // 半平面1：底面 z=0
+  const f1=[V[idx(0,0,0)],V[idx(1,0,0)],V[idx(1,1,0)],V[idx(0,1,0)]];
+  ctx.fillStyle='rgba(248,113,113,0.15)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(f1[0].p.x,f1[0].p.y);f1.slice(1).forEach(v=>ctx.lineTo(v.p.x,v.p.y));ctx.closePath();ctx.fill();ctx.stroke();
+  // 半平面2：前面 y=0
+  const f2=[V[idx(0,0,0)],V[idx(1,0,0)],V[idx(1,0,1)],V[idx(0,0,1)]];
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(f2[0].p.x,f2[0].p.y);f2.slice(1).forEach(v=>ctx.lineTo(v.p.x,v.p.y));ctx.closePath();ctx.fill();ctx.stroke();
+  drawText('平面 α',f1[3].p.x-20,f1[3].p.y+16,'#f87171',11);
+  drawText('平面 β',f2[2].p.x+30,f2[2].p.y,'#06b6d4',11);
+  // 交线（棱）
+  ctx.strokeStyle='#fde68a';ctx.lineWidth=4;ctx.shadowColor='#fde68a';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(V[idx(0,0,0)].p.x,V[idx(0,0,0)].p.y);ctx.lineTo(V[idx(1,0,0)].p.x,V[idx(1,0,0)].p.y);ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('棱 l',V[idx(1,0,0)].p.x+20,V[idx(1,0,0)].p.y,'#fde68a',12);
+  // 法向量 n1（底面法向，沿 +z）
+  const c1={x:(V[idx(0,0,0)].p.x+V[idx(1,1,0)].p.x)/2,y:(V[idx(0,0,0)].p.y+V[idx(1,1,0)].p.y)/2};
+  const n1e=proj3(0.5,0.5,0.8,cx,cy);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(c1.x,c1.y);ctx.lineTo(n1e.x,n1e.y);ctx.stroke();
+  drawText('n₁',n1e.x+12,n1e.y,'#f87171',13);
+  // 法向量 n2（前面法向，沿 +y）
+  const c2={x:(V[idx(0,0,0)].p.x+V[idx(1,0,1)].p.x)/2,y:(V[idx(0,0,0)].p.y+V[idx(1,0,1)].p.y)/2};
+  const n2e=proj3(0.5,0.8,0.5,cx,cy);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(c2.x,c2.y);ctx.lineTo(n2e.x,n2e.y);ctx.stroke();
+  drawText('n₂',n2e.x+14,n2e.y,'#06b6d4',13);
+  // θ = 90°（立方体相邻面垂直）
+  drawText('θ = 90°（相邻面互相垂直）',W/2,H-50,'#34d399',13);
+  drawText('n₁=(0,0,1), n₂=(0,1,0) → n₁·n₂=0 → cosθ=0',W/2,H-72,'#fbbf24',12);
+}
+
+// ===== 场景7：点到平面距离 =====
+function drawDistanceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('点到平面距离 · d = |AP·n| / |n|',W/2,32,'#fbbf24',16);
+  const cx=W/2-40,cy=H/2+50;
+  const V=cubeVerts(cx,cy);
+  // 平面（底面 z=0）
+  const face=[V[idx(0,0,0)],V[idx(1,0,0)],V[idx(1,1,0)],V[idx(0,1,0)]];
+  ctx.fillStyle='rgba(6,182,212,0.18)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(face[0].p.x,face[0].p.y);face.slice(1).forEach(v=>ctx.lineTo(v.p.x,v.p.y));ctx.closePath();ctx.fill();ctx.stroke();
+  drawText('平面 α',face[3].p.x-25,face[3].p.y+16,'#06b6d4',12);
+  // 平面上一点 A
+  const A=V[idx(0.5,0.5,0)]=proj3(0.5,0.5,0,cx,cy);
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(A.x,A.y,5,0,7);ctx.fill();
+  drawText('A（面内）',A.x+18,A.y,'#34d399',11,'left');
+  // 面外一点 P（动画垂直上下）
+  const ph=0.6+0.3*Math.sin(time*0.7);
+  const P=proj3(0.5,0.5,ph,cx,cy);
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(P.x,P.y,5,0,7);ctx.fill();
+  drawText('P（面外）',P.x+18,P.y,'#f87171',11,'left');
+  // 法向量 n（竖直向上）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(P.x,P.y-40);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('n ∥ z',P.x+18,P.y-30,'#fbbf24',11,'left');
+  // 距离 d（A 到 P 的垂线段）
+  ctx.strokeStyle='#fde68a';ctx.lineWidth=4;ctx.shadowColor='#fde68a';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(P.x,P.y);ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('d = '+ph.toFixed(3),A.x-40,(A.y+P.y)/2,'#fde68a',13);
+  // AP 向量
+  drawText('AP = (0,0,'+ph.toFixed(2)+')',W/2,H-70,'#fff',12);
+  drawText('d = |AP·n|/|n| = '+ph.toFixed(3)+'/1 = '+ph.toFixed(3),W/2,H-48,'#34d399',13);
+}
+
+// ===== 场景8：运算演示 =====
+function drawOperationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('数量积 a·b = x₁x₂+y₁y₂+z₁z₂',W/2,32,'#fbbf24',16);
+  const a={x:2+Math.sin(time),y:1,z:-1+0.5*Math.cos(time)};
+  const b={x:1,y:-1+0.5*Math.sin(time*0.8),z:3};
+  const dot=a.x*b.x+a.y*b.y+a.z*b.z;
+  const modA=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z);
+  const modB=Math.sqrt(b.x*b.x+b.y*b.y+b.z*b.z);
+  const cos=dot/(modA*modB);
+  // 显示向量坐标
+  ctx.font='bold 16px serif';ctx.textAlign='center';
+  drawText('a = ('+a.x.toFixed(2)+', '+a.y.toFixed(2)+', '+a.z.toFixed(2)+')',W/2,90,'#f87171',15);
+  drawText('b = ('+b.x.toFixed(2)+', '+b.y.toFixed(2)+', '+b.z.toFixed(2)+')',W/2,118,'#06b6d4',15);
+  // 公式展开
+  const yc=180;
+  const rows=[
+    {l:'a·b',r:'= '+a.x.toFixed(2)+'×'+b.x.toFixed(2)+' + '+a.y.toFixed(2)+'×'+b.y.toFixed(2)+' + '+a.z.toFixed(2)+'×'+b.z.toFixed(2),c:'#9ab0d0'},
+    {l:'    ',r:'= '+(a.x*b.x).toFixed(2)+' + '+(a.y*b.y).toFixed(2)+' + '+(a.z*b.z).toFixed(2),c:'#9ab0d0'},
+    {l:'    ',r:'= '+dot.toFixed(3),c:'#34d399'},
+  ];
+  rows.forEach((r,i)=>{drawText(r.l,W/2-180,yc+i*30,r.c,14);drawText(r.r,W/2+40,yc+i*30,r.c,14,'left');});
+  // 模和夹角
+  drawText('|a| = '+modA.toFixed(3),W/2,yc+110,'#f87171',13);
+  drawText('|b| = '+modB.toFixed(3),W/2,yc+135,'#06b6d4',13);
+  drawText('cos⟨a,b⟩ = '+cos.toFixed(3)+'    ⟨a,b⟩ = '+(Math.acos(Math.max(-1,Math.min(1,cos)))*180/Math.PI).toFixed(1)+'°',W/2,yc+165,'#fbbf24',13);
+  drawText('a⊥b ⇔ a·b = 0',W/2,H-40,'#34d399',12);
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('空间向量法 · 核心总结',W/2,38,'#fbbf24',18);
+  const items=[
+    {t:'建系',d:'选原点+三垂直棱\n写各点坐标',c:'#06b6d4'},
+    {t:'法向量',d:'面内取 a,b\n列 a·n=0, b·n=0',c:'#fbbf24'},
+    {t:'线线角',d:'cosθ=|a·b|\n/(|a||b|)',c:'#f87171'},
+    {t:'线面角',d:'sinθ=|a·n|\n/(|a||n|)',c:'#34d399'},
+    {t:'二面角',d:'cosθ=|n₁·n₂|\n/(|n₁||n₂|)',c:'#a78bfa'},
+    {t:'点面距',d:'d=|AP·n|\n/|n|',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const xw=(W-160)/3;
+    const x=80+col*xw;
+    const y=80+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,xw-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+xw/2,y+40,m.c,16);
+    m.d.split('\n').forEach((line,j)=>drawText(line,x+xw/2,y+75+j*22,'#fff',12));
+  });
+  drawText('几何问题代数化 —— 用坐标和运算替代繁杂推理',W/2,H-30,'#34d399',13);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawVectorBasicScene(t);
+  else if(stepIdx===1)drawOperationScene(t);
+  else if(stepIdx===2)drawVectorBasicScene(t);
+  else if(stepIdx===3)drawCoordSystemScene(t);
+  else if(stepIdx===4)drawNormalVectorScene(t);
+  else if(stepIdx===5)drawLineLineAngleScene(t);
+  else if(stepIdx===6)drawLinePlaneAngleScene(t);
+  else if(stepIdx===7)drawDihedralAngleScene(t);
+  else if(stepIdx===8)drawDistanceScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

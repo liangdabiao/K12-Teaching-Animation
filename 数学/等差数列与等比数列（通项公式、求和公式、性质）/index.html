@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>等差数列与等比数列 · 通项 · 求和 · 性质</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}
+.card.s3::before{background:var(--good)}
+.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}
+.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回数学目录</a>
+  <span class="title">等差数列与等比数列</span>
+  <span class="subtitle">通项公式 · 求和公式 · 性质</span>
+</header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>等差公式三件套</h4><div class="v">aₙ=a₁+(n-1)d<br>Sₙ=n(a₁+aₙ)/2</div></div>
+  <div class="card s2"><div class="num">2</div><h4>等差性质</h4><div class="v">m+n=p+q → aₘ+aₙ=aₚ+a_q<br>等差中项 2b=a+c</div></div>
+  <div class="card s3"><div class="num">3</div><h4>等比公式三件套</h4><div class="v">aₙ=a₁·qⁿ⁻¹<br>Sₙ=a₁(1-qⁿ)/(1-q)</div></div>
+  <div class="card s4"><div class="num">4</div><h4>等比性质</h4><div class="v">m+n=p+q → aₘ·aₙ=aₚ·a_q<br>等比中项 b²=ac</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">等差数列定义</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+  </aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+// ========== 画布与基础工具 ==========
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(520,Math.min(1100,r.width-12));
+  cv.height=Math.max(400,Math.min(600,r.height-12));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+// 圆角矩形
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+// drawText(t,x,y,color,fontSize,align,baseline)
+function drawText(t,x,y,c,fs,a,b){
+  ctx.fillStyle=c||'#9ab0d0';
+  ctx.font=(fs||12)+'px sans-serif';
+  ctx.textAlign=a||'center';
+  ctx.textBaseline=b||'middle';
+  ctx.fillText(t,x,y);
+}
+// 箭头工具
+function drawArrow(x1,y1,x2,y2,color,w){
+  ctx.strokeStyle=color;ctx.lineWidth=w||2;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-8*Math.cos(ang-0.4),y2-8*Math.sin(ang-0.4));
+  ctx.lineTo(x2-8*Math.cos(ang+0.4),y2-8*Math.sin(ang+0.4));
+  ctx.fill();
+}
+
+// ========== 步骤数据 ==========
+const STEPS=[
+  {tag:'等差',name:'等差定义与通项',body:'<strong>等差数列</strong>：从第 2 项起，每一项与它的前一项的<strong>差等于同一个常数</strong> d，d 称为<strong>公差</strong>。<code>aₙ - aₙ₋₁ = d</code>。通项公式 <code>aₙ = a₁ + (n-1)d</code>。',points:{title:'等差三要素',items:['<strong>定义</strong>：aₙ - aₙ₋₁ = d（常数）','<strong>通项</strong>：aₙ = a₁ + (n-1)d','<strong>线性增长</strong>：d&gt;0 递增，d&lt;0 递减','<strong>例</strong>：1,3,5,7,…（a₁=1,d=2）']}},
+  {tag:'等差',name:'等差求和-倒序相加',body:'<strong>倒序相加法</strong>推导前 n 项和：把 Sₙ 正序与倒序两式相加，每对 aₖ+aₙ₊₁₋ₖ = a₁+aₙ，故 2Sₙ = n(a₁+aₙ)。所以 <code>Sₙ = n(a₁+aₙ)/2 = na₁ + n(n-1)d/2</code>。',points:{title:'求和公式',items:['<strong>核心公式</strong>：Sₙ = n(a₁+aₙ)/2','<strong>展开式</strong>：Sₙ = na₁ + n(n-1)d/2','<strong>方法</strong>：正序 + 倒序相加','<strong>关键</strong>：等距项之和相等']}},
+  {tag:'等差',name:'等差性质',body:'等差数列的<strong>下标和性质</strong>：若 m+n=p+q，则 <code>aₘ+aₙ = aₚ+a_q</code>。<strong>等差中项</strong>：若 a,b,c 成等差，则 <code>2b = a+c</code>。<strong>片段和</strong>：Sₙ, S₂ₙ-Sₙ, S₃ₙ-S₂ₙ 仍成等差。',points:{title:'三大性质',items:['<strong>下标和</strong>：m+n=p+q → aₘ+aₙ=aₚ+a_q','<strong>等差中项</strong>：2b = a+c','<strong>片段和等差</strong>：Sₙ, S₂ₙ-Sₙ, S₃ₙ-S₂ₙ','<strong>推广</strong>：每隔 k 项取项仍成等差']}},
+  {tag:'等比',name:'等比定义与通项',body:'<strong>等比数列</strong>：从第 2 项起，每一项与它的前一项的<strong>比等于同一个常数</strong> q（q≠0），q 称为<strong>公比</strong>。<code>aₙ/aₙ₋₁ = q</code>。通项公式 <code>aₙ = a₁·q^(n-1)</code>。',points:{title:'等比三要素',items:['<strong>定义</strong>：aₙ/aₙ₋₁ = q（q≠0）','<strong>通项</strong>：aₙ = a₁·qⁿ⁻¹','<strong>指数增长</strong>：|q|&gt;1 发散，|q|&lt;1 收敛','<strong>例</strong>：1,2,4,8,…（a₁=1,q=2）']}},
+  {tag:'等比',name:'等比求和-错位相减',body:'<strong>错位相减法</strong>推导：Sₙ = a₁+a₁q+…+a₁qⁿ⁻¹，两边同乘 q 得 qSₙ，两式相减得 (1-q)Sₙ = a₁(1-qⁿ)。所以 <code>Sₙ = a₁(1-qⁿ)/(1-q)</code>（q≠1）。q=1 时 <code>Sₙ = na₁</code>。',points:{title:'求和公式',items:['<strong>核心公式</strong>：Sₙ = a₁(1-qⁿ)/(1-q)','<strong>q=1</strong>：Sₙ = na₁','<strong>方法</strong>：错位相减（Sₙ - qSₙ）','<strong>无穷收敛</strong>：|q|&lt;1 时 S=a₁/(1-q)']}},
+  {tag:'等比',name:'等比性质',body:'等比数列的<strong>下标积性质</strong>：若 m+n=p+q，则 <code>aₘ·aₙ = aₚ·a_q</code>。<strong>等比中项</strong>：若 a,b,c 成等比，则 <code>b² = ac</code>。<strong>片段和等比</strong>：Sₙ, S₂ₙ-Sₙ, S₃ₙ-S₂ₙ（q≠1）仍成等比。',points:{title:'三大性质',items:['<strong>下标和</strong>：m+n=p+q → aₘ·aₙ=aₚ·a_q','<strong>等比中项</strong>：b² = ac（b 同号）','<strong>片段和等比</strong>：Sₙ, S₂ₙ-Sₙ, S₃ₙ-S₂ₙ','<strong>注意</strong>：等比中项有两个互为相反数']}},
+  {tag:'对比',name:'数列对比与应用',body:'<strong>等差</strong>是<strong>线性增长</strong>（直线），<strong>等比</strong>是<strong>指数增长</strong>（曲线，|q|&gt;1 时远超等差）。应用：<strong>分期付款、复利</strong>（等比）；<strong>人口增长</strong>（等比）；<strong>放射性衰变</strong>（等比，q&lt;1）；<strong>堆垛、台阶</strong>（等差）。',points:{title:'对比与应用',items:['<strong>增长方式</strong>：等差线性 vs 等比指数','<strong>复利/分期</strong>：等比数列求和','<strong>人口增长</strong>：aₙ=a₁·qⁿ⁻¹','<strong>衰变/半衰期</strong>：q=1/2 等比递减']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ========== 场景 1：等差数列数轴 ==========
+function drawArithDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('等差数列 · 数轴上的线性增长',W/2,30,'#fbbf24',16);
+  const a1=1,d=2,N=8;
+  // 数轴
+  const axisY=H/2+60,leftX=70,rightX=W-70;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(leftX,axisY);ctx.lineTo(rightX,axisY);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(rightX,axisY);ctx.lineTo(rightX-12,axisY-6);ctx.lineTo(rightX-12,axisY+6);ctx.fill();
+  drawText('n',rightX+10,axisY,'#9ab0d0',12,'left');
+  // 高亮当前项（循环）
+  const hi=Math.floor((time*0.8)%N);
+  for(let n=1;n<=N;n++){
+    const an=a1+(n-1)*d;
+    const x=leftX+(n-0.5)*(rightX-leftX)/N;
+    const baseY=axisY-20;
+    const barH=Math.min(an*14,180);
+    const isHi=(n===hi+1);
+    // 竖直柱条
+    ctx.fillStyle=isHi?'#fbbf24':'#06b6d4';
+    ctx.strokeStyle=isHi?'#fde68a':'#67e8f9';ctx.lineWidth=2;
+    roundRect(x-18,baseY-barH,36,barH,4);ctx.fill();ctx.stroke();
+    drawText(an,x,baseY-barH-12,isHi?'#fbbf24':'#67e8f9',12);
+    drawText('a'+n,x,axisY+18,'#9ab0d0',11);
+    // 数轴刻度点
+    ctx.fillStyle='#3a4a6a';
+    ctx.beginPath();ctx.arc(x,axisY,3,0,7);ctx.fill();
+  }
+  // 公差虚线示意
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.setLineDash([4,4]);
+  const x1=leftX+0.5*(rightX-leftX)/N;
+  const x2=leftX+1.5*(rightX-leftX)/N;
+  ctx.beginPath();ctx.moveTo(x1,axisY-40);ctx.lineTo(x2,axisY-40);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('+d',x2-30,axisY-50,'#34d399',12);
+  drawText('公差 d = '+d+' （每项差恒定）',W/2,80,'#34d399',14);
+  drawText('aₙ = a₁ + (n-1)d',W/2,105,'#fff',14);
+}
+
+// ========== 场景 2：倒序相加法 ==========
+function drawArithSumScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('倒序相加法 · 推导 Sₙ',W/2,30,'#fbbf24',16);
+  const a1=2,d=3,N=6;
+  const cycle=(time*0.6)%2;
+  const showSum=cycle>1;
+  // 上排：正序
+  drawText('Sₙ = a₁ + a₂ + … + aₙ',W/2,75,cycle<1?'#06b6d4':'#67e8f9',13);
+  // 下排：倒序
+  drawText('Sₙ = aₙ + aₙ₋₁ + … + a₁',W/2,95,cycle<1?'#a78bfa':'#67e8f9',13);
+  // 列出项
+  const startX=120,colW=(W-240)/N;
+  const topY=170,botY=250;
+  for(let n=1;n<=N;n++){
+    const an=a1+(n-1)*d;
+    const ann=a1+(N-n)*d;
+    const x=startX+(n-0.5)*colW;
+    // 正序项
+    ctx.fillStyle='rgba(6,182,212,0.25)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    roundRect(x-26,topY-18,52,36,6);ctx.fill();ctx.stroke();
+    drawText(an,x,topY,'#67e8f9',14);
+    // 倒序项
+    ctx.fillStyle='rgba(167,139,250,0.25)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+    roundRect(x-26,botY-18,52,36,6);ctx.fill();ctx.stroke();
+    drawText(ann,x,botY,'#c4b5fd',14);
+    // 每对相加 = a1 + aN
+    const pairSum=an+ann;
+    if(showSum){
+      // 配对竖线
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(x,topY+20);ctx.lineTo(x,botY-20);ctx.stroke();
+      drawText(pairSum,x,botY+38,'#fbbf24',13);
+    }
+  }
+  // 推导结果
+  if(showSum){
+    drawText('每对相加 = a₁ + aₙ = '+(a1+(a1+(N-1)*d)),W/2,H-95,'#34d399',14);
+    drawText('2Sₙ = n(a₁+aₙ) → Sₙ = n(a₁+aₙ)/2',W/2,H-65,'#fde68a',15);
+    const Sn=N*(a1+a1+(N-1)*d)/2;
+    drawText('S'+N+' = '+Sn,W/2,H-32,'#34d399',18);
+  }else{
+    drawText('正序 + 倒序，每对之和相等',W/2,H-60,'#9ab0d0',13);
+    drawText('共 n 对，每对 = a₁ + aₙ',W/2,H-32,'#9ab0d0',13);
+  }
+}
+
+// ========== 场景 3：等差性质 ==========
+function drawArithPropScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('等差数列三大性质',W/2,30,'#fbbf24',16);
+  const a1=1,d=2;
+  const props=[
+    {t:'① 下标和性质',f:'m+n=p+q → aₘ+aₙ = aₚ+a_q',c:'#06b6d4',
+      ex:'数列 '+a1+','+(a1+d)+','+(a1+2*d)+','+(a1+3*d)+','+(a1+4*d)+','+(a1+5*d)+','+(a1+6*d)+','+(a1+7*d),
+      ex2:'a₂+a₈ = '+(a1+d)+'+'+(a1+7*d)+' = '+((a1+d)+(a1+7*d))+'；a₄+a₆ = '+(a1+3*d)+'+'+(a1+5*d)+' = '+((a1+3*d)+(a1+5*d))},
+    {t:'② 等差中项',f:'若 a,b,c 成等差 → 2b = a+c',c:'#34d399',
+      ex:'2, 5, 8 成等差：2×5 = 2+8 = 10',
+      ex2:'b = (a+c)/2 是 a、c 的等差中项'},
+    {t:'③ 片段和等差',f:'Sₙ, S₂ₙ-Sₙ, S₃ₙ-S₂ₙ 成等差',c:'#fbbf24',
+      ex:'S₁=1, S₂-S₁=3, S₃-S₂=5（公差 d=2）',
+      ex2:'即第 n 段之和构成新的等差数列'},
+  ];
+  props.forEach((p,i)=>{
+    const y=65+i*128;
+    ctx.fillStyle=p.c+'22';ctx.strokeStyle=p.c;ctx.lineWidth=2;
+    roundRect(50,y,W-100,110,10);ctx.fill();ctx.stroke();
+    drawText(p.t,75,y+22,p.c,15,'left');
+    ctx.font='bold 14px serif';ctx.fillStyle='#fff';ctx.textAlign='left';
+    ctx.fillText(p.f,75,y+48);
+    drawText(p.ex,75,y+72,'#9ab0d0',11,'left');
+    drawText(p.ex2,75,y+92,'#9ab0d0',11,'left');
+  });
+  // 闪烁强调
+  const blink=Math.sin(time*4)>0;
+  if(blink){
+    drawText('★ 核心性质：等差对应"和"相等 ★',W/2,H-18,'#fbbf24',13);
+  }
+}
+
+// ========== 场景 4：等比数列数轴 ==========
+function drawGeomDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('等比数列 · 数轴上的指数增长',W/2,30,'#fbbf24',16);
+  const a1=1,q=2,N=8;
+  const axisY=H-60,leftX=70,rightX=W-70;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(leftX,axisY);ctx.lineTo(rightX,axisY);ctx.stroke();
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(rightX,axisY);ctx.lineTo(rightX-12,axisY-6);ctx.lineTo(rightX-12,axisY+6);ctx.fill();
+  drawText('n',rightX+10,axisY,'#9ab0d0',12,'left');
+  const hi=Math.floor((time*0.8)%N);
+  const maxV=Math.pow(q,N-1);
+  for(let n=1;n<=N;n++){
+    const an=a1*Math.pow(q,n-1);
+    const x=leftX+(n-0.5)*(rightX-leftX)/N;
+    const baseY=axisY-10;
+    const barH=Math.min((an/maxV)*200,200);
+    const isHi=(n===hi+1);
+    ctx.fillStyle=isHi?'#fbbf24':'#34d399';
+    ctx.strokeStyle=isHi?'#fde68a':'#6ee7b7';ctx.lineWidth=2;
+    roundRect(x-18,baseY-barH,36,barH,4);ctx.fill();ctx.stroke();
+    drawText(an,x,baseY-barH-12,isHi?'#fbbf24':'#6ee7b7',11);
+    drawText('a'+n,x,axisY+18,'#9ab0d0',11);
+    ctx.fillStyle='#3a4a6a';
+    ctx.beginPath();ctx.arc(x,axisY,3,0,7);ctx.fill();
+  }
+  drawText('公比 q = '+q+' （每项比恒定）',W/2,80,'#34d399',14);
+  drawText('aₙ = a₁·q^(n-1)',W/2,105,'#fff',14);
+  drawText('指数增长（远超等差线性增长）',W/2,H-25,'#f87171',12);
+}
+
+// ========== 场景 5：错位相减法 ==========
+function drawGeomSumScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('错位相减法 · 推导 Sₙ',W/2,30,'#fbbf24',16);
+  const a1=1,q=2,N=6;
+  const cycle=(time*0.5)%2;
+  const showSub=cycle>1;
+  // S_n
+  drawText('Sₙ = a₁ + a₁q + a₁q² + … + a₁qⁿ⁻¹',W/2,70,'#06b6d4',13);
+  // qS_n
+  drawText('qSₙ =      a₁q + a₁q² + … + a₁qⁿ⁻¹ + a₁qⁿ',W/2,95,'#a78bfa',13);
+  const startX=110,colW=(W-220)/(N+1);
+  const topY=170,botY=250;
+  // 正序项
+  for(let n=0;n<N;n++){
+    const v=a1*Math.pow(q,n);
+    const x=startX+n*colW+colW/2;
+    ctx.fillStyle='rgba(6,182,212,0.25)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    roundRect(x-24,topY-18,48,36,6);ctx.fill();ctx.stroke();
+    drawText(v,x,topY,'#67e8f9',12);
+  }
+  // qS_n 项（错位）
+  for(let n=1;n<=N;n++){
+    const v=a1*Math.pow(q,n);
+    const x=startX+(n-1)*colW+colW/2+colW;
+    ctx.fillStyle='rgba(167,139,250,0.25)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+    roundRect(x-24,botY-18,48,36,6);ctx.fill();ctx.stroke();
+    drawText(v,x,botY,'#c4b5fd',12);
+  }
+  // 抵消连线
+  if(showSub){
+    for(let n=0;n<N-1;n++){
+      const x1=startX+n*colW+colW/2;
+      const x2=startX+n*colW+colW/2+colW;
+      ctx.strokeStyle='rgba(248,113,113,0.4)';ctx.lineWidth=1;
+      ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(x1,topY+18);ctx.lineTo(x2,botY-18);ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    drawText('Sₙ - qSₙ = a₁ - a₁qⁿ  （中间项全部抵消）',W/2,H-100,'#fbbf24',14);
+    drawText('(1-q)Sₙ = a₁(1-qⁿ)',W/2,H-70,'#fde68a',15);
+    const Sn=a1*(1-Math.pow(q,N))/(1-q);
+    drawText('Sₙ = a₁(1-qⁿ)/(1-q) = '+Sn,W/2,H-35,'#34d399',16);
+  }else{
+    drawText('两式相减，中间项全部抵消',W/2,H-60,'#9ab0d0',13);
+    drawText('只留下首项 a₁ 与末项 a₁qⁿ',W/2,H-32,'#9ab0d0',13);
+  }
+}
+
+// ========== 场景 6：等比性质 ==========
+function drawGeomPropScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('等比数列三大性质',W/2,30,'#fbbf24',16);
+  const props=[
+    {t:'① 下标和性质',f:'m+n=p+q → aₘ·aₙ = aₚ·a_q',c:'#34d399',
+      ex:'数列 1,2,4,8,16,32',
+      ex2:'a₁·a₅ = 1×16 = 16；a₂·a₄ = 2×8 = 16'},
+    {t:'② 等比中项',f:'若 a,b,c 成等比 → b² = a·c',c:'#fbbf24',
+      ex:'2, 6, 18 成等比：6² = 2×18 = 36',
+      ex2:'b = ±√(ac)，等比中项有两个（互为相反数）'},
+    {t:'③ 片段和等比',f:'Sₙ, S₂ₙ-Sₙ, S₃ₙ-S₂ₙ 成等比',c:'#06b6d4',
+      ex:'q≠1 时片段和仍成等比（公比 qⁿ）',
+      ex2:'注意 q=1 时片段和为 na₁, na₁, na₁（平凡）'},
+  ];
+  props.forEach((p,i)=>{
+    const y=65+i*128;
+    ctx.fillStyle=p.c+'22';ctx.strokeStyle=p.c;ctx.lineWidth=2;
+    roundRect(50,y,W-100,110,10);ctx.fill();ctx.stroke();
+    drawText(p.t,75,y+22,p.c,15,'left');
+    ctx.font='bold 14px serif';ctx.fillStyle='#fff';ctx.textAlign='left';
+    ctx.fillText(p.f,75,y+48);
+    drawText(p.ex,75,y+72,'#9ab0d0',11,'left');
+    drawText(p.ex2,75,y+92,'#9ab0d0',11,'left');
+  });
+  const blink=Math.sin(time*4)>0;
+  if(blink){
+    drawText('★ 核心性质：等比对应"积"相等 ★',W/2,H-18,'#fbbf24',13);
+  }
+}
+
+// ========== 场景 7：等差 vs 等比 对比 ==========
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('等差 vs 等比 · 增长方式对比',W/2,30,'#fbbf24',16);
+  const a1=1,d=2,q=2,N=10;
+  // 坐标系
+  const ox=80,oy=H-80,axW=W-160,axH=H-180;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+axW,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-axH);ctx.stroke();
+  drawText('n',ox+axW+5,oy,'#9ab0d0',12);
+  drawText('aₙ',ox-15,oy-axH,'#9ab0d0',12);
+  // n 刻度
+  for(let n=1;n<=N;n++){
+    const x=ox+(n-1)*axW/(N-1);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,oy-3);ctx.lineTo(x,oy+3);ctx.stroke();
+    drawText(n,x,oy+18,'#5a6a8a',10);
+  }
+  const maxV=Math.max(a1+(N-1)*d,a1*Math.pow(q,N-1));
+  // 等差曲线（直线）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let n=1;n<=N;n++){
+    const an=a1+(n-1)*d;
+    const x=ox+(n-1)*axW/(N-1);
+    const y=oy-(an/maxV)*axH;
+    if(n===1)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // 等比曲线（指数）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let n=1;n<=N;n++){
+    const an=a1*Math.pow(q,n-1);
+    const x=ox+(n-1)*axW/(N-1);
+    const y=oy-(an/maxV)*axH;
+    if(n===1)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 当前点（循环高亮）
+  const cur=(Math.floor(time*1.5)%N)+1;
+  const xC=ox+(cur-1)*axW/(N-1);
+  const yArith=oy-((a1+(cur-1)*d)/maxV)*axH;
+  const yGeom=oy-((a1*Math.pow(q,cur-1))/maxV)*axH;
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(xC,yArith,6,0,7);ctx.fill();
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(xC,yGeom,6,0,7);ctx.fill();
+  drawText('等差 a'+cur+'='+(a1+(cur-1)*d),xC,yArith-15,'#06b6d4',11);
+  drawText('等比 a'+cur+'='+(a1*Math.pow(q,cur-1)),xC,yGeom-15,'#34d399',11);
+  // 图例
+  drawText('— 等差（线性）',W-180,80,'#06b6d4',12,'left');
+  drawText('— 等比（指数）',W-180,100,'#34d399',12,'left');
+  // 应用提示
+  drawText('应用：分期付款/复利(等比) · 人口增长(等比) · 放射性衰变(等比 q<1) · 堆垛/台阶(等差)',W/2,H-20,'#9ab0d0',12);
+}
+
+// ========== 主绘制 ==========
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawArithDefScene(t);
+  else if(stepIdx===1)drawArithSumScene(t);
+  else if(stepIdx===2)drawArithPropScene(t);
+  else if(stepIdx===3)drawGeomDefScene(t);
+  else if(stepIdx===4)drawGeomSumScene(t);
+  else if(stepIdx===5)drawGeomPropScene(t);
+  else drawCompareScene(t);
+}
+
+// ========== 步骤同步 ==========
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+// ========== 更新循环 ==========
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+// ========== 控件绑定 ==========
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+// ========== 步骤栏构建 ==========
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

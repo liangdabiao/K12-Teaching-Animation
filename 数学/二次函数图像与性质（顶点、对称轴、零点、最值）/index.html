@@ -37,6 +37,7 @@ canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-wi
 button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
 button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
 .controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.pval{color:var(--accent2);font-size:12px;margin-left:4px;font-family:Consolas,Monaco,monospace}
 input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
 @media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
@@ -58,9 +59,9 @@ input[type=range]{accent-color:var(--accent)}
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
-  <label>a <input id="pa" type="range" min="-2" max="2" step="0.1" value="1"></label>
-  <label>b <input id="pb" type="range" min="-4" max="4" step="0.2" value="0"></label>
-  <label>c <input id="pc" type="range" min="-4" max="4" step="0.2" value="-3"></label>
+  <label>a <input id="pa" type="range" min="-2" max="2" step="0.1" value="1"><span id="paV" class="pval"></span></label>
+  <label>b <input id="pb" type="range" min="-4" max="4" step="0.2" value="0"><span id="pbV" class="pval"></span></label>
+  <label>c <input id="pc" type="range" min="-4" max="4" step="0.2" value="-3"><span id="pcV" class="pval"></span></label>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
   <span id="status" class="status">点击播放或选择步骤</span>
 </div>
@@ -75,9 +76,9 @@ function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'
 let A=1,B=0,C=-3;
 const paEl=document.getElementById('pa'),pbEl=document.getElementById('pb'),pcEl=document.getElementById('pc');
 function readParams(){A=parseFloat(paEl.value);B=parseFloat(pbEl.value);C=parseFloat(pcEl.value);
-  paEl.nextSibling.textContent=' a='+A.toFixed(1)+' ';
-  pbEl.nextSibling.textContent=' b='+B.toFixed(1)+' ';
-  pcEl.nextSibling.textContent=' c='+C.toFixed(1)+' ';
+  document.getElementById('paV').textContent=' a='+A.toFixed(1)+' ';
+  document.getElementById('pbV').textContent=' b='+B.toFixed(1)+' ';
+  document.getElementById('pcV').textContent=' c='+C.toFixed(1)+' ';
 }
 paEl.oninput=()=>{readParams();draw();};pbEl.oninput=()=>{readParams();draw();};pcEl.oninput=()=>{readParams();draw();};
 

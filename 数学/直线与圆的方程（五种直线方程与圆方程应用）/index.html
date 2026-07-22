@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>直线与圆的方程 · 五种直线方程 · 圆方程应用</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">直线与圆的方程</span><span class="subtitle">五种直线方程 · 圆方程 · 位置关系</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>直线五种方程</h4><div class="v">点斜式·斜截式·两点式<br>截距式·一般式 Ax+By+C=0</div></div>
+  <div class="card s2"><div class="num">2</div><h4>两直线关系</h4><div class="v">平行 k₁=k₂·垂直 k₁k₂=-1<br>相交 k₁≠k₂</div></div>
+  <div class="card s3"><div class="num">3</div><h4>距离公式</h4><div class="v">点到线 d=|Ax₀+By₀+C|/√(A²+B²)<br>平行线距 d=|C₁-C₂|/√(A²+B²)</div></div>
+  <div class="card s4"><div class="num">4</div><h4>圆与点/线</h4><div class="v">标准 (x-a)²+(y-b)²=r²<br>相离·相切·相交</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">直线方程</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <label>k <input id="paramK" type="range" min="-3" max="3" step="0.1" value="1"></label>
+  <label>r <input id="paramR" type="range" min="1" max="6" step="0.1" value="3"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+// 坐标系绘制：原点在，1 单位 = unit 像素，y 轴向上为正
+function drawAxes(ox,oy,unit,xMin,xMax,yMin,yMax){
+  // 半透明网格
+  ctx.strokeStyle='#15243e';ctx.lineWidth=1;
+  for(let i=xMin;i<=xMax;i++){
+    ctx.beginPath();ctx.moveTo(ox+i*unit,oy+yMin*unit);ctx.lineTo(ox+i*unit,oy+yMax*unit);ctx.stroke();
+  }
+  for(let i=yMin;i<=yMax;i++){
+    ctx.beginPath();ctx.moveTo(ox+xMin*unit,oy+i*unit);ctx.lineTo(ox+xMax*unit,oy+i*unit);ctx.stroke();
+  }
+  // 坐标轴主线
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox+xMin*unit,oy);ctx.lineTo(ox+xMax*unit,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy+yMin*unit);ctx.lineTo(ox,oy+yMax*unit);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#5a6a8a';
+  ctx.beginPath();ctx.moveTo(ox+xMax*unit,oy);ctx.lineTo(ox+xMax*unit-8,oy-4);ctx.lineTo(ox+xMax*unit-8,oy+4);ctx.fill();
+  ctx.beginPath();ctx.moveTo(ox,oy+yMax*unit);ctx.lineTo(ox-4,oy+yMax*unit-8);ctx.lineTo(ox+4,oy+yMax*unit-8);ctx.fill();
+  drawText('x',ox+xMax*unit+10,oy,'#9ab0d0',13);drawText('y',ox,oy+yMax*unit+12,'#9ab0d0',13);
+  drawText('O',ox-10,oy+12,'#9ab0d0',12);
+  // 刻度
+  ctx.strokeStyle='#2a3a5a';ctx.lineWidth=1;ctx.fillStyle='#5a6a8a';ctx.font='10px sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+  for(let i=xMin;i<=xMax;i++){if(i===0)continue;ctx.beginPath();ctx.moveTo(ox+i*unit,oy-3);ctx.lineTo(ox+i*unit,oy+3);ctx.stroke();ctx.fillText(i,ox+i*unit,oy+5);}
+  ctx.textAlign='right';ctx.textBaseline='middle';
+  for(let i=yMin;i<=yMax;i++){if(i===0)continue;ctx.beginPath();ctx.moveTo(ox-3,oy-i*unit);ctx.lineTo(ox+3,oy-i*unit);ctx.stroke();ctx.fillText(i,ox-6,oy-i*unit);}
+}
+
+// 辅助：绘制带光晕的直线（过 y=kx+b 全宽）
+function drawGlowLine(ox,oy,unit,k,b,color,xMin,xMax){
+  ctx.strokeStyle=color;ctx.lineWidth=3;ctx.shadowColor=color;ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(ox+xMin*unit,oy-(k*xMin+b)*unit);ctx.lineTo(ox+xMax*unit,oy-(k*xMax+b)*unit);ctx.stroke();
+  ctx.shadowBlur=0;
+}
+
+// 辅助：绘制实心点 + 标签
+function drawPoint(x,y,color,label,ox,oy,unit){
+  ctx.fillStyle=color;ctx.beginPath();ctx.arc(ox+x*unit,oy-y*unit,6,0,7);ctx.fill();
+  if(label)drawText(label,ox+x*unit+12,oy-y*unit-10,color,12,'left');
+}
+
+const STEPS=[
+  {tag:'直线',name:'五种直线方程',body:'<strong>直线方程</strong>刻画平面上直线所有点。常见五种形式：<code>点斜式 y-y₀=k(x-x₀)</code>、<code>斜截式 y=kx+b</code>、<code>两点式</code>、<code>截距式 x/a+y/b=1</code>、<strong>一般式</strong> <code>Ax+By+C=0</code>。',points:{title:'五种形式对比',items:['<strong>点斜式</strong>：需一点 (x₀,y₀) 和斜率 k','<strong>斜截式</strong>：y=kx+b，b 为 y 轴截距','<strong>两点式</strong>：过 (x₁,y₁)、(x₂,y₂) 两点','<strong>截距式</strong>：a、b 为 x、y 轴截距','<strong>一般式</strong>：Ax+By+C=0（A、B 不同时为 0）']}},
+  {tag:'直线',name:'斜率与倾斜角',body:'<strong>倾斜角 α</strong>：x 轴正向逆时针转至直线的最小角（0≤α<180°）。<strong>斜率</strong> <code>k=tan α</code>，表示直线陡缓。α=90° 时斜率<strong>不存在</strong>。',points:{title:'k 与 α 关系',items:['<strong>k>0</strong>：α 锐角，递增','<strong>k<0</strong>：α 钝角，递减','<strong>k=0</strong>：α=0°，水平线','<strong>k 不存在</strong>：α=90°，竖直线']}},
+  {tag:'关系',name:'两直线位置关系',body:'两直线 <code>y=k₁x+b₁</code>、<code>y=k₂x+b₂</code> 比较 k、b：<strong>平行</strong>需 k₁=k₂ 且 b₁≠b₂；<strong>垂直</strong>需 k₁k₂=-1；<strong>相交</strong>只需 k₁≠k₂；k₁=k₂ 且 b₁=b₂ 则<strong>重合</strong>。',points:{title:'四种关系判定',items:['<strong>平行</strong>：k₁=k₂, b₁≠b₂','<strong>重合</strong>：k₁=k₂, b₁=b₂','<strong>垂直</strong>：k₁k₂ = -1','<strong>相交</strong>：k₁≠k₂']}},
+  {tag:'距离',name:'距离公式',body:'<strong>点到直线</strong>距离：<code>d = |Ax₀+By₀+C| / √(A²+B²)</code>。<strong>两平行线</strong>距离：化为同 A、B 后 <code>d = |C₁-C₂| / √(A²+B²)</code>。',points:{title:'公式要点',items:['<strong>点 P(x₀,y₀)</strong>：代入直线方程取绝对值','<strong>分母</strong>：√(A²+B²) 为法向量长度','<strong>平行线</strong>：A、B 必须先化为相同','<strong>两点距离</strong>：√((x₂-x₁)²+(y₂-y₁)²)']}},
+  {tag:'圆',name:'圆的两种方程',body:'<strong>标准方程</strong>：<code>(x-a)²+(y-b)²=r²</code>，圆心 (a,b)、半径 r。<strong>一般方程</strong>：<code>x²+y²+Dx+Ey+F=0</code>，条件 <strong>D²+E²-4F>0</strong>，圆心 (-D/2,-E/2)。',points:{title:'圆方程对比',items:['<strong>标准式</strong>：直接读出圆心、半径','<strong>一般式</strong>：配方可化为标准式','<strong>圆心</strong>：(-D/2, -E/2)','<strong>半径</strong>：r=½√(D²+E²-4F)','<strong>退化</strong>：D²+E²-4F=0 为点，<0 不存在']}},
+  {tag:'圆',name:'点与圆位置关系',body:'设点 P(x₀,y₀)，圆 (x-a)²+(y-b)²=r²，<strong>圆心距</strong> d=|PC|。比较 d 与 r：<strong>圆内</strong> d<r，<strong>圆上</strong> d=r，<strong>圆外</strong> d>r。',points:{title:'三种位置',items:['<strong>点在圆内</strong>：d < r','<strong>点在圆上</strong>：d = r（在圆周上）','<strong>点在圆外</strong>：d > r','<strong>d 计算</strong>：两点距离公式']}},
+  {tag:'圆',name:'直线与圆位置关系',body:'<strong>几何法</strong>：圆心到直线距离 d 与半径 r 比较。<strong>相离</strong> d>r、<strong>相切</strong> d=r、<strong>相交</strong> d<r。<strong>代数法</strong>：联立方程用判别式 Δ。',points:{title:'三种位置判定',items:['<strong>相离</strong>：d > r（无交点）','<strong>相切</strong>：d = r（1 个交点）','<strong>相交</strong>：d < r（2 个交点）','<strong>代数法</strong>：Δ<0 相离，=0 相切，>0 相交']}},
+  {tag:'计算',name:'典型应用题',body:'例：圆 x²+y²=4，直线 y=x+1。圆心 (0,0) 到直线 x-y+1=0 距离 d=1/√2<2=r，故<strong>相交</strong>。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：写圆心、半径','<strong>步骤2</strong>：直线化一般式','<strong>步骤3</strong>：求圆心到直线距离','<strong>步骤4</strong>：比较 d 与 r 下结论']}},
+  {tag:'总结',name:'核心速记',body:'直线 5 种方程 + 圆 2 种方程 + 距离公式构成解析几何基础。<strong>关键思想</strong>：用坐标、方程刻画几何，<strong>数形结合</strong>。',points:{title:'三句话总结',items:['<strong>直线</strong>：5 种形式互化','<strong>圆</strong>：标准式直读圆心半径','<strong>位置关系</strong>：距离公式比较','<strong>核心方法</strong>：数形结合']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+// ===== 场景1：五种直线方程 =====
+function drawLineFormsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('直线的五种方程',W/2,30,'#fbbf24',16);
+  const ox=W/2,cy=H/2+20,unit=40;
+  drawAxes(ox,cy,unit,-6,6,-4,4);
+  // 动态斜率 k 与截距 b
+  const k=1.2+0.6*Math.sin(time*0.6);
+  const b=-1+0.5*Math.cos(time*0.5);
+  // 绘制直线 y=kx+b（用辅助函数绘制带光晕的直线）
+  drawGlowLine(ox,cy,unit,k,b,'#06b6d4',-6,6);
+  // y 轴截距点 (0,b)
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(ox,cy-b*unit,6,0,7);ctx.fill();
+  drawText('(0,b), b='+b.toFixed(2),ox+35,cy-b*unit,'#fbbf24',12,'left');
+  // 一般式关键点 (x₀,y₀)
+  const x0=1,y0=k*x0+b;
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(ox+x0*unit,cy-y0*unit,6,0,7);ctx.fill();
+  drawText('(x₀,y₀)',ox+x0*unit+15,cy-y0*unit-10,'#34d399',12,'left');
+  // x 轴截距点 (-b/k, 0)
+  if(Math.abs(k)>0.01){
+    const xi=-b/k;
+    if(Math.abs(xi)<6){
+      ctx.fillStyle='#fb923c';ctx.beginPath();ctx.arc(ox+xi*unit,cy,6,0,7);ctx.fill();
+      drawText('x 截距',ox+xi*unit,cy+18,'#fb923c',11);
+    }
+  }
+  // 五种方程公式列表（底部展示）
+  const forms=[
+    {t:'点斜式',f:'y-y₀=k(x-x₀)',c:'#34d399'},
+    {t:'斜截式',f:'y=kx+b',c:'#06b6d4'},
+    {t:'两点式',f:'(y-y₁)/(y₂-y₁)=(x-x₁)/(x₂-x₁)',c:'#a78bfa'},
+    {t:'截距式',f:'x/a+y/b=1',c:'#fb923c'},
+    {t:'一般式',f:'Ax+By+C=0',c:'#f87171'},
+  ];
+  forms.forEach((m,i)=>{
+    const y=H-110+i*18;
+    if(y>H-30)return;
+    drawText('●',40,y,m.c,11,'left');
+    drawText(m.t+'：'+m.f,55,y,'#fff',11,'left');
+  });
+  drawText('当前 k='+k.toFixed(2)+'  b='+b.toFixed(2)+'  (可拖动参数滑块)',W/2,H-15,'#9ab0d0',12);
+}
+
+// ===== 场景2：斜率与倾斜角 =====
+function drawSlopeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('斜率 k 与倾斜角 α',W/2,30,'#fbbf24',16);
+  const ox=W/2-60,cy=H/2+30,unit=40;
+  drawAxes(ox,cy,unit,-6,6,-3,3);
+  // 倾斜角动态变化 0-150°
+  const alpha=(60+60*Math.sin(time*0.4))*Math.PI/180;
+  const k=Math.tan(alpha);
+  // 画角度弧
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(ox,cy,35,0,-alpha,true);ctx.stroke();
+  drawText('α='+(alpha*180/Math.PI).toFixed(0)+'°',ox+45,cy-18,'#fbbf24',13,'left');
+  // 直线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  const L=5;
+  const dx=Math.cos(alpha)*L*unit,dy=Math.sin(alpha)*L*unit;
+  ctx.beginPath();ctx.moveTo(ox,cy);ctx.lineTo(ox+dx,cy-dy);ctx.stroke();
+  ctx.shadowBlur=0;
+  // 倾斜角参考线（x 轴正方向）
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(ox,cy);ctx.lineTo(ox+L*unit,cy);ctx.stroke();ctx.setLineDash([]);
+  // k=tan α 显示
+  drawText('k = tan α = '+k.toFixed(2),W/2,H-85,'#34d399',14);
+  drawText('α=90° 时 k 不存在（竖直线）',W/2,H-60,'#f87171',12);
+  drawText('k>0：α 锐角（↗）；k<0：α 钝角（↘）',W/2,H-38,'#9ab0d0',12);
+  drawText('斜率 k = (y₂-y₁)/(x₂-x₁)（两点定斜率）',W/2,H-18,'#a78bfa',11);
+}
+
+// ===== 场景3：两直线位置关系 =====
+function drawRelScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('两直线位置关系',W/2,30,'#fbbf24',16);
+  const ox=W/2,cy=H/2+20,unit=40;
+  drawAxes(ox,cy,unit,-6,6,-4,4);
+  const phase=time*0.5;
+  // 三种关系轮换：0=平行，1=相交，2=垂直
+  const mode=Math.floor((phase%3));
+  const sub=phase-Math.floor(phase);
+  let k1=0.6,b1=0.5,k2,b2;
+  if(mode===0){k2=0.6;b2=1.5;}
+  else if(mode===1){k2=-0.4+Math.sin(time)*0.3;b2=-0.5;}
+  else{k2=-1/0.6;b2=0;}
+  // 直线1
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(ox-6*unit,cy-(k1*-6+b1)*unit);ctx.lineTo(ox+6*unit,cy-(k1*6+b1)*unit);ctx.stroke();
+  drawText('L₁: y='+k1.toFixed(2)+'x+'+b1.toFixed(2),60,80,'#06b6d4',12,'left');
+  // 直线2
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(ox-6*unit,cy-(k2*-6+b2)*unit);ctx.lineTo(ox+6*unit,cy-(k2*6+b2)*unit);ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('L₂: y='+k2.toFixed(2)+'x+'+b2.toFixed(2),60,100,'#fbbf24',12,'left');
+  // 交点
+  if(mode!==0){
+    const xi=(b2-b1)/(k1-k2),yi=k1*xi+b1;
+    if(Math.abs(xi)<6&&Math.abs(yi)<4){
+      ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(ox+xi*unit,cy-yi*unit,7,0,7);ctx.fill();
+      drawText('交点('+xi.toFixed(1)+','+yi.toFixed(1)+')',ox+xi*unit,cy-yi*unit-18,'#f87171',12);
+    }
+  }
+  const labels=['平行：k₁=k₂, b₁≠b₂','相交：k₁≠k₂','垂直：k₁k₂=-1'];
+  const colors=['#34d399','#a78bfa','#f87171'];
+  drawText('★ '+labels[mode],W/2,H-50,colors[mode],14);
+  drawText('k₁k₂='+(k1*k2).toFixed(2)+'   k₁-k₂='+(k1-k2).toFixed(2),W/2,H-28,'#9ab0d0',12);
+  drawText('重合：k₁=k₂ 且 b₁=b₂',W/2,H-10,'#5a6a8a',11);
+}
+
+// ===== 场景4：距离公式（点到直线 + 两平行线距离） =====
+function drawDistScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('距离公式 · 点到直线',W/2,30,'#fbbf24',16);
+  const ox=W/2,cy=H/2+30,unit=40;
+  drawAxes(ox,cy,unit,-6,6,-3,3);
+  // 直线 L: 2x+y-2=0
+  const A=2,B=1,C=-2;
+  const k=-A/B,bb=-C/B;
+  drawGlowLine(ox,cy,unit,k,bb,'#06b6d4',-6,6);
+  drawText('L: 2x+y-2=0',60,80,'#06b6d4',13,'left');
+  // 动点 P（沿椭圆轨迹运动）
+  const px=2*Math.cos(time*0.6),py=2*Math.sin(time*0.6)+2;
+  drawPoint(px,py,'#fbbf24','P('+px.toFixed(1)+','+py.toFixed(1)+')',ox,cy,unit);
+  // 距离 d 与垂足
+  const d=Math.abs(A*px+B*py+C)/Math.sqrt(A*A+B*B);
+  const t0=-(A*px+B*py+C)/(A*A+B*B);
+  const hx=px+A*t0,hy=py+B*t0;
+  // 距离垂线（红色虚线）
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(ox+px*unit,cy-py*unit);ctx.lineTo(ox+hx*unit,cy-hy*unit);ctx.stroke();ctx.setLineDash([]);
+  // 垂足标记
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(ox+hx*unit,cy-hy*unit,5,0,7);ctx.fill();
+  drawText('垂足',ox+hx*unit+8,cy-hy*unit+12,'#34d399',11,'left');
+  // 数值显示
+  drawText('d = '+d.toFixed(3),W/2,H-55,'#34d399',15);
+  drawText('公式：d = |Ax₀+By₀+C| / √(A²+B²)',W/2,H-32,'#9ab0d0',12);
+  drawText('法向量 n=(A,B)=('+A+','+B+')',W/2,H-12,'#a78bfa',11);
+}
+
+// ===== 场景5：圆的两种方程 =====
+function drawCircleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('圆的两种方程',W/2,30,'#fbbf24',16);
+  const ox=W/2-100,cy=H/2+20,unit=40;
+  drawAxes(ox,cy,unit,-6,6,-4,4);
+  const a=1+0.5*Math.sin(time*0.5),b=0.5+0.3*Math.cos(time*0.4);
+  const r=2+0.4*Math.sin(time*0.7);
+  // 圆
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(ox+a*unit,cy-b*unit,r*unit,0,7);ctx.stroke();
+  ctx.fillStyle='rgba(6,182,212,0.08)';ctx.fill();
+  ctx.shadowBlur=0;
+  // 圆心
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(ox+a*unit,cy-b*unit,5,0,7);ctx.fill();
+  drawText('C('+a.toFixed(1)+','+b.toFixed(1)+')',ox+a*unit+10,cy-b*unit-12,'#fbbf24',12,'left');
+  // 半径线
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox+a*unit,cy-b*unit);ctx.lineTo(ox+a*unit+r*unit,cy-b*unit);ctx.stroke();
+  drawText('r='+r.toFixed(2),ox+a*unit+r*unit/2,cy-b*unit-14,'#34d399',12);
+  // 公式
+  drawText('标准方程：(x-a)²+(y-b)²=r²',W/2,H-70,'#06b6d4',14);
+  drawText('一般方程：x²+y²+Dx+Ey+F=0（D²+E²-4F>0）',W/2,H-45,'#a78bfa',13);
+  drawText('圆心(-D/2,-E/2)，半径 r=½√(D²+E²-4F)',W/2,H-25,'#9ab0d0',12);
+  drawText('当前 a='+a.toFixed(2)+'  b='+b.toFixed(2)+'  r='+r.toFixed(2),W/2,H-8,'#34d399',11);
+}
+
+// ===== 场景6：点与圆位置关系 =====
+function drawPointCircleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('点与圆位置关系',W/2,30,'#fbbf24',16);
+  const ox=W/2,cy=H/2+20,unit=40;
+  drawAxes(ox,cy,unit,-6,6,-4,4);
+  const a=0,b=0,r=3;
+  // 圆
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(ox+a*unit,cy-b*unit,r*unit,0,7);ctx.stroke();
+  ctx.fillStyle='rgba(6,182,212,0.06)';ctx.fill();ctx.shadowBlur=0;
+  // 圆心
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(ox,cy,5,0,7);ctx.fill();
+  // 动点轨迹
+  const ang=time*0.5;
+  const dist=2+1.8*Math.sin(time*0.7);
+  const px=dist*Math.cos(ang),py=dist*Math.sin(ang);
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(ox+px*unit,cy-py*unit,7,0,7);ctx.fill();
+  drawText('P',ox+px*unit+10,cy-py*unit,'#f87171',13,'left');
+  // 连线
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(ox,cy);ctx.lineTo(ox+px*unit,cy-py*unit);ctx.stroke();ctx.setLineDash([]);
+  const relation=dist<r?'圆内':(dist===r?'圆上':'圆外');
+  const rc=dist<r?'#34d399':(Math.abs(dist-r)<0.05?'#fbbf24':'#f87171');
+  drawText('d = |PC| = '+dist.toFixed(2),W/2,H-75,'#34d399',14);
+  drawText('r = '+r,W/2,H-55,'#06b6d4',13);
+  drawText('结论：点在 '+relation,W/2,H-32,rc,15);
+  drawText('d=√((x₀-a)²+(y₀-b)²) 两点距离公式',W/2,H-12,'#9ab0d0',11);
+  drawText('判据：d<r 圆内；d=r 圆上；d>r 圆外',W/2,H+8,'#5a6a8a',11);
+}
+
+// ===== 场景7：直线与圆位置关系（相离·相切·相交） =====
+function drawLineCircleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('直线与圆位置关系',W/2,30,'#fbbf24',16);
+  const ox=W/2,cy=H/2+30,unit=40;
+  drawAxes(ox,cy,unit,-6,6,-4,4);
+  const r=2.5;
+  // 圆 x²+y²=r²
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(ox,cy,r*unit,0,7);ctx.stroke();
+  ctx.fillStyle='rgba(6,182,212,0.06)';ctx.fill();ctx.shadowBlur=0;
+  drawText('圆 x²+y²='+r+'²',60,80,'#06b6d4',12,'left');
+  // 动态直线 y=kx+b，b 随时间动画扫描
+  const b=1.5+2.8*Math.sin(time*0.6);
+  const k=0.6;
+  const A=k,B=-1,C=b; // 一般式：kx - y + b = 0
+  drawGlowLine(ox,cy,unit,k,b,'#fbbf24',-6,6);
+  drawText('L: y='+k.toFixed(2)+'x+'+b.toFixed(2),60,100,'#fbbf24',12,'left');
+  // 圆心到直线距离 d
+  const d=Math.abs(C)/Math.sqrt(A*A+B*B);
+  // 垂足（圆心 (0,0) 到直线的垂足）
+  const t0=-C/(A*A+B*B);
+  const hx=A*t0,hy=B*t0;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(ox,cy);ctx.lineTo(ox+hx*unit,cy-hy*unit);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(ox+hx*unit,cy-hy*unit,4,0,7);ctx.fill();
+  // 判定三种位置关系
+  let rel,rc;
+  if(d>r+0.02){rel='相离（0 个交点）';rc='#f87171';}
+  else if(Math.abs(d-r)<0.05){rel='相切（1 个交点）';rc='#fbbf24';}
+  else{rel='相交（2 个交点）';rc='#34d399';}
+  drawText('d = '+d.toFixed(2)+'   r = '+r,W/2,H-65,'#9ab0d0',13);
+  drawText('★ '+rel,W/2,H-40,rc,15);
+  drawText('几何法：比较 d 与 r ；代数法：用判别式 Δ',W/2,H-18,'#9ab0d0',11);
+}
+
+// ===== 场景8：典型计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型应用 · 直线与圆',W/2,30,'#fbbf24',16);
+  // 例题框
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,60,W-160,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',110,80,'#a78bfa',13,'left');
+  drawText('圆 x²+y²=4，直线 y=x+1。',110,105,'#fff',13,'left');
+  drawText('判断直线与圆的位置关系。',110,130,'#fff',13,'left');
+  drawText('圆心 O(0,0)，半径 r=2',110,152,'#9ab0d0',12,'left');
+  // 解题四步
+  const steps=[
+    {t:'① 标准化',d:'直线化为 x-y+1=0（A=1,B=-1,C=1）',c:'#06b6d4'},
+    {t:'② 求距离',d:'d=|1·0+(-1)·0+1|/√(1²+(-1)²)=1/√2≈0.71',c:'#a78bfa'},
+    {t:'③ 比较',d:'d≈0.71 < r=2',c:'#67e8f9'},
+    {t:'④ 结论',d:'d<r，直线与圆相交（2 个交点）',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=195+i*48;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,40,6);ctx.fill();ctx.stroke();
+    drawText(s.t,135,y+20,s.c,13,'left');
+    drawText(s.d,255,y+20,'#fff',13,'left');
+  });
+  // 底部提示
+  drawText('口诀：d 比 r，离切交',W/2,H-25,'#fbbf24',13);
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('直线与圆核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'直线方程',d:'点斜/斜截/两点/截距/一般 五式',c:'#fbbf24'},
+    {t:'斜率',d:'k=tan α，α=90° 不存在',c:'#06b6d4'},
+    {t:'两线关系',d:'平行 k₁=k₂｜垂直 k₁k₂=-1',c:'#a78bfa'},
+    {t:'距离公式',d:'d=|Ax₀+By₀+C|/√(A²+B²)',c:'#34d399'},
+    {t:'圆的标准式',d:'(x-a)²+(y-b)²=r²',c:'#fb923c'},
+    {t:'线圆关系',d:'d vs r：相离/相切/相交',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawLineFormsScene(t);
+  else if(stepIdx===1)drawSlopeScene(t);
+  else if(stepIdx===2)drawRelScene(t);
+  else if(stepIdx===3)drawDistScene(t);
+  else if(stepIdx===4)drawCircleScene(t);
+  else if(stepIdx===5)drawPointCircleScene(t);
+  else if(stepIdx===6)drawLineCircleScene(t);
+  else if(stepIdx===7)drawCalcScene();
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+const paramK=document.getElementById('paramK'),paramR=document.getElementById('paramR');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+paramK.oninput=()=>{};paramR.oninput=()=>{};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
