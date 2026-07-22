@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pandas 数据处理 · DataFrame · 筛选 · 聚合与分组</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">Pandas 数据处理</span><span class="subtitle">DataFrame · 筛选 · 聚合与分组</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>Series / DataFrame</h4><div class="v">一维带索引 vs 二维表格<br>pd.Series([...]) · pd.DataFrame({...})</div></div>
+  <div class="card s2"><div class="num">2</div><h4>loc vs iloc</h4><div class="v">loc 按标签选择<br>iloc 按位置选择</div></div>
+  <div class="card s3"><div class="num">3</div><h4>筛选与缺失值</h4><div class="v">df[df.年龄&gt;18]<br>dropna / fillna</div></div>
+  <div class="card s4"><div class="num">4</div><h4>groupby 聚合</h4><div class="v">分组 + 聚合函数<br>mean / sum / agg</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">Series 与 DataFrame</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'Series与DataFrame',body:'<strong>Pandas</strong> 两个核心数据结构：<strong>Series</strong> 是一维带索引数组；<strong>DataFrame</strong> 是二维表格（行索引 + 列名）。类似 Excel 表格，每列可以是不同类型。',points:{title:'核心结构',items:['<strong>Series</strong>：一维数据 + 自动索引','<strong>DataFrame</strong>：二维表格（行索引+列名）','<strong>列类型</strong>：可混合（数字/字符串/日期）','<strong>底层</strong>：基于 NumPy 的高性能数组']}},
+  {tag:'创建',name:'创建与读取',body:'创建：<code>pd.Series([1,2,3])</code>、<code>pd.DataFrame({&quot;姓名&quot;:[&quot;张三&quot;],&quot;年龄&quot;:[18]})</code>。读取外部数据：<code>read_csv</code> / <code>read_excel</code> / <code>read_sql</code>。',points:{title:'创建方式',items:['<strong>pd.Series</strong>([值列表])','<strong>pd.DataFrame</strong>({列:值})','<strong>read_csv</strong>(&quot;文件.csv&quot;)','<strong>read_excel / read_sql</strong>']}},
+  {tag:'查看',name:'查看方法',body:'快速认识数据：<code>head(n)</code> 看前 n 行，<code>tail(n)</code> 看末尾，<code>info()</code> 看类型与内存，<code>describe()</code> 看统计摘要（均值、最值、分位数）。',points:{title:'四大查看法',items:['<strong>head()</strong>：默认前 5 行','<strong>tail()</strong>：默认后 5 行','<strong>info()</strong>：列名+类型+非空数','<strong>describe()</strong>：统计摘要']}},
+  {tag:'选择',name:'loc_iloc选择',body:'<strong>loc</strong> 按<strong>标签</strong>选择：<code>df.loc[2,&quot;姓名&quot;]</code>。<strong>iloc</strong> 按<strong>位置</strong>选择：<code>df.iloc[2,0]</code>。切片：<code>df.loc[0:3]</code> 包含末端，<code>df.iloc[0:3]</code> 不含末端。',points:{title:'loc vs iloc',items:['<strong>loc</strong>：按标签（列名、行索引）','<strong>iloc</strong>：按整数位置','<strong>loc 切片</strong>：含右端','<strong>iloc 切片</strong>：不含右端（Python 风格）']}},
+  {tag:'筛选',name:'布尔筛选',body:'条件筛选：<code>df[df.年龄 &gt; 18]</code> 选出成年；<code>df.query("年龄&gt;18")</code> 字符串表达式；多条件用 <code>&amp;</code>（与）和 <code>|</code>（或）。',points:{title:'布尔筛选技巧',items:['<strong>单条件</strong>：df[df.成绩&gt;=90]','<strong>多条件</strong>：df[(条件)&amp;(条件)]','<strong>query</strong>：df.query("成绩&gt;90")','<strong>isin</strong>：df[df.班级.isin(["A","B"])]']}},
+  {tag:'清洗',name:'缺失值处理',body:'缺失值标记为 <strong>NaN</strong>（Not a Number）。处理：<code>dropna()</code> 删除缺失行；<code>fillna(0)</code> 填充；<code>fillna(df.mean())</code> 用均值填充。',points:{title:'缺失值三招',items:['<strong>isnull()</strong>：检测 NaN','<strong>dropna()</strong>：丢弃缺失行/列','<strong>fillna(v)</strong>：用 v 填充','<strong>fillna(mean)</strong>：用均值填充']}},
+  {tag:'聚合',name:'分组聚合',body:'<strong>groupby</strong> 分组后聚合：<code>df.groupby(&quot;班级&quot;)[&quot;成绩&quot;].mean()</code> 求各班均分；多函数聚合：<code>.agg([&quot;mean&quot;,&quot;max&quot;,&quot;min&quot;])</code>。',points:{title:'groupby 流程',items:['<strong>分组</strong>：groupby(列名)','<strong>选列</strong>：[&quot;成绩&quot;]','<strong>聚合</strong>：mean/sum/count','<strong>多函数</strong>：agg([&quot;mean&quot;,&quot;max&quot;])']}},
+  {tag:'排序',name:'sort_values排序',body:'排序：<code>df.sort_values(by=&quot;成绩&quot;,ascending=False)</code> 降序；多列排序：<code>by=[&quot;班级&quot;,&quot;成绩&quot;]</code>。ascending 默认 True 升序。',points:{title:'排序要点',items:['<strong>by</strong>：指定排序列','<strong>ascending</strong>：False 降序','<strong>多列</strong>：by=[&quot;班级&quot;,&quot;成绩&quot;]','<strong>reset_index</strong>：重置索引']}},
+  {tag:'总结',name:'核心速记',body:'Pandas = <strong>Series + DataFrame</strong>。<strong>创建</strong>→<strong>查看</strong>→<strong>选择</strong>(loc/iloc)→<strong>筛选</strong>→<strong>清洗</strong>→<strong>分组聚合</strong>→<strong>排序</strong>，七步完成数据分析全流程。',points:{title:'数据分析七步',items:['<strong>1. 结构</strong>：Series / DataFrame','<strong>2. 选择</strong>：loc 标签 / iloc 位置','<strong>3. 筛选</strong>：布尔条件 / query','<strong>4. 清洗+聚合</strong>：dropna + groupby']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+// ===== 示例数据 =====
+const sampleData={
+  cols:['姓名','年龄','班级','成绩'],
+  rows:[
+    ['张三',18,'A',92],
+    ['李四',19,'A',85],
+    ['王五',17,'B',78],
+    ['赵六',18,'B',NaN],
+    ['钱七',20,'A',88],
+    ['孙八',19,'B',95],
+  ]
+};
+
+// 通用：画一个电子表格
+function drawTable(cx,cy,colW,rowH,cols,rows,highlight,cellColors,title,codeHint){
+  const nCol=cols.length,nRow=rows.length;
+  const tableW=nCol*colW+60,tableH=(nRow+1)*rowH;
+  const x0=cx-tableW/2,y0=cy-tableH/2;
+  // 标题
+  if(title)drawText(title,cx,y0-22,'#fbbf24',15);
+  // 索引列头
+  drawText('#',x0+30,y0+rowH/2,'#9ab0d0',12);
+  cols.forEach((c,i)=>{
+    drawText(c,x0+60+i*colW+colW/2,y0+rowH/2,'#06b6d4',12);
+  });
+  // 数据行
+  rows.forEach((r,ri)=>{
+    const ry=y0+(ri+1)*rowH;
+    // 行索引
+    drawText(String(ri),x0+30,ry+rowH/2,'#5a6a8a',11);
+    r.forEach((v,ci)=>{
+      const cx2=x0+60+ci*colW+colW/2;
+      // 高亮整行
+      if(highlight&&highlight.includes(ri)){
+        ctx.fillStyle='rgba(251,191,36,0.18)';
+        ctx.fillRect(x0+30,ry,colW*(nCol)+30,rowH);
+      }
+      // 单元格颜色
+      let val=String(v);
+      let color='#e8eef8';
+      if(cellColors&&cellColors[ri]&&cellColors[ri][ci]){
+        color=cellColors[ri][ci];
+      }
+      if(v!==v){val='NaN';color='#f87171';}
+      drawText(val,cx2,ry+rowH/2,color,12);
+    });
+  });
+  // 边框
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  roundRect(x0+15,y0,tableW-15,tableH,6);ctx.stroke();
+  // 列分隔
+  ctx.strokeStyle='#1e345a';ctx.lineWidth=1;
+  for(let i=0;i<=nCol;i++){
+    const lx=x0+60+i*colW;
+    ctx.beginPath();ctx.moveTo(lx,y0);ctx.lineTo(lx,y0+tableH);ctx.stroke();
+  }
+  for(let i=0;i<=nRow;i++){
+    const ly=y0+i*rowH;
+    ctx.beginPath();ctx.moveTo(x0+15,ly);ctx.lineTo(x0+15+tableW-15,ly);ctx.stroke();
+  }
+  // 代码提示
+  if(codeHint)drawText(codeHint,cx,y0+tableH+24,'#34d399',12);
+  return{x0,y0,tableW,tableH};
+}
+
+// ===== 场景：Series vs DataFrame =====
+function drawStructureScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('Series 一维 vs DataFrame 二维',W/2,30,'#fbbf24',16);
+  // 左侧 Series
+  drawText('Series（一维）',W*0.27,70,'#06b6d4',14);
+  const sData=[92,85,78,88,95];
+  const sIdx=['张三','李四','王五','钱七','孙八'];
+  const pulse=Math.sin(time*3)*0.5+0.5;
+  sData.forEach((v,i)=>{
+    const y=100+i*38;
+    ctx.fillStyle='rgba(6,182,212,'+(0.15+pulse*0.1)+')';
+    roundRect(W*0.13,y,180,32,5);ctx.fill();
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;ctx.stroke();
+    drawText(sIdx[i],W*0.13+30,y+16,'#9ab0d0',12,'left');
+    drawText(String(v),W*0.13+150,y+16,'#fbbf24',13);
+  });
+  drawText('索引 → 值',W*0.22,100+sData.length*38+18,'#9ab0d0',11);
+  // 中间代码
+  ctx.font='12px Consolas,monospace';
+  drawText('s = pd.Series([92,85,78])',W/2,110,'#34d399',12);
+  drawText('s[0]  → 92',W/2,135,'#fde68a',12);
+  drawText('s.index, s.values',W/2,160,'#a78bfa',12);
+  // 右侧 DataFrame
+  drawText('DataFrame（二维）',W*0.73,70,'#fbbf24',14);
+  const cols=['姓名','年龄','成绩'];
+  const rows=[['张三',18,92],['李四',19,85],['王五',17,78]];
+  const colW=60,rowH=30;
+  const tx=W*0.58,ty=95;
+  // 列头
+  drawText('#',tx+15,ty+rowH/2,'#9ab0d0',11);
+  cols.forEach((c,i)=>drawText(c,tx+30+i*colW+colW/2,ty+rowH/2,'#06b6d4',11));
+  rows.forEach((r,ri)=>{
+    const ry=ty+(ri+1)*rowH;
+    drawText(String(ri),tx+15,ry+rowH/2,'#5a6a8a',10);
+    r.forEach((v,ci)=>{
+      drawText(String(v),tx+30+ci*colW+colW/2,ry+rowH/2,'#e8eef8',11);
+    });
+  });
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  roundRect(tx,ty,30+cols.length*colW,(rows.length+1)*rowH,5);ctx.stroke();
+  drawText('行索引 + 列名 → 表格',W*0.73,ty+(rows.length+1)*rowH+20,'#9ab0d0',11);
+  // 底部对比
+  drawText('一维带索引 ←→ 二维表格（类似 Excel）',W/2,H-50,'#34d399',13);
+}
+
+// ===== 场景：创建与读取 =====
+function drawCreateScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('创建 DataFrame 与读取外部数据',W/2,30,'#fbbf24',16);
+  // 代码块
+  const lines=[
+    {t:'import pandas as pd',c:'#a78bfa'},
+    {t:'df = pd.DataFrame({',c:'#06b6d4'},
+    {t:"    '姓名': ['张三','李四','王五'],",c:'#67e8f9'},
+    {t:"    '年龄': [18, 19, 17],",c:'#67e8f9'},
+    {t:"    '成绩': [92, 85, 78]",c:'#67e8f9'},
+    {t:'})',c:'#06b6d4'},
+    {t:'# 读取外部文件',c:'#9ab0d0'},
+    {t:"df = pd.read_csv('data.csv')",c:'#34d399'},
+    {t:"df = pd.read_excel('data.xlsx')",c:'#34d399'},
+    {t:"df = pd.read_sql('SELECT *', conn)",c:'#34d399'},
+  ];
+  const flash=Math.floor(time*1.5)%lines.length;
+  lines.forEach((l,i)=>{
+    const y=65+i*26;
+    const isFlash=i===flash;
+    if(isFlash){
+      ctx.fillStyle='rgba(251,191,36,0.15)';
+      roundRect(40,y-12,W-80,24,5);ctx.fill();
+    }
+    drawText(l.t,60,y,l.c,13,'left');
+  });
+  // 右侧结果
+  drawText('运行结果 df →',W-180,80,'#fbbf24',13);
+  const cols=['姓名','年龄','成绩'];
+  const rows=[['张三',18,92],['李四',19,85],['王五',17,78]];
+  const colW=50,rowH=24;
+  const tx=W-265,ty=100;
+  drawText('#',tx+15,ty+rowH/2,'#9ab0d0',10);
+  cols.forEach((c,i)=>drawText(c,tx+30+i*colW+colW/2,ty+rowH/2,'#06b6d4',10));
+  rows.forEach((r,ri)=>{
+    const ry=ty+(ri+1)*rowH;
+    drawText(String(ri),tx+15,ry+rowH/2,'#5a6a8a',9);
+    r.forEach((v,ci)=>drawText(String(v),tx+30+ci*colW+colW/2,ry+rowH/2,'#e8eef8',10));
+  });
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  roundRect(tx,ty,30+cols.length*colW,(rows.length+1)*rowH,5);ctx.stroke();
+  drawText('字典 → DataFrame',W-160,ty+(rows.length+1)*rowH+22,'#34d399',12);
+}
+
+// ===== 场景：查看方法 =====
+function drawInspectScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('查看数据：head / tail / info / describe',W/2,30,'#fbbf24',16);
+  const d=sampleData;
+  // head 高亮前 3 行
+  const phase=Math.floor((time*0.6)%4);
+  let highlight=[],label='';
+  if(phase===0){highlight=[0,1,2];label='df.head(3) → 前 3 行';}
+  else if(phase===1){highlight=[3,4,5];label='df.tail(3) → 后 3 行';}
+  else if(phase===2){label='df.info() → 列名+类型+非空数';}
+  else{label='df.describe() → 均值/最值/分位数';}
+  const info=drawTable(W/2,H/2-10,80,26,d.cols,d.rows,highlight,null,'数据表 df',null);
+  // 底部信息
+  ctx.fillStyle='rgba(6,182,212,0.1)';
+  roundRect(60,H-110,W-120,80,8);ctx.fill();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;ctx.stroke();
+  drawText('当前操作：',80,H-90,'#06b6d4',13,'left');
+  drawText(label,180,H-90,'#fbbf24',14,'left');
+  if(phase===2){
+    drawText("列: 姓名(object) 年龄(int64) 成绩(float64)",80,H-65,'#9ab0d0',12,'left');
+    drawText("非空数: 6 / 6 / 5   内存: 288 bytes",80,H-45,'#34d399',12,'left');
+  }else if(phase===3){
+    drawText("成绩: mean=87.6  std=6.5  min=78  max=95",80,H-65,'#9ab0d0',12,'left');
+    drawText("25%=82  50%=87  75%=91",80,H-45,'#34d399',12,'left');
+  }
+}
+
+// ===== 场景：loc / iloc =====
+function drawLocScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('loc 按标签  vs  iloc 按位置',W/2,30,'#fbbf24',16);
+  const d=sampleData;
+  const pulse=Math.floor(time*1.2)%2;
+  // loc 高亮第 2 行（标签 2）
+  const locRow=pulse===0?[2]:[];
+  const ilocRow=pulse===1?[2]:[];
+  drawTable(W/2,H/2-20,80,26,d.cols,d.rows,locRow.concat(ilocRow),null,'示例表',null);
+  // 左侧代码
+  drawText('df.loc[2,"姓名"]',120,H-110,'#06b6d4',13);
+  drawText('→ 标签为 2 的行',120,H-88,'#9ab0d0',11);
+  drawText('→ "王五"',120,H-70,'#34d399',13);
+  // 右侧代码
+  drawText('df.iloc[2,0]',W-120,H-110,'#fbbf24',13);
+  drawText('→ 第 3 行第 1 列',W-120,H-88,'#9ab0d0',11);
+  drawText('→ "王五"',W-120,H-70,'#34d399',13);
+  // 中间标识
+  const flash=Math.sin(time*4)>0;
+  if(pulse===0){
+    drawText('▼ loc 用标签',W/2,H-95,flash?'#06b6d4':'#67e8f9',12);
+  }else{
+    drawText('▼ iloc 用位置',W/2,H-95,flash?'#fbbf24':'#fde68a',12);
+  }
+}
+
+// ===== 场景：布尔筛选 =====
+function drawFilterScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('布尔筛选 df[df.成绩 > 85]',W/2,30,'#fbbf24',16);
+  const d=sampleData;
+  // 找出成绩>85 的行
+  const passRows=d.rows.map((r,i)=>r[3]>85?i:-1).filter(x=>x>=0);
+  const cellColors=d.rows.map((r,i)=>{
+    const res={};
+    if(r[3]!==r[3]||!(r[3]>85)){res[3]='#f87171';}
+    else{res[3]='#34d399';}
+    return res;
+  });
+  drawTable(W/2,H/2-30,75,26,d.cols,d.rows,passRows,cellColors,'成绩 > 85 ?',null);
+  // 筛选箭头
+  drawText('↓ 筛选',W/2,H/2+120,'#fbbf24',14);
+  // 结果表
+  const filtered=passRows.map(i=>d.rows[i]);
+  if(filtered.length>0){
+    drawTable(W/2,H/2+180,75,24,d.cols,filtered,null,null,'筛选结果','df[df.成绩 > 85]');
+  }
+}
+
+// ===== 场景：缺失值处理 =====
+function drawMissingScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('缺失值处理：dropna / fillna',W/2,30,'#fbbf24',16);
+  const d=sampleData;
+  // 原表（NaN 高亮红色）
+  const cellColors=d.rows.map(r=>{const res={};if(r[3]!==r[3])res[3]='#f87171';return res;});
+  const phase=Math.floor((time*0.6)%3);
+  let mode=phase===0?'orig':phase===1?'drop':'fill';
+  let displayRows,displayColors,title;
+  if(mode==='orig'){
+    displayRows=d.rows;displayColors=cellColors;
+    title='原始数据（含 NaN）';
+  }else if(mode==='drop'){
+    displayRows=d.rows.filter(r=>r[3]===r[3]);
+    displayColors=null;
+    title='dropna() → 删除缺失行';
+  }else{
+    displayRows=d.rows.map(r=>r[3]!==r[3]?[r[0],r[1],r[2],87.6]:r);
+    displayColors=displayRows.map((r,i)=>{const res={};if(d.rows[i][3]!==d.rows[i][3])res[3]='#34d399';return res;});
+    title='fillna(均值) → 填充';
+  }
+  drawTable(W/2,H/2,80,26,d.cols,displayRows,null,displayColors,title,null);
+  // 提示
+  if(mode==='drop'){
+    drawText('缺失的整行被丢弃',W/2,H-50,'#f87171',13);
+  }else if(mode==='fill'){
+    drawText('NaN 被均值 87.6 填充',W/2,H-50,'#34d399',13);
+  }else{
+    drawText('NaN = Not a Number（缺失标记）',W/2,H-50,'#9ab0d0',13);
+  }
+}
+
+// ===== 场景：分组聚合 =====
+function drawGroupbyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText("分组聚合 groupby('班级').mean()",W/2,30,'#fbbf24',16);
+  const d=sampleData;
+  // 按班级分组（A / B）
+  const groups={'A':[],'B':[]};
+  d.rows.forEach(r=>{if(r[3]===r[3])groups[r[2]].push(r);});
+  // 左侧原始表
+  drawTable(W*0.28,H/2,65,24,d.cols,d.rows,null,null,'原始表',null);
+  // 中间分组箭头
+  const t2=time*1.5;
+  for(let i=0;i<3;i++){
+    const offset=Math.sin(t2-i*0.5)*5;
+    drawText('→',W*0.45+offset,H/2-40+i*40,'#06b6d4',18);
+  }
+  // 右侧分组结果
+  drawText('分组结果',W*0.75,H/2-100,'#fbbf24',13);
+  // A 组
+  drawText('A 班',W*0.66,H/2-60,'#34d399',12);
+  groups.A.forEach((r,i)=>{
+    drawText(r[0]+':'+r[3],W*0.66,H/2-40+i*20,'#9ab0d0',11,'left');
+  });
+  // B 组
+  drawText('B 班',W*0.84,H/2-60,'#fbbf24',12);
+  groups.B.forEach((r,i)=>{
+    drawText(r[0]+':'+r[3],W*0.84,H/2-40+i*20,'#9ab0d0',11,'left');
+  });
+  // 聚合结果
+  const meanA=(groups.A.reduce((s,r)=>s+r[3],0)/groups.A.length).toFixed(1);
+  const meanB=(groups.B.reduce((s,r)=>s+r[3],0)/groups.B.length).toFixed(1);
+  drawText('mean()',W*0.75,H/2+30,'#06b6d4',12);
+  ctx.fillStyle='rgba(52,211,153,0.15)';
+  roundRect(W*0.62,H/2+45,260,70,8);ctx.fill();
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;ctx.stroke();
+  drawText('班级    成绩均值',W*0.75,H/2+58,'#06b6d4',12);
+  drawText('A       '+meanA,W*0.75,H/2+78,'#34d399',13);
+  drawText('B       '+meanB,W*0.75,H/2+98,'#34d399',13);
+  drawText("df.groupby('班级')['成绩'].mean()",W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：排序 =====
+function drawSortScene(time){
+  const W=cv.width,H=cv.height;
+  drawText("排序 sort_values(by='成绩')",W/2,30,'#fbbf24',16);
+  const d=sampleData;
+  const phase=Math.floor((time*0.5)%2);
+  let rows,title,ascending;
+  if(phase===0){
+    rows=[...d.rows].filter(r=>r[3]===r[3]).sort((a,b)=>a[3]-b[3]);
+    title='升序 ascending=True';ascending=true;
+  }else{
+    rows=[...d.rows].filter(r=>r[3]===r[3]).sort((a,b)=>b[3]-a[3]);
+    title='降序 ascending=False';ascending=false;
+  }
+  const cellColors=rows.map((r,i)=>{
+    const res={};res[3]=ascending?'#34d399':'#fbbf24';return res;
+  });
+  drawTable(W/2,H/2,80,28,d.cols,rows,null,cellColors,title,null);
+  drawText(ascending?"sort_values(by='成绩',ascending=True)":"sort_values(by='成绩',ascending=False)",W/2,H-45,'#9ab0d0',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('Pandas 数据分析全流程',W/2,40,'#fbbf24',18);
+  const steps=[
+    {t:'1 结构',d:'Series / DataFrame',c:'#fbbf24'},
+    {t:'2 创建',d:'pd.DataFrame / read_csv',c:'#a78bfa'},
+    {t:'3 查看',d:'head / info / describe',c:'#06b6d4'},
+    {t:'4 选择',d:'loc 标签 / iloc 位置',c:'#67e8f9'},
+    {t:'5 筛选',d:'df[条件] / query',c:'#34d399'},
+    {t:'6 清洗',d:'dropna / fillna',c:'#fb923c'},
+    {t:'7 聚合',d:'groupby + agg',c:'#ec4899'},
+    {t:'8 排序',d:'sort_values',c:'#f87171'},
+  ];
+  steps.forEach((m,i)=>{
+    const col=i%4,row=Math.floor(i/4);
+    const x=60+col*(W-120)/4;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/4-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/8,y+50,m.c,16);
+    drawText(m.d,x+(W-120)/8,y+95,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawStructureScene(t);
+  else if(stepIdx===1)drawCreateScene(t);
+  else if(stepIdx===2)drawInspectScene(t);
+  else if(stepIdx===3)drawLocScene(t);
+  else if(stepIdx===4)drawFilterScene(t);
+  else if(stepIdx===5)drawMissingScene(t);
+  else if(stepIdx===6)drawGroupbyScene(t);
+  else if(stepIdx===7)drawSortScene(t);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

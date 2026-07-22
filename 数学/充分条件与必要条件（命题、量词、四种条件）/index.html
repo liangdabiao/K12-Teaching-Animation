@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>充分条件与必要条件 · 命题 · 量词 · 四种条件</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回数学目录</a>
+  <span class="title">充分条件与必要条件</span>
+  <span class="subtitle">命题 · 量词 · 四种条件 · 充要关系</span>
+</header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>四种命题</h4><div class="v">原、逆、否、逆否<br>互为逆否同真假</div></div>
+  <div class="card s2"><div class="num">2</div><h4>四种条件关系</h4><div class="v">充分、必要、充要<br>既不充分也不必要</div></div>
+  <div class="card s3"><div class="num">3</div><h4>量词符号</h4><div class="v">∀ 全称量词（任意）<br>∃ 存在量词（存在）</div></div>
+  <div class="card s4"><div class="num">4</div><h4>命题的否定</h4><div class="v">∀x,p(x) 的否定<br>是 ∃x,¬p(x)</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel">
+    <h2><span class="badge" id="stepBadge">命题</span><span id="stepTitle">命题与逆否</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+  </aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+// ============================================================
+// 充分条件与必要条件 · 教学动画
+// 单文件 HTML，深色主题 #0a1628，Canvas + requestAnimationFrame
+// 7 步状态机：命题与逆否 / 充分 / 必要 / 充要 / 四种对比 / 量词 / 否定
+// ============================================================
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(520,Math.min(1100,r.width-12));
+  cv.height=Math.max(400,Math.min(600,r.height-12));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function drawText(t,x,y,c,fs,a,b){
+  ctx.fillStyle=c||'#9ab0d0';
+  ctx.font=(fs||12)+'px sans-serif';
+  ctx.textAlign=a||'center';
+  ctx.textBaseline=b||'middle';
+  ctx.fillText(t,x,y);
+}
+
+// 七个步骤：命题与逆否 / 充分 / 必要 / 充要 / 四种关系对比 / 全称存在量词 / 命题的否定
+const STEPS=[
+  {tag:'命题',name:'命题与逆否',
+    body:'<strong>命题</strong>是可以判断真假的陈述句。若原命题为 <code>若 p 则 q</code>（p⇒q），则其<strong>逆否命题</strong> <code>若 ¬q 则 ¬p</code> 与原命题<strong>同真同假</strong>。这是反证法的依据。',
+    points:{title:'四种命题关系',items:[
+      '<strong>原命题</strong>：若 p 则 q',
+      '<strong>逆命题</strong>：若 q 则 p',
+      '<strong>否命题</strong>：若 ¬p 则 ¬q',
+      '<strong>逆否命题</strong>：若 ¬q 则 ¬p（同真假）'
+    ]}},
+  {tag:'充分',name:'充分条件',
+    body:'<strong>充分条件</strong>：若 <code>A⇒B</code> 成立，则 A 是 B 的<strong>充分条件</strong>（有 A 必有 B）。例如 <code>x&gt;2</code> 是 <code>x²&gt;4</code> 的充分条件。',
+    points:{title:'充分条件 A⇒B',items:[
+      '<strong>定义</strong>：A 成立 ⇒ B 必成立',
+      '<strong>集合角度</strong>：A 对应集合是 B 的子集',
+      '<strong>例</strong>：x&gt;2 ⇒ x²&gt;4',
+      '<strong>记忆</strong>：有之必然，无之未必然'
+    ]}},
+  {tag:'必要',name:'必要条件',
+    body:'<strong>必要条件</strong>：若 <code>B⇒A</code> 成立，则 A 是 B 的<strong>必要条件</strong>（有 B 必有 A，即没 A 就没 B）。例如 <code>x²=1</code> 是 <code>x=1</code> 的必要条件。',
+    points:{title:'必要条件 B⇒A',items:[
+      '<strong>定义</strong>：B 成立 ⇒ A 必成立',
+      '<strong>集合角度</strong>：B 对应集合是 A 的子集',
+      '<strong>例</strong>：x=1 ⇒ x²=1',
+      '<strong>记忆</strong>：无之必不然，有之未必然'
+    ]}},
+  {tag:'充要',name:'充要条件',
+    body:'<strong>充要条件</strong>：若 <code>A⇔B</code>（即 A⇒B 且 B⇒A），则 A 与 B 互为<strong>充分必要条件</strong>。例如 <code>x²-1=0</code> 与 <code>|x|=1</code> 互为充要条件。',
+    points:{title:'充要条件 A⇔B',items:[
+      '<strong>定义</strong>：A⇒B 且 B⇒A',
+      '<strong>集合角度</strong>：两集合相等',
+      '<strong>例</strong>：a&gt;b ⇔ a-b&gt;0',
+      '<strong>记号</strong>：⇔ 双向箭头'
+    ]}},
+  {tag:'对比',name:'四种条件对比',
+    body:'四种条件关系一图看清：<strong>充分不必要</strong>（A 真包含 B）、<strong>必要不充分</strong>（B 真包含 A）、<strong>充要</strong>（A=B）、<strong>既不充分也不必要</strong>（无包含关系）。',
+    points:{title:'四象限对比',items:[
+      '<strong>充分不必要</strong>：A⊃B（A⇒B 但 B⇏A）',
+      '<strong>必要不充分</strong>：A⊂B',
+      '<strong>充要</strong>：A=B',
+      '<strong>既不充分也不必要</strong>：无关系'
+    ]}},
+  {tag:'量词',name:'全称存在量词',
+    body:'<strong>全称量词 ∀</strong>（任意、所有）："<code>∀x∈R, x²≥0</code>" 表示对任意实数 x，x²≥0。<strong>存在量词 ∃</strong>（存在、至少一个）："<code>∃x∈Z, x&gt;5</code>" 表示存在整数 x&gt;5。',
+    points:{title:'量词符号',items:[
+      '<strong>∀</strong>：任意、所有、每一个',
+      '<strong>∃</strong>：存在、至少一个',
+      '<strong>∀x,p(x)</strong>：所有 x 都满足 p',
+      '<strong>∃x,p(x)</strong>：存在某 x 满足 p'
+    ]}},
+  {tag:'否定',name:'命题的否定',
+    body:'<strong>含全称量词命题</strong>的否定："<code>∀x∈M, p(x)</code>" 的否定是 "<code>∃x∈M, ¬p(x)</code>"。<strong>含存在量词命题</strong>的否定："<code>∃x∈M, p(x)</code>" 的否定是 "<code>∀x∈M, ¬p(x)</code>"。量词互换，结论取反。',
+    points:{title:'否定规则',items:[
+      '<strong>∀→∃</strong>：全称变存在',
+      '<strong>∃→∀</strong>：存在变全称',
+      '<strong>p→¬p</strong>：结论取反',
+      '<strong>例</strong>：∀x,x²≥0 的否定是 ∃x,x²&lt;0'
+    ]}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;  // 每步自动推进时长（秒，受速度系数影响）
+
+// ============================================================
+// 通用绘图工具函数
+// ============================================================
+// 通用：绘制带标题与内容的小卡片
+function drawPropBox(x,y,w,h,title,color,content){
+  ctx.fillStyle=color+'22';ctx.strokeStyle=color;ctx.lineWidth=2;
+  roundRect(x,y,w,h,8);ctx.fill();ctx.stroke();
+  drawText(title,x+w/2,y+15,color,12);
+  drawText(content,x+w/2,y+33,'#fff',11);
+}
+
+// 通用：动画箭头（随时间从起点延伸到终点）
+function drawArrow(x1,y1,x2,y2,color,time){
+  const prog=((time*0.8)%1);
+  const px=x1+(x2-x1)*prog,py=y1+(y2-y1)*prog;
+  ctx.strokeStyle=color;ctx.lineWidth=3;
+  ctx.shadowColor=color;ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(px,py);ctx.stroke();
+  if(prog>0.9){
+    ctx.fillStyle=color;
+    const ang=Math.atan2(y2-y1,x2-x1);
+    ctx.beginPath();ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-12*Math.cos(ang-0.4),y2-12*Math.sin(ang-0.4));
+    ctx.lineTo(x2-12*Math.cos(ang+0.4),y2-12*Math.sin(ang+0.4));
+    ctx.fill();
+  }
+  ctx.shadowBlur=0;
+}
+
+// 通用：集合圆形（带标签）
+function drawSet(cx,cy,r,fillC,strokeC,label,labelC,labDx,labDy){
+  ctx.fillStyle=fillC;ctx.strokeStyle=strokeC;ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.fill();ctx.stroke();
+  drawText(label,cx+labDx,cy+labDy,labelC,18);
+}
+
+// ===== 场景1：命题与逆否 =====
+function drawPropositionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('四种命题 · 互为逆否同真假',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  const pulse=0.5+0.5*Math.sin(time*1.5);
+  // 四个命题卡片：原、逆、否、逆否
+  drawPropBox(cx-180,cy-90,140,50,'原命题','#fbbf24','若 p 则 q');
+  drawPropBox(cx+40,cy-90,140,50,'逆命题','#06b6d4','若 q 则 p');
+  drawPropBox(cx-180,cy+50,140,50,'否命题','#34d399','若 ¬p 则 ¬q');
+  drawPropBox(cx+40,cy+50,140,50,'逆否命题','#f87171','若 ¬q 则 ¬p');
+  // 互为逆否的两条高亮连线（脉动虚线）
+  ctx.strokeStyle='rgba(248,113,113,'+(0.4+pulse*0.6)+')';ctx.lineWidth=3;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(cx-40,cy-65);ctx.lineTo(cx+40,cy+75);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+40,cy-65);ctx.lineTo(cx-40,cy+75);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('互为逆否 ⇒ 同真同假',cx,cy-15,'#f87171',12);
+  drawText('原命题 ⇔ 逆否命题（同真假）',W/2,H-55,'#34d399',13);
+  drawText('逆命题 ⇔ 否命题（同真假）',W/2,H-32,'#9ab0d0',12);
+  drawText('反证法：假设 ¬q 推出矛盾 ⇒ q 真',W/2,H-12,'#9ab0d0',11);
+}
+
+// ===== 场景2：充分条件 A⇒B =====
+function drawSufficientScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('充分条件 · A ⇒ B（有 A 必有 B）',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 集合 B（大）：必要条件对应的大集合
+  drawSet(cx,cy,150,'rgba(6,182,212,0.12)','#06b6d4','B','#06b6d4',110,-110);
+  // 集合 A（小，在 B 内，左右漂移）：充分条件对应的子集
+  const ax=cx-40+Math.sin(time)*15;
+  drawSet(ax,cy,80,'rgba(251,191,36,0.25)','#fbbf24','A','#fbbf24',-50,-55);
+  // 动画箭头 A⇒B：从 A 集合指向 B 集合
+  drawArrow(ax+50,cy-15,cx+30,cy-100,'#fbbf24',time);
+  drawText('A ⇒ B',cx,cy+185,'#fbbf24',14);
+  drawText('x&gt;2（A）⇒ x²&gt;4（B）',W/2,H-55,'#34d399',13);
+  drawText('有 A 必有 B，A 是 B 的充分条件',W/2,H-32,'#9ab0d0',12);
+  drawText('（但 B 不一定推出 A，仅 A⊃B）',W/2,H-12,'#9ab0d0',11);
+}
+
+// ===== 场景3：必要条件 B⇒A =====
+function drawNecessaryScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('必要条件 · B ⇒ A（有 B 必有 A）',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 集合 A（大）：必要条件对应的大集合
+  drawSet(cx,cy,150,'rgba(251,191,36,0.12)','#fbbf24','A','#fbbf24',110,-110);
+  // 集合 B（小，在 A 内，左右漂移）：A 是 B 的必要条件
+  const bx=cx+30+Math.sin(time)*15;
+  drawSet(bx,cy,80,'rgba(6,182,212,0.25)','#06b6d4','B','#06b6d4',50,-55);
+  // 动画箭头 B⇒A：从 B 集合指向 A 集合
+  drawArrow(bx+50,cy-15,cx-50,cy-110,'#06b6d4',time);
+  drawText('B ⇒ A',cx,cy+185,'#06b6d4',14);
+  drawText('x=1（B）⇒ x²=1（A）',W/2,H-55,'#34d399',13);
+  drawText('A 是 B 的必要条件（没 A 就没 B）',W/2,H-32,'#9ab0d0',12);
+  drawText('（B 真包含于 A，A⊂B 关系成立）',W/2,H-12,'#9ab0d0',11);
+}
+
+// ===== 场景4：充要条件 A⇔B =====
+function drawIffScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('充要条件 · A ⇔ B（互为充要）',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 两集合完全重合（脉动呼吸效果）
+  const r=130+Math.sin(time*2)*4;
+  ctx.fillStyle='rgba(52,211,153,0.18)';ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  // 两集合相等标签
+  drawText('A = B',cx-90,cy-90,'#34d399',18);
+  drawText('A',cx-30,cy,'#fbbf24',16);
+  drawText('B',cx+30,cy,'#06b6d4',16);
+  // 双向箭头（上下两条交替脉动，体现 ⇔）
+  const off=Math.sin(time*2)*8;
+  drawArrow(cx-60,cy-60+off,cx+60,cy-60+off,'#fbbf24',time);
+  drawArrow(cx+60,cy+60-off,cx-60,cy+60-off,'#06b6d4',time+0.5);
+  drawText('A ⇔ B',cx,cy+185,'#34d399',14);
+  drawText('a&gt;b ⇔ a-b&gt;0',W/2,H-55,'#34d399',13);
+  drawText('A 是 B 的充要条件',W/2,H-32,'#9ab0d0',12);
+  drawText('（充分且必要，集合相等）',W/2,H-12,'#9ab0d0',11);
+}
+
+// ===== 场景5：四种条件对比（四象限） =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('四种条件关系对比',W/2,30,'#fbbf24',16);
+  // 四象限：每个象限展示一种条件关系
+  const cols=[
+    {t:'充分不必要',ar:60,br:90,pos:'A⊃B',c:'#fbbf24',d:'A⇒B, B⇏A',ex:'x&gt;2 vs x²&gt;4',aInB:true},
+    {t:'必要不充分',ar:90,br:60,pos:'A⊂B',c:'#06b6d4',d:'B⇒A, A⇏B',ex:'x²=1 vs x=1',aInB:false},
+    {t:'充要条件',ar:75,br:75,pos:'A=B',c:'#34d399',d:'A⇔B',ex:'|x|=1 ⇔ x²=1',aInB:'same'},
+    {t:'既不充分也不必要',ar:55,br:55,pos:'A∩B=∅',c:'#f87171',d:'A⇏B, B⇏A',ex:'x&gt;0 vs x&lt;0',aInB:'none'},
+  ];
+  const colW=(W-120)/2, rowH=(H-120)/2;
+  cols.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x0=60+col*colW, y0=70+row*rowH;
+    // 卡片背景
+    ctx.fillStyle=m.c+'15';ctx.strokeStyle=m.c;ctx.lineWidth=1.5;
+    roundRect(x0+5,y0,colW-10,rowH-10,8);ctx.fill();ctx.stroke();
+    drawText(m.t,x0+colW/2,y0+20,m.c,13);
+    // 集合位置（按关系）
+    const cx=x0+colW/2, cy=y0+rowH/2+5;
+    const wobble=Math.sin(time+i)*4;
+    let aCx=cx-wobble,bCx=cx+wobble;
+    if(m.aInB==='same'){aCx=cx;bCx=cx;}
+    if(m.aInB==='none'){aCx=cx-30;bCx=cx+30;}
+    // 集合 A
+    ctx.fillStyle='rgba(251,191,36,0.2)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(aCx,cy,m.ar*0.35,0,7);ctx.fill();ctx.stroke();
+    drawText('A',aCx-m.ar*0.18,cy-m.ar*0.25,'#fbbf24',11);
+    // 集合 B
+    ctx.fillStyle='rgba(6,182,212,0.2)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(bCx,cy,m.br*0.35,0,7);ctx.fill();ctx.stroke();
+    drawText('B',bCx+m.br*0.18,cy+m.br*0.25,'#06b6d4',11);
+    // 说明文字
+    drawText(m.pos,x0+colW/2,y0+rowH-50,m.c,12);
+    drawText(m.d,x0+colW/2,y0+rowH-32,'#fff',11);
+    drawText(m.ex,x0+colW/2,y0+rowH-16,'#9ab0d0',10);
+  });
+}
+
+// ===== 场景6：全称与存在量词 =====
+function drawQuantifierScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('全称量词 ∀ · 存在量词 ∃',W/2,30,'#fbbf24',16);
+  // 左半区：全称量词 ∀（所有元素都满足）
+  const lx=W/4, ly=H/2+10;
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(lx-130,ly-110,260,260,12);ctx.fill();ctx.stroke();
+  ctx.font='bold 48px serif';ctx.fillStyle='#fbbf24';ctx.textAlign='center';
+  ctx.fillText('∀',lx,ly-50);
+  drawText('全称量词',lx,ly-10,'#fbbf24',14);
+  drawText('"任意 / 所有"',lx,ly+15,'#9ab0d0',12);
+  drawText('∀x∈R, x²≥0',lx,ly+55,'#fff',13);
+  drawText('对任意实数 x，x²≥0',lx,ly+80,'#34d399',11);
+  drawText('（真命题）',lx,ly+105,'#34d399',11);
+  // 动画点：所有点都亮（遍历高亮）
+  for(let i=0;i<8;i++){
+    const a=time*0.5+i*0.8;
+    const px=lx+Math.cos(a)*40, py=ly-50+Math.sin(a)*20;
+    ctx.fillStyle='rgba(251,191,36,0.6)';
+    ctx.beginPath();ctx.arc(px,py,3,0,7);ctx.fill();
+  }
+  // 右半区：存在量词 ∃（至少一个元素满足）
+  // 右：∃ 存在
+  const rx=W*3/4, ry=H/2+10;
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(rx-130,ry-110,260,260,12);ctx.fill();ctx.stroke();
+  ctx.font='bold 48px serif';ctx.fillStyle='#06b6d4';ctx.textAlign='center';
+  ctx.fillText('∃',rx,ry-50);
+  drawText('存在量词',rx,ry-10,'#06b6d4',14);
+  drawText('"存在 / 至少一个"',rx,ry+15,'#9ab0d0',12);
+  drawText('∃x∈Z, x&gt;5',rx,ry+55,'#fff',13);
+  drawText('存在整数 x&gt;5（如 6）',rx,ry+80,'#34d399',11);
+  drawText('（真命题）',rx,ry+105,'#34d399',11);
+  // 动画点：仅一个亮起（循环）
+  const idx=Math.floor(time)%6;
+  for(let i=0;i<6;i++){
+    const px=rx-50+i*20, py=ry-50;
+    ctx.fillStyle=i===idx?'#06b6d4':'rgba(6,182,212,0.2)';
+    ctx.beginPath();ctx.arc(px,py,i===idx?6:3,0,7);ctx.fill();
+  }
+  drawText('∀ 表示"每一个都"，∃ 表示"至少有一个"',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景7：含量词命题的否定 =====
+function drawNegationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('含量词命题的否定 · 量词互换结论反',W/2,30,'#fbbf24',16);
+  const cy=H/2;
+  // 上框：原命题（含全称量词 ∀）
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(60,cy-130,W-120,90,10);ctx.fill();ctx.stroke();
+  drawText('原命题',90,cy-105,'#fbbf24',13,'left');
+  ctx.font='bold 22px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('∀ x ∈ M,  p(x)',W/2,cy-65);
+  drawText('对任意 x 属于 M，p(x) 成立',W/2,cy-50,'#9ab0d0',11);
+  // 中间：向下动画箭头（表示"取否定"操作）
+  const prog=((time)%1);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(W/2,cy-30);ctx.lineTo(W/2,cy-30+40*prog);ctx.stroke();
+  if(prog>0.9){
+    ctx.fillStyle='#34d399';
+    ctx.beginPath();ctx.moveTo(W/2,cy+10);ctx.lineTo(W/2-8,cy);ctx.lineTo(W/2+8,cy);ctx.fill();
+  }
+  ctx.shadowBlur=0;
+  drawText('量词 ∀→∃，结论 p→¬p',W/2,cy-12,'#34d399',12);
+  // 下框：否定命题（量词互换、结论取反）
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(60,cy+20,W-120,90,10);ctx.fill();ctx.stroke();
+  drawText('否定命题',90,cy+45,'#f87171',13,'left');
+  ctx.font='bold 22px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('∃ x ∈ M,  ¬p(x)',W/2,cy+85);
+  drawText('存在一个 x 属于 M，使 ¬p(x) 成立',W/2,cy+100,'#9ab0d0',11);
+  // 底部：实例框
+  ctx.fillStyle='rgba(52,211,153,0.08)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(60,cy+125,W-120,55,8);ctx.fill();ctx.stroke();
+  drawText('例：∀x∈R,x²≥0 的否定是 ∃x∈R,x²&lt;0',W/2,cy+145,'#34d399',13);
+  drawText('（取 x 使 x²&lt;0 在实数集不成立，故原命题为真）',W/2,cy+165,'#9ab0d0',10);
+}
+
+// ============================================================
+// 主绘制分发：根据 stepIdx 选择对应场景函数
+// ============================================================
+// 主绘制分发
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawPropositionScene(t);
+  else if(stepIdx===1)drawSufficientScene(t);
+  else if(stepIdx===2)drawNecessaryScene(t);
+  else if(stepIdx===3)drawIffScene(t);
+  else if(stepIdx===4)drawCompareScene(t);
+  else if(stepIdx===5)drawQuantifierScene(t);
+  else if(stepIdx===6)drawNegationScene(t);
+}
+
+// 步骤面板同步
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  const pts=s.points;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(pts?.title||'')+'</h4><ul>'+((pts?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+// 每帧更新：累加时间，自动推进步骤
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+// requestAnimationFrame 主循环
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+// ============================================================
+// 控件绑定与初始化
+// ============================================================
+// 控件绑定
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+// 构建底部步骤条
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

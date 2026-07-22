@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>胚胎工程 · 体外受精 · 胚胎分割 · 胚胎移植</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">胚胎工程</span><span class="subtitle">体外受精 · 胚胎分割 · 胚胎移植 · 胚胎干细胞</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>体外受精流程</h4><div class="v">精子获能 + 卵母细胞采集<br>人工受精（试管内）</div></div>
+  <div class="card s2"><div class="num">2</div><h4>胚胎分割</h4><div class="v">分割针均分内细胞团<br>获得同卵双胎</div></div>
+  <div class="card s3"><div class="num">3</div><h4>胚胎移植</h4><div class="v">供体与受体同步发情<br>植入受体子宫发育</div></div>
+  <div class="card s4"><div class="num">4</div><h4>胚胎干细胞</h4><div class="v">取自囊胚内细胞团<br>具有发育全能性</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">胚胎工程</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'体外受精 IVF',body:'<strong>体外受精（IVF）</strong>是将<strong>精子</strong>与<strong>卵母细胞</strong>在体外人工环境下完成受精。包括：<strong>精子采集与获能处理</strong>（用化学物质诱导获能）、<strong>卵母细胞采集</strong>（超数排卵后从卵巢取出）、<strong>人工受精</strong>（试管内精子+卵子结合）。',points:{title:'IVF 三大步骤',items:['<strong>超数排卵</strong>：注射促性腺激素获得多个卵母细胞','<strong>精子获能</strong>：用肝素或钙离子载体诱导','<strong>体外受精</strong>：获能精子 + 成熟卵母细胞','<strong>获能</strong>是受精的必要前提']}},
+  {tag:'基础',name:'精子与卵子采集',body:'<strong>精子采集</strong>后必须经过<strong>获能处理</strong>，因为刚射出的精子<strong>不能直接受精</strong>。雌性生殖道中的获能因子可使精子获得受精能力，体外用<strong>肝素、咖啡因、钙离子载体</strong>模拟此过程。<strong>卵母细胞</strong>通过超数排卵从卵巢采集，需培养至<strong>减数第二次分裂中期（MⅡ）</strong>。',points:{title:'采集要点',items:['<strong>超数排卵</strong>：FSH + LH 促多个卵泡发育','<strong>采卵方式</strong>：冲卵、B 超引导取卵','<strong>精子获能</strong>：体外化学诱导','<strong>卵子成熟</strong>：培养至 MⅡ 期']}},
+  {tag:'发育',name:'卵裂过程',body:'受精卵形成后开始<strong>有丝分裂（卵裂）</strong>：受精卵 → <strong>2 细胞</strong> → <strong>4 细胞</strong> → <strong>8 细胞</strong> → <strong>16 细胞</strong>。<strong>卵裂特点</strong>：细胞<strong>越分越小</strong>、总体积<strong>不变</strong>、DNA 复制快、几乎没有生长期。',points:{title:'卵裂特征',items:['<strong>细胞数 ↑</strong>：1→2→4→8→16','<strong>单个体积 ↓</strong>：总体积不变','<strong>卵裂球</strong>：未分化细胞','<strong>16 细胞</strong>：开始致密化']}},
+  {tag:'发育',name:'桑椹胚与囊胚',body:'卵裂继续到 <strong>16-32 细胞</strong>形成<strong>桑椹胚</strong>（似桑椹）。进一步发育细胞<strong>分化</strong>：外层为<strong>滋养层</strong>，内部一团细胞叫<strong>内细胞团（ICM）</strong>，中央出现囊腔叫<strong>囊胚腔</strong>。这就是<strong>囊胚</strong>。',points:{title:'囊胚三结构',items:['<strong>滋养层</strong>：将来发育为胎盘胎膜','<strong>内细胞团</strong>：将来发育为胎儿本体','<strong>囊胚腔</strong>：充满液体的腔','<strong>孵化</strong>：囊胚从透明带脱出']}},
+  {tag:'分割',name:'胚胎分割技术',body:'<strong>胚胎分割</strong>是用<strong>分割针或刀片</strong>将<strong>囊胚的内细胞团</strong>均分为两份（或更多），每份分别移植入不同受体，可获得<strong>同卵双胎（或多胎）</strong>。后代<strong>基因型完全相同</strong>。',points:{title:'分割操作',items:['<strong>取囊胚</strong>：内细胞团清晰可见','<strong>分割针</strong>：沿内细胞团正中切开','<strong>均分</strong>：内细胞团对半','<strong>移植</strong>：分别植入两位受体']}},
+  {tag:'移植',name:'胚胎移植 ET',body:'<strong>胚胎移植（ET）</strong>：将供体（<strong>优良品种</strong>）的早期胚胎移植到受体（<strong>普通品种</strong>）子宫内发育。要求<strong>供体与受体同种、生理状态同步</strong>（同期发情处理），使<strong>受体子宫环境</strong>能接受外来胚胎着床。',points:{title:'移植关键',items:['<strong>同期发情</strong>：注射前列腺素或孕激素','<strong>供体</strong>：优良品种（高产奶牛）','<strong>受体</strong>：普通品种（黄牛）','<strong>优势</strong>：优良母畜可借腹生子']}},
+  {tag:'移植',name:'应用：试管婴儿',body:'<strong>人类试管婴儿</strong>（1978 年路易斯·布朗）是 IVF-ET 的典型应用。用于治疗<strong>输卵管阻塞</strong>、<strong>少精弱精</strong>、<strong>不明原因不孕</strong>。流程：超排卵 → 取卵 → 体外受精 → 胚胎培养 → 移植入母体子宫。',points:{title:'临床应用',items:['<strong>第一代</strong>：常规 IVF（女方输卵管问题）','<strong>第二代</strong>：ICSI 单精子注射（男方问题）','<strong>第三代</strong>：PGD 植入前遗传诊断','<strong>适用</strong>：输卵管阻塞、少弱精症']}},
+  {tag:'干细胞',name:'胚胎干细胞 ESC',body:'<strong>胚胎干细胞（ESC）</strong>是从<strong>囊胚内细胞团</strong>分离培养的细胞，具有<strong>发育全能性</strong>，能分化为体内<strong>任何一种细胞</strong>（包括生殖细胞）。在体外可<strong>无限增殖</strong>且保持未分化状态。',points:{title:'ESC 特性',items:['<strong>来源</strong>：囊胚内细胞团','<strong>全能性</strong>：分化为三胚层任何细胞','<strong>体外无限增殖</strong>：保持未分化','<strong>应用</strong>：组织工程、再生医学']}},
+  {tag:'应用',name:'优良家畜快速繁殖',body:'通过<strong>超数排卵 + 体外受精 + 胚胎移植</strong>，一头高产奶牛一年可繁殖<strong>数十头后代</strong>（自然繁殖一年 1 头）。还可结合<strong>胚胎分割</strong>获得同卵双胎。<strong>濒危物种保护</strong>也借助此技术。',points:{title:'畜牧业价值',items:['<strong>奶牛</strong>：高产母牛借腹生子','<strong>肉牛</strong>：胚胎分割得双胎','<strong>濒危动物</strong>：大熊猫、金丝猴','<strong>效率</strong>：1 头牛年产 20+ 后代']}},
+  {tag:'伦理',name:'伦理与社会思考',body:'胚胎工程带来的<strong>伦理争议</strong>：<strong>胚胎是否算生命</strong>？<strong>设计婴儿</strong>（选择性别、基因）是否道德？<strong>代孕</strong>是否应允许？<strong>干细胞研究</strong>涉及<strong>破坏囊胚</strong>。需要在<strong>科学进步</strong>与<strong>伦理规范</strong>之间寻找平衡。',points:{title:'伦理考量',items:['<strong>胚胎地位</strong>：生命从何时算起？','<strong>设计婴儿</strong>：基因选择的边界','<strong>代孕争议</strong>：商业化代孕','<strong>ESC 研究</strong>：规范使用囊胚']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景：体外受精 =====
+function drawIVFScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('体外受精 IVF · 精子 + 卵子结合',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 培养皿（圆形）
+  ctx.fillStyle='rgba(6,182,212,0.05)';ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,Math.min(W,H)/2-30,0,7);ctx.stroke();
+  // 卵母细胞（大圆，MII 期）
+  const r=55;
+  ctx.fillStyle='rgba(251,191,36,0.12)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.fill();ctx.stroke();
+  // 透明带
+  ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.arc(cx,cy,r+10,0,7);ctx.stroke();ctx.setLineDash([]);
+  drawText('透明带',cx,cy-r-22,'#fbbf24',11);
+  // 卵细胞核
+  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.beginPath();ctx.arc(cx-15,cy-10,12,0,7);ctx.fill();
+  drawText('卵母细胞',cx,cy,'#fff',13);
+  drawText('MⅡ 期',cx-15,cy-10,'#fbbf24',10);
+  // 精子（多个游向卵子）
+  const N=6;
+  for(let i=0;i<N;i++){
+    const a=(i/N)*7+time*0.6;
+    const dist=180-Math.min(120,Math.sin(time*1.2+i)*60+60);
+    const sx=cx+Math.cos(a)*dist;
+    const sy=cy+Math.sin(a)*dist;
+    // 精子尾（鞭毛摆动）
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(sx,sy);
+    for(let k=1;k<=6;k++){
+      const wave=Math.sin(time*6+k*0.6+i)*4;
+      const bx=sx-Math.cos(a)*(k*5)+Math.sin(a)*wave;
+      const by=sy-Math.sin(a)*(k*5)-Math.cos(a)*wave;
+      ctx.lineTo(bx,by);
+    }
+    ctx.stroke();
+    // 精子头（椭圆）
+    ctx.fillStyle='#06b6d4';
+    ctx.save();ctx.translate(sx,sy);ctx.rotate(a+Math.PI);
+    ctx.beginPath();ctx.ellipse(0,0,6,4,0,0,7);ctx.fill();
+    ctx.restore();
+  }
+  drawText('精子（已获能）',cx-180,cy-100,'#06b6d4',12);
+  // 已结合精子（透明带内）
+  const penetrate=Math.sin(time*0.8)>0;
+  if(penetrate){
+    ctx.fillStyle='#34d399';
+    ctx.beginPath();ctx.arc(cx+r*0.6,cy-r*0.3,5,0,7);ctx.fill();
+    drawText('受精!',cx,cy+r+40,'#34d399',14);
+  }
+  drawText('精子穿透透明带 → 雌雄原核融合 → 受精卵',W/2,H-50,'#34d399',12);
+}
+
+// ===== 场景：卵裂过程 =====
+function drawCleavageScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('卵裂过程 · 受精卵分裂',W/2,30,'#fbbf24',16);
+  // 5 个阶段
+  const stages=[
+    {n:'受精卵',cells:1,c:160},
+    {n:'2 细胞',cells:2,c:280},
+    {n:'4 细胞',cells:4,c:420},
+    {n:'8 细胞',cells:8,c:580},
+    {n:'桑椹胚',cells:16,c:740},
+  ];
+  // 当前阶段（循环）
+  const phase=Math.floor((time*0.6)%stages.length);
+  const nextPhase=(phase+1)%stages.length;
+  const morph=(time*0.6)%1;
+  // 中心大圆显示当前阶段
+  const cx=W/2,cy=H/2+20;
+  const cellLayouts={
+    1:[[0,0]],
+    2:[[-18,0],[18,0]],
+    4:[[-18,-18],[18,-18],[-18,18],[18,18]],
+    8:[[-22,-22],[0,-22],[22,-22],[-22,0],[22,0],[-22,22],[0,22],[22,22]],
+    16:[[-24,-24],[-8,-24],[8,-24],[24,-24],[-24,-8],[24,-8],[-24,8],[24,8],[-24,24],[-8,24],[8,24],[24,24],[0,-8],[0,8],[-8,0],[8,0]],
+  };
+  const cur=stages[phase];
+  const cells=cellLayouts[cur.cells];
+  // 囊膜
+  ctx.strokeStyle='rgba(251,191,36,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.arc(cx,cy,55,0,7);ctx.stroke();ctx.setLineDash([]);
+  // 细胞
+  ctx.fillStyle='rgba(6,182,212,0.5)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  const size=Math.max(8,22-Math.sqrt(cur.cells)*3);
+  cells.forEach(([dx,dy])=>{
+    ctx.beginPath();ctx.arc(cx+dx,cy+dy,size,0,7);ctx.fill();ctx.stroke();
+  });
+  drawText(cur.n,cx,cy-80,'#fbbf24',16);
+  drawText(cur.cells+' 个卵裂球',cx,cy+90,'#06b6d4',12);
+  // 流程箭头
+  drawText('→',W/2,H-70,'#9ab0d0',14);
+  drawText('卵裂：细胞数增多，单个变小，总体积不变',W/2,H-45,'#34d399',12);
+}
+
+// ===== 场景：囊胚结构 =====
+function drawBlastocystScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('囊胚结构 · 内细胞团 + 滋养层',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  const R=80;
+  // 囊胚（大圆）
+  ctx.fillStyle='rgba(167,139,250,0.12)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fill();ctx.stroke();
+  // 透明带（虚线）
+  ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.arc(cx,cy,R+8,0,7);ctx.stroke();ctx.setLineDash([]);
+  // 囊胚腔（中心液体）
+  ctx.fillStyle='rgba(6,182,212,0.15)';
+  ctx.beginPath();ctx.arc(cx,cy,55,0,7);ctx.fill();
+  // 滋养层细胞（外环）
+  ctx.fillStyle='#06b6d4';
+  for(let i=0;i<24;i++){
+    const a=i/24*7;
+    const tx=cx+Math.cos(a)*(R-10);
+    const ty=cy+Math.sin(a)*(R-10);
+    ctx.beginPath();ctx.arc(tx,ty,4,0,7);ctx.fill();
+  }
+  // 内细胞团（一团）
+  ctx.fillStyle='rgba(251,191,36,0.6)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx-30,cy-10,22,0,7);ctx.fill();ctx.stroke();
+  // ICM 内部
+  ctx.fillStyle='#fbbf24';
+  for(let i=0;i<6;i++){
+    const a=i/6*7;
+    ctx.beginPath();ctx.arc(cx-30+Math.cos(a)*8,cy-10+Math.sin(a)*8,3,0,7);ctx.fill();
+  }
+  // 标注
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-30,cy-32);ctx.lineTo(cx-120,cy-60);ctx.stroke();
+  drawText('内细胞团 ICM',cx-180,cy-65,'#fbbf24',13,'left');
+  drawText('→ 发育为胎儿本体',cx-180,cy-48,'#9ab0d0',11,'left');
+  ctx.strokeStyle='#06b6d4';
+  ctx.beginPath();ctx.moveTo(cx+R-10,cy);ctx.lineTo(cx+100,cy-60);ctx.stroke();
+  drawText('滋养层',cx+105,cy-65,'#06b6d4',13,'left');
+  drawText('→ 发育为胎盘胎膜',cx+105,cy-48,'#9ab0d0',11,'left');
+  ctx.strokeStyle='#a78bfa';
+  ctx.beginPath();ctx.moveTo(cx,cy+10);ctx.lineTo(cx,cy+100);ctx.stroke();
+  drawText('囊胚腔',cx,cy+115,'#a78bfa',12);
+  // 孵化动画
+  const hatch=Math.sin(time*0.5)*0.5+0.5;
+  if(hatch>0.5){
+    drawText('孵化：囊胚从透明带脱出',W/2,H-50,'#34d399',12);
+  }
+}
+
+// ===== 场景：胚胎分割 =====
+function drawSplitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('胚胎分割 · 切开内细胞团得同卵双胎',W/2,30,'#fbbf24',16);
+  const cy=H/2+10;
+  const phase=(time*0.5)%3;
+  // 三个阶段：原囊胚 → 分割 → 两个胚胎
+  const positions=[
+    {x:W/2,split:false},
+    {x:W/2,split:true,cut:phase},
+    {x:W/2,special:'two'}
+  ];
+  const stg=phase<1?0:phase<2?1:2;
+  const R=55;
+  function drawBlasto(bx,by,icmOffset,showICM){
+    ctx.fillStyle='rgba(167,139,250,0.12)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(bx,by,R,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#06b6d4';
+    for(let i=0;i<18;i++){
+      const a=i/18*7;
+      ctx.beginPath();ctx.arc(bx+Math.cos(a)*(R-7),by+Math.sin(a)*(R-7),3.5,0,7);ctx.fill();
+    }
+    if(showICM){
+      ctx.fillStyle='rgba(251,191,36,0.6)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(bx+icmOffset,by-5,16,0,7);ctx.fill();ctx.stroke();
+    }
+  }
+  if(stg===0){
+    drawBlasto(W/2,cy,-20,true);
+    drawText('① 完整囊胚',W/2,cy+R+25,'#fbbf24',13);
+    drawText('内细胞团清晰可见',W/2,cy+R+45,'#9ab0d0',11);
+  }else if(stg===1){
+    drawBlasto(W/2,cy,0,true);
+    // 分割针/刀
+    const cutX=W/2+(phase-1.5)*60;
+    ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+    ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.moveTo(cutX,cy-R-30);ctx.lineTo(cutX,cy+R+30);ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText('分割针',cutX,cy-R-40,'#f87171',11);
+    drawText('② 沿中线切开内细胞团',W/2,cy+R+25,'#fbbf24',13);
+  }else{
+    // 两个分开的胚胎
+    const sep=(phase-2)*120;
+    drawBlasto(W/2-sep-15,cy,-12,true);
+    drawBlasto(W/2+sep+15,cy,12,true);
+    drawText('③ 分别移植',W/2,cy+R+25,'#34d399',13);
+    drawText('→ 同卵双胎（基因型相同）',W/2,cy+R+45,'#34d399',11);
+    if(phase>2.7){
+      drawText('＝',W/2,cy,'#fff',18);
+    }
+  }
+  drawText('分割 → 每份含完整内细胞团 → 各自发育成个体',W/2,H-45,'#9ab0d0',12);
+}
+
+// ===== 场景：胚胎移植 =====
+function drawTransferScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('胚胎移植 · 供体与受体同步发情',W/2,30,'#fbbf24',16);
+  const cy=H/2+20;
+  // 供体（左）优良品种（高产奶牛）
+  const lx=140,rx=W-140;
+  ctx.fillStyle='rgba(251,191,36,0.08)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(lx-90,cy-70,180,140,12);ctx.fill();ctx.stroke();
+  drawText('供体（高产奶牛）',lx,cy-50,'#fbbf24',14);
+  drawText('优良品种',lx,cy-30,'#9ab0d0',11);
+  // 牛身体（简化轮廓）
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.ellipse(lx,cy+5,40,18,0,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(lx+35,cy-5,10,0,7);ctx.fill();
+  // 受体（右）普通品种
+  ctx.fillStyle='rgba(52,211,153,0.08)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(rx-90,cy-70,180,140,12);ctx.fill();ctx.stroke();
+  drawText('受体（黄牛）',rx,cy-50,'#34d399',14);
+  drawText('普通品种（代孕）',rx,cy-30,'#9ab0d0',11);
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.ellipse(rx,cy+5,40,18,0,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(rx-35,cy-5,10,0,7);ctx.fill();
+  // 子宫（受体内）
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(rx,cy+20,18,0,Math.PI,false);ctx.stroke();
+  // 移植箭头（胚胎从供体到受体）
+  const prog=(Math.sin(time*1.2)*0.5+0.5);
+  const ax1=lx+90,ax2=rx-90;
+  const arrX=ax1+(ax2-ax1)*prog;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(ax1,cy);ctx.lineTo(ax2,cy);ctx.stroke();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.moveTo(ax2,cy);ctx.lineTo(ax2-10,cy-6);ctx.lineTo(ax2-10,cy+6);ctx.fill();
+  // 移动中的胚胎
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(arrX,cy,8,0,7);ctx.fill();
+  drawText('胚胎',arrX,cy-18,'#fbbf24',11);
+  // 同期发情标注
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  roundRect(60,cy-110,W-120,30,6);ctx.fill();ctx.stroke();ctx.setLineDash([]);
+  drawText('同期发情处理（前列腺素/孕激素）',W/2,cy-95,'#f87171',12);
+  drawText('供体采卵后 → 胚胎 → 移植入受体子宫',W/2,H-55,'#34d399',12);
+  drawText('受体代孕分娩，后代是供体的优良基因',W/2,H-35,'#9ab0d0',11);
+}
+
+// ===== 场景：胚胎干细胞 =====
+function drawESCScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('胚胎干细胞 ESC · 全能性分化',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 囊胚（中心）
+  ctx.fillStyle='rgba(167,139,250,0.15)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy-30,40,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(251,191,36,0.7)';
+  ctx.beginPath();ctx.arc(cx-12,cy-35,13,0,7);ctx.fill();
+  drawText('囊胚',cx,cy-30,'#a78bfa',11);
+  drawText('内细胞团',cx-12,cy-35,'#fff',9);
+  // 箭头到 ESC
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy+15);ctx.lineTo(cx,cy+45);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(cx,cy+45);ctx.lineTo(cx-6,cy+38);ctx.lineTo(cx+6,cy+38);ctx.fill();
+  drawText('分离培养',cx,cy+30,'#fbbf24',10);
+  // ESC 细胞
+  ctx.fillStyle='rgba(52,211,153,0.4)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy+65,22,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(cx,cy+65,7,0,7);ctx.fill();
+  drawText('ESC',cx,cy+65,'#fff',11);
+  // 分化方向（三条射线）
+  const targets=[
+    {a:-Math.PI*0.75,label:'神经细胞',c:'#06b6d4',icon:'外胚层'},
+    {a:0,label:'心肌细胞',c:'#f87171',icon:'中胚层'},
+    {a:Math.PI*0.75,label:'肝细胞',c:'#34d399',icon:'内胚层'},
+  ];
+  targets.forEach((tg,i)=>{
+    const swing=Math.sin(time*1.2+i*1.5)*8;
+    const tx=cx+Math.cos(tg.a)*180+swing;
+    const ty=cy+65+Math.sin(tg.a)*180;
+    // 连接线
+    ctx.strokeStyle=tg.c+'88';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(cx,cy+65);ctx.lineTo(tx,ty);ctx.stroke();ctx.setLineDash([]);
+    // 目标细胞
+    ctx.fillStyle=tg.c+'55';ctx.strokeStyle=tg.c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(tx,ty,25,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle=tg.c;
+    ctx.beginPath();ctx.arc(tx,ty,7,0,7);ctx.fill();
+    drawText(tg.label,tx,ty+38,tg.c,11);
+    drawText(tg.icon,tx,ty-38,'#9ab0d0',10);
+  });
+  drawText('全能性：可分化为三胚层任何一种细胞',W/2,H-40,'#34d399',12);
+}
+
+// ===== 场景：应用案例 =====
+function drawAppScene(){
+  const W=cv.width,H=cv.height;
+  drawText('胚胎工程应用',W/2,30,'#fbbf24',16);
+  const items=[
+    {t:'人类试管婴儿',d:'治疗不孕不育',c:'#06b6d4',icon:'👶'},
+    {t:'优良家畜繁殖',d:'1 头牛年产 20+ 后代',c:'#fbbf24',icon:'🐄'},
+    {t:'濒危物种保护',d:'大熊猫、金丝猴',c:'#34d399',icon:'🐼'},
+    {t:'转基因动物',d:'乳腺生物反应器',c:'#a78bfa',icon:'🧬'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+15,y,(W-160)/2-30,140,10);ctx.fill();ctx.stroke();
+    ctx.font='32px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText(m.icon,x+(W-160)/4,y+50);
+    drawText(m.t,x+(W-160)/4,y+85,m.c,15);
+    drawText(m.d,x+(W-160)/4,y+110,'#9ab0d0',12);
+  });
+}
+
+// ===== 场景：伦理 =====
+function drawEthicsScene(){
+  const W=cv.width,H=cv.height;
+  drawText('胚胎工程的伦理思考',W/2,30,'#fbbf24',16);
+  // 天平
+  const cx=W/2,cy=H/2-10;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx,cy-40);ctx.lineTo(cx,cy+80);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-100,cy+80);ctx.lineTo(cx+100,cy+80);ctx.stroke();
+  // 天平横梁（轻微摆动）
+  const tilt=0;
+  ctx.save();ctx.translate(cx,cy-40);ctx.rotate(tilt);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(-150,0);ctx.lineTo(150,0);ctx.stroke();
+  // 左盘：科学进步
+  ctx.fillStyle='rgba(6,182,212,0.2)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(-150,30,40,0,Math.PI,true);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-180,30);ctx.lineTo(-150,0);ctx.moveTo(-120,30);ctx.lineTo(-150,0);ctx.stroke();
+  ctx.restore();
+  drawText('科学进步',cx-150,cy+10,'#06b6d4',14);
+  drawText('治疗不孕',cx-150,cy+30,'#9ab0d0',11);
+  drawText('再生医学',cx-150,cy+48,'#9ab0d0',11);
+  // 右盘：伦理规范
+  ctx.save();ctx.translate(cx,cy-40);
+  ctx.fillStyle='rgba(248,113,113,0.2)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(150,30,40,0,Math.PI,true);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(120,30);ctx.lineTo(150,0);ctx.moveTo(180,30);ctx.lineTo(150,0);ctx.stroke();
+  ctx.restore();
+  drawText('伦理规范',cx+150,cy+10,'#f87171',14);
+  drawText('胚胎地位',cx+150,cy+30,'#9ab0d0',11);
+  drawText('禁止设计婴儿',cx+150,cy+48,'#9ab0d0',11);
+  // 底部说明
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  roundRect(60,H-110,W-120,80,8);ctx.fill();ctx.stroke();
+  drawText('我国规定：禁止生殖性克隆人',W/2,H-90,'#fbbf24',13);
+  drawText('允许治疗性克隆研究但严格审查',W/2,H-68,'#9ab0d0',12);
+  drawText('胚胎研究不超过 14 天（原条出现前）',W/2,H-46,'#34d399',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawIVFScene(t);
+  else if(stepIdx===1)drawIVFScene(t);
+  else if(stepIdx===2)drawCleavageScene(t);
+  else if(stepIdx===3)drawBlastocystScene(t);
+  else if(stepIdx===4)drawSplitScene(t);
+  else if(stepIdx===5)drawTransferScene(t);
+  else if(stepIdx===6)drawTransferScene(t);
+  else if(stepIdx===7)drawESCScene(t);
+  else if(stepIdx===8)drawAppScene();
+  else if(stepIdx===9)drawEthicsScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

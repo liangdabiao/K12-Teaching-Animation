@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>植物组织培养 · 全能性 · 脱分化与再分化</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">植物组织培养</span><span class="subtitle">全能性表达 · 脱分化与再分化 · 激素调控</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>植物细胞全能性</h4><div class="v">已分化细胞具有发育成<br>完整植株的潜能</div></div>
+  <div class="card s2"><div class="num">2</div><h4>激素调控方向</h4><div class="v">生长素/细胞分裂素比例<br>决定根芽分化方向</div></div>
+  <div class="card s3"><div class="num">3</div><h4>培养流程</h4><div class="v">外植体→消毒→脱分化→<br>再分化→炼苗→移栽</div></div>
+  <div class="card s4"><div class="num">4</div><h4>四大应用</h4><div class="v">快繁·脱毒苗·人工种子·<br>转基因植物培育</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">植物细胞全能性</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'全能性',name:'细胞全能性',body:'<strong>植物细胞全能性</strong>：具有<strong>完整细胞核</strong>的植物细胞，在适宜条件下具有<strong>发育成完整植株</strong>的潜能。这是组织培养的<strong>理论基础</strong>。已分化的根、茎、叶细胞，<strong>基因组并未丢失</strong>，只是基因选择性表达。',points:{title:'全能性核心',items:['<strong>定义</strong>：已分化细胞→完整植株的潜能','<strong>物质基础</strong>：含完整基因组（全套基因）','<strong>分化程度</strong>：受精卵 > 生殖细胞 > 体细胞','<strong>体现条件</strong>：离体·无菌·适宜营养激素']}},
+  {tag:'激素调控',name:'激素比例调控',body:'<strong>生长素（IAA）</strong>与<strong>细胞分裂素（CTK）</strong>的<strong>比例</strong>决定分化方向：<code>生长素&gt;细胞分裂素</code>→长根；<code>细胞分裂素&gt;生长素</code>→长芽；<strong>两者比例适中且浓度较高</strong>→只形成<strong>愈伤组织</strong>（脱分化）。',points:{title:'激素比例口诀',items:['<strong>生长素多</strong>：促进长根','<strong>细胞分裂素多</strong>：促进长芽','<strong>两者均高</strong>：脱分化→愈伤组织','<strong>先芽后根</strong>：再分化的正常顺序']}},
+  {tag:'外植体',name:'外植体消毒',body:'<strong>外植体</strong>：从植物体上切取下来用于培养的<strong>根、茎、叶</strong>等组织块（多为<strong>幼嫩、分生能力强</strong>的部位）。接种前必须<strong>严格消毒</strong>（70%酒精+次氯酸钠），保证<strong>无菌环境</strong>，否则杂菌污染会失败。',points:{title:'取材与消毒',items:['<strong>取材部位</strong>：茎尖·幼叶·根尖·花瓣','<strong>消毒剂</strong>：70%酒精·次氯酸钠·升汞','<strong>培养基</strong>：MS 培养基（含大量元素）','<strong>环境</strong>：无菌·25°C·弱光']}},
+  {tag:'脱分化',name:'脱分化',body:'<strong>脱分化</strong>：已分化的外植体细胞，在<strong>高浓度激素</strong>诱导下<strong>恢复分裂能力</strong>，形成<strong>排列疏松、无定形</strong>的<strong>愈伤组织</strong>。该过程是<strong>已分化 → 未分化</strong>的状态逆转。',points:{title:'脱分化特征',items:['<strong>产物</strong>：愈伤组织（薄壁细胞团）','<strong>条件</strong>：高激素·避光或弱光','<strong>本质</strong>：细胞恢复分裂能力','<strong>持续时间</strong>：约 2 周左右']}},
+  {tag:'再分化',name:'再分化',body:'<strong>再分化</strong>：愈伤组织在<strong>改变激素比例</strong>后，重新分化出<strong>芽</strong>和<strong>根</strong>，最终发育成<strong>完整试管苗</strong>。<strong>正常顺序是先长芽后长根</strong>，再分化阶段需要<strong>光照</strong>（叶绿体形成所需）。',points:{title:'再分化顺序',items:['<strong>第一步</strong>：先分化出芽（需光）','<strong>第二步</strong>：芽基部再分化出根','<strong>光照需求</strong>：再分化阶段必需','<strong>结果</strong>：形成完整试管苗']}},
+  {tag:'炼苗移栽',name:'炼苗移栽',body:'<strong>炼苗</strong>：试管苗从无菌、高湿、异养环境，<strong>逐步过渡</strong>到自然条件。先<strong>打开瓶盖</strong>炼苗 2-3 天，再移栽到<strong>消毒过的基质</strong>（蛭石·珍珠岩），最后定植到大田。',points:{title:'炼苗三步',items:['<strong>第一步</strong>：闭瓶强光 3-5 天','<strong>第二步</strong>：开瓶炼苗 2-3 天','<strong>第三步</strong>：移栽消毒基质·保湿','<strong>目的</strong>：提高自养与抗病能力']}},
+  {tag:'应用',name:'实际应用',body:'<strong>四大应用</strong>：(1) <strong>快速繁殖</strong>（如兰花工业化生产，一年繁殖百万株）；(2) <strong>脱毒苗</strong>（取<strong>茎尖分生区</strong>，病毒无法到达此处，培育无毒苗）；(3) <strong>人工种子</strong>（愈伤组织包裹胶囊）；(4) <strong>转基因植物</strong>培育（农杆菌介导后再生）。',points:{title:'四大应用场景',items:['<strong>快速繁殖</strong>：兰花·草莓·香蕉','<strong>脱毒苗</strong>：取茎尖分生区（0.2-0.5mm）','<strong>人工种子</strong>：胚状体+人工种皮','<strong>转基因</strong>：受体细胞→再生植株']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：细胞全能性 =====
+function drawTotipotencyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('植物细胞全能性 · 一个细胞→完整植株',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 一个已分化细胞（左）
+  const pulse=0.5+0.5*Math.sin(time*2);
+  ctx.fillStyle='rgba(52,211,153,0.25)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(100,cy,30+pulse*4,0,7);ctx.fill();ctx.stroke();
+  drawText('已分化',100,cy,'#34d399',12);
+  drawText('细胞',100,cy+16,'#34d399',12);
+  // 核（含全套基因）
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(100,cy,8,0,7);ctx.fill();
+  drawText('完整DNA',100,cy-50,'#fbbf24',11);
+  // 箭头1（脱分化）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(140,cy);ctx.lineTo(220,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(220,cy);ctx.lineTo(210,cy-6);ctx.lineTo(210,cy+6);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('脱分化',180,cy-18,'#06b6d4',12);
+  // 愈伤组织
+  ctx.fillStyle='rgba(6,182,212,0.3)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  for(let i=0;i<6;i++){
+    const ang=i*Math.PI/3,a=260+Math.sin(time+i)*4;
+    ctx.beginPath();ctx.arc(a,cy+Math.sin(ang)*15,12,0,7);ctx.fill();ctx.stroke();
+  }
+  drawText('愈伤组织',300,cy-40,'#06b6d4',12);
+  // 箭头2（再分化）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(340,cy);ctx.lineTo(420,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(420,cy);ctx.lineTo(410,cy-6);ctx.lineTo(410,cy+6);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('再分化',380,cy-18,'#fbbf24',12);
+  // 试管苗（右）
+  const px=W-100;
+  // 根
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(px,cy);ctx.lineTo(px-12,cy+30);ctx.moveTo(px,cy);ctx.lineTo(px+10,cy+30);ctx.stroke();
+  // 茎
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(px,cy);ctx.lineTo(px,cy-50);ctx.stroke();
+  // 叶
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.ellipse(px-12,cy-35,12,6,-0.5,0,7);ctx.fill();
+  ctx.beginPath();ctx.ellipse(px+12,cy-45,12,6,0.5,0,7);ctx.fill();
+  drawText('完整植株',px,cy-75,'#34d399',12);
+  // 底部说明
+  drawText('基因组不变 · 基因选择性表达',W/2,H-50,'#9ab0d0',12);
+  drawText('条件：离体 · 无菌 · 适宜营养与激素',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：激素调控 =====
+function drawHormoneScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('激素调控 · 生长素 / 细胞分裂素比例',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 比例动态变化
+  const phase=(time*0.4)%3;
+  let iaa,ctk,label,color;
+  if(phase<1){iaa=0.7;ctk=0.3;label='生长素 > 细胞分裂素  →  长根';color='#a78bfa';}
+  else if(phase<2){iaa=0.3;ctk=0.7;label='细胞分裂素 > 生长素  →  长芽';color='#34d399';}
+  else{iaa=0.9;ctk=0.9;label='两者均高  →  脱分化（愈伤组织）';color='#06b6d4';}
+  // 两个柱
+  const bw=80,bh=180;
+  // 生长素
+  ctx.fillStyle='rgba(167,139,250,0.2)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-130,cy-bh/2,bw,bh,8);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#a78bfa';
+  const h1=iaa*(bh-20);
+  roundRect(cx-130,cy-bh/2+bh-h1-10,bw,h1+10,6);ctx.fill();
+  drawText('生长素',cx-90,cy+bh/2+18,'#a78bfa',13);
+  drawText('IAA',cx-90,cy-bh/2-12,'#a78bfa',12);
+  drawText((iaa*100).toFixed(0)+'%',cx-90,cy-bh/2+bh-h1/2-5,'#fff',14);
+  // 细胞分裂素
+  ctx.fillStyle='rgba(52,211,153,0.2)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(cx+50,cy-bh/2,bw,bh,8);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#34d399';
+  const h2=ctk*(bh-20);
+  roundRect(cx+50,cy-bh/2+bh-h2-10,bw,h2+10,6);ctx.fill();
+  drawText('细胞分裂素',cx+90,cy+bh/2+18,'#34d399',13);
+  drawText('CTK',cx+90,cy-bh/2-12,'#34d399',12);
+  drawText((ctk*100).toFixed(0)+'%',cx+90,cy-bh/2+bh-h2/2-5,'#fff',14);
+  // 结果文字（带辉光）
+  ctx.shadowColor=color;ctx.shadowBlur=15;
+  drawText(label,W/2,H-70,color,15);
+  ctx.shadowBlur=0;
+  drawText('激素比例 = 分化方向开关',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景：外植体与消毒 =====
+function drawExplantScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('外植体取材 · 消毒 · 接种',W/2,30,'#fbbf24',16);
+  // 母株（左）
+  drawText('母株',100,80,'#34d399',13);
+  ctx.strokeStyle='#8b5e34';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(100,150);ctx.lineTo(100,90);ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.ellipse(80,100,22,12,-0.4,0,7);ctx.fill();
+  ctx.beginPath();ctx.ellipse(120,110,20,11,0.4,0,7);ctx.fill();
+  ctx.beginPath();ctx.ellipse(100,75,18,10,0,0,7);ctx.fill();
+  // 取材部位标记（脉动）
+  const pulse=0.5+0.5*Math.sin(time*3);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.shadowColor='#f87171';ctx.shadowBlur=10*pulse;
+  ctx.beginPath();ctx.arc(100,90,18,0,7);ctx.stroke();
+  ctx.shadowBlur=0;
+  // 箭头
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(125,90);ctx.lineTo(220,90);ctx.stroke();
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.moveTo(220,90);ctx.lineTo(212,85);ctx.lineTo(212,95);ctx.fill();
+  drawText('切取',170,80,'#06b6d4',11);
+  // 外植体块
+  ctx.fillStyle='rgba(52,211,153,0.4)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(220,75,50,30,6);ctx.fill();ctx.stroke();
+  drawText('外植体',245,90,'#34d399',12);
+  // 消毒（酒精灯 + 消毒液）
+  drawText('消毒',360,80,'#fbbf24',13);
+  // 酒精灯火焰
+  const flick=1+Math.sin(time*8)*0.2;
+  ctx.fillStyle='#fb923c';ctx.beginPath();
+  ctx.moveTo(360,150);ctx.quadraticCurveTo(355,120,360,95);ctx.quadraticCurveTo(365,120,360,150);ctx.fill();
+  ctx.fillStyle='#fde68a';ctx.beginPath();
+  ctx.moveTo(360,140);ctx.quadraticCurveTo(357,125,360,110);ctx.quadraticCurveTo(363,125,360,140);ctx.fill();
+  drawText('70%酒精',360,170,'#9ab0d0',10);
+  drawText('+次氯酸钠',360,185,'#9ab0d0',10);
+  // 培养瓶（MS 培养基）
+  const bx=W-180,by=cy=H/2+10;
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(bx,by-60,120,120,8);ctx.fill();ctx.stroke();
+  // 培养基（凝胶）
+  ctx.fillStyle='rgba(167,139,250,0.3)';
+  ctx.fillRect(bx+8,by+20,104,36);
+  drawText('MS培养基',bx+60,by+38,'#a78bfa',11);
+  // 接种的外植体（在培养基上）
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(bx+60,by+18,8,0,7);ctx.fill();
+  // 瓶口
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(bx+30,by-60);ctx.lineTo(bx+30,by-75);ctx.lineTo(bx+90,by-75);ctx.lineTo(bx+90,by-60);ctx.stroke();
+  drawText('无菌接种',bx+60,by-90,'#06b6d4',12);
+  // 箭头2
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(270,90);ctx.lineTo(bx-10,90);ctx.lineTo(bx-10,by);ctx.lineTo(bx,by);ctx.stroke();
+  drawText('环境：25°C · 弱光 · 无菌',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景：脱分化（愈伤组织）=====
+function drawDediffScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('脱分化 · 已分化细胞 → 愈伤组织',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 外植体（左）逐渐变愈伤（右）
+  const prog=(Math.sin(time*0.8)+1)/2;
+  // 左：外植体
+  ctx.fillStyle='rgba(52,211,153,0.4)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(80,cy-30,80,60,8);ctx.fill();ctx.stroke();
+  drawText('外植体',120,cy,'#34d399',13);
+  drawText('（排列整齐·已分化）',120,cy+50,'#9ab0d0',10);
+  // 中：激素冲击
+  ctx.fillStyle='rgba(251,191,36,0.3)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx-100,cy,40,0,7);ctx.fill();ctx.stroke();
+  drawText('高浓度激素',cx-100,cy,'#fbbf24',12);
+  drawText('IAA+CTK',cx-100,cy+15,'#fde68a',10);
+  // 箭头
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(170,cy);ctx.lineTo(cx-150,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-150,cy);ctx.lineTo(cx-142,cy-6);ctx.lineTo(cx-142,cy+6);ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx-60,cy);ctx.lineTo(cx,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx-8,cy-6);ctx.lineTo(cx-8,cy+6);ctx.fill();
+  ctx.shadowBlur=0;
+  // 右：愈伤组织（一团不规则细胞）
+  ctx.fillStyle='rgba(6,182,212,0.35)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  const blocks=14;
+  for(let i=0;i<blocks;i++){
+    const ang=i*Math.PI*2/blocks+time*0.5;
+    const rr=25+Math.sin(time*2+i)*8;
+    const px=cx+140+Math.cos(ang)*rr;
+    const py=cy+Math.sin(ang)*rr*0.85;
+    ctx.beginPath();ctx.arc(px,py,12,0,7);ctx.fill();ctx.stroke();
+  }
+  drawText('愈伤组织',cx+140,cy,'#06b6d4',14);
+  drawText('（排列疏松·薄壁·未分化）',cx+140,cy+70,'#9ab0d0',11);
+  // 底部
+  drawText('细胞恢复分裂能力 · 基因重新编程',W/2,H-50,'#34d399',13);
+  drawText('条件：避光或弱光 · 高激素 · 约2周',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：再分化 =====
+function drawRediffScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('再分化 · 愈伤 → 先芽 → 后根 → 试管苗',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 阶段进度（0-1循环）
+  const prog=((time*0.25)%1);
+  // 培养基底（褐色）
+  ctx.fillStyle='rgba(139,94,52,0.4)';ctx.strokeStyle='#8b5e34';ctx.lineWidth=1.5;
+  ctx.fillRect(cx-120,cy+60,240,30);ctx.strokeRect(cx-120,cy+60,240,30);
+  drawText('MS培养基（激素比例改变）',cx,cy+105,'#a78bfa',11);
+  // 愈伤组织底座
+  ctx.fillStyle='rgba(6,182,212,0.4)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy+55,30,0,Math.PI);ctx.fill();ctx.stroke();
+  drawText('愈伤',cx,cy+60,'#06b6d4',10);
+  // 芽（生长）
+  if(prog>0.15){
+    const budH=Math.min(80,(prog-0.15)*200);
+    ctx.strokeStyle='#34d399';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(cx,cy+45);ctx.lineTo(cx,cy+45-budH);ctx.stroke();
+    // 叶
+    if(budH>20){
+      ctx.fillStyle='#34d399';
+      ctx.beginPath();ctx.ellipse(cx-12,cy+45-budH*0.5,14,7,-0.5,0,7);ctx.fill();
+      ctx.beginPath();ctx.ellipse(cx+12,cy+45-budH*0.7,14,7,0.5,0,7);ctx.fill();
+    }
+    drawText('芽（需光）',cx,cy+45-budH-15,'#34d399',12);
+  }
+  // 根（芽长出后才长根）
+  if(prog>0.5){
+    const rootH=Math.min(50,(prog-0.5)*150);
+    ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx,cy+60);ctx.lineTo(cx-10,cy+60+rootH*0.7);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,cy+60);ctx.lineTo(cx+12,cy+60+rootH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,cy+60);ctx.lineTo(cx,cy+60+rootH*0.9);ctx.stroke();
+    drawText('根',cx+30,cy+60+rootH*0.5,'#a78bfa',11);
+  }
+  // 光照标识（再分化需要光）
+  if(prog>0.2){
+    ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.lineWidth=1;
+    for(let i=-3;i<=3;i++){
+      ctx.beginPath();ctx.moveTo(cx+i*30,cy-130);ctx.lineTo(cx+i*20,cy+30);ctx.stroke();
+    }
+    drawText('☀ 光照',cx-160,cy-100,'#fbbf24',13);
+  }
+  // 顺序说明
+  drawText('再分化顺序：先芽 → 后根',W/2,H-50,'#34d399',13);
+  drawText('光照是叶绿体形成的必要条件',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：炼苗移栽 =====
+function drawTransferScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('炼苗 · 移栽 · 完整生活史',W/2,30,'#fbbf24',16);
+  const cy=H/2+10;
+  // 三个阶段
+  const stages=[
+    {x:140,t:'试管苗',c:'#06b6d4',type:'tube'},
+    {x:W/2,t:'炼苗',c:'#fbbf24',type:'harden'},
+    {x:W-140,t:'土培苗',c:'#34d399',type:'soil'},
+  ];
+  // 连接箭头
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(220,cy);ctx.lineTo(W/2-80,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W/2+80,cy);ctx.lineTo(W-220,cy);ctx.stroke();
+  drawText('逐步过渡',W/2-150,cy-15,'#fbbf24',11);
+  drawText('定植',W/2+150,cy-15,'#34d399',11);
+  stages.forEach((s,i)=>{
+    const x=s.x;
+    if(s.type==='tube'){
+      // 培养瓶
+      ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+      roundRect(x-40,cy-60,80,120,8);ctx.fill();ctx.stroke();
+      ctx.fillStyle='rgba(167,139,250,0.3)';ctx.fillRect(x-32,cy+20,64,30);
+      // 苗
+      ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(x,cy+18);ctx.lineTo(x,cy-30);ctx.stroke();
+      ctx.fillStyle='#34d399';
+      ctx.beginPath();ctx.ellipse(x-10,cy-15,10,5,-0.5,0,7);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x+10,cy-25,10,5,0.5,0,7);ctx.fill();
+    }else if(s.type==='harden'){
+      // 开盖（脉动）
+      const open=Math.sin(time*1.5)*5;
+      ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+      roundRect(x-40,cy-60,80,120,8);ctx.fill();ctx.stroke();
+      ctx.fillStyle='rgba(139,94,52,0.4)';ctx.fillRect(x-32,cy+20,64,30);
+      // 开着的盖
+      ctx.strokeStyle=s.c;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x-30,cy-60);ctx.lineTo(x-30-open*3,cy-80);ctx.lineTo(x+30-open*3,cy-80);ctx.lineTo(x+30,cy-60);ctx.stroke();
+      // 苗（更高）
+      ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(x,cy+18);ctx.lineTo(x,cy-50);ctx.stroke();
+      ctx.fillStyle='#34d399';
+      ctx.beginPath();ctx.ellipse(x-12,cy-30,12,6,-0.5,0,7);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x+12,cy-42,12,6,0.5,0,7);ctx.fill();
+      // 湿度波纹
+      ctx.strokeStyle='rgba(96,165,250,0.4)';ctx.lineWidth=1;
+      for(let j=0;j<3;j++){
+        ctx.beginPath();ctx.arc(x,cy-30,15+j*8+Math.sin(time*3+j)*3,-Math.PI*0.7,-Math.PI*0.3);ctx.stroke();
+      }
+    }else{
+      // 花盆 + 土
+      ctx.fillStyle='rgba(139,94,52,0.5)';ctx.strokeStyle='#8b5e34';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x-50,cy+10);ctx.lineTo(x-40,cy+70);ctx.lineTo(x+40,cy+70);ctx.lineTo(x+50,cy+10);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle='#3a2a1a';ctx.fillRect(x-45,cy+5,90,8);
+      // 苗（最大）
+      ctx.strokeStyle=s.c;ctx.lineWidth=4;
+      ctx.beginPath();ctx.moveTo(x,cy+8);ctx.lineTo(x,cy-70);ctx.stroke();
+      ctx.fillStyle=s.c;
+      ctx.beginPath();ctx.ellipse(x-16,cy-30,16,8,-0.5,0,7);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x+16,cy-50,16,8,0.5,0,7);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x,cy-70,14,7,0,0,7);ctx.fill();
+    }
+    drawText(s.t,x,cy+100,s.c,13);
+  });
+  drawText('炼苗三步：闭瓶强光 → 开瓶炼苗 → 移栽基质',W/2,H-50,'#34d399',12);
+  drawText('目的：从异养高湿 → 自养自然环境的过渡',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：四大应用 =====
+function drawAppScene(){
+  const W=cv.width,H=cv.height;
+  drawText('植物组织培养 · 四大应用',W/2,30,'#fbbf24',16);
+  const apps=[
+    {t:'快速繁殖',d:'兰花·草莓·香蕉\n一年百万株',c:'#fbbf24',icon:'plant'},
+    {t:'脱毒苗',d:'取茎尖分生区\n0.2-0.5mm 无病毒',c:'#06b6d4',icon:'tip'},
+    {t:'人工种子',d:'胚状体+人工种皮\n胶囊化包裹',c:'#34d399',icon:'seed'},
+    {t:'转基因植物',d:'农杆菌介导\n受体细胞再生',c:'#f87171',icon:'gene'},
+  ];
+  apps.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=80+row*((H-160)/2);
+    const cw=(W-160)/2-20,ch=(H-160)/2-20;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,cw,ch,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+cw/2+10,y+30,m.c,15);
+    // 图标（简化）
+    const ix=x+50,iy=y+ch/2;
+    if(m.icon==='plant'){
+      ctx.strokeStyle=m.c;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(ix,iy-20);ctx.lineTo(ix,iy+15);ctx.stroke();
+      ctx.fillStyle=m.c;
+      ctx.beginPath();ctx.ellipse(ix-10,iy-10,8,4,-0.5,0,7);ctx.fill();
+      ctx.beginPath();ctx.ellipse(ix+10,iy-5,8,4,0.5,0,7);ctx.fill();
+    }else if(m.icon==='tip'){
+      ctx.strokeStyle=m.c;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(ix,iy+20);ctx.lineTo(ix,iy-20);ctx.stroke();
+      for(let j=0;j<4;j++){
+        ctx.beginPath();ctx.moveTo(ix,iy-10+j*8);ctx.lineTo(ix-10+j*3,iy-15+j*8);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(ix,iy-10+j*8);ctx.lineTo(ix+10-j*3,iy-15+j*8);ctx.stroke();
+      }
+      ctx.fillStyle=m.c;ctx.beginPath();ctx.arc(ix,iy-20,4,0,7);ctx.fill();
+    }else if(m.icon==='seed'){
+      ctx.fillStyle=m.c;
+      ctx.beginPath();ctx.ellipse(ix,iy,16,20,0,0,7);ctx.fill();
+      ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.arc(ix,iy-5,3,0,7);ctx.fill();
+    }else{
+      // DNA 双螺旋简化
+      ctx.strokeStyle=m.c;ctx.lineWidth=2;
+      for(let j=-20;j<=20;j+=4){
+        const off=Math.sin(j*0.3)*10;
+        ctx.beginPath();ctx.moveTo(ix-off,iy+j);ctx.lineTo(ix+off,iy+j+2);ctx.stroke();
+      }
+    }
+    // 描述（多行）
+    const lines=m.d.split('\n');
+    lines.forEach((ln,k)=>drawText(ln,x+cw/2+50,y+ch/2-8+k*18,'#fff',12,'left'));
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawTotipotencyScene(t);
+  else if(stepIdx===1)drawHormoneScene(t);
+  else if(stepIdx===2)drawExplantScene(t);
+  else if(stepIdx===3)drawDediffScene(t);
+  else if(stepIdx===4)drawRediffScene(t);
+  else if(stepIdx===5)drawTransferScene(t);
+  else if(stepIdx===6)drawAppScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

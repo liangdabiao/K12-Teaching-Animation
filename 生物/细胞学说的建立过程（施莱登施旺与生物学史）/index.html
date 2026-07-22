@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>细胞学说的建立过程 · 施莱登施旺 · 生物学史</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">细胞学说的建立过程</span><span class="subtitle">施莱登 · 施旺 · 魏尔肖 · 生物学史</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>显微镜发展史</h4><div class="v">胡克 1665 软木切片命名 cell<br>列文虎克 观察活细胞</div></div>
+  <div class="card s2"><div class="num">2</div><h4>细胞学说三位创始人</h4><div class="v">施莱登(植物)1838<br>施旺(动物)1839 · 魏尔肖1855</div></div>
+  <div class="card s3"><div class="num">3</div><h4>三大主要内容</h4><div class="v">①生物由细胞构成<br>②细胞是基本单位 ③老细胞分裂</div></div>
+  <div class="card s4"><div class="num">4</div><h4>细胞学说意义</h4><div class="v">揭示生物界统一性<br>奠定生物学基础</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">发现</span><span id="stepTitle">细胞学说</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'发现',name:'胡克发现细胞',body:'<strong>1665 年</strong>，英国科学家<strong>罗伯特·胡克</strong>（Robert Hooke）用自制的<strong>显微镜</strong>观察软木切片，发现许多蜂窝状的小室，他将其命名为<strong>"cell"（细胞）</strong>。胡克实际上看到的是<strong>死去植物的细胞壁</strong>。',points:{title:'胡克的贡献',items:['<strong>时间</strong>：1665 年','<strong>著作</strong>：《显微图谱》','<strong>命名</strong>：cell（小室）','<strong>实质</strong>：观察到的是细胞壁']}},
+  {tag:'发现',name:'列文虎克活细胞',body:'<strong>荷兰科学家列文虎克</strong>（Leeuwenhoek）磨制出<strong>高倍显微镜</strong>（放大 270 倍），首次观察到<strong>活细胞</strong>：原生动物、细菌、红细胞、精子细胞等，开辟了<strong>微观生命世界</strong>。',points:{title:'列文虎克的突破',items:['<strong>高倍镜</strong>：放大 270×','<strong>首次</strong>：观察活细胞','<strong>发现</strong>：细菌、原生动物','<strong>称号</strong>：微生物之父']}},
+  {tag:'奠基',name:'施莱登植物细胞',body:'<strong>1838 年</strong>，德国植物学家<strong>施莱登</strong>（M. J. Schleiden）发表研究，指出<strong>所有植物组织都由细胞构成</strong>，细胞是植物体的<strong>基本结构单位</strong>。',points:{title:'施莱登的论断',items:['<strong>身份</strong>：德国植物学家','<strong>时间</strong>：1838 年','<strong>结论</strong>：植物由细胞构成','<strong>意义</strong>：植物学奠基']}},
+  {tag:'奠基',name:'施旺动物细胞',body:'<strong>1839 年</strong>，德国动物学家<strong>施旺</strong>（T. Schwann）研究发现<strong>动物组织也由细胞构成</strong>，与施莱登的植物研究相互印证，两人共同提出<strong>"细胞学说"</strong>。',points:{title:'施旺的贡献',items:['<strong>身份</strong>：德国动物学家','<strong>时间</strong>：1839 年','<strong>结论</strong>：动物也由细胞构成','<strong>共同</strong>：与施莱登创立细胞学说']}},
+  {tag:'内容',name:'细胞学说三大内容',body:'细胞学说的<strong>三大主要内容</strong>：① <strong>一切生物都是由细胞和细胞产物所构成</strong>；② <strong>细胞是生物体结构和功能的基本单位</strong>；③ <strong>新细胞由老细胞分裂产生</strong>。',points:{title:'三大要点',items:['<strong>①</strong>：生物由细胞和细胞产物构成','<strong>②</strong>：细胞是结构与功能基本单位','<strong>③</strong>：新细胞由老细胞分裂产生','<strong>范围</strong>：除病毒外一切生物']}},
+  {tag:'完善',name:'魏尔肖补充',body:'<strong>1855 年</strong>，德国病理学家<strong>魏尔肖</strong>（R. Virchow）总结出<strong>"细胞通过分裂产生新细胞"</strong>，即着名的<strong>"Omnis cellula e cellula"</strong>（一切细胞来自细胞），完善了细胞学说。',points:{title:'魏尔肖的名言',items:['<strong>时间</strong>：1855 年','<strong>身份</strong>：德国病理学家','<strong>补充</strong>：细胞来自细胞','<strong>拉丁文</strong>：Omnis cellula e cellula']}},
+  {tag:'意义',name:'细胞学说的意义',body:'细胞学说<strong>揭示了生物界的统一性</strong>和<strong>生物结构的物质性</strong>：植物、动物、微生物都由细胞构成，遵循共同规律。它是<strong>19 世纪自然科学的三大发现之一</strong>（与进化论、能量守恒定律并列），为现代生物学奠定了基础。',points:{title:'历史意义',items:['<strong>统一性</strong>：生物界结构统一','<strong>物质性</strong>：生命有物质基础','<strong>三大发现</strong>：19世纪自然科学之一','<strong>奠基</strong>：现代生物学基础']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：胡克显微镜与软木细胞 =====
+function drawHookeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('罗伯特·胡克 · 1665 · 软木细胞命名',W/2,30,'#fbbf24',16);
+  const cx=W/2-120,cy=H/2+10;
+  // ===== 显微镜主体（左侧）=====
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  // 镜筒
+  ctx.fillStyle='#172a4a';
+  roundRect(cx-25,cy-110,50,90,6);ctx.fill();ctx.stroke();
+  // 镜筒装饰横纹
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+  for(let k=0;k<3;k++){
+    const yy=cy-95+k*25;
+    ctx.beginPath();ctx.moveTo(cx-23,yy);ctx.lineTo(cx+23,yy);ctx.stroke();
+  }
+  // 目镜
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.fillStyle='#06b6d4';
+  roundRect(cx-30,cy-120,60,14,4);ctx.fill();ctx.stroke();
+  // 物镜（梯形）
+  ctx.beginPath();
+  ctx.moveTo(cx-20,cy-20);
+  ctx.lineTo(cx-12,cy);
+  ctx.lineTo(cx+12,cy);
+  ctx.lineTo(cx+20,cy-20);
+  ctx.closePath();
+  ctx.fillStyle='#06b6d4';ctx.fill();ctx.stroke();
+  // 支柱与底座
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(cx+25,cy-100);
+  ctx.lineTo(cx+60,cy-100);
+  ctx.lineTo(cx+60,cy+40);
+  ctx.stroke();
+  // 底座
+  ctx.beginPath();
+  ctx.moveTo(cx-60,cy+50);
+  ctx.lineTo(cx+70,cy+50);
+  ctx.stroke();
+  // 载物台
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  roundRect(cx-50,cy+10,100,12,3);ctx.fill();ctx.stroke();
+  // 载物台上的软木样本
+  ctx.fillStyle='rgba(251,191,36,0.3)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+  roundRect(cx-20,cy+11,40,10,2);ctx.fill();ctx.stroke();
+  drawText('显微镜',cx,cy+85,'#06b6d4',13);
+  // ===== 软木切片视野（右侧蜂窝状）=====
+  const vx=W/2+150,vy=cy;
+  ctx.fillStyle='#1a3050';ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(vx,vy,110,0,7);ctx.fill();ctx.stroke();
+  drawText('软木切片视野',vx,vy-125,'#9ab0d0',12);
+  // 蜂窝状六边形（细胞壁空腔，模拟胡克所见）
+  const hexR=22;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  ctx.fillStyle='rgba(251,191,36,0.08)';
+  for(let row=-3;row<=3;row++){
+    for(let col=-3;col<=3;col++){
+      const ox=vx+col*hexR*1.5;
+      const oy=vy+row*hexR*1.732+(col%2?hexR*0.866:0);
+      // 限制在圆形视野内
+      if(Math.abs(ox-vx)>90||Math.abs(oy-vy)>90)continue;
+      const pulse=1+0.05*Math.sin(time*2+col+row);
+      ctx.beginPath();
+      for(let k=0;k<6;k++){
+        const a=k*Math.PI/3;
+        const px=ox+Math.cos(a)*hexR*pulse;
+        const py=oy+Math.sin(a)*hexR*pulse;
+        if(k===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+      }
+      ctx.closePath();ctx.fill();ctx.stroke();
+    }
+  }
+  drawText('"cell" · 小室',vx,vy+125,'#fbbf24',14);
+  // 年份大字水印
+  ctx.font='bold 40px serif';ctx.fillStyle='rgba(251,191,36,0.08)';
+  ctx.textAlign='center';ctx.fillText('1665',W/2,H/2+150);
+  drawText('胡克实际看到的是死细胞的细胞壁',W/2,H-40,'#9ab0d0',12);
+  drawText('首次为生物微观结构命名',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景：列文虎克活细胞 =====
+function drawLeeuwenhoekScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('列文虎克 · 高倍显微镜下的活细胞',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 视野圆（模拟镜下圆形视野）
+  ctx.fillStyle='#0a1830';ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,140,0,7);ctx.fill();ctx.stroke();
+  // 视野外框装饰
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(cx,cy,145,0,7);ctx.stroke();
+  // 活动的草履虫/细菌/红细胞等活细胞
+  const bugs=[
+    {x:cx-50,y:cy-30,r:18,c:'#34d399',s:1.0,name:'草履虫'},
+    {x:cx+60,y:cy+20,r:12,c:'#06b6d4',s:1.5,name:'细菌'},
+    {x:cx-20,y:cy+60,r:10,c:'#fbbf24',s:0.8,name:'原生动物'},
+    {x:cx+30,y:cy-50,r:8,c:'#ec4899',s:1.2,name:'红细胞'},
+    {x:cx-80,y:cy+30,r:6,c:'#a78bfa',s:1.8,name:'杆菌'},
+    {x:cx+85,y:cy-65,r:7,c:'#67e8f9',s:1.4,name:'球菌'},
+  ];
+  bugs.forEach((b,i)=>{
+    const ang=time*b.s+i;
+    const bx=b.x+Math.cos(ang)*15;
+    const by=b.y+Math.sin(ang*1.3)*12;
+    // 主体（椭圆，模拟微生物形态）
+    ctx.fillStyle=b.c;ctx.globalAlpha=0.85;
+    ctx.beginPath();
+    ctx.ellipse(bx,by,b.r,b.r*0.6,ang,0,7);
+    ctx.fill();
+    // 高光
+    ctx.globalAlpha=0.4;ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(bx-b.r*0.3,by-b.r*0.2,b.r*0.2,0,7);ctx.fill();
+    ctx.globalAlpha=1;
+    // 鞭毛/纤毛（随时间摆动）
+    ctx.strokeStyle=b.c;ctx.lineWidth=1;
+    for(let k=0;k<5;k++){
+      const fa=ang+k*0.4-1;
+      const wave=Math.sin(time*4+k)*2;
+      ctx.beginPath();
+      ctx.moveTo(bx+Math.cos(fa)*b.r,by+Math.sin(fa)*b.r*0.6);
+      ctx.lineTo(bx+Math.cos(fa)*(b.r+8)+wave,by+Math.sin(fa)*(b.r+8)*0.6);
+      ctx.stroke();
+    }
+    drawText(b.name,bx,by+b.r+10,b.c,10);
+  });
+  // 放大倍数标注
+  drawText('放大 270×',cx-100,cy-120,'#06b6d4',13);
+  drawText('视野',cx,cy-125,'#9ab0d0',12);
+  // 顶部刻度装饰
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+  for(let k=-3;k<=3;k++){
+    const tx=cx+k*30;
+    ctx.beginPath();ctx.moveTo(tx,cy-150);ctx.lineTo(tx,cy-142);ctx.stroke();
+  }
+  drawText('列文虎克首次观察活的微生物',W/2,H-40,'#34d399',13);
+  drawText('微生物学之父',W/2,H-22,'#fbbf24',12);
+}
+
+// ===== 场景：施莱登植物细胞 =====
+function drawSchleidenScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('施莱登 1838 · 植物由细胞构成',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 植物组织（规则排列的植物细胞，带细胞壁）
+  const cols=5,rows=4,cw=70,chh=50;
+  const startX=cx-(cols*cw)/2,startY=cy-(rows*chh)/2;
+  // 组织外框
+  ctx.fillStyle='rgba(52,211,153,0.04)';ctx.strokeStyle='#34d39988';ctx.lineWidth=1;
+  roundRect(startX-8,startY-8,cols*cw+16,rows*chh+16,8);ctx.fill();ctx.stroke();
+  drawText('植物组织',startX-8,startY-22,'#34d399',11,'left');
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const x=startX+c*cw,y=startY+r*chh;
+      const pulse=0.9+0.1*Math.sin(time*1.5+r+c);
+      // 细胞壁（绿色厚框，植物特有）
+      ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;
+      roundRect(x+3,y+3,cw-6,chh-6,6);ctx.fill();ctx.stroke();
+      // 细胞质基质
+      ctx.fillStyle='rgba(6,182,212,0.18)';
+      roundRect(x+8,y+8,cw-16,chh-16,4);ctx.fill();
+      // 细胞核（偏于一侧）
+      ctx.fillStyle='rgba(251,191,36,'+(0.5*pulse)+')';
+      ctx.beginPath();ctx.arc(x+cw/2-8,y+chh/2,6*pulse,0,7);ctx.fill();
+      // 核仁
+      ctx.fillStyle='rgba(167,139,250,0.8)';
+      ctx.beginPath();ctx.arc(x+cw/2-8,y+chh/2,2.5,0,7);ctx.fill();
+      // 叶绿体（多个绿色椭圆小体，植物特有）
+      for(let k=0;k<3;k++){
+        ctx.fillStyle='#34d399';
+        const py=y+18+Math.sin(time+r+k)*3;
+        ctx.beginPath();
+        ctx.ellipse(x+18+k*15,py,3.5,2.2,0.5,0,7);
+        ctx.fill();
+      }
+      // 中央大液泡（淡色区域）
+      ctx.fillStyle='rgba(103,232,249,0.12)';
+      ctx.beginPath();
+      ctx.arc(x+cw/2+12,y+chh/2+4,10,0,7);
+      ctx.fill();
+    }
+  }
+  drawText('植物细胞（细胞壁 · 叶绿体 · 大液泡）',cx,startY-40,'#34d399',13);
+  // 侧边标注
+  ctx.fillStyle='rgba(251,191,36,0.08)';ctx.strokeStyle='#fbbf2433';ctx.lineWidth=1;
+  roundRect(W-150,cy-30,130,60,6);ctx.fill();ctx.stroke();
+  drawText('施莱登',W-85,cy-12,'#fbbf24',13);
+  drawText('植物学家',W-85,cy+8,'#9ab0d0',11);
+  drawText('1838 年提出',W-85,cy+25,'#9ab0d0',10);
+  drawText('所有植物都由细胞构成',W/2,H-45,'#fbbf24',13);
+  drawText('细胞是植物体的基本结构单位',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：施旺动物细胞 =====
+function drawSchwannScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('施旺 1839 · 动物也由细胞构成',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 动物细胞（不规则、无细胞壁）
+  const cells=[
+    {x:cx-140,y:cy-50,r:40},
+    {x:cx-40,y:cy-70,r:35},
+    {x:cx+60,y:cy-40,r:38},
+    {x:cx-100,y:cy+50,r:42},
+    {x:cx+10,y:cy+60,r:36},
+    {x:cx+120,y:cy+50,r:33},
+  ];
+  cells.forEach((c,i)=>{
+    const pulse=1+0.08*Math.sin(time*2+i);
+    // 不规则细胞膜
+    ctx.fillStyle='rgba(236,72,153,0.18)';ctx.strokeStyle='#ec4899';ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let k=0;k<12;k++){
+      const a=k/12*7;
+      const rr=c.r*pulse*(0.85+0.15*Math.sin(a*3+time+i));
+      const px=c.x+Math.cos(a)*rr;
+      const py=c.y+Math.sin(a)*rr;
+      if(k===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.closePath();ctx.fill();ctx.stroke();
+    // 细胞核
+    ctx.fillStyle='rgba(167,139,250,0.7)';
+    ctx.beginPath();ctx.arc(c.x,c.y,c.r*0.35*pulse,0,7);ctx.fill();
+  });
+  drawText('动物细胞（无细胞壁 · 不规则）',cx,cy-110,'#ec4899',13);
+  drawText('施旺：动物组织同样由细胞构成',W/2,H-45,'#fbbf24',13);
+  drawText('与施莱登共同创立细胞学说',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景：三大主要内容 =====
+function drawThreePointsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('细胞学说三大主要内容',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  const items=[
+    {n:'①',t:'生物由细胞构成',d:'一切生物体都是由细胞\n和细胞产物所构成',c:'#fbbf24',ic:'🧬'},
+    {n:'②',t:'细胞是基本单位',d:'细胞是生物体结构\n和功能的基本单位',c:'#06b6d4',ic:'⚙'},
+    {n:'③',t:'细胞分裂产生新细胞',d:'新细胞由老细胞\n分裂产生而来',c:'#34d399',ic:'⊕'},
+  ];
+  const w=220,gap=20;
+  const total=items.length*w+(items.length-1)*gap;
+  const sx=cx-total/2;
+  items.forEach((m,i)=>{
+    const x=sx+i*(w+gap);
+    const pulse=0.92+0.08*Math.sin(time*2+i);
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x,cy-100,w,200,10);ctx.fill();ctx.stroke();
+    // 序号
+    ctx.font='bold 32px sans-serif';ctx.fillStyle=m.c;ctx.textAlign='center';
+    ctx.fillText(m.n,x+w/2,cy-50);
+    // 标题
+    drawText(m.t,x+w/2,cy-5,'#fff',15);
+    // 描述
+    const lines=m.d.split('\n');
+    lines.forEach((ln,k)=>drawText(ln,x+w/2,cy+35+k*22,'#9ab0d0',12));
+  });
+  drawText('注意：病毒无细胞结构，是例外',W/2,H-40,'#f87171',12);
+  drawText('三大要点构成细胞学说的核心',W/2,H-22,'#9ab0d0',12);
+}
+
+// ===== 场景：魏尔肖补充（细胞分裂） =====
+function drawVirchowScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('魏尔肖 1855 · 细胞来自细胞',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 细胞分裂动画：1→2→4
+  const phase=(time*0.5)%3;
+  const splits=phase<1?1:phase<2?2:4;
+  const positions=[];
+  if(splits===1)positions.push({x:cx,y:cy,r:60});
+  else if(splits===2){
+    const off=40*(1-Math.abs(phase-1.5)*2);
+    positions.push({x:cx-off,y:cy,r:50});
+    positions.push({x:cx+off,y:cy,r:50});
+  }else{
+    const off=60;
+    positions.push({x:cx-off,y:cy-off,r:38});
+    positions.push({x:cx+off,y:cy-off,r:38});
+    positions.push({x:cx-off,y:cy+off,r:38});
+    positions.push({x:cx+off,y:cy+off,r:38});
+  }
+  positions.forEach((p,i)=>{
+    ctx.fillStyle='rgba(52,211,153,0.2)';ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();ctx.stroke();
+    // 核
+    ctx.fillStyle='rgba(251,191,36,0.7)';
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r*0.35,0,7);ctx.fill();
+  });
+  // 拉丁文名言框
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2-200,90,400,55,8);ctx.fill();ctx.stroke();
+  drawText('Omnis cellula e cellula',W/2,110,'#fde68a',16);
+  drawText('（一切细胞来自细胞）',W/2,130,'#9ab0d0',12);
+  drawText('魏尔肖完善了细胞学说第三条',W/2,H-45,'#34d399',13);
+  drawText('细胞只能由已存在的细胞分裂产生',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：历史意义与时间轴 =====
+function drawSignificanceScene(){
+  const W=cv.width,H=cv.height;
+  drawText('细胞学说的历史意义',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'生物界统一性',d:'动植物微生物都由细胞构成',c:'#fbbf24'},
+    {t:'物质性证明',d:'生命有物质结构基础',c:'#06b6d4'},
+    {t:'三大发现之一',d:'19世纪自然科学三大发现',c:'#34d399'},
+    {t:'生物学奠基',d:'为现代生物学奠定基础',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+15,y,(W-160)/2-30,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/4,y+50,m.c,16);
+    drawText(m.d,x+(W-160)/4,y+90,'#fff',12);
+  });
+  // 时间轴底部
+  const ty=H-70;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(80,ty);ctx.lineTo(W-80,ty);ctx.stroke();
+  const events=[
+    {x:120,y:'1665',t:'胡克'},
+    {x:W*0.3,y:'1838',t:'施莱登'},
+    {x:W*0.45,y:'1839',t:'施旺'},
+    {x:W*0.6,y:'1855',t:'魏尔肖'},
+    {x:W-120,y:'现代',t:'生物学'},
+  ];
+  events.forEach(e=>{
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.arc(e.x,ty,5,0,7);ctx.fill();
+    drawText(e.y,e.x,ty-18,'#fbbf24',12);
+    drawText(e.t,e.x,ty+18,'#9ab0d0',11);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawHookeScene(t);
+  else if(stepIdx===1)drawLeeuwenhoekScene(t);
+  else if(stepIdx===2)drawSchleidenScene(t);
+  else if(stepIdx===3)drawSchwannScene(t);
+  else if(stepIdx===4)drawThreePointsScene(t);
+  else if(stepIdx===5)drawVirchowScene(t);
+  else if(stepIdx===6)drawSignificanceScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>二次函数 · 顶点 · 对称轴 · 零点 · 最值</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">二次函数 y=ax²+bx+c</span><span class="subtitle">顶点 · 对称轴 · 零点 · 最值</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>三种表达式</h4><div class="v">一般式 · 顶点式 · 交点式<br>同一函数的多种表达</div></div>
+  <div class="card s2"><div class="num">2</div><h4>顶点与对称轴</h4><div class="v">h=-b/2a, k=(4ac-b²)/4a<br>对称轴 x=h</div></div>
+  <div class="card s3"><div class="num">3</div><h4>判别式与韦达</h4><div class="v">Δ=b²-4ac 判零点<br>韦达 x₁+x₂=-b/a</div></div>
+  <div class="card s4"><div class="num">4</div><h4>闭区间最值</h4><div class="v">结合对称轴位置<br>比较端点与顶点</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">三种表达式</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>a <input id="pa" type="range" min="-2" max="2" step="0.1" value="1"></label>
+  <label>b <input id="pb" type="range" min="-4" max="4" step="0.2" value="0"></label>
+  <label>c <input id="pc" type="range" min="-4" max="4" step="0.2" value="-3"></label>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+// 参数 a/b/c
+let A=1,B=0,C=-3;
+const paEl=document.getElementById('pa'),pbEl=document.getElementById('pb'),pcEl=document.getElementById('pc');
+function readParams(){A=parseFloat(paEl.value);B=parseFloat(pbEl.value);C=parseFloat(pcEl.value);
+  paEl.nextSibling.textContent=' a='+A.toFixed(1)+' ';
+  pbEl.nextSibling.textContent=' b='+B.toFixed(1)+' ';
+  pcEl.nextSibling.textContent=' c='+C.toFixed(1)+' ';
+}
+paEl.oninput=()=>{readParams();draw();};pbEl.oninput=()=>{readParams();draw();};pcEl.oninput=()=>{readParams();draw();};
+
+const STEPS=[
+  {tag:'表达式',name:'三种表达式',body:'二次函数有<strong>三种常用表达式</strong>：<code>一般式 y=ax²+bx+c</code>、<code>顶点式 y=a(x-h)²+k</code>（顶点为 (h,k)）、<code>交点式 y=a(x-x₁)(x-x₂)</code>（x₁,x₂ 为零点）。三种形式可以互相转换。',points:{title:'三种形式',items:['<strong>一般式</strong>：y=ax²+bx+c（a≠0）','<strong>顶点式</strong>：y=a(x-h)²+k','<strong>交点式</strong>：y=a(x-x₁)(x-x₂)','<strong>条件</strong>：有零点才能写交点式']}},
+  {tag:'表达式',name:'顶点与对称轴',body:'顶点坐标 <code>(-b/2a, (4ac-b²)/4a)</code>，即 h=-b/2a, k=(4ac-b²)/4a。<strong>对称轴</strong>是过顶点且垂直于 x 轴的直线：<code>x=-b/2a</code>。',points:{title:'顶点公式',items:['<strong>顶点横坐标</strong>：h = -b/2a','<strong>顶点纵坐标</strong>：k = (4ac-b²)/4a','<strong>对称轴方程</strong>：x = -b/2a','<strong>配方</strong>：y=a(x+b/2a)²+(4ac-b²)/4a']}},
+  {tag:'图像',name:'开口方向',body:'<strong>二次项系数 a</strong> 决定抛物线开口方向：<code>a&gt;0</code> 开口<strong>向上</strong>（有最小值）；<code>a&lt;0</code> 开口<strong>向下</strong>（有最大值）。<strong>|a| 越大开口越窄</strong>，|a| 越小开口越宽。',points:{title:'开口规律',items:['<strong>a&gt;0</strong>：开口向上，顶点是最低点','<strong>a&lt;0</strong>：开口向下，顶点是最高点','<strong>|a| 大</strong>：开口窄（变化快）','<strong>|a| 小</strong>：开口宽（变化慢）']}},
+  {tag:'零点',name:'判别式与零点',body:'令 y=0 得 ax²+bx+c=0。<strong>判别式</strong> <code>Δ=b²-4ac</code> 决定零点个数：<strong>Δ&gt;0</strong> 两个不等零点 x=(-b±√Δ)/2a；<strong>Δ=0</strong> 一个零点（顶点在 x 轴上）；<strong>Δ&lt;0</strong> 无零点。',points:{title:'判别式分类',items:['<strong>Δ&gt;0</strong>：两个不等实根','<strong>Δ=0</strong>：两个相等实根（一个零点）','<strong>Δ&lt;0</strong>：无实数零点','<strong>求根公式</strong>：x=(-b±√Δ)/2a']}},
+  {tag:'零点',name:'韦达定理',body:'若方程有两个根 x₁、x₂（含复根），则<strong>韦达定理</strong>：<code>x₁+x₂=-b/a</code>，<code>x₁·x₂=c/a</code>。这是根与系数的关系，无需具体求根即可得根之和与积。',points:{title:'韦达公式',items:['<strong>两根之和</strong>：x₁+x₂ = -b/a','<strong>两根之积</strong>：x₁·x₂ = c/a','<strong>用 a、b、c</strong>：无需具体求根','<strong>注意</strong>：a≠0 时恒成立']}},
+  {tag:'最值',name:'闭区间最值分析',body:'求 y=ax²+bx+c 在<strong>闭区间 [m,n]</strong> 上的最值，需<strong>比较顶点与端点</strong>：①若对称轴 x=-b/2a 在区间内，顶点是一个极值（a&gt;0 为最小，a&lt;0 为最大）；②端点值由代入 m、n 得到；③最大最小值在<strong>顶点和两端点</strong>中比较。',points:{title:'最值三比较',items:['<strong>顶点值</strong>：k=(4ac-b²)/4a','<strong>左端点</strong>：y(m)=am²+bm+c','<strong>右端点</strong>：y(n)=an²+bn+c','<strong>对称轴在区间外</strong>：最值在端点']}},
+  {tag:'变换',name:'参数变换演示',body:'调节 a、b、c 三参数观察抛物线变化：<strong>a</strong> 控制开口方向与宽窄；<strong>b</strong> 与 a 共同决定对称轴位置；<strong>c</strong> 是与 y 轴交点（y 截距）。顶点与对称轴会实时随之变化。',points:{title:'参数影响',items:['<strong>a 变</strong>：开口方向与宽窄','<strong>b 变</strong>：对称轴位置（依赖 a）','<strong>c 变</strong>：与 y 轴交点 (0,c)','<strong>组合</strong>：a、b 共定顶点横坐标']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+// ===== 坐标系工具 =====
+function coordSys(){
+  const cx=cv.width/2,cy=cv.height/2+20;
+  const unit=Math.min(36,cv.width/22);
+  return {cx,cy,unit};
+}
+function math2px(mx,my){const {cx,cy,unit}=coordSys();return [cx+mx*unit,cy-my*unit];}
+function drawAxes(){
+  const {cx,cy,unit}=coordSys();const W=cv.width,H=cv.height;
+  // 网格背景
+  ctx.strokeStyle='rgba(36,58,94,0.4)';ctx.lineWidth=1;
+  for(let i=-12;i<=12;i++){
+    const x=cx+i*unit;
+    if(x>20&&x<W-20){ctx.beginPath();ctx.moveTo(x,30);ctx.lineTo(x,H-30);ctx.stroke();}
+  }
+  for(let i=-8;i<=8;i++){
+    const y=cy-i*unit;
+    if(y>30&&y<H-30){ctx.beginPath();ctx.moveTo(30,y);ctx.lineTo(W-30,y);ctx.stroke();}
+  }
+  // 主轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(30,cy);ctx.lineTo(W-30,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,30);ctx.lineTo(cx,H-30);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(W-25,cy);ctx.lineTo(W-35,cy-5);ctx.lineTo(W-35,cy+5);ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx,25);ctx.lineTo(cx-5,35);ctx.lineTo(cx+5,35);ctx.fill();
+  drawText('x',W-18,cy+14,'#9ab0d0',12);drawText('y',cx+14,22,'#9ab0d0',12);
+  ctx.fillStyle='#9ab0d0';ctx.font='10px sans-serif';ctx.textAlign='center';
+  for(let i=-8;i<=8;i++){if(i===0)continue;const x=cx+i*unit;if(x<30||x>W-30)continue;
+    ctx.strokeStyle='#3a4a6a';ctx.beginPath();ctx.moveTo(x,cy-3);ctx.lineTo(x,cy+3);ctx.stroke();ctx.fillText(i,x,cy+14);}
+  ctx.textAlign='right';
+  for(let i=-6;i<=6;i++){if(i===0)continue;const y=cy-i*unit;if(y<30||y>H-30)continue;
+    ctx.strokeStyle='#3a4a6a';ctx.beginPath();ctx.moveTo(cx-3,y);ctx.lineTo(cx+3,y);ctx.stroke();ctx.fillText(i,cx-6,y);}
+  drawText('O',cx-8,cy+12,'#9ab0d0',11,'right');
+}
+function drawArrow(x1,y1,x2,y2,col,w){
+  ctx.strokeStyle=col||'#fbbf24';ctx.lineWidth=w||2;ctx.shadowColor=col;ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=col||'#fbbf24';
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-8*Math.cos(ang-0.4),y2-8*Math.sin(ang-0.4));
+  ctx.lineTo(x2-8*Math.cos(ang+0.4),y2-8*Math.sin(ang+0.4));
+  ctx.fill();ctx.shadowBlur=0;
+}
+function drawDot(mx,my,col,r,label){
+  const [px,py]=math2px(mx,my);
+  ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,py,r||6,0,7);ctx.fill();ctx.shadowBlur=0;
+  if(label)drawText(label,px,py-r-12,col,11);
+}
+function drawParabola(a,b,c,col,glow){
+  if(Math.abs(a)<1e-6)return;const {cx,cy,unit}=coordSys();const W=cv.width;
+  ctx.strokeStyle=col||'#06b6d4';ctx.lineWidth=3;
+  if(glow){ctx.shadowColor=col;ctx.shadowBlur=12;}
+  ctx.beginPath();
+  let first=true;
+  for(let px=20;px<=W-20;px+=2){
+    const mx=(px-cx)/unit;const my=a*mx*mx+b*mx+c;const py=cy-my*unit;
+    if(py<-50||py>cv.height+50){first=true;continue;}
+    if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+}
+
+// ===== 场景1：三种表达式 =====
+function drawFormsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('三种表达式 · 同一函数不同写法',W/2,30,'#fbbf24',16);
+  drawAxes();
+  const a=1,b=-2,c=-3;
+  drawParabola(a,b,c,'#06b6d4',true);
+  // 顶点
+  const h=-b/(2*a),k=(4*a*c-b*b)/(4*a);
+  const [px,py]=math2px(h,k);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('V('+h+','+k+')',px,py-18,'#fbbf24',12);
+  // 零点
+  const delta=b*b-4*a*c;
+  if(delta>=0){
+    const sq=Math.sqrt(delta);
+    const x1=(-b-sq)/(2*a),x2=(-b+sq)/(2*a);
+    drawDot(x1,0,'#34d399',5,'x₁='+x1);
+    drawDot(x2,0,'#34d399',5,'x₂='+x2);
+  }
+  // y 截距
+  drawDot(0,c,'#a78bfa',5,'(0,'+c+')');
+  // 三种公式显示
+  const y0=H-110;
+  const cardW=(W-100)/3;
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(40,y0,cardW,70,8);ctx.fill();ctx.stroke();
+  drawText('一般式',40+cardW/2,y0+15,'#06b6d4',12);
+  drawText('y = x² - 2x - 3',40+cardW/2,y0+45,'#fff',13);
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';
+  roundRect(50+cardW,y0,cardW,70,8);ctx.fill();ctx.stroke();
+  drawText('顶点式',50+cardW+cardW/2,y0+15,'#fbbf24',12);
+  drawText('y = (x-1)² - 4',50+cardW+cardW/2,y0+45,'#fff',13);
+  ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';
+  roundRect(60+2*cardW,y0,cardW,70,8);ctx.fill();ctx.stroke();
+  drawText('交点式',60+2*cardW+cardW/2,y0+15,'#34d399',12);
+  drawText('y = (x-3)(x+1)',60+2*cardW+cardW/2,y0+45,'#fff',13);
+  drawText('配方：x²-2x-3 = (x²-2x+1)-4 = (x-1)²-4',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景2：顶点与对称轴 =====
+function drawVertexScene(){
+  const W=cv.width,H=cv.height;
+  drawText('顶点坐标与对称轴 · x=-b/2a',W/2,30,'#fbbf24',16);
+  drawAxes();
+  const a=A,b=B,c=C;
+  if(Math.abs(a)<1e-6){drawText('a 不能为 0',W/2,H/2,'#f87171',16);return;}
+  drawParabola(a,b,c,'#06b6d4',true);
+  const h=-b/(2*a),k=(4*a*c-b*b)/(4*a);
+  // 对称轴
+  const {cx,cy,unit}=coordSys();const ax=cx+h*unit;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(ax,40);ctx.lineTo(ax,H-40);ctx.stroke();ctx.setLineDash([]);
+  drawText('对称轴 x='+h.toFixed(2),ax+60,55,'#fbbf24',12,'left');
+  // 顶点
+  const [px,py]=math2px(h,k);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('顶点 ('+h.toFixed(2)+', '+k.toFixed(2)+')',px,py-22,'#fbbf24',13);
+  // 顶点到 x 轴的虚线
+  ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(cx,py);ctx.stroke();
+  ctx.setLineDash([]);
+  // 对称性演示：在抛物线上取对称点
+  const sampleDx=2;
+  const sx1=h-sampleDx,sx2=h+sampleDx;
+  const sy=a*sx1*sx1+b*sx1+c;
+  drawDot(sx1,sy,'#a78bfa',5,'');
+  drawDot(sx2,sy,'#a78bfa',5,'对称点');
+  ctx.strokeStyle='rgba(167,139,250,0.4)';ctx.setLineDash([3,3]);
+  const [sp1x,sp1y]=math2px(sx1,sy);const [sp2x,sp2y]=math2px(sx2,sy);
+  ctx.beginPath();ctx.moveTo(sp1x,sp1y);ctx.lineTo(sp2x,sp2y);ctx.stroke();
+  ctx.setLineDash([]);
+  // 公式说明
+  drawText('h = -b/2a = -('+b.toFixed(1)+')/(2·'+a.toFixed(1)+') = '+h.toFixed(2),W/2,H-80,'#e8eef8',12);
+  drawText('k = (4ac-b²)/4a = '+k.toFixed(2),W/2,H-58,'#e8eef8',12);
+  drawText('抛物线关于直线 x=h 对称',W/2,H-36,'#34d399',11);
+}
+
+// ===== 场景3：开口方向 =====
+function drawOpenScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('开口方向 · a 的符号与大小',W/2,30,'#fbbf24',16);
+  drawAxes();
+  // 多条 a 值对比
+  const a0=0.5+0.15*Math.sin(time*0.6);
+  // 左侧：a>0 不同大小
+  drawParabola(0.3,0,0,'#34d399',false);
+  drawParabola(1,0,0,'#34d399',true);
+  drawParabola(2,0,0,'#34d399',false);
+  // 右侧：a<0
+  drawParabola(-0.3,0,0,'#f87171',false);
+  drawParabola(-1,0,0,'#f87171',true);
+  drawParabola(-2,0,0,'#f87171',false);
+  drawText('a>0 开口向上（有最小值）',W/4,55,'#34d399',12);
+  drawText('a<0 开口向下（有最大值）',3*W/4,55,'#f87171',12);
+  // 图例
+  const legY=H-95;
+  drawText('a=0.3（宽）',W/4-50,legY,'#34d399',11,'left');
+  drawText('a=1.0',W/4-50,legY+18,'#34d399',11,'left');
+  drawText('a=2.0（窄）',W/4-50,legY+36,'#34d399',11,'left');
+  drawText('a=-0.3（宽）',3*W/4-50,legY,'#f87171',11,'left');
+  drawText('a=-1.0',3*W/4-50,legY+18,'#f87171',11,'left');
+  drawText('a=-2.0（窄）',3*W/4-50,legY+36,'#f87171',11,'left');
+  drawText('|a| 越大 → 开口越窄（变化越快）',W/2,H-40,'#fbbf24',12);
+}
+
+// ===== 场景4：判别式与零点 =====
+function drawRootsScene(){
+  const W=cv.width,H=cv.height;
+  drawText('判别式 Δ=b²-4ac 与零点',W/2,30,'#fbbf24',16);
+  drawAxes();
+  const a=A,b=B,c=C;
+  if(Math.abs(a)<1e-6){drawText('a 不能为 0',W/2,H/2,'#f87171',16);return;}
+  drawParabola(a,b,c,'#06b6d4',true);
+  const delta=b*b-4*a*c;
+  drawText('Δ = '+b.toFixed(1)+'² - 4·('+a.toFixed(1)+')·('+c.toFixed(1)+') = '+delta.toFixed(2),W/2,H-70,'#e8eef8',12);
+  if(delta>1e-6){
+    const sq=Math.sqrt(delta);
+    const x1=(-b-sq)/(2*a),x2=(-b+sq)/(2*a);
+    [[x1,0],[x2,0]].forEach((p,i)=>{
+      const [px,py]=math2px(p[0],p[1]);
+      ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=12;
+      ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();ctx.shadowBlur=0;
+      drawText('x'+(i+1)+'='+p[0].toFixed(2),px,py+18,'#34d399',12);
+    });
+    drawText('Δ>0：两个不等零点',W/2,H-45,'#34d399',13);
+  }else if(Math.abs(delta)<1e-6){
+    const h=-b/(2*a);const [px,py]=math2px(h,0);
+    ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+    ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();ctx.shadowBlur=0;
+    drawText('x='+h.toFixed(2)+'（重根）',px,py+18,'#fbbf24',12);
+    drawText('Δ=0：一个零点（顶点在 x 轴上）',W/2,H-45,'#fbbf24',13);
+  }else{
+    drawText('Δ<0：无实数零点（不与 x 轴相交）',W/2,H-45,'#f87171',13);
+  }
+}
+
+// ===== 场景5：韦达定理 =====
+function drawVietaScene(){
+  const W=cv.width,H=cv.height;
+  drawText('韦达定理 · 根与系数关系',W/2,30,'#fbbf24',16);
+  drawAxes();
+  const a=A,b=B,c=C;
+  if(Math.abs(a)<1e-6){drawText('a 不能为 0',W/2,H/2,'#f87171',16);return;}
+  drawParabola(a,b,c,'#06b6d4',true);
+  const delta=b*b-4*a*c;
+  if(delta>=-1e-6){
+    const sq=Math.sqrt(Math.max(0,delta));
+    const x1=(-b-sq)/(2*a),x2=(-b+sq)/(2*a);
+    if(delta>1e-6){
+      [[x1,0],[x2,0]].forEach((p,i)=>{
+        const [px,py]=math2px(p[0],p[1]);
+        ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();
+        drawText('x'+(i+1)+'='+p[0].toFixed(2),px,py+18,'#34d399',12);
+      });
+    }
+    drawText('x₁+x₂ = '+((x1+x2)).toFixed(2)+' = -b/a = '+(-b/a).toFixed(2),W/2,H-80,'#fbbf24',13);
+    drawText('x₁·x₂ = '+(x1*x2).toFixed(2)+' = c/a = '+(c/a).toFixed(2),W/2,H-55,'#34d399',13);
+  }else{
+    drawText('Δ<0 无实根，但韦达定理仍成立（复根）',W/2,H-70,'#f87171',12);
+    drawText('x₁+x₂ = -b/a = '+(-b/a).toFixed(2),W/2,H-45,'#fbbf24',13);
+    drawText('x₁·x₂ = c/a = '+(c/a).toFixed(2),W/2,H-25,'#34d399',13);
+  }
+}
+
+// ===== 场景6：闭区间最值 =====
+function drawExtremaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('闭区间最值 · 顶点与端点比较',W/2,30,'#fbbf24',16);
+  drawAxes();
+  const a=A,b=B,c=C;
+  if(Math.abs(a)<1e-6){drawText('a 不能为 0',W/2,H/2,'#f87171',16);return;}
+  // 区间 [-2,3] 随时间略变
+  const m=-2+Math.sin(time*0.3)*0.5,n=3+Math.cos(time*0.3)*0.5;
+  // 整条抛物线（淡色）
+  drawParabola(a,b,c,'#3a4a6a',false);
+  // 区间内抛物线高亮
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=4;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();let first=true;
+  const {cx,cy,unit}=coordSys();
+  for(let mx=m;mx<=n;mx+=0.05){
+    const my=a*mx*mx+b*mx+c;const px=cx+mx*unit,py=cy-my*unit;
+    if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 计算关键值
+  const ym=a*m*m+b*m+c,yn=a*n*n+b*n+c;
+  const h=-b/(2*a),k=(4*a*c-b*b)/(4*a);
+  const inRange=h>=m&&h<=n;
+  const candidates=[{x:m,y:ym,label:'y(m)'},{x:n,y:yn,label:'y(n)'}];
+  if(inRange)candidates.push({x:h,y:k,label:'顶点'});
+  // 绘制候选点
+  candidates.forEach(p=>{
+    const [px,py]=math2px(p.x,p.y);
+    ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+    drawText(p.label+'='+p.y.toFixed(2),px,py-16,'#fbbf24',11);
+  });
+  // 区间边界竖线
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  [m,n].forEach(mx=>{const px=cx+mx*unit;ctx.beginPath();ctx.moveTo(px,40);ctx.lineTo(px,H-40);ctx.stroke();});
+  // 区间填充阴影
+  ctx.fillStyle='rgba(6,182,212,0.05)';
+  ctx.fillRect(cx+m*unit,40,(n-m)*unit,H-80);
+  ctx.setLineDash([]);
+  drawText('m='+m.toFixed(1),cx+m*unit,H-30,'#9ab0d0',11);
+  drawText('n='+n.toFixed(1),cx+n*unit,H-30,'#9ab0d0',11);
+  // 比较结果
+  const arr=candidates.map(p=>p.y);
+  const maxV=Math.max(...arr),minV=Math.min(...arr);
+  // 结果面板
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  roundRect(W-230,55,200,80,8);ctx.fill();ctx.stroke();
+  drawText('最值结果',W-130,72,'#fbbf24',12);
+  drawText('最大值 = '+maxV.toFixed(2),W-130,95,'#34d399',12);
+  drawText('最小值 = '+minV.toFixed(2),W-130,118,'#06b6d4',12);
+  drawText(inRange?'顶点在区间内 → 参与比较':'顶点在区间外 → 看端点',W/2,H-55,'#fbbf24',12);
+  drawText('a='+(a>0?'+':'')+a.toFixed(1)+(a>0?'（最小在顶点）':'（最大在顶点）'),W/2,H-35,'#9ab0d0',11);
+}
+
+// ===== 场景7：参数变换 =====
+function drawParamScene(){
+  const W=cv.width,H=cv.height;
+  drawText('参数变换 · 调 a/b/c 观察变化',W/2,30,'#fbbf24',16);
+  drawAxes();
+  const a=A,b=B,c=C;
+  if(Math.abs(a)<1e-6){drawText('a 不能为 0',W/2,H/2,'#f87171',16);return;}
+  drawParabola(a,b,c,'#06b6d4',true);
+  const h=-b/(2*a),k=(4*a*c-b*b)/(4*a);
+  const delta=b*b-4*a*c;
+  // 顶点
+  const [px,py]=math2px(h,k);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();ctx.shadowBlur=0;
+  // y 截距
+  const [yx,yy]=math2px(0,c);
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(yx,yy,6,0,7);ctx.fill();
+  drawText('y 截距 (0,'+c.toFixed(1)+')',yx+40,yy,'#34d399',11,'left');
+  // 信息面板
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  roundRect(W-260,50,240,H-150,8);ctx.fill();ctx.stroke();
+  drawText('实时数据',W-140,68,'#fbbf24',13);
+  drawText('a = '+a.toFixed(1),W-140,95,'#e8eef8',12);
+  drawText('b = '+b.toFixed(1),W-140,118,'#e8eef8',12);
+  drawText('c = '+c.toFixed(1),W-140,141,'#e8eef8',12);
+  drawText('顶点 ('+h.toFixed(2)+','+k.toFixed(2)+')',W-140,170,'#06b6d4',12);
+  drawText('对称轴 x='+h.toFixed(2),W-140,193,'#fbbf24',12);
+  drawText('Δ = '+delta.toFixed(2),W-140,216,a>0?'#34d399':'#f87171',12);
+  drawText('y 截距 (0,'+c.toFixed(1)+')',W-140,239,'#34d399',12);
+  if(delta>1e-6){
+    const sq=Math.sqrt(delta);
+    const x1=(-b-sq)/(2*a),x2=(-b+sq)/(2*a);
+    drawText('零点：'+x1.toFixed(2)+', '+x2.toFixed(2),W-140,262,'#34d399',11);
+    drawText('x₁+x₂='+(x1+x2).toFixed(2),W-140,283,'#fbbf24',11);
+    drawText('x₁·x₂='+(x1*x2).toFixed(2),W-140,304,'#fbbf24',11);
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawFormsScene(t);
+  else if(stepIdx===1)drawVertexScene();
+  else if(stepIdx===2)drawOpenScene(t);
+  else if(stepIdx===3)drawRootsScene();
+  else if(stepIdx===4)drawVietaScene();
+  else if(stepIdx===5)drawExtremaScene(t);
+  else if(stepIdx===6)drawParamScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+readParams();buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

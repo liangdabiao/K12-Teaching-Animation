@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python 流程控制 · 分支 · 循环 · 异常</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">Python 流程控制</span><span class="subtitle">分支 · 循环 · 异常处理</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>分支结构</h4><div class="v">if / elif / else<br>缩进 4 空格，三元表达式</div></div>
+  <div class="card s2"><div class="num">2</div><h4>循环结构</h4><div class="v">for i in range(n)<br>while 条件循环</div></div>
+  <div class="card s3"><div class="num">3</div><h4>break / continue</h4><div class="v">break 跳出整个循环<br>continue 跳过本次</div></div>
+  <div class="card s4"><div class="num">4</div><h4>异常处理</h4><div class="v">try / except / else / finally<br>ZeroDivisionError 等</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">分支</span><span id="stepTitle">if 分支</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'分支',name:'if / elif / else',body:'<strong>分支结构</strong>根据<strong>条件真假</strong>选择执行路径。Python 使用 <code>if</code>、<code>elif</code>、<code>else</code>，依赖<strong>缩进（4 空格）</strong>划分代码块，没有大括号。',points:{title:'分支要点',items:['<strong>if 条件</strong>：为 True 执行该块','<strong>elif</strong>：否则如果，可多个','<strong>else</strong>：以上都不满足','<strong>缩进</strong>：必须 4 空格一致']}},
+  {tag:'分支',name:'三元表达式',body:'<strong>三元表达式</strong>把简单 if/else 写成一行：<code>a if cond else b</code>。条件为 True 取 a，否则取 b。常用于赋值与返回值。',points:{title:'一行写法',items:['<strong>语法</strong>：a if cond else b','<strong>cond=True</strong>：结果为 a','<strong>cond=False</strong>：结果为 b','<strong>用途</strong>：赋值 / 列表推导']}},
+  {tag:'循环',name:'for 循环',body:'<strong>for 循环</strong>遍历<strong>可迭代对象</strong>：range、列表、字符串、字典等。<code>range(n)</code> 生成 0..n-1，<code>range(a,b)</code> 左闭右开。',points:{title:'for 遍历',items:['<strong>range(5)</strong>：0,1,2,3,4','<strong>range(2,6)</strong>：2,3,4,5','<strong>for x in 列表</strong>：直接取元素','<strong>for k,v in dict.items()</strong>']},
+  },
+  {tag:'循环',name:'while 循环',body:'<strong>while</strong> 只要条件为 True 就<strong>反复执行</strong>。必须保证条件最终变 False，否则<strong>死循环</strong>。常用 i+=1 推进。',points:{title:'while 注意点',items:['<strong>条件变 False</strong>：才能结束','<strong>忘记更新</strong>：变成死循环','<strong>i += 1</strong>：推进计数器','<strong>while True</strong>：配合 break 退出']}},
+  {tag:'控制',name:'break / continue',body:'<strong>break</strong> 立刻<strong>跳出整个循环</strong>；<strong>continue</strong> 跳过本次剩余语句，<strong>进入下一轮</strong>。两者只对最近一层循环生效。',points:{title:'跳转控制',items:['<strong>break</strong>：彻底结束循环','<strong>continue</strong>：只跳过这一次','<strong>嵌套循环</strong>：只影响最内层','<strong>找素数</strong>：典型 break 场景']}},
+  {tag:'嵌套',name:'嵌套循环',body:'<strong>嵌套循环</strong>：外层每走一步，内层走完整轮。<strong>九九乘法表</strong>是经典例子；二维列表（list of list）需双层 for 遍历行列。',points:{title:'嵌套用法',items:['<strong>九九乘法表</strong>：i 外 j 内','<strong>二维列表</strong>：先行后列','<strong>总次数</strong>：外层 × 内层','<strong>break 只退一层</strong>']}},
+  {tag:'异常',name:'try / except',body:'<strong>异常处理</strong>让程序遇到错误<strong>不崩溃</strong>。<code>try</code> 包裹可能出错的代码，<code>except</code> 捕获指定异常类型。可写多个 except 分别处理。',points:{title:'try/except',items:['<strong>ZeroDivisionError</strong>：除以 0','<strong>ValueError</strong>：转换失败','<strong>IndexError</strong>：下标越界','<strong>except 异常类型</strong>']}},
+  {tag:'异常',name:'else / finally',body:'<strong>else</strong> 在 try 没抛异常时执行；<strong>finally</strong> 无论是否异常都执行（关闭文件、释放资源）。完整结构：try-except-else-finally。',points:{title:'完整结构',items:['<strong>else</strong>：无异常才执行','<strong>finally</strong>：必定执行','<strong>资源释放</strong>：放 finally','<strong>raise</strong>：主动抛出异常']}},
+  {tag:'总结',name:'流程控制速记',body:'Python 流程控制三大块：<strong>分支</strong>（if/elif/else）、<strong>循环</strong>（for/while）、<strong>异常</strong>（try/except）。配合 break/continue 实现灵活控制流。',points:{title:'核心速记',items:['<strong>分支</strong>：if/elif/else + 4 空格缩进','<strong>循环</strong>：for 遍历，while 条件','<strong>跳转</strong>：break 退出，continue 跳过','<strong>异常</strong>：try/except/else/finally']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// 终端窗口：显示变量值变化
+function drawTerminal(x,y,w,h,lines,highlight){
+  ctx.fillStyle='#0d1117';ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  roundRect(x,y,w,h,8);ctx.fill();ctx.stroke();
+  // 标题栏
+  ctx.fillStyle='#1a2332';roundRect(x,y,w,24,8);ctx.fill();
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(x+14,y+12,5,0,7);ctx.fill();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(x+30,y+12,5,0,7);ctx.fill();
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(x+46,y+12,5,0,7);ctx.fill();
+  drawText('Python Terminal',x+w/2+30,y+12,'#9ab0d0',11);
+  // 内容
+  lines.forEach((ln,i)=>{
+    const ly=y+38+i*16;
+    if(highlight===i){ctx.fillStyle='rgba(251,191,36,0.12)';ctx.fillRect(x+6,ly-8,w-12,16);}
+    drawText(ln,x+12,ly,ln.startsWith('>>>')?'#06b6d4':(ln.startsWith('#')?'#34d399':'#e8eef8'),11,'left');
+  });
+}
+
+// 流程图节点
+function drawNode(x,y,w,h,text,active,color){
+  const c=color||'#172a4a';
+  if(active){ctx.shadowColor=text.includes('条件')||text.includes('try')||text.includes('while')||text.includes('for')?'#fbbf24':'#34d399';ctx.shadowBlur=18;}
+  ctx.fillStyle=active?(text.includes('条件')||text.includes('try')||text.includes('while')||text.includes('for')?'rgba(251,191,36,0.25)':'rgba(52,211,153,0.22)'):c;
+  ctx.strokeStyle=active?(text.includes('条件')||text.includes('try')||text.includes('while')||text.includes('for')?'#fbbf24':'#34d399'):'#243a5e';
+  ctx.lineWidth=active?2.5:1.5;
+  roundRect(x,y,w,h,8);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+  drawText(text,x+w/2,y+h/2,'#e8eef8',12);
+}
+function drawDiamond(x,y,w,h,text,active){
+  if(active){ctx.shadowColor='#fbbf24';ctx.shadowBlur=18;}
+  ctx.fillStyle=active?'rgba(251,191,36,0.22)':'#172a4a';
+  ctx.strokeStyle=active?'#fbbf24':'#243a5e';ctx.lineWidth=active?2.5:1.5;
+  ctx.beginPath();ctx.moveTo(x+w/2,y);ctx.lineTo(x+w,y+h/2);ctx.lineTo(x+w/2,y+h);ctx.lineTo(x,y+h/2);ctx.closePath();
+  ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+  drawText(text,x+w/2,y+h/2,'#e8eef8',12);
+}
+function arrow(x1,y1,x2,y2,label,color){
+  ctx.strokeStyle=color||'#9ab0d0';ctx.lineWidth=1.8;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const a=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=color||'#9ab0d0';
+  ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-8*Math.cos(a-0.4),y2-8*Math.sin(a-0.4));ctx.lineTo(x2-8*Math.cos(a+0.4),y2-8*Math.sin(a+0.4));ctx.fill();
+  if(label)drawText(label,(x1+x2)/2+8,(y1+y2)/2-2,color||'#9ab0d0',10);
+}
+
+// 场景1：if 分支
+function drawIfScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('if / elif / else 分支流程',W/2,28,'#fbbf24',16);
+  const cx=W/2;
+  drawNode(cx-60,50,120,36,'开始',false,'#1e345a');
+  arrow(cx,cx>=0?86:86,cx,110);
+  const score=Math.floor((Math.sin(time*0.6)*40+70));
+  drawDiamond(cx-70,110,140,56,'score = '+score+'\n(score>=90?)',true);
+  arrow(cx,166,cx,190,'',score>=90?'#34d399':'#9ab0d0');
+  drawNode(cx-120,190,100,36,'A 优秀',score>=90,'#172a4a');
+  arrow(cx-40,166,cx-40,190,'True',score>=90?'#34d399':'#5a6a8a');
+  // elif 分支
+  arrow(cx-70,138,cx-220,138,'False',score<90?'#fbbf24':'#5a6a8a');
+  drawDiamond(cx-300,110,140,56,'elif score>=80?',score<90&&score>=80);
+  arrow(cx-230,166,cx-230,190,'True',score<90&&score>=80?'#34d399':'#5a6a8a');
+  drawNode(cx-280,190,100,36,'B 良好',score<90&&score>=80);
+  // else 分支
+  arrow(cx-300,138,cx-440,138,'False',score<80?'#fbbf24':'#5a6a8a');
+  drawNode(cx-500,110,120,36,'else: C 不及格',score<80);
+  // 终端
+  const grade=score>=90?'A':(score>=80?'B':'C');
+  drawTerminal(40,H-150,W-80,110,[
+    '>>> score = '+score,
+    '>>> if score >= 90:',
+    '...     grade = "A"',
+    '>>> elif score >= 80:',
+    '...     grade = "B"',
+    '>>> else:',
+    '...     grade = "C"',
+    '# 结果：grade = "'+grade+'"   （缩进 4 空格）'
+  ],7);
+}
+
+// 场景2：三元表达式
+function drawTernaryScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('三元表达式 · a if cond else b',W/2,28,'#fbbf24',16);
+  const cx=W/2;
+  const n=Math.floor(Math.sin(time*0.7)*10+5);
+  const result=n%2===0?'偶':'奇';
+  // 大公式
+  ctx.font='bold 20px Consolas,monospace';ctx.textAlign='center';
+  drawText('result = "偶" if n % 2 == 0 else "奇"',cx,90,'#fff',20);
+  // 分解
+  drawNode(cx-260,140,100,40,'"偶"',result==='偶','#172a4a');
+  drawNode(cx-50,140,100,40,'if n%2==0',true,'#2a3a5a');
+  drawNode(cx+160,140,100,40,'else "奇"',result==='奇','#172a4a');
+  // 等号
+  drawText('=',cx-155,160,'#9ab0d0',16);
+  drawText('else',cx+55,160,'#9ab0d0',14);
+  // 当前值
+  drawText('n = '+n,cx,210,'#06b6d4',16);
+  drawText('n % 2 == 0  →  '+(n%2===0)+'',cx,238,'#a78bfa',14);
+  // 结果框
+  ctx.fillStyle=result==='偶'?'rgba(52,211,153,0.2)':'rgba(248,113,113,0.2)';
+  ctx.strokeStyle=result==='偶'?'#34d399':'#f87171';ctx.lineWidth=2;
+  roundRect(cx-100,270,200,50,10);ctx.fill();ctx.stroke();
+  drawText('result = "'+result+'"',cx,295,result==='偶'?'#34d399':'#f87171',20);
+  // 终端
+  drawTerminal(40,H-170,W-80,130,[
+    '>>> n = '+n,
+    '>>> result = "偶" if n % 2 == 0 else "奇"',
+    '# 等价于：',
+    '#   if n % 2 == 0:',
+    '#       result = "偶"',
+    '#   else:',
+    '#       result = "奇"',
+    '>>> print(result)',
+    '# '+result
+  ],7);
+}
+
+// 场景3：for 循环
+function drawForScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('for i in range(5) 循环',W/2,28,'#fbbf24',16);
+  const cx=W/2;
+  const idx=Math.floor(time*1.2)%5;
+  // 流程图
+  drawNode(cx-60,50,120,34,'for i in range(5)',true,'#1e345a');
+  arrow(cx,84,cx,108);
+  drawDiamond(cx-70,108,140,52,'i = '+idx+'\n(i < 5?)',true);
+  arrow(cx,160,cx,180,'True','#34d399');
+  drawNode(cx-90,180,180,40,'循环体: print(i)',true,'#172a4a');
+  arrow(cx-90,200,cx-200,200);arrow(cx-200,200,cx-200,134);arrow(cx-200,134,cx-70,134);
+  // 退出
+  arrow(cx+70,134,cx+170,134,'False','#fbbf24');
+  drawNode(cx+170,108,110,52,'结束循环',false,'#1e345a');
+  // i 值列表
+  for(let i=0;i<5;i++){
+    const bx=80+i*((W-160)/5);
+    const active=i===idx;
+    ctx.fillStyle=active?'rgba(251,191,36,0.3)':'#172a4a';
+    ctx.strokeStyle=active?'#fbbf24':'#243a5e';ctx.lineWidth=active?2.5:1.5;
+    roundRect(bx,H-150,(W-160)/5-10,40,8);ctx.fill();ctx.stroke();
+    drawText('i='+i,bx+((W-160)/5-10)/2,H-130,active?'#fbbf24':'#9ab0d0',14);
+    drawText(i<idx?'已遍历':(i===idx?'当前':'待执行'),bx+((W-160)/5-10)/2,H-112,i<idx?'#34d399':(i===idx?'#fbbf24':'#5a6a8a'),10);
+  }
+  drawTerminal(40,H-95,W-80,60,[
+    '>>> for i in range(5):',
+    '...     print(i)',
+    '# 输出：0 1 2 3 4   （左闭右开）'
+  ],2);
+}
+
+// 场景4：while 循环
+function drawWhileScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('while i < 5 循环（注意避免死循环）',W/2,28,'#fbbf24',16);
+  const cx=W/2;
+  const phase=Math.floor(time*1.0)%6;
+  const i=Math.min(phase,5);
+  drawNode(cx-70,50,140,34,'i = 0  （初始化）',false,'#1e345a');
+  arrow(cx,84,cx,108);
+  drawDiamond(cx-75,108,150,52,'while i < 5?\n(i='+i+')',true);
+  arrow(cx,160,cx,180,i<5?'True':'False',i<5?'#34d399':'#fbbf24');
+  if(i<5){
+    drawNode(cx-100,180,200,40,'print(i);  i += 1',true,'#172a4a');
+    arrow(cx-100,200,cx-220,200);arrow(cx-220,200,cx-220,134);arrow(cx-220,134,cx-75,134);
+    drawNode(cx+170,108,110,52,'结束',false,'#1e345a');
+  }else{
+    drawNode(cx+170,108,110,52,'结束循环\n(否则死循环)',false,'#1e345a');
+    arrow(cx+75,134,cx+170,134,'False','#fbbf24');
+  }
+  // 警示
+  if(phase>=5){
+    ctx.fillStyle='rgba(248,113,113,0.15)';
+    roundRect(cx-200,250,400,40,8);ctx.fill();
+    drawText('警告：忘记 i+=1 会变成死循环！',cx,270,'#f87171',14);
+  }
+  drawTerminal(40,H-130,W-80,90,[
+    '>>> i = 0',
+    '>>> while i < 5:',
+    '...     print(i)',
+    '...     i += 1        # 必须更新计数器',
+    '# 输出：0 1 2 3 4'
+  ],i<5?3:4);
+}
+
+// 场景5：break / continue
+function drawBreakScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('break 与 continue 的区别',W/2,28,'#fbbf24',16);
+  const idx=Math.floor(time*1.0)%6;
+  // break 示例
+  drawText('break 示例：遇到 3 立刻跳出',180,70,'#34d399',14);
+  for(let i=0;i<6;i++){
+    const bx=60+i*55,by=90;
+    const state=i<idx?'done':(i===idx?'cur':'todo');
+    const doneBreak=i>=3&&idx>=3;
+    ctx.fillStyle=state==='cur'?'rgba(251,191,36,0.3)':(doneBreak?'rgba(120,120,120,0.1)':'#172a4a');
+    ctx.strokeStyle=state==='cur'?'#fbbf24':(doneBreak?'#444':'#243a5e');ctx.lineWidth=2;
+    roundRect(bx,by,45,40,6);ctx.fill();ctx.stroke();
+    drawText(i,bx+22,by+20,doneBreak?'#555':(i===3?'#f87171':'#e8eef8'),14);
+    if(i===3){drawText('break!',bx+22,by-8,'#f87171',9);}
+  }
+  drawText(idx>=3?'break → 循环结束':'正在遍历 i='+idx,180,150,idx>=3?'#f87171':'#9ab0d0',12);
+  // continue 示例
+  drawText('continue 示例：跳过 3 继续执行',180,200,'#06b6d4',14);
+  for(let i=0;i<6;i++){
+    const bx=60+i*55,by=220;
+    const state=i<idx?'done':(i===idx?'cur':'todo');
+    ctx.fillStyle=i===3?'rgba(248,113,113,0.15)':(state==='cur'?'rgba(251,191,36,0.3)':'#172a4a');
+    ctx.strokeStyle=i===3?'#f87171':(state==='cur'?'#fbbf24':'#243a5e');ctx.lineWidth=2;
+    roundRect(bx,by,45,40,6);ctx.fill();ctx.stroke();
+    drawText(i,bx+22,by+20,i===3?'#f87171':'#e8eef8',14);
+    if(i===3){drawText('skip',bx+22,by-8,'#f87171',9);}
+  }
+  drawText(idx<6?'continue → 跳过 3，继续 i='+(idx>=4?idx:idx+1):'循环结束',180,280,'#06b6d4',12);
+  drawTerminal(40,H-110,W-80,80,[
+    '# break：跳出整个循环',
+    '>>> for i in range(6):',
+    '...     if i == 3: break',
+    '# continue：跳过本次，继续下一轮',
+    '>>> for i in range(6):',
+    '...     if i == 3: continue'
+  ],-1);
+}
+
+// 场景6：嵌套循环 - 九九乘法表
+function drawNestedScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('嵌套循环 · 九九乘法表',W/2,28,'#fbbf24',16);
+  const outer=Math.floor(time*0.5)%9+1;
+  const inner=Math.floor(time*2)%outer+1;
+  // 表格
+  const cellW=Math.min(52,(W-120)/10);
+  const startX=80,startY=60;
+  // 表头
+  drawText('*',startX-cellW/2,startY,'#fbbf24',11);
+  for(let j=1;j<=9;j++){
+    const active=j<=outer;
+    ctx.fillStyle=active?'rgba(6,182,212,0.2)':'#0d1525';
+    ctx.strokeStyle=active?'#06b6d4':'#243a5e';ctx.lineWidth=1;
+    roundRect(startX+(j-1)*cellW,startY-cellW/2,cellW-2,cellW-2,4);ctx.fill();ctx.stroke();
+    drawText(j,startX+(j-1)*cellW+cellW/2,startY,active?'#06b6d4':'#5a6a8a',10);
+  }
+  for(let i=1;i<=9;i++){
+    const rowActive=i<=outer;
+    ctx.fillStyle=rowActive?'rgba(6,182,212,0.2)':'#0d1525';
+    ctx.strokeStyle=rowActive?'#06b6d4':'#243a5e';
+    roundRect(startX-cellW,startY+(i-1)*cellW+cellW/2,cellW-2,cellW-2,4);ctx.fill();ctx.stroke();
+    drawText(i,startX-cellW/2,startY+(i-1)*cellW+cellW,rowActive?'#06b6d4':'#5a6a8a',10);
+    for(let j=1;j<=9;j++){
+      const cellActive=i<=outer&&j<=inner&&i===outer;
+      const done=i<outer||(i===outer&&j<=inner);
+      ctx.fillStyle=cellActive?'rgba(251,191,36,0.3)':(done?'rgba(52,211,153,0.1)':'#0d1525');
+      ctx.strokeStyle=cellActive?'#fbbf24':(done?'#34d39966':'#1a2540');ctx.lineWidth=cellActive?2:1;
+      roundRect(startX+(j-1)*cellW,startY+(i-1)*cellW+cellW/2,cellW-2,cellW-2,3);ctx.fill();ctx.stroke();
+      if(done||cellActive){drawText(i+'×'+j+'='+(i*j),startX+(j-1)*cellW+cellW/2,startY+(i-1)*cellW+cellW,'#e8eef8',cellW>40?9:8);}
+    }
+  }
+  drawText('外层 i='+outer+'，内层 j='+inner+'   (外层走一步，内层走一轮)',W/2,H-55,'#fbbf24',13);
+  drawTerminal(40,H-40,W-80,28,['>>> for i in range(1,10):','...     for j in range(1,i+1):','...         print(f"{j}×{i}={i*j}",end=" ")'],-1);
+}
+
+// 场景7：try/except
+function drawTryScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('try / except 异常捕获',W/2,28,'#fbbf24',16);
+  const cx=W/2;
+  const phase=Math.floor(time*0.5)%3;
+  const errs=['ZeroDivisionError','ValueError','IndexError'];
+  const curErr=errs[phase];
+  drawNode(cx-70,50,140,34,'try: 可能出错的代码',true,'#1e345a');
+  arrow(cx,84,cx,104);
+  drawDiamond(cx-80,104,160,56,'是否抛出异常?\n('+curErr+')',true);
+  // except 分支
+  arrow(cx-80,132,cx-220,132,'是 抛出','#f87171');
+  drawNode(cx-320,104,200,56,'except '+curErr+':\n  print("已捕获")',phase>=0,'#3a1a2a');
+  // 无异常分支
+  arrow(cx,160,cx,180,'否 正常','#34d399');
+  drawNode(cx-100,180,200,40,'程序继续往下执行',false,'#172a4a');
+  // 两条汇合
+  arrow(cx-220,132,cx-220,240);arrow(cx-220,240,cx,240);
+  arrow(cx,220,cx,240);
+  arrow(cx,240,cx,260);
+  drawNode(cx-70,260,140,34,'结束',false,'#1e345a');
+  drawTerminal(40,H-120,W-80,90,[
+    '>>> try:',
+    '...     n = 10 / 0        # 除零',
+    '... except ZeroDivisionError:',
+    '...     print("不能除以0")',
+    '# 没有崩溃，被 except 捕获'
+  ],phase===0?4:3);
+}
+
+// 场景8：else/finally
+function drawElseFinallyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('try / except / else / finally 完整结构',W/2,28,'#fbbf24',16);
+  const cx=W/2;
+  const noErr=Math.sin(time*0.6)>0;
+  drawNode(cx-80,50,160,34,'try: 执行代码',true,'#1e345a');
+  arrow(cx,84,cx,104);
+  drawDiamond(cx-90,104,180,52,'是否抛异常?',true);
+  // 有异常
+  arrow(cx-90,130,cx-260,130,'是','#f87171');
+  drawNode(cx-360,104,200,52,'except:\n处理异常',!noErr,'#3a1a2a');
+  // 无异常
+  arrow(cx,156,cx,180,'否','#34d399');
+  drawNode(cx-100,180,200,40,'else: 无异常才执行',noErr,'#172a4a');
+  // 汇合到 finally
+  arrow(cx-260,156,cx-260,250);arrow(cx-260,250,cx,250);
+  arrow(cx,220,cx,250);
+  arrow(cx,250,cx,270);
+  drawNode(cx-100,270,200,40,'finally: 必定执行',true,'#2a3a5a');
+  arrow(cx,310,cx,330);
+  drawNode(cx-70,330,140,34,'结束',false,'#1e345a');
+  drawText('finally 用于：关闭文件、释放资源、清理状态',cx,H-60,'#fbbf24',13);
+  drawTerminal(40,H-45,W-80,30,['>>> try: f=open("x.txt")','>>> except: print("打开失败")','>>> else: print("成功")','>>> finally: f.close()  # 总会执行'],-1);
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('Python 流程控制核心速记',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'分支结构',d:'if / elif / else\n缩进 4 空格',c:'#fbbf24'},
+    {t:'三元表达式',d:'a if cond else b',c:'#fbbf24'},
+    {t:'for 循环',d:'for i in range(n)\n遍历可迭代对象',c:'#06b6d4'},
+    {t:'while 循环',d:'while 条件:\n必须更新计数器',c:'#06b6d4'},
+    {t:'break',d:'跳出整个循环',c:'#34d399'},
+    {t:'continue',d:'跳过本次循环',c:'#34d399'},
+    {t:'异常捕获',d:'try / except\n防程序崩溃',c:'#f87171'},
+    {t:'完整异常',d:'try/except/else\n/finally',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%4,row=Math.floor(i/4);
+    const cellW=(W-160)/4;
+    const x=80+col*cellW;
+    const y=90+row*200;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,cellW-20,150,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+cellW/2,y+45,m.c,15);
+    m.d.split('\n').forEach((ln,k)=>{drawText(ln,x+cellW/2,y+85+k*22,'#fff',12);});
+  });
+  drawText('缩进即语法 · 避免死循环 · 异常保护关键代码',W/2,H-40,'#34d399',14);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawIfScene(t);
+  else if(stepIdx===1)drawTernaryScene(t);
+  else if(stepIdx===2)drawForScene(t);
+  else if(stepIdx===3)drawWhileScene(t);
+  else if(stepIdx===4)drawBreakScene(t);
+  else if(stepIdx===5)drawNestedScene(t);
+  else if(stepIdx===6)drawTryScene(t);
+  else if(stepIdx===7)drawElseFinallyScene(t);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

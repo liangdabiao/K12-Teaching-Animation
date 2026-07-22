@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matplotlib 数据可视化 · 折线图 · 柱状图 · 散点图 · 饼图</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">Matplotlib 数据可视化</span><span class="subtitle">折线图 · 柱状图 · 散点图 · 饼图</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>pyplot 基础流程</h4><div class="v">import · figure · plot · show<br>五步绘制标准图表</div></div>
+  <div class="card s2"><div class="num">2</div><h4>四大图表类型</h4><div class="v">折线/柱状/散点/饼图<br>按数据特征选择</div></div>
+  <div class="card s3"><div class="num">3</div><h4>常用参数</h4><div class="v">color/linestyle/marker<br>label/title/legend</div></div>
+  <div class="card s4"><div class="num">4</div><h4>subplot 子图</h4><div class="v">subplot(2,2,k)<br>一张画布多图对比</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">Matplotlib</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function drawCode(cx,cy,w,h,lines,hi){ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;roundRect(cx,cy,w,h,8);ctx.fill();ctx.stroke();const lh=17;lines.forEach((ln,i)=>{const y=cy+22+i*lh;const isHi=(hi!==undefined&&i>=hi&&i<hi+1.4);if(isHi){ctx.fillStyle='rgba(251,191,36,0.22)';ctx.fillRect(cx+6,y-11,w-12,15);}const m=ln.match(/^(\s*)(.*)$/);const ind=m[1].length;drawText(ln,cx+w/2,y,'#cfe8ff',12,'center');});}
+
+const STEPS=[
+  {tag:'基础',name:'导入与画布',body:'<strong>Matplotlib</strong> 是 Python 最常用的绘图库。<strong>pyplot</strong> 模块提供类似 MATLAB 的接口。<code>import matplotlib.pyplot as plt</code> 创建画布，<code>plt.figure(figsize=(8,6))</code> 设置画布大小。',points:{title:'五步流程',items:['<strong>导入</strong>：import matplotlib.pyplot as plt','<strong>建画布</strong>：plt.figure(figsize=(8,6))','<strong>绘图</strong>：plt.plot / bar / scatter / pie','<strong>装饰</strong>：xlabel/ylabel/title/legend','<strong>显示</strong>：plt.show() 或 savefig']}},
+  {tag:'折线图',name:'plt.plot',body:'<strong>折线图</strong>用于展示<strong>数据随变量变化趋势</strong>。<code>plt.plot(x, y, color, linestyle, marker, label)</code>。<strong>linestyle</strong>: - -- -. : ; <strong>marker</strong>: o s ^ v * 。',points:{title:'plot 关键参数',items:['<strong>color</strong>：r/g/b/#ff00ff','<strong>linestyle</strong>：- 实线 / -- 虚线','<strong>marker</strong>：o 圆 / s 方 / ^ 三角','<strong>label</strong>：图例文字（配 legend）','<strong>linewidth</strong>：lw=2 线宽']}},
+  {tag:'柱状图',name:'plt.bar',body:'<strong>柱状图</strong>对比<strong>不同类别</strong>数值大小。<code>plt.bar(x, height, width=0.8, color)</code>。<strong>并列</strong>用 <code>x-w/2</code> 和 <code>x+w/2</code> 偏移；<strong>堆叠</strong>用 <code>bottom=h1</code> 参数叠加。',points:{title:'bar 用法',items:['<strong>基本</strong>：plt.bar(x, height)','<strong>并列</strong>：bar(x-w/2,a) + bar(x+w/2,b)','<strong>堆叠</strong>：第二组 bottom=h1','<strong>横向</strong>：plt.barh() 等价','<strong>width</strong>：控制柱宽']}},
+  {tag:'散点图',name:'plt.scatter',body:'<strong>散点图</strong>展示<strong>两个变量关系</strong>，发现相关性。<code>plt.scatter(x, y, s=大小, c=颜色, alpha=0.5, marker=\\\'o\\\')</code>。<strong>s</strong> 控制点大小，<strong>alpha</strong> 控制透明度。',points:{title:'scatter 参数',items:['<strong>s</strong>：点面积（数组可映射）','<strong>c</strong>：颜色或数值映射','<strong>alpha</strong>：0-1 透明度','<strong>cmap</strong>：颜色映射 viridis/jet','<strong>marker</strong>：点形状']}},
+  {tag:'饼图',name:'plt.pie',body:'<strong>饼图</strong>展示<strong>各部分占比</strong>。<code>plt.pie(data, labels=, autopct=\\\'%1.1f%%\\\', explode=, startangle=90)</code>。<strong>autopct</strong> 显示百分比，<strong>explode</strong> 突出某一块。',points:{title:'pie 参数',items:['<strong>labels</strong>：每块标签列表','<strong>autopct</strong>：\\\'%1.1f%%\\\' 显示百分比','<strong>explode</strong>：[0,0.1,0,0] 突出','<strong>startangle</strong>：起始角度','<strong>shadow</strong>：True 阴影']}},
+  {tag:'直方图',name:'plt.hist',body:'<strong>直方图</strong>展示<strong>数据分布</strong>。<code>plt.hist(data, bins=30, density=True, color)</code>。<strong>bins</strong> 控制分箱数量，<strong>density=True</strong> 归一化为概率密度。',points:{title:'hist 用法',items:['<strong>bins</strong>：分箱数（int 或序列）','<strong>density</strong>：True 归一化','<strong>range</strong>：(low, high) 范围','<strong>cumulative</strong>：True 累积','<strong>区别</strong>：hist ≠ bar']}},
+  {tag:'子图',name:'plt.subplot',body:'<strong>子图</strong>在一张画布排列多张图。<code>plt.subplot(2,2,1)</code> 选 2×2 第 1 个；或 <code>fig, axes = plt.subplots(2,2)</code> 一次性创建，用 <code>axes[0,0].plot(...)</code> 操作。',points:{title:'subplot 两套 API',items:['<strong>方式1</strong>：plt.subplot(行,列,序号)','<strong>方式2</strong>：fig,axes=subplots(2,2)','<strong>访问</strong>：axes[0,1] 第二个子图','<strong>共享轴</strong>：sharex/sharey=True','<strong>紧致</strong>：plt.tight_layout()']}},
+  {tag:'配置',name:'中文字体与保存',body:'Matplotlib 默认<strong>不显示中文</strong>，需配置 <code>plt.rcParams[\\\'font.sans-serif\\\'] = [\\\'SimHei\\\']</code>，负号修复 <code>axes.unicode_minus=False</code>。<code>plt.savefig(\\\'out.png\\\', dpi=300, bbox_inches=\\\'tight\\\')</code> 高清保存。',points:{title:'中文与导出',items:['<strong>字体</strong>：rcParams font.sans-serif','<strong>常见</strong>：SimHei / Microsoft YaHei','<strong>负号</strong>：axes.unicode_minus=False','<strong>savefig</strong>：dpi=300 高清','<strong>bbox_inches</strong>：tight 去白边']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：基础流程 =====
+function drawBasicScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('Matplotlib · pyplot 五步流程',W/2,30,'#fbbf24',16);
+  const cx=W/2-180,cy=70;
+  const lines=[
+    '# 1. 导入库',
+    'import matplotlib.pyplot as plt',
+    'import numpy as np',
+    '',
+    '# 2. 创建画布',
+    'plt.figure(figsize=(8,6))',
+    '',
+    '# 3. 绘制图表',
+    'plt.plot(x, y, color="r")',
+    '',
+    '# 4. 添加装饰',
+    'plt.title("标题")',
+    'plt.xlabel("X轴")',
+    '',
+    '# 5. 显示/保存',
+    'plt.show()',
+  ];
+  const hi=Math.floor((time*0.8)%lines.length);
+  drawCode(cx,cy,360,H-110,lines,hi);
+  // 右侧流程图
+  const fx=W/2+200;
+  const steps=[{n:'1',t:'import',c:'#06b6d4',d:'导入 pyplot'},{n:'2',t:'figure',c:'#a78bfa',d:'创建画布'},{n:'3',t:'plot',c:'#fbbf24',d:'绘制图形'},{n:'4',t:'label',c:'#34d399',d:'装饰标注'},{n:'5',t:'show',c:'#f87171',d:'显示保存'}];
+  const active=Math.floor((time*0.6)%5);
+  steps.forEach((s,i)=>{
+    const y=cy+30+i*72;
+    const on=(i===active);
+    ctx.fillStyle=on?s.c+'55':s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=on?2.5:1.5;
+    if(on){ctx.shadowColor=s.c;ctx.shadowBlur=15;}
+    roundRect(fx,y,260,56,10);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+    drawText(s.n,fx+30,y+28,'#fff',22);
+    drawText(s.t,fx+70,y+20,on?'#fff':'#cfe8ff',15,'left');
+    drawText(s.d,fx+70,y+40,on?'#fde68a':'#9ab0d0',11,'left');
+    if(i<4){ctx.strokeStyle='#243a5e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(fx+30,y+56);ctx.lineTo(fx+30,y+72);ctx.stroke();}
+  });
+}
+
+// ===== 场景：折线图 =====
+function drawLineScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('折线图 plt.plot · 趋势变化',W/2,30,'#fbbf24',16);
+  // 代码
+  drawCode(20,60,260,200,[
+    'plt.plot(x, y1,',
+    '  color="#06b6d4",',
+    '  linestyle="-",',
+    '  marker="o",',
+    '  label="温度")',
+    'plt.plot(x, y2,',
+    '  color="#fbbf24",',
+    '  linestyle="--",',
+    '  marker="s",',
+    '  label="湿度")',
+    'plt.legend()',
+  ],Math.floor(time*0.7)%12);
+  // 图表区
+  const ox=340,oy=80,pw=W-ox-30,ph=H-180;
+  drawText('某地一周温湿度变化',ox+pw/2,oy-10,'#fff',13);
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+ph);ctx.lineTo(ox+pw,oy+ph);ctx.stroke();
+  // x 轴标签
+  const days=['一','二','三','四','五','六','日'];
+  const xs=days.map((d,i)=>ox+30+i*(pw-60)/6);
+  days.forEach((d,i)=>{drawText(d,xs[i],oy+ph+18,'#9ab0d0',11);});
+  // y 轴
+  for(let v=0;v<=30;v+=10){const y=oy+ph-(v/30)*ph;drawText(v,ox-20,y,'#5a6a8a',10);ctx.strokeStyle='#1e2a44';ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+pw,y);ctx.stroke();}
+  // 数据
+  const y1=[10,15,22,18,25,28,20];
+  const y2=[60,55,70,65,80,75,68];
+  // 进度
+  const prog=Math.min(1,(time*0.5)%1.3);
+  const n=Math.ceil(prog*7);
+  // y1 折线（温度）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<n&&i<7;i++){const px=xs[i],py=oy+ph-(y1[i]/30)*ph;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+  ctx.stroke();ctx.shadowBlur=0;
+  // 点
+  for(let i=0;i<n&&i<7;i++){const px=xs[i],py=oy+ph-(y1[i]/30)*ph;ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();}
+  // y2 折线（湿度 - 缩放到 0-100 显示为 0-30 倍数）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  for(let i=0;i<n&&i<7;i++){const px=xs[i],py=oy+ph-(y2[i]/100)*ph;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+  ctx.stroke();ctx.setLineDash([]);
+  for(let i=0;i<n&&i<7;i++){const px=xs[i],py=oy+ph-(y2[i]/100)*ph;ctx.fillStyle='#fbbf24';ctx.fillRect(px-4,py-4,8,8);}
+  // 图例
+  drawText('— 温度(°C)',ox+pw-120,oy+20,'#06b6d4',11,'left');
+  drawText('-- 湿度(%)',ox+pw-120,oy+40,'#fbbf24',11,'left');
+}
+
+// ===== 场景：柱状图 =====
+function drawBarScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('柱状图 plt.bar · 类别对比',W/2,30,'#fbbf24',16);
+  drawCode(20,60,250,200,[
+    'x = ["Q1","Q2","Q3","Q4"]',
+    'sales = [80, 120, 95, 150]',
+    'cost  = [50, 70, 60, 90]',
+    '',
+    '# 并列柱状图',
+    'w = 0.35',
+    'plt.bar(x-w/2, sales,',
+    '  width=w, label="销售")',
+    'plt.bar(x+w/2, cost,',
+    '  width=w, label="成本")',
+    'plt.legend()',
+  ],Math.floor(time*0.7)%10);
+  const ox=300,oy=80,pw=W-ox-30,ph=H-180;
+  drawText('季度销售与成本对比',ox+pw/2,oy-10,'#fff',13);
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+ph);ctx.lineTo(ox+pw,oy+ph);ctx.stroke();
+  const cats=['Q1','Q2','Q3','Q4'];
+  const sales=[80,120,95,150];
+  const cost=[50,70,60,90];
+  const maxV=160;
+  const slot=pw/cats.length;
+  const w=slot*0.35;
+  cats.forEach((c,i)=>{const cx=ox+slot*i+slot/2;drawText(c,cx,oy+ph+18,'#9ab0d0',11);});
+  for(let v=0;v<=maxV;v+=40){const y=oy+ph-(v/maxV)*ph;drawText(v,ox-20,y,'#5a6a8a',10);ctx.strokeStyle='#1e2a44';ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+pw,y);ctx.stroke();}
+  const prog=Math.min(1,(time*0.5)%1.3);
+  cats.forEach((c,i)=>{
+    const cx=ox+slot*i+slot/2;
+    const sH=(sales[i]/maxV)*ph*Math.min(1,prog*4-i*0.5);
+    const cH=(cost[i]/maxV)*ph*Math.min(1,prog*4-i*0.5-0.2);
+    if(sH>0){ctx.fillStyle='#06b6d4';ctx.fillRect(cx-w-2,oy+ph-sH,w,sH);drawText(sales[i],cx-w/2-2,oy+ph-sH-10,'#06b6d4',10);}
+    if(cH>0){ctx.fillStyle='#fbbf24';ctx.fillRect(cx+2,oy+ph-cH,w,cH);drawText(cost[i],cx+w/2+2,oy+ph-cH-10,'#fbbf24',10);}
+  });
+  drawText('■ 销售',ox+pw-130,oy+20,'#06b6d4',11,'left');
+  drawText('■ 成本',ox+pw-130,oy+40,'#fbbf24',11,'left');
+}
+
+// ===== 场景：散点图 =====
+function drawScatterScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('散点图 plt.scatter · 相关性',W/2,30,'#fbbf24',16);
+  drawCode(20,60,260,180,[
+    '# x 学习时长, y 成绩',
+    'plt.scatter(x, y,',
+    '  s=area,        # 大小',
+    '  c=score,       # 颜色',
+    '  alpha=0.6,',
+    '  cmap="viridis",',
+    '  marker="o")',
+    'plt.colorbar()',
+    'plt.xlabel("学习时长")',
+  ],Math.floor(time*0.7)%9);
+  const ox=320,oy=70,pw=W-ox-30,ph=H-160;
+  drawText('学习时长 vs 成绩（颜色=得分）',ox+pw/2,oy-10,'#fff',13);
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+ph);ctx.lineTo(ox+pw,oy+ph);ctx.stroke();
+  drawText('成绩',ox-30,oy+ph/2,'#9ab0d0',11);
+  drawText('学习时长(h)',ox+pw/2,oy+ph+25,'#9ab0d0',11);
+  // 网格
+  ctx.strokeStyle='#1e2a44';ctx.lineWidth=1;
+  for(let i=1;i<=5;i++){const gx=ox+pw*i/6;ctx.beginPath();ctx.moveTo(gx,oy);ctx.lineTo(gx,oy+ph);ctx.stroke();}
+  // 散点（伪随机）
+  const seed=[[1,40],[2,55],[3,50],[4,70],[5,65],[6,80],[7,75],[8,88],[9,82],[10,92],[2,45],[4,60],[6,68],[8,78],[3,48],[5,72],[7,85],[9,90],[1.5,50],[4.5,67]];
+  const prog=Math.min(1,(time*0.4)%1.3);
+  const n=Math.floor(prog*seed.length);
+  for(let i=0;i<n;i++){const[tx,ty]=seed[i];const px=ox+(tx/12)*pw;const py=oy+ph-((ty-30)/70)*ph;const col=ty>=75?'#34d399':ty>=60?'#fbbf24':'#f87171';ctx.fillStyle=col;ctx.globalAlpha=0.7;ctx.beginPath();ctx.arc(px,py,5+ty/20,0,7);ctx.fill();ctx.globalAlpha=1;}
+  drawText('● 优秀(≥75)',ox+pw-130,oy+20,'#34d399',11,'left');
+  drawText('● 良好(60-74)',ox+pw-130,oy+40,'#fbbf24',11,'left');
+  drawText('● 待提升(<60)',ox+pw-130,oy+60,'#f87171',11,'left');
+  drawText('观察：正相关，时长越长成绩越高',ox+pw/2,oy+ph+50,'#34d399',12);
+}
+
+// ===== 场景：饼图 =====
+function drawPieScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('饼图 plt.pie · 占比分布',W/2,30,'#fbbf24',16);
+  drawCode(20,60,250,200,[
+    'labels = ["Python","Java",',
+    '          "C++","Go"]',
+    'sizes  = [45, 25, 20, 10]',
+    'explode= [0.1,0,0,0]',
+    '',
+    'plt.pie(sizes,',
+    '  labels=labels,',
+    '  autopct="%1.1f%%",',
+    '  explode=explode,',
+    '  startangle=90,',
+    '  shadow=True)',
+  ],Math.floor(time*0.7)%11);
+  // 饼图绘制
+  const cx=W/2+140,cy=H/2+10;
+  const r=130;
+  const data=[{l:'Python',v:45,c:'#06b6d4',e:0.1},{l:'Java',v:25,c:'#fbbf24',e:0},{l:'C++',v:20,c:'#a78bfa',e:0},{l:'Go',v:10,c:'#34d399',e:0}];
+  const total=data.reduce((s,d)=>s+d.v,0);
+  const prog=Math.min(1,(time*0.4)%1.2);
+  let start=-Math.PI/2;
+  const sweep=prog*Math.PI*2;
+  let drawn=0;
+  data.forEach(d=>{
+    const ang=(d.v/total)*Math.PI*2;
+    if(drawn>=sweep)return;
+    const realAng=Math.min(ang,sweep-drawn);
+    const ox=Math.cos(start+ang/2)*d.e*60;
+    const oy=Math.sin(start+ang/2)*d.e*60;
+    ctx.fillStyle=d.c;ctx.strokeStyle='#0a1628';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx+ox,cy+oy);
+    ctx.arc(cx+ox,cy+oy,r,start,start+realAng);
+    ctx.closePath();ctx.fill();ctx.stroke();
+    if(realAng>0.2){
+      const mx=cx+ox+Math.cos(start+realAng/2)*r*0.6;
+      const my=cy+oy+Math.sin(start+realAng/2)*r*0.6;
+      drawText(d.l,mx,my-8,'#fff',12);
+      drawText((d.v/total*100).toFixed(1)+'%',mx,my+8,'#1a1a1a',11);
+    }
+    start+=ang;drawn+=ang;
+  });
+  drawText('编程语言使用占比',cx,cy+r+40,'#9ab0d0',13);
+  drawText('explode=[0.1,0,0,0] 突出 Python',cx,cy+r+62,'#fbbf24',12);
+}
+
+// ===== 场景：直方图 =====
+function drawHistScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('直方图 plt.hist · 数据分布',W/2,30,'#fbbf24',16);
+  drawCode(20,60,250,180,[
+    '# 1000 个正态分布样本',
+    'data = np.random.randn(1000)',
+    '',
+    'plt.hist(data,',
+    '  bins=30,         # 分箱',
+    '  density=True,    # 归一化',
+    '  color="#06b6d4",',
+    '  alpha=0.7,',
+    '  edgecolor="white")',
+    'plt.xlabel("数值")',
+  ],Math.floor(time*0.7)%9);
+  const ox=300,oy=80,pw=W-ox-30,ph=H-180;
+  drawText('正态分布样本（bins=30）',ox+pw/2,oy-10,'#fff',13);
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+ph);ctx.lineTo(ox+pw,oy+ph);ctx.stroke();
+  const bins=30;
+  const binW=pw/bins;
+  const prog=Math.min(1,(time*0.4)%1.2);
+  for(let i=0;i<bins;i++){
+    const x=(-3+i*6/bins);
+    const freq=Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
+    const h=freq*ph*2.5*Math.min(1,prog*bins/Math.max(1,i+1)*1.5);
+    const bx=ox+i*binW;
+    ctx.fillStyle='rgba(6,182,212,0.7)';ctx.strokeStyle='#fff';ctx.lineWidth=0.5;
+    ctx.fillRect(bx,oy+ph-h,binW,h);
+    ctx.strokeRect(bx,oy+ph-h,binW,h);
+  }
+  drawText('频率密度',ox-30,oy+ph/2,'#9ab0d0',11);
+  drawText('数值',ox+pw/2,oy+ph+25,'#9ab0d0',11);
+  for(let v=-3;v<=3;v+=1){const bx=ox+((v+3)/6)*pw;drawText(v,bx,oy+ph+15,'#5a6a8a',10);}
+  drawText('钟形曲线 = 正态分布特征',ox+pw/2,oy+ph+55,'#34d399',12);
+}
+
+// ===== 场景：子图 subplot =====
+function drawSubplotScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('子图 plt.subplot / subplots · 多图对比',W/2,30,'#fbbf24',16);
+  drawCode(20,60,250,220,[
+    '# 方式 1：逐个切换',
+    'plt.subplot(2,2,1)',
+    'plt.plot(x,y1)',
+    'plt.subplot(2,2,2)',
+    'plt.bar(x,y2)',
+    '',
+    '# 方式 2：一次性创建',
+    'fig,axes = plt.subplots(',
+    '  2,2, sharex=True)',
+    'axes[0,0].plot(x,y1)',
+    'axes[1,1].scatter(x,y3)',
+    'plt.tight_layout()',
+  ],Math.floor(time*0.7)%12);
+  // 2x2 子图示意
+  const ox=300,oy=70,pw=W-ox-30,ph=H-120;
+  const sub=pw/2,subh=ph/2;
+  drawText('2 × 2 子图画布',ox+pw/2,oy-12,'#fff',13);
+  const titles=['subplot(2,2,1)','subplot(2,2,2)','subplot(2,2,3)','subplot(2,2,4)'];
+  const colors=['#06b6d4','#fbbf24','#a78bfa','#34d399'];
+  const active=Math.floor((time*0.6)%4);
+  for(let r=0;r<2;r++)for(let c=0;c<2;c++){
+    const idx=r*2+c;
+    const bx=ox+c*sub,by=oy+r*subh;
+    ctx.fillStyle=idx===active?'rgba(251,191,36,0.08)':'rgba(255,255,255,0.02)';
+    ctx.strokeStyle=idx===active?'#fbbf24':'#3a4a6a';ctx.lineWidth=idx===active?2:1;
+    roundRect(bx+8,by+8,sub-16,subh-16,6);ctx.fill();ctx.stroke();
+    drawText(titles[idx],bx+sub/2,by+20,idx===active?'#fbbf24':'#9ab0d0',11);
+    // 简略图
+    const ix=bx+20,iy=by+35,iw=sub-40,ih=subh-55;
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ix,iy+ih);ctx.lineTo(ix+iw,iy+ih);ctx.stroke();
+    if(idx===0){ctx.strokeStyle=colors[0];ctx.lineWidth=2;ctx.beginPath();for(let i=0;i<=20;i++){const px=ix+iw*i/20,py=iy+ih-Math.sin(i*0.5+time)*ih*0.3;i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}ctx.stroke();}
+    if(idx===1){ctx.fillStyle=colors[1];for(let i=0;i<5;i++){const bw=iw/6,bx2=ix+iw*(i+0.5)/5-15,bh=ih*0.3*(0.5+Math.sin(i+time)*0.3);ctx.fillRect(bx2,iy+ih-bh,bw,bh);}}
+    if(idx===2){ctx.fillStyle=colors[2];for(let i=0;i<15;i++){const px=ix+Math.random()*iw,py=iy+Math.random()*ih;ctx.beginPath();ctx.arc(px,py,2,0,7);ctx.fill();}}
+    if(idx===3){ctx.fillStyle=colors[3];ctx.beginPath();ctx.moveTo(ix+iw/2,iy+ih);ctx.arc(ix+iw/2,iy+ih,ih*0.7,0,Math.PI);ctx.fill();}
+  }
+}
+
+// ===== 场景：中文与保存 =====
+function drawConfigScene(){
+  const W=cv.width,H=cv.height;
+  drawText('中文字体配置 · 高清保存',W/2,30,'#fbbf24',16);
+  // 使用双引号字符串避免单引号转义混乱
+  const codeLines=[
+    "import matplotlib.pyplot as plt",
+    "import numpy as np",
+    "",
+    "# 解决中文乱码问题",
+    "plt.rcParams['font.sans-serif']",
+    "    = ['SimHei']",
+    "# 解决负号显示为方块",
+    "plt.rcParams['axes.unicode_minus']",
+    "    = False",
+    "",
+    "x = np.linspace(0, 10, 100)",
+    "plt.plot(x, np.sin(x))",
+    "plt.title('正弦曲线')",
+    "plt.xlabel('时间 t / s')",
+    "plt.ylabel('幅值')",
+    "",
+    "# 保存为高清图片",
+    "plt.savefig('out.png',",
+    "    dpi=300,            # 印刷级",
+    "    bbox_inches='tight',# 去白边",
+    "    facecolor='white')  # 白底",
+    "plt.show()"
+  ];
+  drawCode(40,70,W/2-70,H-130,codeLines,Math.floor(t*0.8)%codeLines.length);
+  // 右侧：关键配置卡片
+  const fx=W/2+60;
+  drawText('关键配置速查',fx+(W-fx-30)/2,80,'#fbbf24',14);
+  const items=[
+    {t:'font.sans-serif',d:"= ['SimHei'] 黑体",c:'#06b6d4'},
+    {t:'常见可用字体',d:'SimHei / Microsoft YaHei',c:'#a78bfa'},
+    {t:'unicode_minus',d:'= False 修复负号',c:'#fbbf24'},
+    {t:'savefig 路径',d:"savefig('out.png')",c:'#34d399'},
+    {t:'dpi 分辨率',d:'300 印刷级清晰度',c:'#f87171'},
+    {t:'bbox_inches',d:"tight 自动去除白边",c:'#06b6d4'},
+    {t:'facecolor',d:"white 白色背景",c:'#a78bfa'},
+  ];
+  items.forEach((m,i)=>{
+    const y=110+i*60;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=1.5;
+    ctx.shadowColor=m.c;ctx.shadowBlur=4;
+    roundRect(fx,y,W-fx-30,52,8);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(m.t,fx+15,y+20,m.c,13,'left');
+    drawText(m.d,fx+15,y+38,'#cfe8ff',11,'left');
+  });
+  drawText('提示：rcParams 全局生效，写在 import 之后、绘图之前',W/2,H-30,'#34d399',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawBasicScene(t);
+  else if(stepIdx===1)drawLineScene(t);
+  else if(stepIdx===2)drawBarScene(t);
+  else if(stepIdx===3)drawScatterScene(t);
+  else if(stepIdx===4)drawPieScene(t);
+  else if(stepIdx===5)drawHistScene(t);
+  else if(stepIdx===6)drawSubplotScene(t);
+  else if(stepIdx===7)drawConfigScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

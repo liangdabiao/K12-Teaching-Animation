@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>集合的概念与运算 · 交并补 · 子集 · Venn图</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">集合的概念与运算</span><span class="subtitle">子集 · 交集 · 并集 · 补集 · Venn图</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>集合三要素</h4><div class="v">确定性、互异性、无序性<br>集合元素的三大特征</div></div>
+  <div class="card s2"><div class="num">2</div><h4>集合间关系</h4><div class="v">子集 A⊆B · 真子集 A⊊B<br>相等 A=B · 空集 ∅</div></div>
+  <div class="card s3"><div class="num">3</div><h4>三大运算</h4><div class="v">交集 A∩B · 并集 A∪B<br>补集 ∁UA</div></div>
+  <div class="card s4"><div class="num">4</div><h4>常用数集符号</h4><div class="v">N 自然数 · Z 整数<br>Q 有理数 · R 实数</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">集合的概念</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+// ============================================================
+// 集合的概念与运算 · 教学动画
+// 状态机：STEPS 数组驱动，每步一个场景绘制函数
+// 控件：播放/重置/单步/速度，与模板保持一致
+// ============================================================
+
+// 全局画布与状态元素引用
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+
+// 自适应画布尺寸：根据父容器宽度高度调整，限制在合理范围
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(520,Math.min(1100,r.width-12));
+  cv.height=Math.max(400,Math.min(600,r.height-12));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+// 圆角矩形辅助函数（用于卡片、说明框等）
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+// 统一文本绘制：drawText(文本, x, y, 颜色, 字号, 水平对齐, 垂直对齐)
+function drawText(t,x,y,c,fs,a,b){
+  ctx.fillStyle=c||'#9ab0d0';
+  ctx.font=(fs||12)+'px sans-serif';
+  ctx.textAlign=a||'center';
+  ctx.textBaseline=b||'middle';
+  ctx.fillText(t,x,y);
+}
+
+// 绘制箭头辅助函数（用于元素流向、关系指示）
+function drawArrow(x1,y1,x2,y2,color,w){
+  ctx.strokeStyle=color||'#9ab0d0';ctx.lineWidth=w||2;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=color||'#9ab0d0';
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-8*Math.cos(ang-0.4),y2-8*Math.sin(ang-0.4));
+  ctx.lineTo(x2-8*Math.cos(ang+0.4),y2-8*Math.sin(ang+0.4));
+  ctx.closePath();ctx.fill();
+}
+
+// ============================================================
+// STEPS 状态机：每个步骤包含标签、名称、正文、要点
+// tag 用于步骤栏分类，name 显示标题，body/points 渲染右栏
+// ============================================================
+const STEPS=[
+  {tag:'基础',name:'集合三要素',body:'<strong>集合</strong>是<strong>一些确定的、不同的对象</strong>构成的整体。集合中的对象称为<strong>元素</strong>。集合具有三大特性：确定性、互异性、无序性。',points:{title:'三要素详解',items:['<strong>确定性</strong>：任一对象是否属于集合必须明确','<strong>互异性</strong>：集合中元素不重复','<strong>无序性</strong>：元素无先后顺序','<strong>记法</strong>：大写字母表示集合 A、B、C']}},
+  {tag:'基础',name:'元素与集合',body:'<strong>元素 a 与集合 A 的关系</strong>只有两种：<code>a ∈ A</code>（属于）或 <code>a ∉ A</code>（不属于）。符号 ∈ 读作"属于"，∉ 读作"不属于"。',points:{title:'常用数集',items:['<strong>N</strong>：自然数集 0,1,2,…','<strong>Z</strong>：整数集 …,-1,0,1,…','<strong>Q</strong>：有理数集（分数）','<strong>R</strong>：实数集（全部小数）']}},
+  {tag:'表示',name:'集合表示法',body:'集合有三种常见表示方法：<strong>列举法</strong>（把元素一一列出，如 {1,2,3}）、<strong>描述法</strong>（用性质描述，如 {x|x>0}）、<strong>Venn 图法</strong>（用封闭曲线表示）。',points:{title:'三种表示法',items:['<strong>列举法</strong>：A = {1, 2, 3}','<strong>描述法</strong>：B = {x ∈ Z | 0<x<5}','<strong>Venn图</strong>：圆圈表示集合','<strong>注意</strong>：列举法元素间用逗号隔开']}},
+  {tag:'关系',name:'子集与真子集',body:'若集合 A 的<strong>所有元素都是集合 B 的元素</strong>，则 <code>A ⊆ B</code>（A 是 B 的<strong>子集</strong>）。若 A⊆B 且 A≠B，则 <code>A ⊊ B</code>（A 是 B 的<strong>真子集</strong>）。',points:{title:'子集性质',items:['<strong>A ⊆ B</strong>：A 中元素都在 B 中','<strong>A ⊊ B</strong>：真子集，A ≠ B','<strong>A = B</strong>：A⊆B 且 B⊆A','<strong>空集 ∅</strong>：任何集合的子集']}},
+  {tag:'运算',name:'交集 A∩B',body:'<strong>交集</strong>：由所有<strong>既属于 A 又属于 B</strong> 的元素组成的集合，记作 <code>A ∩ B</code>。即 A∩B = {x | x∈A 且 x∈B}。',points:{title:'交集要点',items:['<strong>定义</strong>：两集合的公共元素','<strong>记号</strong>：A ∩ B','<strong>关键词</strong>："且"（and）','<strong>性质</strong>：A∩B ⊆ A，A∩A = A']}},
+  {tag:'运算',name:'并集 A∪B',body:'<strong>并集</strong>：由所有<strong>属于 A 或属于 B</strong> 的元素组成的集合，记作 <code>A ∪ B</code>。即 A∪B = {x | x∈A 或 x∈B}。',points:{title:'并集要点',items:['<strong>定义</strong>：两集合所有元素合并','<strong>记号</strong>：A ∪ B','<strong>关键词</strong>："或"（or）','<strong>性质</strong>：A ⊆ A∪B，A∪A = A']}},
+  {tag:'运算',name:'补集 ∁UA',body:'<strong>全集 U</strong> 包含所研究问题的所有元素。集合 A 的<strong>补集</strong>是<strong>全集中不属于 A</strong>的元素组成的集合，记作 <code>∁UA</code>。即 ∁UA = {x | x∈U 且 x∉A}。',points:{title:'补集要点',items:['<strong>全集 U</strong>：研究问题的所有元素','<strong>记号</strong>：∁UA','<strong>定义</strong>：U 中除去 A 的部分','<strong>性质</strong>：A∪∁UA = U，A∩∁UA = ∅']}},
+  {tag:'综合',name:'常用数集',body:'<strong>常用数集</strong>有四个：N（自然数集）、Z（整数集）、Q（有理数集）、R（实数集）。它们之间有包含关系：<code>N ⫋ Z ⫋ Q ⫋ R</code>。',points:{title:'数集关系',items:['<strong>N ⊂ Z</strong>：自然数是整数','<strong>Z ⊂ Q</strong>：整数是有理数','<strong>Q ⊂ R</strong>：有理数是实数','<strong>记忆</strong>：N→Z→Q→R 逐渐扩大']}},
+];
+
+// 动画运行时状态：stepIdx 当前步骤，playing 是否播放，speed 倍速
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5; // 每步默认停留秒数
+
+// 元素小球颜色映射：用于 Venn 图中元素着色
+const ELEMENTS=[1,2,3,4,5,6,7,8];
+function elementColor(v){return v<=4?'#06b6d4':'#fbbf24';}
+
+// ===== 场景：集合三要素（确定性、互异性、无序性）=====
+// 三张卡片并排展示，每张含定义与正反例
+function drawThreeProps(time){
+  const W=cv.width,H=cv.height;
+  drawText('集合三要素 · 确定性 互异性 无序性',W/2,30,'#fbbf24',16);
+  const items=[
+    {t:'确定性',d:'对象是否属于集合\n必须明确判断',c:'#34d399',ex:'"高个子"不是集合\n"身高>180cm"是集合'},
+    {t:'互异性',d:'集合中元素\n不能重复',c:'#06b6d4',ex:'{1,1,2} 错误\n应为 {1,2}'},
+    {t:'无序性',d:'元素无先后\n{1,2,3}={3,1,2}',c:'#fbbf24',ex:'{a,b,c}\n= {c,b,a}'},
+  ];
+  items.forEach((m,i)=>{
+    const x=W/2-260+i*200,y=80;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x,y,180,260,12);ctx.fill();ctx.stroke();
+    drawText(m.t,x+90,y+35,m.c,18);
+    const lines=m.d.split('\n');
+    lines.forEach((ln,j)=>drawText(ln,x+90,y+90+j*22,'#fff',12));
+    const exs=m.ex.split('\n');
+    exs.forEach((ln,j)=>drawText(ln,x+90,y+180+j*20,'#9ab0d0',11));
+  });
+  drawText('集合记作：大写字母 A、B、C…，元素用小写 a、b、c…',W/2,H-50,'#9ab0d0',13);
+  drawText('a ∈ A 读作 "a 属于 A"',W/2,H-25,'#34d399',13);
+}
+
+// ===== 场景：三种表示法（列举法、描述法、Venn 图）=====
+function drawNotation(time){
+  const W=cv.width,H=cv.height;
+  drawText('集合的三种表示方法',W/2,30,'#fbbf24',16);
+  // ① 列举法
+  ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(60,70,200,200,10);ctx.fill();ctx.stroke();
+  drawText('① 列举法',160,95,'#34d399',15);
+  drawText('把元素一一列出',160,120,'#fff',12);
+  drawText('A = {1, 2, 3}',160,160,'#fde68a',14);
+  drawText('B = {a, b, c}',160,190,'#fde68a',13);
+  drawText('适合：元素少',160,230,'#9ab0d0',11);
+  drawText('可明确列出',160,250,'#9ab0d0',11);
+  // ② 描述法
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(290,70,200,200,10);ctx.fill();ctx.stroke();
+  drawText('② 描述法',390,95,'#06b6d4',15);
+  drawText('用性质描述元素',390,120,'#fff',12);
+  drawText('C = {x|x > 0}',390,160,'#fde68a',14);
+  drawText('D = {x∈Z|1<x<5}',390,195,'#fde68a',12);
+  drawText('适合：元素多',390,230,'#9ab0d0',11);
+  drawText('有共同特征',390,250,'#9ab0d0',11);
+  // ③ Venn 图法
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W-260,70,200,200,10);ctx.fill();ctx.stroke();
+  drawText('③ Venn 图',W-160,95,'#fbbf24',15);
+  drawText('用封闭曲线表示',W-160,120,'#fff',12);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(W-160,200,55,40,0,0,7);ctx.stroke();
+  drawText('A',W-160,200,'#fbbf24',13);
+  drawText('直观形象',W-160,250,'#9ab0d0',11);
+  drawText('适合：演示推理',W/2,H-40,'#34d399',13);
+}
+
+// ===== 场景：子集与真子集（A 在 B 内部，呼吸动画）=====
+function drawSubset(time){
+  const W=cv.width,H=cv.height;
+  drawText('子集 · A ⊆ B · 真子集 · A ⊊ B',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 大圆 B（外层）
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(cx,cy,150,0,7);ctx.fill();ctx.stroke();
+  drawText('B',cx+120,cy-120,'#fbbf24',18);
+  // 小圆 A（在 B 内，呼吸效果）
+  const breath=80+Math.sin(time*1.5)*6;
+  ctx.fillStyle='rgba(6,182,212,0.2)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(cx-30,cy,breath,0,7);ctx.fill();ctx.stroke();
+  drawText('A',cx-30,cy,'#06b6d4',18);
+  // 元素点（A 内点也在 B 内）
+  ctx.fillStyle='#67e8f9';
+  [[-60,-20],[-20,-30],[0,20],[-40,30]].forEach(p=>{ctx.beginPath();ctx.arc(cx-30+p[0],cy+p[1],5,0,7);ctx.fill();});
+  // B 中 A 外的元素
+  ctx.fillStyle='#fde68a';
+  [[100,-50],[110,40],[60,90]].forEach(p=>{
+    ctx.beginPath();ctx.arc(cx+p[0],cy+p[1],5,0,7);ctx.fill();
+  });
+  // 关系标注
+  ctx.font='bold 22px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  drawText('A ⊆ B',W/2,H-90,'#34d399',20);
+  drawText('A 的所有元素都在 B 中',W/2,H-60,'#9ab0d0',13);
+  drawText('A ≠ B → A 是 B 的真子集 A ⊊ B',W/2,H-35,'#fbbf24',13);
+}
+
+// ===== 场景：交集 A∩B（两圆相交，公共部分高亮脉冲）=====
+function drawIntersection(time){
+  const W=cv.width,H=cv.height;
+  drawText('交集 A ∩ B · 公共部分',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  const r=110,offset=70;
+  // 左圆 A
+  ctx.fillStyle='rgba(6,182,212,0.18)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(cx-offset,cy,r,0,7);ctx.fill();ctx.stroke();
+  // 右圆 B
+  ctx.fillStyle='rgba(251,191,36,0.18)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(cx+offset,cy,r,0,7);ctx.fill();ctx.stroke();
+  drawText('A',cx-offset-r+25,cy-r+25,'#06b6d4',20);
+  drawText('B',cx+offset+r-25,cy-r+25,'#fbbf24',20);
+  // 高亮交集区域（绿色脉冲）
+  const pulse=0.3+0.15*Math.sin(time*3);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx-offset,cy,r,0,7);
+  ctx.arc(cx+offset,cy,r,0,7,true);
+  ctx.clip();
+  ctx.fillStyle='rgba(52,211,153,'+pulse+')';
+  ctx.fillRect(cx-r*2,cy-r,r*4,r*2);
+  ctx.restore();
+  // 交集区域元素（绿色，动态流动）
+  ctx.fillStyle='#34d399';
+  for(let i=0;i<3;i++){
+    const a=time+i*2;
+    const ex=cx+Math.cos(a)*20,ey=cy+Math.sin(a)*20;
+    ctx.beginPath();ctx.arc(ex,ey,7,0,7);ctx.fill();
+  }
+  // A 独有元素（左半部分）
+  ctx.fillStyle='#67e8f9';
+  [[-100,-30],[-110,30],[-90,50]].forEach(p=>{ctx.beginPath();ctx.arc(cx+p[0],cy+p[1],6,0,7);ctx.fill();});
+  // B 独有元素（右半部分）
+  ctx.fillStyle='#fde68a';
+  [[100,-30],[110,30],[90,50]].forEach(p=>{ctx.beginPath();ctx.arc(cx+p[0],cy+p[1],6,0,7);ctx.fill();});
+  drawText('A ∩ B = {x | x∈A 且 x∈B}',W/2,H-70,'#34d399',15);
+  drawText('绿色区域：两集合的公共元素',W/2,H-45,'#9ab0d0',13);
+  drawText('关键词："且"（同时属于）',W/2,H-25,'#fbbf24',13);
+}
+
+// ===== 场景：并集 A∪B（两圆合并区域整体高亮）=====
+function drawUnion(time){
+  const W=cv.width,H=cv.height;
+  drawText('并集 A ∪ B · 所有元素',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  const r=110,offset=70;
+  // 先填充整个并集区域（紫色脉冲高亮）
+  const pulse=0.35+0.15*Math.sin(time*3);
+  ctx.fillStyle='rgba(167,139,250,'+pulse+')';
+  ctx.beginPath();ctx.arc(cx-offset,cy,r,0,7);ctx.arc(cx+offset,cy,r,0,7);ctx.fill();
+  // 描边两圆
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(cx-offset,cy,r,0,7);ctx.stroke();
+  ctx.strokeStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(cx+offset,cy,r,0,7);ctx.stroke();
+  drawText('A',cx-offset-r+25,cy-r+25,'#06b6d4',20);
+  drawText('B',cx+offset+r-25,cy-r+25,'#fbbf24',20);
+  // 所有元素（都在并集中，动态流动）
+  ctx.fillStyle='#a78bfa';
+  for(let i=0;i<8;i++){
+    const a=time*0.5+i*0.9;
+    const side=i<4?-1:1;
+    const ex=cx+side*60+Math.cos(a)*40,ey=cy+Math.sin(a)*50;
+    ctx.beginPath();ctx.arc(ex,ey,6,0,7);ctx.fill();
+  }
+  drawText('A ∪ B = {x | x∈A 或 x∈B}',W/2,H-70,'#a78bfa',15);
+  drawText('紫色区域：两集合合并后的所有元素',W/2,H-45,'#9ab0d0',13);
+  drawText('关键词："或"（任一属于即可）',W/2,H-25,'#fbbf24',13);
+}
+
+// ===== 场景：补集 ∁UA（全集矩形 U 中 A 圆外部高亮）=====
+function drawComplement(time){
+  const W=cv.width,H=cv.height;
+  drawText('补集 ∁UA · 全集除去 A 的部分',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 全集矩形 U
+  ctx.fillStyle='rgba(167,139,250,0.15)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-220,cy-150,440,300,10);ctx.fill();ctx.stroke();
+  drawText('U (全集)',cx-200,cy-130,'#a78bfa',15,'left');
+  // 集合 A（在 U 内，呼吸）
+  const breath=80+Math.sin(time*1.5)*5;
+  ctx.fillStyle='rgba(6,182,212,0.25)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(cx,cy,breath,0,7);ctx.fill();ctx.stroke();
+  drawText('A',cx,cy,'#06b6d4',18);
+  // 补集区域高亮（U 中 A 外，使用 evenodd 填充）
+  const pulse=0.25+0.15*Math.sin(time*3);
+  ctx.save();
+  roundRect(cx-220,cy-150,440,300,10);ctx.clip();
+  ctx.fillStyle='rgba(248,113,113,'+pulse+')';
+  ctx.beginPath();ctx.rect(cx-220,cy-150,440,300);
+  ctx.arc(cx,cy,breath,0,7,true);
+  ctx.fill('evenodd');
+  ctx.restore();
+  // A 中元素（青色）
+  ctx.fillStyle='#67e8f9';
+  [[-30,-20],[30,-10],[0,30]].forEach(p=>{ctx.beginPath();ctx.arc(cx+p[0],cy+p[1],6,0,7);ctx.fill();});
+  // 补集中的元素（红色）
+  ctx.fillStyle='#fca5a5';
+  [[-150,-80],[160,-70],[-160,90],[170,100],[0,-110]].forEach(p=>{ctx.beginPath();ctx.arc(cx+p[0],cy+p[1],6,0,7);ctx.fill();});
+  drawText('∁UA',cx-160,cy-90,'#f87171',14);
+  drawText('∁UA = {x | x∈U 且 x∉A}',W/2,H-75,'#f87171',15);
+  drawText('红色区域：U 中除 A 外的元素',W/2,H-50,'#9ab0d0',13);
+  drawText('性质：A ∪ ∁UA = U，A ∩ ∁UA = ∅',W/2,H-28,'#fbbf24',13);
+}
+
+// ===== 场景：常用数集 N ⊂ Z ⊂ Q ⊂ R（同心圆嵌套）=====
+function drawNumberSets(time){
+  const W=cv.width,H=cv.height;
+  drawText('常用数集 · N ⊂ Z ⊂ Q ⊂ R',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 数集数组：从外到内依次是 R、Q、Z、N
+  const sets=[
+    {n:'R',c:'#f87171',r:160,d:'实数集\n所有小数和整数',ex:'π, √2, 0.5'},
+    {n:'Q',c:'#fb923c',r:120,d:'有理数集\n整数+分数',ex:'1/2, -3, 0.7'},
+    {n:'Z',c:'#fbbf24',r:80,d:'整数集\n正负整数和0',ex:'-1, 0, 5'},
+    {n:'N',c:'#34d399',r:45,d:'自然数集\n0和正整数',ex:'0, 1, 2'},
+  ];
+  // 同心圆（从大到小绘制，形成嵌套）
+  sets.forEach((s,i)=>{
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(cx,cy,s.r,0,7);ctx.fill();ctx.stroke();
+    drawText(s.n,cx-s.r+25,cy-s.r+25,s.c,16);
+  });
+  // 最内层 N 标注
+  drawText('N',cx,cy-15,'#34d399',20);
+  drawText('0,1,2…',cx,cy+10,'#fff',12);
+  // 底部说明
+  drawText('集合包含关系（由内向外）：',W/2,H-100,'#9ab0d0',13);
+  drawText('N ⫋ Z ⫋ Q ⫋ R',W/2,H-72,'#fbbf24',18);
+  drawText('自然数是整数，整数是有理数，有理数是实数',W/2,H-45,'#34d399',12);
+  drawText('实数集 R 最大，包含所有数',W/2,H-25,'#9ab0d0',12);
+}
+
+// ============================================================
+// 主绘制函数：根据 stepIdx 选择对应场景函数
+// stepIdx 0-1 三要素, 2 表示法, 3 子集, 4 交集, 5 并集, 6 补集, 7 数集
+// ============================================================
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawThreeProps(t);
+  else if(stepIdx===1)drawThreeProps(t);
+  else if(stepIdx===2)drawNotation(t);
+  else if(stepIdx===3)drawSubset(t);
+  else if(stepIdx===4)drawIntersection(t);
+  else if(stepIdx===5)drawUnion(t);
+  else if(stepIdx===6)drawComplement(t);
+  else if(stepIdx===7)drawNumberSets(t);
+}
+
+// 同步步骤：将 STEPS[stepIdx] 的内容渲染到右栏面板
+// 同时更新步骤栏的 active 高亮状态和底部状态文本
+function syncStep(){
+  const s=STEPS[stepIdx];
+  // 更新徽章标签（基础/表示/关系/运算/综合）
+  document.getElementById('stepBadge').textContent=s.tag;
+  // 更新步骤标题
+  document.getElementById('stepTitle').textContent=s.name;
+  // 更新正文（支持 HTML 标签）
+  document.getElementById('stepBody').innerHTML=s.body;
+  // 更新要点列表
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  // 更新步骤栏高亮
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  // 更新底部状态栏
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  // 重置当前步骤计时
+  stepTime=0;
+}
+
+// ============================================================
+// 更新逻辑：每帧推进时间，播放模式下到时自动进入下一步
+// dt 为帧间隔秒数，speed 控制播放速率
+// ============================================================
+function update(dt){
+  // 动画时间 t 始终推进（用于场景内动态效果）
+  t+=dt*speed;
+  // 非播放状态只刷新画面，不推进步骤
+  if(!playing)return;
+  // 累计当前步骤已播放时间
+  stepTime+=dt*speed;
+  // 达到单步时长后自动跳转下一步
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){
+      stepIdx++;
+      syncStep();
+    }else{
+      // 已是最后一步：停止播放
+      playing=false;
+      playBtn.textContent='▶ 播放';
+      statusEl.textContent='动画完成';
+    }
+  }
+}
+
+// 主循环：requestAnimationFrame 驱动，计算 dt 后更新+绘制
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;
+  lastT=ts;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ============================================================
+// 控件绑定：播放/暂停、重置、单步前进/后退、速度滑块
+// 与物理模板完全一致的交互逻辑
+// ============================================================
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+
+// 播放/暂停切换
+playBtn.onclick=()=>{
+  playing=!playing;
+  playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';
+};
+
+// 重置：回到第一步并停止播放
+resetBtn.onclick=()=>{
+  stepIdx=0;
+  playing=false;
+  syncStep();
+  draw();
+  playBtn.textContent='▶ 播放';
+};
+
+// 下一步（不超过最大步数）
+stepFwdBtn.onclick=()=>{
+  if(stepIdx<STEPS.length-1){
+    stepIdx++;
+    syncStep();
+    draw();
+  }
+};
+
+// 上一步（不低于 0）
+stepBackBtn.onclick=()=>{
+  if(stepIdx>0){
+    stepIdx--;
+    syncStep();
+    draw();
+  }
+};
+
+// 速度滑块：0.3x ~ 3x
+speedEl.oninput=()=>{
+  speed=parseFloat(speedEl.value);
+};
+
+// ============================================================
+// 构建底部步骤栏：动态生成每个步骤的按钮
+// 点击步骤按钮可跳转到对应步骤
+// ============================================================
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    // 名称过长截断显示
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{
+      stepIdx=i;
+      syncStep();
+      draw();
+    };
+    bar.appendChild(el);
+  });
+}
+
+// 初始化：构建步骤栏 → 同步第一步 → 启动动画循环
+buildStepbar();
+syncStep();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

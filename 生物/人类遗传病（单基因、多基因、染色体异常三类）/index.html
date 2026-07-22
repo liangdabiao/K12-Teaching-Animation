@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>人类遗传病 · 单基因 · 多基因 · 染色体异常</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">人类遗传病</span><span class="subtitle">单基因 · 多基因 · 染色体异常 · 监测与预防</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>单基因五大类</h4><div class="v">常显/常隐/X显/X隐/Y<br>受一对等位基因控制</div></div>
+  <div class="card s2"><div class="num">2</div><h4>多基因特点</h4><div class="v">家族聚集+环境共同作用<br>高血压、冠心病、哮喘</div></div>
+  <div class="card s3"><div class="num">3</div><h4>染色体异常</h4><div class="v">数目/结构改变<br>21三体、猫叫、Turner</div></div>
+  <div class="card s4"><div class="num">4</div><h4>遗传咨询+产前诊断</h4><div class="v">家系分析→风险预测<br>羊水、B超、基因诊断</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">人类遗传病</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'单基因',name:'常染色体显性',body:'<strong>常染色体显性遗传病</strong>：致病基因位于<strong>常染色体</strong>上，<strong>显性</strong>致病。患者大多为杂合子 Aa，<strong>代代相传</strong>，发病率较高。代表病：<strong>多指、并指</strong>。',points:{title:'常显特征',items:['<strong>基因型</strong>：AA、Aa 患病，aa 正常','<strong>遗传特点</strong>：代代相传','<strong>患病概率</strong>：Aa×aa → 1/2','<strong>代表病</strong>：多指、并指、软骨发育不全']}},
+  {tag:'单基因',name:'常染色体隐性',body:'<strong>常染色体隐性遗传病</strong>：致病基因位于<strong>常染色体</strong>上，<strong>隐性</strong>致病。只有 aa 才患病，杂合子 Aa 是<strong>携带者</strong>，常隔代遗传。<strong>近亲婚配</strong>发病率显著升高。代表病：<strong>白化病、苯丙酮尿症</strong>。',points:{title:'常隐特征',items:['<strong>基因型</strong>：只有 aa 患病','<strong>携带者</strong>：Aa 表现正常但携带致病基因','<strong>隔代遗传</strong>：常隔代出现患者','<strong>代表病</strong>：白化病、苯丙酮尿症、镰刀型贫血']}},
+  {tag:'单基因',name:'伴性遗传',body:'<strong>伴性遗传</strong>：致病基因位于<strong>性染色体</strong>上，发病率有<strong>性别差异</strong>。X 显性：抗维生素 D 佝偻病；X 隐性：红绿色盲、血友病（男多于女）；Y 染色体：外耳道多毛症（<strong>父→子全遗传</strong>）。',points:{title:'三大伴性遗传',items:['<strong>X 显性</strong>：抗维生素 D 佝偻病（女多于男）','<strong>X 隐性</strong>：红绿色盲、血友病（男多于女）','<strong>Y 连锁</strong>：外耳道多毛症（仅男性）','<strong>交叉遗传</strong>：母→子，父→女']}},
+  {tag:'多基因',name:'多基因遗传病',body:'<strong>多基因遗传病</strong>：受<strong>多对基因</strong>控制，有<strong>家族聚集性</strong>，易受<strong>环境因素</strong>影响，发病率大多<strong>高于 1%</strong>。代表病：原发性高血压、冠心病、哮喘、唇裂、糖尿病。',points:{title:'多基因特点',items:['<strong>多对基因</strong>：累加效应，无显隐之分','<strong>家族聚集</strong>：亲属发病率高于群体','<strong>环境影响</strong>：饮食、生活方式可诱发','<strong>代表病</strong>：高血压、冠心病、哮喘、唇裂']}},
+  {tag:'染色体',name:'染色体异常',body:'<strong>染色体异常遗传病</strong>：由<strong>染色体数目或结构</strong>异常引起，往往<strong>后果严重</strong>。21 三体综合征（多一条 21 号）、猫叫综合征（5 号部分缺失）、Turner 综合征（<strong>XO</strong>，少一条 X）。',points:{title:'三种染色体病',items:['<strong>21 三体</strong>：Down，多一条 21 号染色体','<strong>猫叫综合征</strong>：5 号染色体部分缺失','<strong>Turner</strong>：性染色体 XO（女性）','<strong>Klinefelter</strong>：性染色体 XXY（男性）']}},
+  {tag:'监测',name:'遗传咨询',body:'<strong>遗传咨询</strong>：医生或遗传咨询师对咨询者进行<strong>家系分析</strong>，再进行<strong>风险预测</strong>，最后给出婚育<strong>建议</strong>。可大大降低遗传病患儿的出生率。',points:{title:'咨询四步法',items:['<strong>① 诊断</strong>：是否患遗传病','<strong>② 家系分析</strong>：遗传方式、类型','<strong>③ 风险预测</strong>：后代发病率','<strong>④ 建议对策</strong>：婚育、产前诊断']}},
+  {tag:'监测',name:'产前诊断',body:'<strong>产前诊断</strong>：在胎儿出生前检测其是否患有遗传病或先天性疾病。<strong>羊水检查</strong>（羊水细胞染色体核型分析）、<strong>B 超检查</strong>（形态结构异常）、<strong>基因诊断</strong>（直接检测致病基因）。',points:{title:'三大方法',items:['<strong>羊水检查</strong>：羊膜穿刺抽取羊水细胞','<strong>B 超检查</strong>：无创、查形态异常','<strong>基因诊断</strong>：DNA 水平，最精确','<strong>HGP</strong>：22+X+Y 共 24 条测序']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+// ===== 场景：家系图绘制工具 =====
+function drawPedigreeBase(time,title,layout){
+  const W=cv.width,H=cv.height;
+  drawText(title,W/2,28,'#fbbf24',16);
+  // generation labels
+  drawText('Ⅰ',50,H*0.28,'#9ab0d0',14);
+  drawText('Ⅱ',50,H*0.55,'#9ab0d0',14);
+  drawText('Ⅲ',50,H*0.82,'#9ab0d0',14);
+  layout.forEach(p=>{
+    const x=W*p.x,y=H*p.y;
+    // connect lines first (already drawn outside)
+    ctx.strokeStyle=p.line||'#5a6a8a';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    if(p.shape==='M'){ctx.arc(x,y,16,0,Math.PI*2);}
+    else{ctx.rect(x-15,y-15,30,30);}
+    if(p.fill==='patient'){ctx.fillStyle='#f87171';ctx.fill();}
+    else if(p.fill==='carrier'){ctx.fillStyle='rgba(251,191,36,.4)';ctx.fill();}
+    else{ctx.fillStyle='transparent';}
+    ctx.stroke();
+    drawText(p.label,x,y+28,'#9ab0d0',11);
+  });
+}
+
+// ===== 场景：常染色体显性（多指） =====
+function drawADScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('常染色体显性遗传 · 多指 / 并指',W/2,28,'#fbbf24',16);
+  // I 代：父患病(Aa) × 母正常(aa)
+  const I1x=W*0.3,I1y=H*0.3, I2x=W*0.5,I2y=H*0.3;
+  // II 代：4 个孩子
+  const IIy=H*0.6;
+  const kids=[{x:W*0.2,fill:'patient',label:'Aa 患病'},{x:W*0.4,fill:'normal',label:'aa 正常'},{x:W*0.6,fill:'patient',label:'Aa 患病'},{x:W*0.8,fill:'normal',label:'aa 正常'}];
+  // 婚配连线
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(I1x+16,I1y);ctx.lineTo(I2x-16,I2y);ctx.stroke();
+  // 父子连线
+  const midX=(I1x+I2x)/2, midY=(I1y+I2y)/2;
+  ctx.beginPath();ctx.moveTo(midX,midY);ctx.lineTo(midX,IIy-80);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W*0.2,IIy-80);ctx.lineTo(W*0.8,IIy-80);ctx.stroke();
+  kids.forEach(k=>{ctx.beginPath();ctx.moveTo(k.x,IIy-80);ctx.lineTo(k.x,IIy-15);ctx.stroke();});
+  // 父亲（方-男-患病）
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.rect(I1x-15,I1y-15,30,30);ctx.fill();ctx.stroke();
+  drawText('Aa',I1x,I1y,'#fff',11);drawText('Ⅰ1 父(多指)',I1x,I1y+28,'#9ab0d0',11);
+  // 母亲（圆-女-正常）
+  ctx.strokeStyle='#9ab0d0';ctx.fillStyle='transparent';
+  ctx.beginPath();ctx.arc(I2x,I2y,16,0,Math.PI*2);ctx.fill();ctx.stroke();
+  drawText('aa',I2x,I2y,'#9ab0d0',11);drawText('Ⅰ2 母(正常)',I2x,I2y+28,'#9ab0d0',11);
+  // 孩子
+  const flash=Math.floor(time*1.5)%2;
+  kids.forEach((k,i)=>{
+    const isPatient=k.fill==='patient';
+    ctx.strokeStyle=isPatient?'#f87171':'#9ab0d0';
+    ctx.fillStyle=isPatient?'#f87171':'transparent';
+    const shape=(i%2===0)?'rect':'circle';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    if(shape==='rect'){ctx.rect(k.x-15,IIy-15,30,30);}else{ctx.arc(k.x,IIy,16,0,Math.PI*2);}
+    ctx.fill();ctx.stroke();
+    drawText(isPatient?'Aa':'aa',k.x,IIy,isPatient?'#fff':'#9ab0d0',11);
+    drawText('Ⅱ'+(i+1),k.x,IIy+28,'#9ab0d0',11);
+  });
+  drawText('□ 男 ○ 女 ■ 患病 · 患病率 1/2 · 代代相传',W/2,H-55,'#34d399',13);
+  // 图例：基因型 / 遗传规律
+  drawText('典型婚配 Aa × aa → Aa : aa = 1 : 1',W/2,H-32,'#9ab0d0',12);
+  // 闪烁高亮当前代
+  const glow=0.5+0.5*Math.sin(time*2);
+  ctx.strokeStyle='rgba(251,191,36,'+glow+')';ctx.lineWidth=1;
+  roundRect(W*0.15-20,IIy-30,W*0.7+40,60,6);ctx.stroke();
+}
+
+// ===== 场景：常染色体隐性（白化） =====
+function drawARScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('常染色体隐性遗传 · 白化病 / 苯丙酮尿症',W/2,28,'#fbbf24',16);
+  // I 代：父携带(Aa) × 母携带(Aa)
+  const I1x=W*0.3,I1y=H*0.3, I2x=W*0.55,I2y=H*0.3;
+  // II 代：4 孩子
+  const IIy=H*0.62;
+  const kids=[{x:W*0.18,fill:'normal',gen:'AA',label:'正常'},{x:W*0.38,fill:'carrier',gen:'Aa',label:'携带'},{x:W*0.58,fill:'carrier',gen:'Aa',label:'携带'},{x:W*0.78,fill:'patient',gen:'aa',label:'患病'}];
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(I1x+16,I1y);ctx.lineTo(I2x-16,I2y);ctx.stroke();
+  const midX=(I1x+I2x)/2,midY=I1y;
+  ctx.beginPath();ctx.moveTo(midX,midY);ctx.lineTo(midX,IIy-85);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W*0.18,IIy-85);ctx.lineTo(W*0.78,IIy-85);ctx.stroke();
+  kids.forEach(k=>{ctx.beginPath();ctx.moveTo(k.x,IIy-85);ctx.lineTo(k.x,IIy-15);ctx.stroke();});
+  // 父（携带者-半填充）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.fillStyle='rgba(251,191,36,.4)';
+  ctx.beginPath();ctx.rect(I1x-15,I1y-15,30,30);ctx.fill();ctx.stroke();
+  drawText('Aa',I1x,I1y,'#fde68a',11);drawText('Ⅰ1 父(携带)',I1x,I1y+28,'#9ab0d0',11);
+  // 母
+  ctx.beginPath();ctx.arc(I2x,I2y,16,0,Math.PI*2);ctx.fill();ctx.stroke();
+  drawText('Aa',I2x,I2y,'#fde68a',11);drawText('Ⅰ2 母(携带)',I2x,I2y+28,'#9ab0d0',11);
+  kids.forEach((k,i)=>{
+    ctx.lineWidth=2;
+    if(k.fill==='patient'){ctx.strokeStyle='#f87171';ctx.fillStyle='#f87171';}
+    else if(k.fill==='carrier'){ctx.strokeStyle='#fbbf24';ctx.fillStyle='rgba(251,191,36,.4)';}
+    else{ctx.strokeStyle='#9ab0d0';ctx.fillStyle='transparent';}
+    const shape=(i%2===0)?'rect':'circle';
+    ctx.beginPath();
+    if(shape==='rect'){ctx.rect(k.x-15,IIy-15,30,30);}else{ctx.arc(k.x,IIy,16,0,Math.PI*2);}
+    ctx.fill();ctx.stroke();
+    drawText(k.gen,k.x,IIy,k.fill==='patient'?'#fff':(k.fill==='carrier'?'#fde68a':'#9ab0d0'),11);
+    drawText('Ⅱ'+(i+1)+' '+k.label,k.x,IIy+28,'#9ab0d0',11);
+  });
+  drawText('Aa×Aa → AA:Aa:aa = 1:2:1 · 患者 1/4',W/2,H-50,'#fbbf24',13);
+  drawText('近亲婚配发病率显著升高 · 隔代遗传',W/2,H-28,'#34d399',12);
+}
+
+// ===== 场景：伴性遗传 =====
+function drawSexLinkedScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('伴性遗传 · X 显性 / X 隐性 / Y 连锁',W/2,28,'#fbbf24',16);
+  // 三列对比
+  const cols=[{title:'X 显性',sub:'抗维生素D佝偻病',c:'#34d399',x:W*0.2},
+    {title:'X 隐性',sub:'红绿色盲、血友病',c:'#f87171',x:W*0.5},
+    {title:'Y 连锁',sub:'外耳道多毛症',c:'#a78bfa',x:W*0.8}];
+  cols.forEach(col=>{
+    drawText(col.title,col.x,H*0.13,col.c,15);
+    drawText(col.sub,col.x,H*0.18,'#9ab0d0',11);
+  });
+  // 性染色体示意
+  const pulse=(Math.sin(time*2)+1)/2;
+  // X 显性
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.fillStyle='rgba(52,211,153,'+(0.3+pulse*0.3)+')';
+  ctx.beginPath();ctx.arc(W*0.15,H*0.4,18,0,Math.PI*2);ctx.fill();ctx.stroke();
+  drawText('X^R',W*0.15,H*0.4,'#fff',12);
+  ctx.fillStyle='transparent';
+  ctx.beginPath();ctx.arc(W*0.25,H*0.4,18,0,Math.PI*2);ctx.fill();ctx.stroke();
+  drawText('X^r',W*0.25,H*0.4,'#34d399',12);
+  drawText('女患病多',W*0.2,H*0.52,'#34d399',12);
+  drawText('X^RX^R,X^RX^r患病',W*0.2,H*0.6,'#9ab0d0',11);
+  // X 隐性
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.fillStyle='rgba(248,113,113,'+(0.3+pulse*0.4)+')';
+  ctx.beginPath();ctx.rect(W*0.42,H*0.28,30,30);ctx.fill();ctx.stroke();
+  drawText('X^rY',W*0.435,H*0.43,'#fff',11);
+  ctx.fillStyle='transparent';
+  ctx.beginPath();ctx.arc(W*0.55,H*0.4,18,0,Math.PI*2);ctx.fill();ctx.stroke();
+  drawText('X^RX^r',W*0.55,H*0.4,'#f87171',11);
+  drawText('男患病多',W*0.5,H*0.52,'#f87171',12);
+  drawText('X^rY 患病，X^RX^r携带',W*0.5,H*0.6,'#9ab0d0',11);
+  // Y 连锁
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;ctx.fillStyle='rgba(167,139,250,'+(0.4+pulse*0.4)+')';
+  ctx.beginPath();ctx.rect(W*0.78,H*0.3,30,30);ctx.fill();ctx.stroke();
+  drawText('XY',W*0.795,H*0.45,'#fff',12);
+  drawText('父→子 全遗传',W*0.8,H*0.55,'#a78bfa',12);
+  drawText('仅男性患病',W*0.8,H*0.62,'#9ab0d0',11);
+  // 交叉遗传示意
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(W*0.3,H*0.78);ctx.lineTo(W*0.7,H*0.78);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('交叉遗传：外孙可通过母亲获得外公的 X 染色体',W/2,H*0.78,'#fbbf24',12);
+  drawText('男性 X、Y 仅有一条，故称为半合子',W/2,H*0.85,'#9ab0d0',11);
+}
+
+// ===== 场景：多基因遗传病 =====
+function drawMultifactorialScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('多基因遗传病 · 家族聚集 + 环境影响',W/2,28,'#fbbf24',16);
+  // 多基因累加柱状图
+  const genes=[{n:'基因1',w:1},{n:'基因2',w:1.2},{n:'基因3',w:0.8},{n:'基因4',w:1.5},{n:'基因5',w:1.1}];
+  const envFactor=0.5+0.5*Math.sin(time);
+  const barX=80,barBaseY=H*0.55,barMaxH=80;
+  genes.forEach((g,i)=>{
+    const x=barX+i*60;
+    const h=barMaxH*g.w/2*(1+envFactor*0.4);
+    ctx.fillStyle='#06b6d4';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+    ctx.fillRect(x,barBaseY-h,30,h);ctx.strokeRect(x,barBaseY-h,30,h);
+    drawText(g.n,x+15,barBaseY+15,'#9ab0d0',11);
+  });
+  drawText('↑ 发病风险累加',barX+150,barBaseY-barMaxH-20,'#06b6d4',12);
+  drawText('多对微效基因累加效应',barX+150,barBaseY-barMaxH,'#9ab0d0',11);
+  // 环境因素
+  const envX=W*0.7;
+  ctx.fillStyle='rgba(251,191,36,'+(0.1+envFactor*0.2)+')';
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(envX-60,H*0.2,160,180,10);ctx.fill();ctx.stroke();
+  drawText('环境因素',envX+20,H*0.24,'#fbbf24',14);
+  ['高盐饮食','精神紧张','缺乏运动','空气污染','吸烟饮酒'].forEach((e,i)=>{
+    const alpha=0.3+0.5*Math.sin(time+i);
+    drawText(e,envX+20,H*0.3+i*24,`rgba(255,255,255,${Math.max(0.4,alpha)})`,12);
+  });
+  // 代表病列表
+  const dis=[{n:'原发性高血压',c:'#f87171'},{n:'冠心病',c:'#fbbf24'},{n:'哮喘',c:'#34d399'},{n:'唇裂',c:'#06b6d4'}];
+  dis.forEach((d,i)=>{
+    const x=W*0.15+i*(W*0.7/4);
+    ctx.fillStyle=d.c+'22';ctx.strokeStyle=d.c;ctx.lineWidth=2;
+    roundRect(x,H*0.75,W*0.7/4-10,40,8);ctx.fill();ctx.stroke();
+    drawText(d.n,x+(W*0.7/4-10)/2,H*0.75+20,d.c,12);
+  });
+  drawText('特点：家族聚集性 · 受环境影响大 · 发病率 > 1%',W/2,H-30,'#34d399',13);
+  // 图例
+  drawText('● 微效多基因累加',W*0.3,H-10,'#06b6d4',11);
+  drawText('● 环境因素调节',W*0.7,H-10,'#fbbf24',11);
+}
+
+// ===== 场景：染色体异常（21三体核型图） =====
+function drawChromoScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('21 三体综合征核型 · 47,XY,+21',W/2,28,'#fbbf24',16);
+  // 绘制核型：22对常染色体 + XY
+  const pairs=[];
+  for(let i=1;i<=22;i++)pairs.push(i);
+  const startX=60,startY=70,gapX=(W-120)/11,gapY=20;
+  pairs.forEach((n,i)=>{
+    const col=i%11, row=Math.floor(i/11);
+    const x=startX+col*gapX+gapX/2;
+    const y=startY+row*100+gapY;
+    const is21=(n===21);
+    const len=is21?40:35+Math.min(n*1.5,30);
+    // 画两条同源染色体
+    [0,1].forEach(k=>{
+      const cx=x+(k===0?-6:6);
+      ctx.strokeStyle=is21?'#f87171':'#9ab0d0';
+      ctx.lineWidth=2;
+      ctx.fillStyle=is21?'rgba(248,113,113,.3)':'rgba(154,176,208,.15)';
+      roundRect(cx-5,y-len/2,10,len,4);ctx.fill();ctx.stroke();
+      // 着丝粒
+      ctx.fillStyle=is21?'#f87171':'#5a6a8a';
+      ctx.fillRect(cx-5,y-2,10,4);
+    });
+    drawText(n,x,y+len/2+12,is21?'#f87171':'#9ab0d0',11);
+    if(is21){
+      // 第三条
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.fillStyle='rgba(251,191,36,.3)';
+      roundRect(x+12,y-len/2,10,len,4);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#fbbf24';ctx.fillRect(x+12,y-2,10,4);
+      const flash=0.5+0.5*Math.sin(time*3);
+      ctx.shadowColor='#fbbf24';ctx.shadowBlur=10*flash;
+      drawText('+21',x+17,y-len/2-10,'#fbbf24',11);
+      ctx.shadowBlur=0;
+    }
+  });
+  // 性染色体 XY
+  const sx=W-90,sy=startY+30;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.fillStyle='rgba(6,182,212,.2)';
+  roundRect(sx-5,sy-15,10,30,4);ctx.fill();ctx.stroke();
+  ctx.fillRect(sx-5,sy-2,10,4);
+  drawText('X',sx,sy+25,'#06b6d4',12);
+  ctx.strokeStyle='#ec4899';
+  roundRect(sx+15,sy-12,8,24,3);ctx.stroke();
+  ctx.fillStyle='#ec4899';ctx.fillRect(sx+15,sy-2,8,3);
+  drawText('Y',sx+19,sy+25,'#ec4899',12);
+  drawText('XY',sx+10,sy+45,'#9ab0d0',11);
+  // 三种染色体病对比卡片
+  const dis=[
+    {n:'21 三体（Down）',d:'+21 · 智力低下 · 特殊面容',c:'#f87171'},
+    {n:'猫叫综合征',d:'5p- 缺失 · 猫叫样哭声 · 小头',c:'#a78bfa'},
+    {n:'Turner 综合征',d:'45,X · 女性 · 身材矮小 · 不孕',c:'#06b6d4'}
+  ];
+  const cardY=H-105, cardW=(W-160)/3;
+  dis.forEach((d,i)=>{
+    const x=80+i*(cardW+10);
+    const pulse=0.7+0.3*Math.sin(time*1.2+i*0.8);
+    ctx.fillStyle=d.c+'22';ctx.strokeStyle=d.c;ctx.lineWidth=2;
+    ctx.shadowColor=d.c;ctx.shadowBlur=10*pulse;
+    roundRect(x,cardY,cardW,55,8);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(d.n,x+cardW/2,cardY+18,d.c,13);
+    drawText(d.d,x+cardW/2,cardY+40,'#9ab0d0',11);
+  });
+  // 底部说明
+  drawText('染色体数目或结构异常 · 后果严重 · 多数不能治愈',W/2,H-35,'#fbbf24',13);
+}
+
+// ===== 场景：遗传咨询流程 =====
+function drawCounselScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('遗传咨询 · 四步流程',W/2,28,'#fbbf24',16);
+  const steps=[{n:'①诊断',d:'是否患遗传病',c:'#06b6d4'},
+    {n:'②家系分析',d:'遗传方式/类型',c:'#a78bfa'},
+    {n:'③风险预测',d:'后代发病率',c:'#fbbf24'},
+    {n:'④建议对策',d:'婚育/产前诊断',c:'#34d399'}];
+  const startX=80,y=H*0.4,step=(W-160)/(steps.length-1);
+  // 连接箭头
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=2;
+  for(let i=0;i<steps.length-1;i++){
+    const x1=startX+i*step+45, x2=startX+(i+1)*step-45;
+    ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();
+    // 箭头
+    ctx.fillStyle='#5a6a8a';
+    ctx.beginPath();ctx.moveTo(x2,y);ctx.lineTo(x2-8,y-5);ctx.lineTo(x2-8,y+5);ctx.fill();
+  }
+  steps.forEach((s,i)=>{
+    const x=startX+i*step;
+    const pulse=0.6+0.4*Math.sin(time*1.5-i*0.5);
+    ctx.fillStyle=s.c+'33';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    ctx.shadowColor=s.c;ctx.shadowBlur=15*pulse;
+    ctx.beginPath();ctx.arc(x,y,40,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(s.n,x,y-5,'#fff',14);
+    drawText(s.d,x,y+15,'#9ab0d0',11);
+    drawText('步骤 '+(i+1),x,y+65,s.c,12);
+  });
+  // 案例
+  ctx.fillStyle='rgba(255,255,255,.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,H*0.7,W-160,80,8);ctx.fill();ctx.stroke();
+  drawText('【案例】女方弟弟患白化病（常隐），夫妇表型正常',W/2,H*0.7+20,'#fff',12);
+  drawText('→ 家系分析：女方 2/3 概率为携带者 Aa',W/2,H*0.7+40,'#34d399',12);
+  drawText('→ 风险预测：后代患病率 = 2/3 × 2/3 × 1/4 ≈ 1/9',W/2,H*0.7+60,'#fbbf24',12);
+  // 底部提示
+  drawText('适用人群：家族遗传病史、高龄孕妇、曾生育患儿、近亲婚配',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景：产前诊断 =====
+function drawPrenatalScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('产前诊断 · 三大方法 + 人类基因组计划',W/2,28,'#fbbf24',16);
+  // 三大方法
+  const methods=[{n:'羊水检查',d:'羊膜穿刺抽取\n羊水细胞做核型',c:'#06b6d4',x:W*0.2},
+    {n:'B 超检查',d:'无创伤\n查形态结构异常',c:'#34d399',x:W*0.45},
+    {n:'基因诊断',d:'DNA 水平\n最精确直接',c:'#f87171',x:W*0.7}];
+  methods.forEach((m,i)=>{
+    const pulse=0.7+0.3*Math.sin(time*1.5+i);
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    ctx.shadowColor=m.c;ctx.shadowBlur=12*pulse;
+    roundRect(m.x-70,H*0.15,140,90,10);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(m.n,m.x,H*0.15+20,m.c,14);
+    m.d.split('\n').forEach((line,j)=>{
+      drawText(line,m.x,H*0.15+45+j*18,'#9ab0d0',11);
+    });
+  });
+  // HGP 部分
+  const hgpY=H*0.5;
+  ctx.fillStyle='rgba(251,191,36,.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(60,hgpY,W-120,180,12);ctx.fill();ctx.stroke();
+  drawText('人类基因组计划（HGP）',W/2,hgpY+25,'#fbbf24',15);
+  // 24 条染色体动画
+  const total=24;
+  const chromW=(W-200)/total;
+  for(let i=0;i<total;i++){
+    const x=100+i*chromW;
+    const isSex=(i>=22);
+    const h=20+Math.abs(Math.sin(time*2+i*0.5))*15;
+    ctx.strokeStyle=isSex?'#ec4899':'#06b6d4';
+    ctx.fillStyle=isSex?'rgba(236,72,153,.3)':'rgba(6,182,212,.2)';
+    ctx.lineWidth=1.5;
+    roundRect(x,hgpY+80-h/2,chromW-4,h,3);ctx.fill();ctx.stroke();
+    if(i<22)drawText(i+1,x+chromW/2-2,hgpY+100,'#9ab0d0',9);
+    else drawText(i===22?'X':'Y',x+chromW/2-2,hgpY+100,isSex?'#ec4899':'#06b6d4',10);
+  }
+  drawText('22 条常染色体 + X + Y = 24 条',W/2,hgpY+130,'#9ab0d0',12);
+  drawText('测定人类全部 DNA 序列 · 1990 启动 · 2003 完成',W/2,hgpY+155,'#34d399',12);
+  // 底部图例
+  const legY=H-30;
+  drawText('● 羊水检查（染色体核型）',W*0.2,legY,'#06b6d4',11);
+  drawText('● B 超（形态异常）',W*0.5,legY,'#34d399',11);
+  drawText('● 基因诊断（DNA 精确）',W*0.8,legY,'#f87171',11);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawADScene(t);
+  else if(stepIdx===1)drawARScene(t);
+  else if(stepIdx===2)drawSexLinkedScene(t);
+  else if(stepIdx===3)drawMultifactorialScene(t);
+  else if(stepIdx===4)drawChromoScene(t);
+  else if(stepIdx===5)drawCounselScene(t);
+  else if(stepIdx===6)drawPrenatalScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

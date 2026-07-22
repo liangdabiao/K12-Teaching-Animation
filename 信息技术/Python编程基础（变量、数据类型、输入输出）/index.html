@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python 编程基础 · 变量 · 数据类型 · 输入输出</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">Python 编程基础</span><span class="subtitle">变量 · 数据类型 · 输入输出 · 运算符</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>变量命名规则</h4><div class="v">字母/数字/下划线<br>不能数字开头、不用关键字</div></div>
+  <div class="card s2"><div class="num">2</div><h4>五大基本类型</h4><div class="v">int 整数 / float 浮点<br>str 字符串 / bool / NoneType</div></div>
+  <div class="card s3"><div class="num">3</div><h4>输入输出</h4><div class="v">input() 返回字符串<br>print() 多参数 sep/end</div></div>
+  <div class="card s4"><div class="num">4</div><h4>运算符大全</h4><div class="v">算术 / 比较 / 逻辑<br>+ - * / // % **</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">变量与赋值</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'变量与赋值',body:'<strong>变量</strong>是存储数据的"盒子"。<strong>赋值</strong>用 <code>=</code> 把右边的值装进左边的变量。Python 是<strong>动态类型</strong>语言，变量类型由所赋的值决定，可随时改变。',points:{title:'核心要点',items:['<strong>语法</strong>：变量名 = 值','<strong>动态类型</strong>：同一变量可改存不同类型','<strong>=</strong>：赋值符号（不是等号）','<strong>命名</strong>：见名知义，如 age、user_name']}},
+  {tag:'基础',name:'命名规则',body:'<strong>变量命名规则</strong>：(1) 只能用<strong>字母、数字、下划线</strong>；(2) <strong>不能以数字开头</strong>；(3) <strong>不能用关键字</strong>（如 if、for、class）；(4) 区分大小写。',points:{title:'合法 vs 非法',items:['<strong>合法</strong>：name、_count、user2、MAX_SIZE','<strong>非法</strong>：2name（数字开头）','<strong>非法</strong>：my-var（含减号）','<strong>非法</strong>：for、if、class（关键字）']}},
+  {tag:'类型',name:'五种数据类型',body:'Python 五大基本类型：<code>int</code> 整数、<code>float</code> 浮点数、<code>str</code> 字符串、<code>bool</code> 布尔（True/False）、<code>NoneType</code> 空值（None）。用 <code>type()</code> 查看类型。',points:{title:'五大类型速查',items:['<strong>int</strong>：10、-5、0（整数）','<strong>float</strong>：3.14、-0.5（小数）','<strong>str</strong>："hello"、\'abc\'（引号包围）','<strong>bool</strong>：True、False（首字母大写）','<strong>NoneType</strong>：None（表示"没有"）']}},
+  {tag:'输入',name:'input 输入',body:'<strong>input()</strong> 从键盘读取一行，<strong>返回值始终是字符串 str</strong>。要得到数字必须<strong>类型转换</strong>：<code>int(input())</code>、<code>float(input())</code>、<code>eval(input())</code>。',points:{title:'输入转换',items:['<strong>input()</strong>：返回字符串','<strong>int(input())</strong>：转整数','<strong>float(input())</strong>：转小数','<strong>eval(input())</strong>：自动推断类型','<strong>常见错误</strong>：直接对 input() 做算术']}},
+  {tag:'输出',name:'print 输出',body:'<strong>print()</strong> 输出到屏幕。可传<strong>多个参数</strong>用逗号分隔，默认用<strong>空格</strong>连接（sep），结尾<strong>换行</strong>（end）。可改 sep 和 end 实现特殊格式。',points:{title:'print 参数',items:['<strong>多参数</strong>：print(a, b, c) → a b c','<strong>sep=</strong>：分隔符，默认空格','<strong>end=</strong>：结尾符，默认换行','<strong>sep=","</strong>：用逗号连接','<strong>end=""</strong>：不换行']}},
+  {tag:'输出',name:'f-string 格式化',body:'<strong>f-string</strong>（Python 3.6+）是最优雅的格式化方式：在字符串前加 <code>f</code>，用 <code>{ }</code> 嵌入变量或表达式。<code>f"姓名:{name}, 年龄:{age}"</code>。',points:{title:'格式化对比',items:['<strong>f-string</strong>：f"{name}今年{age}岁"','<strong>% 格式</strong>："%s今年%d岁" % (name,age)','<strong>.format()</strong>："{}今年{}岁".format(name,age)','<strong>推荐</strong>：f-string 简洁直观','<strong>控制小数</strong>：f"{pi:.2f}" → 3.14']}},
+  {tag:'运算',name:'算术运算符',body:'Python 提供 7 个算术运算符：<code>+ - * /</code>（加减乘除）、<code>//</code>（整除）、<code>%</code>（取余）、<code>**</code>（幂）。注意 <code>/</code> 总返回 float。',points:{title:'七个算术符',items:['<strong>+ - *</strong>：加、减、乘','<strong>/</strong>：除法，结果总是 float','<strong>//</strong>：整除（向下取整）','<strong>%</strong>：取余数 7%3=1','<strong>**</strong>：幂 2**3=8']}},
+  {tag:'运算',name:'比较与逻辑',body:'<strong>比较运算符</strong>返回 bool：<code>&gt; &lt; == != &gt;= &lt;=</code>。<strong>逻辑运算符</strong>：<code>and</code>（且）、<code>or</code>（或）、<code>not</code>（非），用于组合多个条件。',points:{title:'运算结果',items:['<strong>比较</strong>：&gt; &lt; == != &gt;= &lt;=','<strong>结果</strong>：True 或 False','<strong>and</strong>：两边都真才真','<strong>or</strong>：一边真就真','<strong>not</strong>：取反 not True = False']}},
+  {tag:'转换',name:'类型转换',body:'<strong>类型转换函数</strong>：<code>int()</code>、<code>float()</code>、<code>str()</code>、<code>bool()</code>。把字符串转数字时内容必须是合法数字格式。',points:{title:'转换示例',items:['<strong>int("123")</strong>：→ 123','<strong>float("3.14")</strong>：→ 3.14','<strong>str(123)</strong>：→ "123"','<strong>bool(0)</strong>：→ False（空值为假）','<strong>int("abc")</strong>：报错 ValueError']}},
+  {tag:'总结',name:'核心速记',body:'Python 编程三大基石：<strong>变量存储数据</strong>（动态类型）、<strong>数据类型</strong>（int/float/str/bool/None）、<strong>输入输出</strong>（input/print）。掌握运算符即可完成大部分计算任务。',points:{title:'三句话总结',items:['<strong>变量</strong>：名字=值，动态类型','<strong>类型</strong>：int float str bool None','<strong>输入</strong>：input() 返回 str','<strong>输出</strong>：print() / f-string','<strong>运算</strong>：+ - * / // % **']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// 终端窗口框架
+function drawTerminal(time,title,lines,highlightLine){
+  const W=cv.width,H=cv.height;
+  drawText(title,W/2,30,'#fbbf24',16);
+  const tx=60,ty=60,tw=W-120,th=H-130;
+  // 窗口
+  ctx.fillStyle='#0d1726';ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  roundRect(tx,ty,tw,th,10);ctx.fill();ctx.stroke();
+  // 标题栏
+  ctx.fillStyle='#172a4a';roundRect(tx,ty,tw,32,10);ctx.fill();
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(tx,ty+32);ctx.lineTo(tx+tw,ty+32);ctx.stroke();
+  // 红黄绿圆点
+  ['#f87171','#fbbf24','#34d399'].forEach((c,i)=>{
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(tx+18+i*22,ty+16,6,0,7);ctx.fill();
+  });
+  drawText('Python 3 · terminal',tx+tw/2,ty+16,'#9ab0d0',11);
+  // 代码行
+  const startY=ty+55;
+  const flashHighlight=Math.sin(time*4)>0;
+  lines.forEach((ln,i)=>{
+    const y=startY+i*24;
+    const isHL=(i===highlightLine);
+    if(isHL&&flashHighlight){
+      ctx.fillStyle='rgba(251,191,36,0.15)';
+      roundRect(tx+10,y-11,tw-20,22,4);ctx.fill();
+    }
+    ctx.font='13px Consolas,Monaco,monospace';
+    // 行号
+    drawText(String(i+1),tx+25,y,'#5a6a8a',11,'center');
+    // 代码内容（彩色）
+    drawCodeLine(ln,tx+45,y,isHL);
+  });
+}
+
+function drawCodeLine(parts,x,y,hl){
+  let cx=x;
+  ctx.textAlign='left';ctx.textBaseline='middle';ctx.font='13px Consolas,Monaco,monospace';
+  parts.forEach(p=>{
+    ctx.fillStyle=hl?(p.c||'#fff'):(p.c||'#e8eef8');
+    ctx.fillText(p.t,cx,y);
+    cx+=ctx.measureText(p.t).width;
+  });
+  ctx.textAlign='center';
+}
+
+// 变量盒子
+function drawVarBoxes(vars,cx,cy){
+  vars.forEach((v,i)=>{
+    const x=cx+i*130;
+    ctx.fillStyle=v.c+'22';ctx.strokeStyle=v.c;ctx.lineWidth=2;
+    roundRect(x,cy,110,70,8);ctx.fill();ctx.stroke();
+    drawText(v.name,x+55,cy+18,'#9ab0d0',12);
+    drawText(String(v.val),x+55,cy+42,'#fff',15);
+    drawText(v.type,x+55,cy+60,v.c,10);
+  });
+}
+
+// ===== 场景：变量与赋值 =====
+function drawVarAssignScene(time){
+  const W=cv.width,H=cv.height;
+  const lines=[
+    [{t:'# 1. 创建变量：用 = 把值装进"盒子"',c:'#5a6a8a'}],
+    [{t:'age',c:'#06b6d4'},{t:'   = ',c:'#9ab0d0'},{t:'18',c:'#34d399'}],
+    [{t:'name',c:'#06b6d4'},{t:' = ',c:'#9ab0d0'},{t:'"小明"',c:'#fbbf24'}],
+    [{t:'score',c:'#06b6d4'},{t:'= ',c:'#9ab0d0'},{t:'95.5',c:'#a78bfa'}],
+    [{t:'# 2. 动态类型：同一变量可换装不同类型',c:'#5a6a8a'}],
+    [{t:'age',c:'#06b6d4'},{t:'   = ',c:'#9ab0d0'},{t:'"十八"',c:'#fbbf24'},{t:'  # int → str',c:'#5a6a8a'}],
+    [{t:'print',c:'#ec4899'},{t:'(name, age, score)',c:'#9ab0d0'}],
+  ];
+  const hl=Math.floor(time*0.8)%7;
+  drawTerminal(time,'变量与赋值 · 动态类型',lines,hl);
+  // 变量盒子（动态显示）
+  const vars=[
+    {name:'age',val:'"十八"',type:'str',c:'#fbbf24'},
+    {name:'name',val:'小明',type:'str',c:'#fbbf24'},
+    {name:'score',val:95.5,type:'float',c:'#a78bfa'},
+  ];
+  drawVarBoxes(vars,90,H-90);
+  drawText('变量是存储数据的"盒子"，类型由值决定，可随时改变',W/2,H-15,'#34d399',12);
+}
+
+// ===== 场景：命名规则 =====
+function drawNamingScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('变量命名规则 · 合法 vs 非法',W/2,30,'#fbbf24',16);
+  const rules=[
+    {ok:true,t:'name、user_name',d:'字母/下划线开头',c:'#34d399'},
+    {ok:true,t:'_count、MAX_SIZE',d:'下划线、大写',c:'#34d399'},
+    {ok:true,t:'age2、user123',d:'数字可在中间',c:'#34d399'},
+    {ok:false,t:'2name',d:'数字开头 ✗',c:'#f87171'},
+    {ok:false,t:'my-var、my var',d:'含非法字符 ✗',c:'#f87171'},
+    {ok:false,t:'for、if、class',d:'Python 关键字 ✗',c:'#f87171'},
+  ];
+  rules.forEach((r,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=60+col*(W-120)/2;
+    const y=70+row*120;
+    ctx.fillStyle=r.c+'18';ctx.strokeStyle=r.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/2-20,100,10);ctx.fill();ctx.stroke();
+    drawText(r.ok?'✓ 合法':'✗ 非法',x+(W-120)/4,y+22,r.ok?'#34d399':'#f87171',14);
+    ctx.font='bold 14px Consolas,monospace';
+    drawText(r.t,x+(W-120)/4,y+52,'#fff',14);
+    ctx.font='12px sans-serif';
+    drawText(r.d,x+(W-120)/4,y+78,'#9ab0d0',11);
+  });
+  drawText('规则：字母/数字/下划线 + 不能数字开头 + 不用关键字 + 区分大小写',W/2,H-25,'#06b6d4',12);
+}
+
+// ===== 场景：五种数据类型 =====
+function drawTypesScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('Python 五大基本数据类型',W/2,30,'#fbbf24',16);
+  const types=[
+    {n:'int',v:'10  -5  0',d:'整数',c:'#34d399'},
+    {n:'float',v:'3.14  -0.5',d:'浮点数（小数）',c:'#a78bfa'},
+    {n:'str',v:'"hello"',d:'字符串（引号）',c:'#fbbf24'},
+    {n:'bool',v:'True  False',d:'布尔（真假）',c:'#06b6d4'},
+    {n:'NoneType',v:'None',d:'空值（没有）',c:'#f87171'},
+  ];
+  const w=(W-120)/3;
+  types.forEach((tp,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*w;
+    const y=70+row*180;
+    const pulse=1+0.05*Math.sin(time*2+i);
+    ctx.save();ctx.translate(x+w/2,y+75);ctx.scale(pulse,pulse);ctx.translate(-(x+w/2),-(y+75));
+    ctx.fillStyle=tp.c+'22';ctx.strokeStyle=tp.c;ctx.lineWidth=2;
+    roundRect(x+10,y,w-20,150,12);ctx.fill();ctx.stroke();
+    ctx.restore();
+    drawText(tp.n,x+w/2,y+35,tp.c,18);
+    ctx.font='bold 15px Consolas,monospace';
+    drawText(tp.v,x+w/2,y+80,'#fff',15);
+    ctx.font='12px sans-serif';
+    drawText(tp.d,x+w/2,y+120,'#9ab0d0',12);
+  });
+  drawText('用 type(x) 查看变量的类型',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景：input 输入 =====
+function drawInputScene(time){
+  const W=cv.width,H=cv.height;
+  const lines=[
+    [{t:'# input() 永远返回字符串 str！',c:'#5a6a8a'}],
+    [{t:'s',c:'#06b6d4'},{t:'   = ',c:'#9ab0d0'},{t:'input',c:'#ec4899'},{t:'("请输入年龄：")',c:'#fbbf24'}],
+    [{t:'# 此时 s = "15"，是字符串不能做算术',c:'#5a6a8a'}],
+    [{t:'age',c:'#06b6d4'},{t:' = ',c:'#9ab0d0'},{t:'int',c:'#ec4899'},{t:'(s)  ',c:'#9ab0d0'},{t:'# 转为整数',c:'#5a6a8a'}],
+    [{t:'height',c:'#06b6d4'},{t:'= ',c:'#9ab0d0'},{t:'float',c:'#ec4899'},{t:'(input("身高m："))',c:'#fbbf24'}],
+    [{t:'print',c:'#ec4899'},{t:'("明年你", age+1, "岁")',c:'#9ab0d0'}],
+  ];
+  const hl=Math.floor(time*0.7)%6;
+  drawTerminal(time,'input() · 输入与类型转换',lines,hl);
+  // 输入提示框
+  const ix=60,iy=H-95;
+  ctx.fillStyle='#0d1726';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(ix,iy,W-120,75,8);ctx.fill();ctx.stroke();
+  drawText('请输入年龄：15_',ix+15,iy+25,'#fbbf24',13,'left');
+  drawText('input() 返回字符串 "15"  →  int() 转为整数 15',ix+15,iy+55,'#34d399',12,'left');
+}
+
+// ===== 场景：print 输出 =====
+function drawPrintScene(time){
+  const W=cv.width,H=cv.height;
+  const lines=[
+    [{t:'# 多参数：默认用空格分隔，结尾换行',c:'#5a6a8a'}],
+    [{t:'print',c:'#ec4899'},{t:'("hello", "world")',c:'#fbbf24'}],
+    [{t:'# sep= 指定分隔符',c:'#5a6a8a'}],
+    [{t:'print',c:'#ec4899'},{t:'("a", "b", "c", ',c:'#fbbf24'},{t:'sep',c:'#06b6d4'},{t:'="-")',c:'#fbbf24'}],
+    [{t:'# end= 指定结尾符（默认换行 \\n）',c:'#5a6a8a'}],
+    [{t:'print',c:'#ec4899'},{t:'("line1", ',c:'#fbbf24'},{t:'end',c:'#06b6d4'},{t:'="")',c:'#fbbf24'}],
+    [{t:'print',c:'#ec4899'},{t:'("line2")',c:'#fbbf24'}],
+  ];
+  const hl=Math.floor(time*0.7)%6;
+  drawTerminal(time,'print() · 多参数与 sep/end',lines,hl);
+  // 输出预览
+  const ox=60,oy=H-105;
+  ctx.fillStyle='#0d1726';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(ox,oy,W-120,85,8);ctx.fill();ctx.stroke();
+  drawText('输出结果：',ox+15,oy+18,'#34d399',12,'left');
+  drawText('hello world',ox+15,oy+38,'#fff',12,'left');
+  drawText('a-b-c',ox+15,oy+56,'#fff',12,'left');
+  drawText('line1line2（end="" 不换行）',ox+15,oy+74,'#9ab0d0',11,'left');
+}
+
+// ===== 场景：f-string =====
+function drawFstringScene(time){
+  const W=cv.width,H=cv.height;
+  const lines=[
+    [{t:'# f-string：字符串前加 f，{ } 内嵌变量/表达式',c:'#5a6a8a'}],
+    [{t:'name',c:'#06b6d4'},{t:' = ',c:'#9ab0d0'},{t:'"小明"',c:'#fbbf24'}],
+    [{t:'age',c:'#06b6d4'},{t:'  = ',c:'#9ab0d0'},{t:'15',c:'#34d399'}],
+    [{t:'pi',c:'#06b6d4'},{t:'   = ',c:'#9ab0d0'},{t:'3.14159',c:'#a78bfa'}],
+    [{t:'# :.2f 表示保留 2 位小数',c:'#5a6a8a'}],
+    [{t:'msg',c:'#06b6d4'},{t:' = ',c:'#9ab0d0'},{t:'f"',c:'#fbbf24'},{t:'{name}',c:'#06b6d4'},{t:'今年',c:'#fbbf24'},{t:'{age}',c:'#34d399'},{t:'岁，π=',c:'#fbbf24'},{t:'{pi:.2f}',c:'#a78bfa'},{t:'"',c:'#fbbf24'}],
+    [{t:'print',c:'#ec4899'},{t:'(msg)',c:'#9ab0d0'}],
+    [{t:'# 对比：%s/%d 与 .format() 已过时',c:'#5a6a8a'}],
+  ];
+  const hl=Math.floor(time*0.7)%7;
+  drawTerminal(time,'f-string · 格式化字符串',lines,hl);
+  const ox=60,oy=H-70;
+  ctx.fillStyle='#0d1726';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(ox,oy,W-120,50,8);ctx.fill();ctx.stroke();
+  drawText('输出：小明今年15岁，π=3.14',ox+15,oy+25,'#34d399',13,'left');
+}
+
+// ===== 场景：比较与逻辑运算符 =====
+function drawCompareLogicScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('比较与逻辑运算符 · 结果为 bool',W/2,30,'#fbbf24',16);
+  // 左半：比较运算符
+  const lx=60,ly=65,lw=(W-180)/2;
+  ctx.fillStyle='#06b6d418';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(lx,ly,lw,H-150,10);ctx.fill();ctx.stroke();
+  drawText('比较运算符',lx+lw/2,ly+28,'#06b6d4',16);
+  const cmps=[
+    {o:'>',e:'5 > 3',r:'True'},
+    {o:'<',e:'5 < 3',r:'False'},
+    {o:'==',e:'5 == 5',r:'True'},
+    {o:'!=',e:'5 != 3',r:'True'},
+    {o:'>=',e:'5 >= 5',r:'True'},
+    {o:'<=',e:'5 <= 3',r:'False'},
+  ];
+  cmps.forEach((c,i)=>{
+    const yy=ly+60+i*38;
+    ctx.font='bold 16px Consolas,monospace';
+    drawText(c.o,lx+50,yy,'#06b6d4',16);
+    drawText(c.e,lx+lw/2,yy,'#fff',14);
+    drawText(c.r,lx+lw-50,yy,c.r==='True'?'#34d399':'#f87171',14);
+  });
+  // 右半：逻辑运算符
+  const rx=lx+lw+60,ry=65,rw=(W-180)/2;
+  ctx.fillStyle='#a78bfa18';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(rx,ry,rw,H-150,10);ctx.fill();ctx.stroke();
+  drawText('逻辑运算符',rx+rw/2,ry+28,'#a78bfa',16);
+  const logs=[
+    {o:'and',e:'True and False',r:'False',d:'两边都真才真'},
+    {o:'or',e:'True or False',r:'True',d:'一边真就真'},
+    {o:'not',e:'not True',r:'False',d:'取反'},
+  ];
+  logs.forEach((l,i)=>{
+    const yy=ry+70+i*75;
+    ctx.font='bold 16px Consolas,monospace';
+    drawText(l.o,rx+60,yy,'#a78bfa',16);
+    drawText(l.e,rx+rw/2,yy,'#fff',13);
+    drawText(l.r,rx+rw-50,yy,l.r==='True'?'#34d399':'#f87171',14);
+    ctx.font='11px sans-serif';
+    drawText(l.d,rx+rw/2,yy+22,'#9ab0d0',11);
+  });
+  drawText('age>=18 and age<=60（成年且未退休）→',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景：运算符 =====
+function drawOperatorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('Python 运算符大全',W/2,30,'#fbbf24',16);
+  const ops=[
+    {cat:'算术',items:['+ 加','- 减','* 乘','/ 除','// 整除','% 取余','** 幂'],c:'#34d399'},
+    {cat:'比较',items:['> 大于','< 小于','== 等于','!= 不等','>= >=','<= <='],c:'#06b6d4'},
+    {cat:'逻辑',items:['and 且','or 或','not 非'],c:'#a78bfa'},
+  ];
+  ops.forEach((g,i)=>{
+    const x=60+i*(W-120)/3;
+    const y=65;
+    ctx.fillStyle=g.c+'18';ctx.strokeStyle=g.c;ctx.lineWidth=2;
+    roundRect(x,y,(W-120)/3-10,H-150,10);ctx.fill();ctx.stroke();
+    drawText(g.cat,x+(W-120)/6-5,y+25,g.c,16);
+    g.items.forEach((it,j)=>{
+      const yy=y+60+j*32;
+      ctx.font='bold 13px Consolas,monospace';
+      drawText(it,x+(W-120)/6-5,yy,'#fff',13);
+    });
+  });
+  // 示例
+  const ex=Math.floor(time*0.5)%5;
+  const examples=['7 // 2 = 3','7 % 3 = 1','2 ** 3 = 8','7 / 2 = 3.5','5 > 3 → True'];
+  drawText('示例：'+examples[ex],W/2,H-30,'#fbbf24',14);
+}
+
+// ===== 场景：类型转换 =====
+function drawConvertScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('类型转换 · int() float() str()',W/2,30,'#fbbf24',16);
+  const convs=[
+    {f:'int("123")',r:123,t:'→ int',c:'#34d399'},
+    {f:'float("3.14")',r:3.14,t:'→ float',c:'#a78bfa'},
+    {f:'str(123)',r:'"123"',t:'→ str',c:'#fbbf24'},
+    {f:'bool(0)',r:'False',t:'→ bool',c:'#06b6d4'},
+    {f:'int("abc")',r:'ValueError!',t:'报错',c:'#f87171'},
+    {f:'int(3.9)',r:3,t:'→ 截断小数',c:'#34d399'},
+  ];
+  convs.forEach((c,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=70+row*130;
+    const pulse=1+0.04*Math.sin(time*2+i);
+    ctx.save();ctx.translate(x+(W-160)/4,y+50);ctx.scale(pulse,pulse);ctx.translate(-(x+(W-160)/4),-(y+50));
+    ctx.fillStyle=c.c+'18';ctx.strokeStyle=c.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/2-20,110,10);ctx.fill();ctx.stroke();
+    ctx.restore();
+    ctx.font='bold 14px Consolas,monospace';
+    drawText(c.f,x+(W-160)/4,y+35,'#fff',14);
+    ctx.font='20px Consolas,monospace';
+    drawText(c.r,x+(W-160)/4,y+70,c.c,18);
+    ctx.font='11px sans-serif';
+    drawText(c.t,x+(W-160)/4,y+95,'#9ab0d0',11);
+  });
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('Python 编程基础 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'变量',d:'名字 = 值\n动态类型',c:'#fbbf24'},
+    {t:'数据类型',d:'int float\nstr bool None',c:'#06b6d4'},
+    {t:'输入',d:'input()\n返回字符串',c:'#a78bfa'},
+    {t:'输出',d:'print() / f-string\nsep / end',c:'#34d399'},
+    {t:'运算符',d:'+ - * / //\n% ** 比较 逻辑',c:'#fb923c'},
+    {t:'类型转换',d:'int() float()\nstr() bool()',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    m.d.split('\n').forEach((ln,j)=>{
+      drawText(ln,x+(W-160)/6,y+85+j*22,'#fff',12);
+    });
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawVarAssignScene(t);
+  else if(stepIdx===1)drawNamingScene(t);
+  else if(stepIdx===2)drawTypesScene(t);
+  else if(stepIdx===3)drawInputScene(t);
+  else if(stepIdx===4)drawPrintScene(t);
+  else if(stepIdx===5)drawFstringScene(t);
+  else if(stepIdx===6)drawOperatorScene(t);
+  else if(stepIdx===7)drawCompareLogicScene(t);
+  else if(stepIdx===8)drawConvertScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

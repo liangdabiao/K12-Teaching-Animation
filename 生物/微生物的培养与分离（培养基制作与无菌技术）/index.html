@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微生物的培养与分离 · 培养基制作 · 无菌技术</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">微生物的培养与分离</span><span class="subtitle">培养基制作 · 无菌技术 · 接种分离</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>培养基分类</h4><div class="v">液体/半固体/固体<br>天然 vs 合成培养基</div></div>
+  <div class="card s2"><div class="num">2</div><h4>无菌技术五法</h4><div class="v">高压蒸汽·干热·紫外<br>火焰灼烧·化学消毒</div></div>
+  <div class="card s3"><div class="num">3</div><h4>接种两种方法</h4><div class="v">平板划线分离单菌落<br>稀释涂布平板可计数</div></div>
+  <div class="card s4"><div class="num">4</div><h4>菌种保藏</h4><div class="v">临时 4°C 冰箱<br>长期 -20/-70°C 甘油</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">培养基</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'培养基分类',body:'<strong>培养基</strong>是人工配制的供微生物生长的<strong>营养物质基质</strong>。按<strong>物理状态</strong>分：液体、半固体（加 0.5% 琼脂）、固体（加 1.5-2% 琼脂）；按<strong>成分来源</strong>分：天然培养基（牛肉膏蛋白胨）与合成培养基（已知化学成分）。',points:{title:'分类要点',items:['<strong>液体培养基</strong>：大量菌体扩增','<strong>固体培养基</strong>：分离纯化、计数','<strong>半固体</strong>：观察运动性、保藏菌种','<strong>天然</strong>：成分不明确（LB）；<strong>合成</strong>：成分已知（MS）']}},
+  {tag:'基础',name:'营养构成',body:'培养基需含<strong>五大营养要素</strong>：<strong>碳源</strong>（葡萄糖、牛肉膏）、<strong>氮源</strong>（蛋白胨、铵盐）、<strong>无机盐</strong>（K、Mg、P 等）、<strong>水</strong>、<strong>生长因子</strong>（维生素、氨基酸）。还需调节 <code>pH 至 7.0-7.6</code>。',points:{title:'五大要素',items:['<strong>碳源</strong>：提供能量与碳骨架','<strong>氮源</strong>：合成蛋白质核酸','<strong>无机盐</strong>：酶辅因子、渗透压','<strong>水</strong>：生化反应溶剂','<strong>生长因子</strong>：自养菌不需要']}},
+  {tag:'无菌',name:'无菌技术',body:'<strong>无菌技术</strong>是防止杂菌污染的操作。常用 5 法：<strong>高压蒸汽灭菌</strong>（121°C，15-30 min）、<strong>干热灭菌</strong>（160°C，2 h，玻璃器皿）、<strong>紫外线灭菌</strong>（接种箱 30 min）、<strong>火焰灼烧</strong>（接种环）、<strong>化学消毒</strong>（75% 酒精擦拭）。',points:{title:'五法对比',items:['<strong>高压蒸汽</strong>：培养基、耐热物品首选','<strong>干热灭菌</strong>：玻璃器皿','<strong>紫外线</strong>：空气与台面','<strong>火焰灼烧</strong>：金属接种工具','<strong>化学消毒</strong>：皮肤、桌面']}},
+  {tag:'无菌',name:'高压蒸汽灭菌',body:'使用<strong>高压蒸汽灭菌锅</strong>：将培养基装入锥形瓶（塞棉塞、包牛皮纸），<code>121°C、100 kPa、15-30 min</code>。高温高压使<strong>蛋白质与核酸变性</strong>，杀灭<strong>芽孢</strong>。冷却后取出备用。',points:{title:'操作要点',items:['<strong>121°C 100 kPa</strong>：标准参数','<strong>15-30 min</strong>：保证杀芽孢','<strong>排冷气</strong>：否则温度上不去','<strong>冷却待用</strong>：约 50°C 倒平板']}},
+  {tag:'操作',name:'倒平板',body:'<strong>倒平板</strong>：灭菌后培养基<strong>溶化→冷却至 50°C 左右</strong>（不烫手），在<strong>酒精灯火焰旁</strong>打开培养皿（45° 斜开），倒入约 15-20 mL，轻轻摇匀，<strong>冷却凝固</strong>。凝固后<strong>倒置</strong>存放防冷凝水滴落。',points:{title:'倒板四步',items:['<strong>①溶化</strong>：加热至全熔','<strong>②冷却</strong>：50°C 左右','<strong>③倒皿</strong>：火焰旁无菌','<strong>④凝固</strong>：倒置保藏']}},
+  {tag:'接种',name:'平板划线法',body:'<strong>平板划线</strong>用于<strong>分离单菌落</strong>。接种环<strong>火焰灼烧灭菌→冷却→蘸菌液</strong>，在平板表面<strong>分区划线</strong>（之字形），每区稀释一次。最终使菌细胞<strong>充分分散</strong>，单个细胞繁殖成<strong>单菌落</strong>，可作纯培养。',points:{title:'划线要点',items:['<strong>灼烧接种环</strong>：红热冷却后用','<strong>之字形划</strong>：分 3-4 区','<strong>每区换角度</strong>：上一区起笔','<strong>目的</strong>：单菌落纯化']}},
+  {tag:'接种',name:'稀释涂布平板法',body:'<strong>稀释涂布</strong>用于<strong>活菌计数</strong>。将菌液<strong>梯度稀释</strong>（10⁻¹ 至 10⁻⁷），取 0.1 mL 涂布平板，每个稀释度<strong>重复 3 个</strong>，<strong>37°C 培养 24-48 h</strong>。选择<strong>菌落数 30-300</strong> 的平板计数。',points:{title:'计数公式',items:['<strong>梯度稀释</strong>：10 倍系列','<strong>0.1 mL 涂布</strong>：均匀涂开','<strong>30-300 菌落</strong>：有效计数范围','<strong>菌数 CFU/mL</strong>：菌落数×稀释倍数÷0.1']}},
+  {tag:'培养',name:'恒温培养',body:'将接种后的平板<strong>倒置</strong>放入<strong>恒温培养箱</strong>，细菌 <code>37°C</code>、霉菌酵母 <code>25-28°C</code>，培养 <strong>24-48 h</strong>。倒置防止<strong>冷凝水滴落</strong>污染菌落。期间形成肉眼可见<strong>单菌落</strong>（每个约 10⁹ 个同源细胞）。',points:{title:'培养条件',items:['<strong>细菌 37°C</strong>：人体体温','<strong>真菌 25-28°C</strong>：室温偏高','<strong>倒置培养</strong>：防冷凝水','<strong>24-48 h</strong>：菌落可见']}},
+  {tag:'保藏',name:'菌种保藏',body:'<strong>短期保藏</strong>：斜面或平板置于<strong>冰箱 4°C</strong>，定期<strong>每月转接</strong>（1-3 个月）。<strong>长期保藏</strong>：<strong>甘油管藏法</strong>，菌液中加 15% 甘油，置于 <strong>-20°C 或 -70°C 超低温冰箱</strong>，可保存<strong>数年</strong>，最大限度减少变异。',points:{title:'保藏对比',items:['<strong>临时</strong>：4°C 冰箱，1-3 月','<strong>长期</strong>：甘油管 -20°C/-70°C','<strong>15% 甘油</strong>：保护冰晶','<strong>冷冻干燥</strong>：更久（10 年以上）']}},
+  {tag:'总结',name:'核心流程',body:'<strong>微生物培养分离核心流程</strong>：① 配培养基 → ② 调 pH 分装 → ③ 高压蒸汽灭菌 → ④ 倒平板 → ⑤ 接种（划线/涂布）→ ⑥ 恒温培养 → ⑦ 观察单菌落 → ⑧ 菌种保藏。贯穿始终的是<strong>无菌操作</strong>。',points:{title:'八步速记',items:['<strong>配制</strong>：碳氮盐水生长因子','<strong>灭菌</strong>：121°C 15-30 min','<strong>倒板</strong>：50°C 火焰旁','<strong>接种培养</strong>：37°C 24-48 h','<strong>保藏</strong>：4°C 临时，-20°C 长期']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// 场景：培养基分类
+function drawClassScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('培养基的分类（物理状态）',W/2,30,'#fbbf24',16);
+  const cy=H/2+10;
+  const types=[{n:'液体培养基',c:'#06b6d4',a:'无琼脂',w:1,l:0},{n:'半固体培养基',c:'#34d399',a:'0.5% 琼脂',w:.5,l:1},{n:'固体培养基',c:'#fbbf24',a:'1.5-2% 琼脂',w:0,l:2}];
+  types.forEach((tp,i)=>{
+    const x=120+i*(W-240)/3+30;
+    ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+    roundRect(x-40,cy-110,80,200,12);ctx.fill();ctx.stroke();
+    ctx.fillStyle=tp.c+'55';
+    const top=cy-90+tp.l*30;
+    ctx.fillRect(x-39,top,78,cy+70-top);
+    if(tp.w>0){
+      ctx.strokeStyle=tp.c;ctx.lineWidth=2;ctx.beginPath();
+      for(let dx=-39;dx<=39;dx++){
+        const yy=top+Math.sin(time*2+dx*0.2)*tp.w*4;
+        if(dx===-39)ctx.moveTo(x+dx,yy);else ctx.lineTo(x+dx,yy);
+      }
+      ctx.stroke();
+    }
+    drawText(tp.n,x,cy-135,tp.c,13);
+    drawText(tp.a,x,cy+110,'#9ab0d0',11);
+    drawText(['扩增菌体','运动性/保藏','分离/计数'][i],x,cy+130,'#fff',11);
+  });
+  drawText('天然培养基（牛肉膏蛋白胨）vs 合成培养基（已知化学成分）',W/2,H-40,'#9ab0d0',12);
+  drawText('固体加琼脂 → 凝固 → 可分离单菌落',W/2,H-22,'#34d399',12);
+}
+
+// 场景：营养构成
+function drawNutrientScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('培养基五大营养要素',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-20,cy-90);ctx.lineTo(cx-90,cy+70);ctx.lineTo(cx+90,cy+70);ctx.lineTo(cx+20,cy-90);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.strokeRect(cx-25,cy-110,50,25);
+  ctx.fillStyle='rgba(52,211,153,0.3)';
+  ctx.beginPath();
+  ctx.moveTo(cx-78,cy+30);ctx.lineTo(cx-90,cy+70);ctx.lineTo(cx+90,cy+70);ctx.lineTo(cx+78,cy+30);
+  ctx.closePath();ctx.fill();
+  const els=[{n:'碳源',d:'葡萄糖/牛肉膏',c:'#fbbf24'},{n:'氮源',d:'蛋白胨/铵盐',c:'#06b6d4'},{n:'无机盐',d:'K·Mg·P·Na',c:'#34d399'},{n:'水',d:'H₂O 溶剂',c:'#a78bfa'},{n:'生长因子',d:'维生素/氨基酸',c:'#ec4899'}];
+  els.forEach((e,i)=>{
+    const ang=-Math.PI/2+i/5*Math.PI*2+time*0.3;
+    const ex=cx+Math.cos(ang)*170,ey=cy+Math.sin(ang)*120;
+    ctx.fillStyle=e.c+'33';ctx.strokeStyle=e.c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(ex,ey,30,0,7);ctx.fill();ctx.stroke();
+    drawText(e.n,ex,ey-4,e.c,13);drawText(e.d,ex,ey+12,'#fff',9);
+    ctx.strokeStyle=e.c+'66';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(cx,cy);ctx.stroke();
+  });
+  drawText('pH 调至 7.0 - 7.6',W/2,H-50,'#34d399',12);
+  drawText('五大要素 + pH = 完整培养基',W/2,H-30,'#9ab0d0',12);
+}
+
+// 场景：无菌技术五法
+function drawSterileScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('无菌技术 · 五种灭菌方法',W/2,30,'#fbbf24',16);
+  const ms=[{n:'高压蒸汽灭菌',d:'121°C 15-30 min',c:'#f87171'},{n:'干热灭菌',d:'160°C 2 h',c:'#fb923c'},{n:'紫外线灭菌',d:'接种箱 30 min',c:'#a78bfa'},{n:'火焰灼烧',d:'接种环红热',c:'#fbbf24'},{n:'化学消毒',d:'75% 酒精',c:'#06b6d4'}];
+  ms.forEach((m,i)=>{
+    const x=70+i*(W-140)/5+(W-140)/5/2-30,y=80;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x-50,y,100,120,10);ctx.fill();ctx.stroke();
+    drawText(m.n,x+50,y+25,m.c,12);drawText(m.d,x+50,y+50,'#fff',10);
+    const pulse=0.4+0.6*Math.abs(Math.sin(time*2+i));
+    ctx.fillStyle=m.c;ctx.globalAlpha=pulse;
+    ctx.beginPath();ctx.arc(x+50,y+85,10,0,7);ctx.fill();
+    ctx.globalAlpha=1;drawText(i+1,x+50,y+85,'#fff',12);
+  });
+  drawText('耐高温高压：培养基 / 干热：玻璃器皿',W/2,H/2+80,'#9ab0d0',12);
+  drawText('紫外：空气台面 / 火焰：金属工具 / 化学：皮肤桌面',W/2,H/2+105,'#34d399',11);
+  drawText('目的：杀灭杂菌与芽孢，保证纯培养',W/2,H-50,'#fbbf24',13);
+}
+
+// 场景：高压蒸汽灭菌
+function drawAutoclaveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('高压蒸汽灭菌锅 · 121°C / 100 kPa',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  ctx.fillStyle='rgba(167,139,250,0.15)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;
+  roundRect(cx-120,cy-100,240,200,16);ctx.fill();ctx.stroke();
+  drawText('高压灭菌锅',cx,cy-115,'#a78bfa',13);
+  ctx.fillStyle='#1e345a';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,90,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(6,182,212,0.4)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx-15,cy-50);ctx.lineTo(cx-35,cy+40);ctx.lineTo(cx+35,cy+40);ctx.lineTo(cx+15,cy-50);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  const phase=(time*1.5)%2;
+  for(let i=0;i<4;i++){
+    const r=30+i*15+phase*15,alpha=1-i*0.2-phase*0.3;
+    if(alpha>0){ctx.strokeStyle='rgba(248,113,113,'+alpha+')';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI*0.8,-Math.PI*0.2);ctx.stroke();}
+  }
+  ctx.fillStyle='#0a1628';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx+150,cy-50,30,0,7);ctx.fill();ctx.stroke();
+  const ang=-Math.PI*0.6+Math.abs(Math.sin(time))*Math.PI*0.4;
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx+150,cy-50);ctx.lineTo(cx+150+Math.cos(ang)*22,cy-50+Math.sin(ang)*22);ctx.stroke();
+  drawText('压力',cx+150,cy-15,'#9ab0d0',10);
+  drawText('温度：'+(120+Math.sin(time*2)*2).toFixed(1)+'°C',cx,cy+90,'#f87171',14);
+  drawText('压力：100 kPa（0.1 MPa）',cx,cy+115,'#fbbf24',12);
+  drawText('15-30 min → 杀死芽孢',W/2,H-50,'#34d399',13);
+  drawText('高温高压使蛋白质变性',W/2,H-30,'#9ab0d0',11);
+}
+
+// 场景：倒平板
+function drawPourScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('倒平板 · 溶化→冷却→倒皿→凝固',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(cx,cy+90,140,28,0,0,7);ctx.fill();ctx.stroke();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(cx,cy+60,140,28,0,Math.PI,7);ctx.stroke();
+  ctx.fillStyle='rgba(251,191,36,0.3)';
+  ctx.beginPath();ctx.ellipse(cx,cy+92,132,22,0,0,7);ctx.fill();
+  const tilt=Math.sin(time*0.6)*0.2-0.3;
+  ctx.save();ctx.translate(cx,cy-90);ctx.rotate(tilt);
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(-20,-40);ctx.lineTo(-50,40);ctx.lineTo(50,40);ctx.lineTo(20,-40);
+  ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeRect(-25,-60,50,20);
+  ctx.fillStyle='rgba(251,191,36,0.6)';
+  ctx.beginPath();ctx.moveTo(-40,0);ctx.lineTo(-50,40);ctx.lineTo(50,40);ctx.lineTo(40,0);
+  ctx.closePath();ctx.fill();ctx.restore();
+  ctx.fillStyle='rgba(251,191,36,0.7)';
+  const pourX=cx+Math.sin(tilt)*40;
+  ctx.beginPath();
+  ctx.moveTo(pourX-4,cy-50);ctx.quadraticCurveTo(pourX,cy,cx-4,cy+85);
+  ctx.lineTo(cx+4,cy+85);ctx.quadraticCurveTo(pourX+4,cy,pourX+4,cy-50);
+  ctx.closePath();ctx.fill();
+  const fx=cx-160,fy=cy;
+  ctx.fillStyle='rgba(248,113,113,0.4)';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(fx,fy+30);
+  ctx.quadraticCurveTo(fx-12,fy,fx,fy-30+Math.sin(time*5)*4);
+  ctx.quadraticCurveTo(fx+12,fy,fx,fy+30);ctx.fill();ctx.stroke();
+  drawText('酒精灯',fx,fy+55,'#f87171',11);
+  drawText('① 溶化  →  ② 冷却 50°C  →  ③ 火焰旁倒皿  →  ④ 凝固倒置',W/2,H-60,'#34d399',12);
+  drawText('培养皿斜开 45°，倒 15-20 mL',W/2,H-40,'#9ab0d0',11);
+  drawText('凝固后倒置防止冷凝水滴落',W/2,H-22,'#fbbf24',11);
+}
+
+// 场景：平板划线
+function drawStreakScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平板划线法 · 分离单菌落',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,150,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.beginPath();ctx.arc(cx,cy,145,0,7);ctx.fill();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  for(let s=0;s<3;s++){
+    const sy=cy-80+s*70;ctx.beginPath();let first=true;
+    for(let dx=-100;dx<=100;dx+=8){
+      const yy=sy+Math.sin(dx*0.15)*8,xx=cx+dx+s*8-30;
+      if(first){ctx.moveTo(xx,yy);first=false;}else ctx.lineTo(xx,yy);
+    }
+    ctx.stroke();
+  }
+  const ringT=(time*0.5)%1,ringX=cx-100+ringT*200,ringY=cy-80+Math.sin(ringT*15)*8;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(ringX,ringY,8,0,7);ctx.stroke();
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(ringX+6,ringY+6);ctx.lineTo(ringX+60,ringY+50);ctx.stroke();
+  const fx=cx-210,fy=cy-30;
+  ctx.fillStyle='rgba(248,113,113,0.5)';
+  ctx.beginPath();ctx.moveTo(fx,fy+30);
+  ctx.quadraticCurveTo(fx-10,fy,fx,fy-25+Math.sin(time*6)*3);
+  ctx.quadraticCurveTo(fx+10,fy,fx,fy+30);ctx.fill();
+  drawText('灼烧',fx,fy+50,'#f87171',10);
+  for(let i=0;i<5;i++){
+    const ang=i*1.3,r=110;
+    ctx.fillStyle='rgba(52,211,153,0.8)';
+    ctx.beginPath();ctx.arc(cx+Math.cos(ang)*r*(0.6+i*0.05),cy+Math.sin(ang)*r*0.7,4,0,7);ctx.fill();
+  }
+  drawText('①灼烧接种环 → ②蘸菌 → ③之字形分区划线',W/2,H-60,'#34d399',12);
+  drawText('每区稀释 → 单细胞繁殖成单菌落 → 纯化',W/2,H-40,'#06b6d4',11);
+  drawText('目的：分离纯化（不计数量）',W/2,H-22,'#fbbf24',11);
+}
+
+// 场景：稀释涂布
+function drawDilutionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('稀释涂布平板法 · 用于活菌计数',W/2,30,'#fbbf24',16);
+  const cy=H/2,dilutions=['10⁻¹','10⁻²','10⁻³','10⁻⁴','10⁻⁵','10⁻⁶'],startX=70;
+  dilutions.forEach((d,i)=>{
+    const x=startX+i*60;
+    ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+    roundRect(x-15,cy-50,30,80,6);ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(6,182,212,'+(0.7-i*0.1)+')';ctx.fillRect(x-14,cy-15,28,44);
+    drawText(d,x,cy-60,'#06b6d4',11);
+    if(i<dilutions.length-1){
+      ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x+18,cy-10);ctx.lineTo(x+42,cy-10);ctx.stroke();
+      ctx.fillStyle='#34d399';
+      ctx.beginPath();ctx.moveTo(x+42,cy-10);ctx.lineTo(x+38,cy-13);ctx.lineTo(x+38,cy-7);ctx.fill();
+      drawText('10×',x+30,cy-22,'#34d399',9);
+    }
+  });
+  const sel=[2,3,4];
+  sel.forEach((s,i)=>{
+    const px=startX+s*60,py=cy+90;
+    ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.ellipse(px,py,30,12,0,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(251,191,36,0.25)';ctx.beginPath();ctx.ellipse(px,py,28,10,0,0,7);ctx.fill();
+    const n=Math.max(2,12-s*2);
+    for(let j=0;j<n;j++){
+      const a=j/n*Math.PI*2;
+      ctx.fillStyle='rgba(52,211,153,0.8)';
+      ctx.beginPath();ctx.arc(px+Math.cos(a)*15,py+Math.sin(a)*5,2,0,7);ctx.fill();
+    }
+    drawText(dilutions[s],px,py+25,'#fbbf24',10);
+    if(s===3){
+      ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+      ctx.beginPath();ctx.ellipse(px,py,33,15,0,0,7);ctx.stroke();
+      drawText('✓ 30-300',px,py-25,'#34d399',10);
+    }
+  });
+  drawText('菌落数(CFU/mL) = 平均菌落数 × 稀释倍数 ÷ 0.1 mL',W/2,H-70,'#34d399',13);
+  drawText('选 30-300 个菌落的平板计数',W/2,H-50,'#fbbf24',11);
+  drawText('每个稀释度做 3 个重复',W/2,H-30,'#9ab0d0',11);
+}
+
+// 场景：恒温培养
+function drawIncubateScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('恒温培养箱 · 37°C × 24-48 h',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  ctx.fillStyle='rgba(167,139,250,0.1)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;
+  roundRect(cx-160,cy-100,320,200,12);ctx.fill();ctx.stroke();
+  drawText('恒温培养箱',cx,cy-115,'#a78bfa',13);
+  ctx.fillStyle='#0a1628';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(cx+90,cy-90,60,28,5);ctx.fill();ctx.stroke();
+  drawText('37.0°C',cx+120,cy-76,'#34d399',12);
+  const grow=Math.min(1,time*0.3%1.5);
+  // 皿1
+  ctx.fillStyle='rgba(255,255,255,0.06)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(cx-60,cy+30,55,16,0,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.ellipse(cx-60,cy+18,55,16,0,0,7);ctx.stroke();
+  ctx.fillStyle='rgba(251,191,36,0.2)';ctx.beginPath();ctx.ellipse(cx-60,cy+30,52,14,0,0,7);ctx.fill();
+  [{x:-30,y:25,r:5},{x:-50,y:35,r:4},{x:-70,y:22,r:6},{x:-40,y:40,r:3},{x:-60,y:18,r:5},{x:-80,y:38,r:4}].forEach(co=>{
+    ctx.fillStyle='rgba(52,211,153,'+grow+')';
+    ctx.beginPath();ctx.arc(cx-60+co.x,cy+co.y,co.r*grow,0,7);ctx.fill();
+  });
+  // 皿2
+  ctx.fillStyle='rgba(255,255,255,0.06)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(cx+60,cy+30,55,16,0,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.ellipse(cx+60,cy+18,55,16,0,0,7);ctx.stroke();
+  ctx.fillStyle='rgba(251,191,36,0.2)';ctx.beginPath();ctx.ellipse(cx+60,cy+30,52,14,0,0,7);ctx.fill();
+  for(let i=0;i<8;i++){
+    const a=i/8*Math.PI*2,rr=Math.max(2,grow*4);
+    ctx.fillStyle='rgba(52,211,153,'+grow+')';
+    ctx.beginPath();ctx.arc(cx+60+Math.cos(a)*25,cy+30+Math.sin(a)*8,rr,0,7);ctx.fill();
+  }
+  drawText('倒置（防冷凝水滴落）',cx,cy+70,'#fbbf24',11);
+  drawText('培养时间：'+Math.floor((time*5)%48)+' h',cx,cy+95,'#06b6d4',12);
+  drawText('细菌 37°C · 真菌 25-28°C',W/2,H-55,'#34d399',12);
+  drawText('单菌落 ≈ 10⁹ 同源细胞（纯培养）',W/2,H-35,'#fbbf24',11);
+  drawText('肉眼可见菌落后停止培养',W/2,H-18,'#9ab0d0',11);
+}
+
+// 场景：菌种保藏
+function drawPreserveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('菌种保藏 · 临时 vs 长期',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 临时：冰箱
+  const x1=cx-160;
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(x1-60,cy-100,120,180,8);ctx.fill();ctx.stroke();
+  drawText('冰箱',x1,cy-115,'#06b6d4',14);
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x1-60,cy-30);ctx.lineTo(x1+60,cy-30);ctx.stroke();
+  for(let i=0;i<3;i++){
+    const tx=x1-30+i*30;
+    ctx.fillStyle='rgba(251,191,36,0.3)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    roundRect(tx-8,cy-20,16,80,4);ctx.fill();ctx.stroke();
+  }
+  drawText('4°C',x1,cy+70,'#06b6d4',16);
+  drawText('1-3 个月转接',x1,cy+95,'#9ab0d0',11);
+  drawText('临时保藏',x1,cy-85,'#fff',12);
+  // 长期：超低温
+  const x2=cx+160;
+  ctx.fillStyle='rgba(248,113,113,0.15)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(x2-60,cy-100,120,180,8);ctx.fill();ctx.stroke();
+  drawText('超低温冰箱',x2,cy-115,'#f87171',14);
+  for(let i=0;i<3;i++){
+    const tx=x2-30+i*30;
+    ctx.fillStyle='rgba(52,211,153,0.3)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+    roundRect(tx-8,cy-20,16,80,4);ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.6)';
+    for(let j=0;j<3;j++){
+      ctx.beginPath();ctx.arc(tx+Math.sin(time*2+i+j)*3,cy-10+j*20,2,0,7);ctx.fill();
+    }
+  }
+  drawText('-20°C / -70°C',x2,cy+70,'#f87171',13);
+  drawText('数年不变异',x2,cy+95,'#9ab0d0',11);
+  drawText('甘油管长期保藏',x2,cy-85,'#fff',12);
+  // 箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(x1+65,cy);ctx.lineTo(x2-65,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(x2-65,cy);ctx.lineTo(x2-75,cy-6);ctx.lineTo(x2-75,cy+6);ctx.fill();
+  drawText('加 15% 甘油',cx,cy-15,'#fbbf24',11);
+  drawText('长期保藏需 15% 甘油（保护细胞免受冰晶损伤）',W/2,H-50,'#34d399',12);
+  drawText('冷冻干燥法可保藏 10 年以上',W/2,H-30,'#9ab0d0',11);
+}
+
+// 场景：核心流程总结
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('微生物培养与分离 · 核心流程',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'① 配培养基',d:'碳氮盐水生长因子',c:'#fbbf24'},{t:'② 调 pH 分装',d:'7.0-7.6',c:'#a78bfa'},
+    {t:'③ 高压灭菌',d:'121°C 15-30 min',c:'#f87171'},{t:'④ 倒平板',d:'50°C 火焰旁',c:'#06b6d4'},
+    {t:'⑤ 接种',d:'划线 / 涂布',c:'#34d399'},{t:'⑥ 恒温培养',d:'37°C 24-48 h',c:'#fb923c'},
+    {t:'⑦ 观察单菌落',d:'纯化鉴定',c:'#ec4899'},{t:'⑧ 菌种保藏',d:'4°C / -70°C',c:'#67e8f9'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%4,row=Math.floor(i/4),x=60+col*(W-120)/4,y=100+row*150;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+8,y,(W-120)/4-16,110,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/8,y+40,m.c,14);
+    drawText(m.d,x+(W-120)/8,y+75,'#fff',12);
+  });
+  drawText('贯穿始终：无菌操作',W/2,H-50,'#fbbf24',14);
+}
+
+const SCENE_FNS=[
+  drawClassScene,     // 0 培养基分类
+  drawNutrientScene,  // 1 营养构成
+  drawSterileScene,   // 2 无菌技术
+  drawAutoclaveScene, // 3 高压灭菌
+  drawPourScene,      // 4 倒平板
+  drawStreakScene,    // 5 平板划线
+  drawDilutionScene,  // 6 稀释涂布
+  drawIncubateScene,  // 7 恒温培养
+  drawPreserveScene,  // 8 菌种保藏
+];
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx<SCENE_FNS.length)SCENE_FNS[stepIdx](t);
+  else drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
