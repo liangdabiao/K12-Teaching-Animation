@@ -3,99 +3,502 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>反射弧（神经调节基础）</title>
+<title>神经调节的基本反射弧 - 交互式教学动画</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+:root{
+  --bg:#0a1628;--panel:#111d33;--card:#15243d;--ink:#e8edf6;--muted:#8b9dc3;
+  --accent:#00b894;--accent2:#fdcb6e;--line:#1e3050;
+  --recept:#3498db;--afferent:#27ae60;--cns:#9b59b6;--efferent:#e67e22;--effector:#e74c3c;
+  --impulse:#fbbf24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
 .back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
 .back:hover{background:#1f2a40}
 .title{font-size:16px;font-weight:600}
-main{flex:1;display:flex;min-height:0}
+.knowledge-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:14px 18px;background:linear-gradient(180deg,#0e1c33,#0a1628);border-bottom:1px solid var(--line)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.kcard h3{font-size:14px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard b{color:var(--ink)}
+.kcard .num{display:inline-block;background:var(--accent);color:#fff;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:bold;flex:none}
+main{flex:1;display:flex;flex-direction:column;min-height:0}
 .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
 canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.stepbar{display:flex;gap:4px;padding:10px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap;justify-content:center}
+.step-btn{padding:7px 12px;background:#1a2942;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.step-btn:hover{background:#223656;color:var(--ink)}
+.step-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.step-btn.done{background:#1e3a5f;color:var(--accent)}
+.detail{padding:14px 16px;background:var(--panel);border-top:1px solid var(--line);max-height:30vh;overflow:auto}
+.detail h2{font-size:15px;color:var(--accent2);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail h2 .badge{background:rgba(0,184,148,0.15);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:normal}
+.detail .body{font-size:13px;line-height:1.75;color:var(--ink)}
+.detail .body b{color:var(--accent2)}
+.points{margin-top:8px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
+.points h4{color:var(--accent);font-size:13px;margin-bottom:6px}
+.points ul{padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7}
 .controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
 button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+button:hover{background:#2c3c5a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){.knowledge-bar{grid-template-columns:1fr}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">反射弧（神经调节基础）</span>
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">神经调节的基本反射弧（感受器→传入→中枢→传出→效应器）</span>
 </header>
+
+<div class="knowledge-bar">
+  <div class="kcard"><h3><span class="num">1</span>反射与反射弧</h3>
+    <p><b>反射</b>：在中枢神经系统参与下，机体对刺激作出的<b>规律性反应</b>。<br><b>反射弧</b>：完成反射的结构基础，由 5 部分组成。</p></div>
+  <div class="kcard"><h3><span class="num">2</span>反射弧 5 环节</h3>
+    <p><b>① 感受器 → ② 传入神经 → ③ 神经中枢 → ④ 传出神经 → ⑤ 效应器</b><br>兴奋在反射弧中<b>单向传递</b>，5 部分缺一不可。</p></div>
+  <div class="kcard"><h3><span class="num">3</span>反射类型</h3>
+    <p><b>非条件反射</b>：天生、不需学习（缩手、膝跳、眨眼）<br>
+    <b>条件反射</b>：后天建立，需大脑皮层参与（望梅止渴）</p></div>
+  <div class="kcard"><h3><span class="num">4</span>常见反射实例</h3>
+    <p><b>缩手反射</b>：手碰烫物→立即缩手（毫秒级）<br>
+    <b>膝跳反射</b>：敲膝盖下方→小腿踢出（最简单）<br>
+    <b>眨眼反射</b>：异物接近→眨眼</p></div>
+</div>
+
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>反射弧是完成反射活动的结构基础，由五部分组成：感受器→传入神经→神经中枢→传出神经→效应器。兴奋在反射弧中单向传递，从感受器开始到效应器作出反应。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">①</b> 感受器</span><span class="li"><b style="color:#00b894">②</b> 传入神经</span><span class="li"><b style="color:#fdcb6e">③</b> 神经中枢</span><span class="li"><b style="color:#e17055">④</b> 传出神经</span><span class="li"><b style="color:#d63031">⑤</b> 效应器</span></div>
-  <div class="key-points"><h3>反射弧组成</h3><ul><li>①感受器：接受刺激→产生兴奋</li><li>②传入神经：将兴奋传向中枢</li><li>③神经中枢：分析综合→发出指令</li><li>④传出神经：将指令传向效应器</li><li>⑤效应器：执行反应（肌肉收缩/腺体分泌）</li><li>兴奋传导方向：<b>单向</b>（不可逆）</li></ul></div></aside>
 </main>
+
+<div class="stepbar" id="stepbar"></div>
+
+<div class="detail" id="detail"></div>
+
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button>
   <button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <label>进度 <input id="progress" type="range" min="0" max="100" step="0.5" value="0"></label>
+  <span class="status" id="status"></span>
 </div>
-<script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const Rf={t:0,p:0,lit:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){Rf.t=0;Rf.p=0;Rf.lit=0;}
-function sceneUpdate(dt){Rf.t+=dt;if(Rf.p<1)Rf.p=Math.min(1,Rf.p+dt*0.3);Rf.lit=Math.max(0,Rf.lit-dt*2);}
-function node(x,y,on,lab){ctx.fillStyle=on?'#fbbf24':'#7f93b5';ctx.beginPath();ctx.arc(x,y,14,0,7);ctx.fill();ctx.fillStyle='#cdd7ea';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(lab,x,y-22);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const y=160;
-  const xs=[80,230,380,530,680];
-  const labs=['感受器','传入神经','神经中枢','传出神经','效应器'];
-  let active=Math.floor(Rf.p*5);
-  for(let i=0;i<5;i++){if(i>0){ctx.strokeStyle=(active>=i)?'#fbbf24':'#7f93b5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(xs[i-1],y);ctx.lineTo(xs[i],y);ctx.stroke();}node(xs[i],y,active>=i,labs[i]);}
-  // stimulus flash at start
-  if(active>=0){ctx.fillStyle='rgba(248,113,113,'+(0.5*Rf.p)+')';ctx.beginPath();ctx.arc(xs[0]-30,y,10,0,7);ctx.fill();}
-  // hand
-  ctx.fillStyle='#cdd7ea';ctx.fillText('刺激→缩手（毫秒级，非随意）',cv.width/2,y+60);
-  statusEl.textContent='反射弧：感受器→传入→中枢→传出→效应器，五部分缺一不可';
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const speedEl=document.getElementById('speed');
+const progressEl=document.getElementById('progress');
+const stepbarEl=document.getElementById('stepbar');
+const detailEl=document.getElementById('detail');
+
+let stepIdx=0;
+let stepProgress=0;
+let playing=false;
+let speed=1;
+let lastT=0;
+let t=0;
+
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(800,Math.min(1100,r.width-8));
+  cv.height=Math.max(400,Math.min(500,r.height-8));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+const STEPS=[
+  {
+    tag:'stimulus',name:'① 刺激感受器',
+    title:'① 感受器接受刺激，产生兴奋',
+    body:`<p>手碰到烫的物体（如热锅），<b>感受器</b>（皮肤中的<b>热觉感受器</b>和<b>痛觉感受器</b>）接受刺激，产生<b>兴奋（神经冲动）</b>。</p>
+    <div class="points"><h4>感受器特点</h4><ul>
+    <li>感受器 = <b>感觉神经末梢</b>（不是细胞）</li>
+    <li>能感受特定刺激（热、冷、痛、压、触）</li>
+    <li>刺激→产生<b>动作电位</b>（神经冲动）</li></ul></div>`,
+    duration:2,
+  },
+  {
+    tag:'afferent',name:'② 传入神经',
+    title:'② 传入神经：将兴奋传向中枢',
+    body:`<p>兴奋（动作电位）沿<b>传入神经</b>（感觉神经）向中枢方向传导。</p>
+    <div class="points"><h4>神经纤维上的传导</h4><ul>
+    <li>兴奋以<b>动作电位（电信号）</b>形式传导</li>
+    <li>传导方向：双向（在离体神经纤维上）</li>
+    <li>在反射弧中：单向（从感受器向中枢）</li>
+    <li>速度：约 10-100 m/s（有髓神经纤维更快）</li></ul></div>`,
+    duration:2,
+  },
+  {
+    tag:'cns',name:'③ 神经中枢',
+    title:'③ 神经中枢分析综合，发出指令',
+    body:`<p>兴奋到达<b>神经中枢</b>（脊髓），中枢对信息进行<b>分析与综合</b>，发出"缩手"指令。</p>
+    <div class="points"><h4>缩手反射的中枢</h4><ul>
+    <li>位置：<b>脊髓</b>（不需要大脑参与）</li>
+    <li>是<b>非条件反射</b>：先天、快速、不需思考</li>
+    <li>痛觉信号同时上传大脑皮层（之后才感觉到烫）</li>
+    <li><b>先缩手，后知烫</b>——反射快于感觉</li></ul></div>`,
+    duration:2,
+  },
+  {
+    tag:'efferent',name:'④ 传出神经',
+    title:'④ 传出神经：将指令传向效应器',
+    body:`<p>兴奋沿<b>传出神经</b>（运动神经）传导到手臂肌肉。</p>
+    <div class="points"><h4>传出神经 vs 传入神经</h4><ul>
+    <li><b>传入神经</b>：感觉神经元，将信号<b>送入</b>中枢</li>
+    <li><b>传出神经</b>：运动神经元，将指令<b>送出</b>中枢</li>
+    <li>两者在结构上通过神经中枢连接</li></ul></div>`,
+    duration:2,
+  },
+  {
+    tag:'effector',name:'⑤ 效应器',
+    title:'⑤ 效应器作出反应：肌肉收缩',
+    body:`<p>兴奋到达<b>效应器</b>（手臂的<b>骨骼肌</b>），肌肉收缩，手臂缩回，完成反射。</p>
+    <div class="points"><h4>效应器</h4><ul>
+    <li>效应器 = <b>运动神经末梢</b> + 它所支配的<b>肌肉或腺体</b></li>
+    <li>对肌肉：引起<b>收缩或舒张</b></li>
+    <li>对腺体：引起<b>分泌</b></li>
+    <li>缩手反射的效应器：手臂肌肉（不是手本身）</li></ul></div>`,
+    duration:2,
+  },
+  {
+    tag:'summary',name:'⑥ 反射完成',
+    title:'⑥ 反射完成：从刺激到反应，毫秒级',
+    body:`<p>整个缩手反射从刺激到反应约需 <b>0.1-0.5 秒</b>，远快于有意识的反应（约 0.3-1 秒）。</p>
+    <div class="points"><h4>反射弧的完整性</h4><ul>
+    <li>反射弧<b>任一环节受损</b>→反射消失</li>
+    <li>感受器受损：感觉不到刺激</li>
+    <li>传入/传出神经受损：信号无法传递</li>
+    <li>神经中枢受损：无法分析和决策</li>
+    <li>效应器受损：无法作出反应</li></ul></div>
+    <div class="points"><h4>反射弧 vs 反射</h4>
+    反射是<b>生理过程</b>，反射弧是<b>结构基础</b>。</div>`,
+    duration:2,
+  },
+];
+
+function renderStepbar(){
+  stepbarEl.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const btn=document.createElement('button');
+    btn.className='step-btn'+(i===stepIdx?' active':(i<stepIdx?' done':''));
+    btn.textContent=s.name;
+    btn.onclick=()=>{stepIdx=i;stepProgress=0;updateDetail();renderStepbar();draw();};
+    stepbarEl.appendChild(btn);
+  });
 }
 
-let playing=false,lastT=0,speed=1,t=0;
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
-const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+function updateDetail(){
+  const s=STEPS[stepIdx];
+  detailEl.innerHTML=`<h2>${s.title}<span class="badge">第 ${stepIdx+1}/${STEPS.length} 步</span></h2><div class="body">${s.body}</div>`;
+}
+
+// Drawing
+
+function drawNode(x,y,color,label,active,sublabel){
+  // glow when active
+  if(active){
+    const grad=ctx.createRadialGradient(x,y,5,x,y,40);
+    grad.addColorStop(0,'rgba(251,191,36,0.5)');
+    grad.addColorStop(1,'rgba(251,191,36,0)');
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.arc(x,y,40,0,Math.PI*2);ctx.fill();
+  }
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.arc(x,y,20,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=active?'#fbbf24':'#fff';
+  ctx.lineWidth=active?2.5:1;
+  ctx.stroke();
+  // label
+  ctx.fillStyle='#fff';
+  ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText(label,x,y+3);
+  if(sublabel){
+    ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
+    ctx.fillText(sublabel,x,y+38);
+  }
+}
+
+function drawWire(x1,y1,x2,y2,color,signal){
+  // base line
+  ctx.strokeStyle=color+'66';
+  ctx.lineWidth=4;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.stroke();
+  // signal pulse animation
+  if(signal){
+    const numPulses=3;
+    for(let i=0;i<numPulses;i++){
+      const phase=((t*1.5+i/numPulses)%1);
+      const px=x1+(x2-x1)*phase;
+      const py=y1+(y2-y1)*phase;
+      ctx.fillStyle='rgba(251,191,36,'+(1-phase*0.3)+')';
+      ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#fbbf24';
+      ctx.beginPath();ctx.arc(px,py,2,0,Math.PI*2);ctx.fill();
+    }
+  }
+}
+
+function drawHand(x,y,hot){
+  // simplified hand/arm
+  ctx.save();
+  ctx.translate(x,y);
+  // arm
+  ctx.fillStyle='#f5c89c';
+  ctx.strokeStyle='#d4a373';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.roundRect?ctx.roundRect(-20,-5,80,30,8):ctx.rect(-20,-5,80,30);
+  ctx.fill();ctx.stroke();
+  // hand
+  ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(60,-10,30,40,12);
+  else ctx.rect(60,-10,30,40);
+  ctx.fill();ctx.stroke();
+  // finger (extended)
+  ctx.fillStyle='#f5c89c';
+  ctx.fillRect(85,-8,15,8);
+  ctx.strokeRect(85,-8,15,8);
+  // hot stimulus
+  if(hot){
+    const grad=ctx.createRadialGradient(110,-4,2,110,-4,30);
+    grad.addColorStop(0,'rgba(231,76,60,0.8)');
+    grad.addColorStop(1,'rgba(231,76,60,0)');
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.arc(110,-4,30,0,Math.PI*2);ctx.fill();
+    // heat waves
+    ctx.strokeStyle='rgba(231,76,60,0.5)';
+    ctx.lineWidth=1;
+    for(let i=0;i<3;i++){
+      const yo=-4+i*4-Math.sin(t*3+i)*2;
+      ctx.beginPath();
+      ctx.moveTo(115,yo);
+      ctx.quadraticCurveTo(120,yo-3,125,yo);
+      ctx.stroke();
+    }
+    ctx.fillStyle='#e74c3c';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('🔥烫',110,-30);
+  }
+  ctx.restore();
+}
+
+function drawMuscle(x,y,contracted){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.fillStyle=contracted?'#e74c3c':'#c0392b';
+  ctx.strokeStyle='#922b21';ctx.lineWidth=1.5;
+  if(contracted){
+    // contracted - shorter, thicker
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(-25,-18,50,36,8);
+    else ctx.rect(-25,-18,50,36);
+    ctx.fill();ctx.stroke();
+    // striations
+    for(let i=-2;i<=2;i++){
+      ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(i*10,-16);ctx.lineTo(i*10,16);ctx.stroke();
+    }
+  }else{
+    // relaxed
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(-35,-12,70,24,8);
+    else ctx.rect(-35,-12,70,24);
+    ctx.fill();ctx.stroke();
+    for(let i=-3;i<=3;i++){
+      ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(i*10,-10);ctx.lineTo(i*10,10);ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawSpinalCord(x,y,active){
+  // spinal cord - vertical with a synapse in middle
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.fillStyle='rgba(155,89,182,0.4)';
+  ctx.strokeStyle='#9b59b6';ctx.lineWidth=2;
+  ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(-25,-50,50,100,15);
+  else ctx.rect(-25,-50,50,100);
+  ctx.fill();ctx.stroke();
+  // spinal cord cross-section label
+  ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('脊髓',0,-58);
+  ctx.fillText('（中枢）',0,55);
+  // central canal
+  ctx.fillStyle='rgba(155,89,182,0.6)';
+  ctx.beginPath();
+  ctx.moveTo(-8,-20);
+  ctx.bezierCurveTo(-12,0,-12,0,-8,20);
+  ctx.lineTo(8,20);
+  ctx.bezierCurveTo(12,0,12,0,8,-20);
+  ctx.closePath();ctx.fill();
+  if(active){
+    ctx.fillStyle='rgba(251,191,36,0.5)';
+    ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fbbf24';ctx.font='bold 10px sans-serif';
+    ctx.fillText('⚡',0,4);
+  }
+  ctx.restore();
+}
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  // Layout: hand on right (receptor), wire goes right-to-left through CNS, then back to muscle (effector) on far right
+  // Better layout: 5 nodes in a row, with receptor on far right (hand+heat), effector on right side
+  // Let me use: receptor(right)→CNS(left-center)→effector(far right above)
+  // Actually clearer: stimulus→receptor→afferent→CNS→efferent→effector
+  // Use a horizontal layout with curve down to spinal cord
+
+  const baseY=H*0.55;
+  const tag=STEPS[stepIdx].tag;
+  const p=stepProgress;
+
+  // Layout positions
+  // Receptor: right side (where hand is)
+  // CNS: center (spinal cord)
+  // Effector: upper right (arm muscle)
+  // Wire: receptor → CNS → effector
+
+  const cx=W/2;
+  const receptorX=W*0.78;
+  const receptorY=baseY;
+  const cnsX=cx;
+  const cnsY=baseY;
+  const effectorX=W*0.78;
+  const effectorY=baseY-110;
+
+  // Title
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText(STEPS[stepIdx].title,W/2,24);
+
+  // Spinal cord outline (showing it's a section of body)
+  // Body silhouette
+  ctx.strokeStyle='rgba(93,173,226,0.2)';
+  ctx.lineWidth=1.5;
+  ctx.setLineDash([5,5]);
+  ctx.beginPath();
+  ctx.ellipse(cx,baseY+80,W*0.4,H*0.5,0,0,Math.PI*2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Draw stimulus/hand at receptor
+  const showHot=stepIdx>=0;
+  drawHand(receptorX-30,receptorY,showHot);
+
+  // Draw receptor node (on hand)
+  const receptorActive=stepIdx===0;
+  drawNode(receptorX+80,receptorY-5,'#3498db','①感受器',receptorActive,'热觉/痛觉');
+
+  // Wire from receptor to CNS (down)
+  const afferentSignal=stepIdx>=1&&stepIdx<=2;
+  drawWire(receptorX+80,receptorY+10,cnsX+25,cnsY+20,'#27ae60',afferentSignal&&stepIdx<=1);
+  drawNode((receptorX+80+cnsX)/2,(receptorY+cnsY)/2+15,'#27ae60','②传入',afferentSignal,'感觉神经');
+
+  // CNS (spinal cord)
+  const cnsActive=stepIdx===2;
+  drawSpinalCord(cnsX,cnsY,cnsActive);
+  drawNode(cnsX,cnsY+80,'#9b59b6','③神经中枢',cnsActive,'脊髓');
+
+  // Wire from CNS to effector
+  const efferentSignal=stepIdx>=3;
+  drawWire(cnsX-25,cnsY-20,effectorX-30,effectorY+15,'#e67e22',efferentSignal&&stepIdx<=3);
+  drawNode((cnsX+effectorX)/2-20,(cnsY+effectorY)/2-20,'#e67e22','④传出',efferentSignal,'运动神经');
+
+  // Effector (muscle)
+  const effectorActive=stepIdx>=4;
+  const contracted=stepIdx>=4;
+  drawMuscle(effectorX,effectorY,contracted);
+  drawNode(effectorX,effectorY+30,'#e74c3c','⑤效应器',effectorActive,'手臂肌肉');
+
+  // arrow from effector showing motion
+  if(stepIdx>=4){
+    ctx.strokeStyle='rgba(231,76,60,0.6)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(effectorX+45,effectorY);
+    ctx.lineTo(effectorX+90,effectorY);
+    ctx.stroke();
+    // arrowhead
+    ctx.fillStyle='#e74c3c';
+    ctx.beginPath();
+    ctx.moveTo(effectorX+95,effectorY);
+    ctx.lineTo(effectorX+85,effectorY-5);
+    ctx.lineTo(effectorX+85,effectorY+5);
+    ctx.closePath();ctx.fill();
+    ctx.fillStyle='#e74c3c';ctx.font='bold 11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('缩手',effectorX+95,effectorY+4);
+  }
+
+  // timing display
+  if(stepIdx===STEPS.length-1){
+    ctx.fillStyle='#fdcb6e';
+    ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+    ctx.fillText('总耗时 ≈ 0.1-0.5 秒（毫秒级）',W/2,H-30);
+  }
+
+  // step progress indicator
+  const totalTime=STEPS.reduce((s,x,i)=>s+(i<stepIdx?x.duration:(i===stepIdx?p*x.duration:0)),0);
+  const totalDuration=STEPS.reduce((s,x)=>s+x.duration,0);
+  statusEl.textContent=`步骤 ${stepIdx+1}/6 | 进度 ${Math.round(p*100)}% | 累计 ${Math.round(totalTime/totalDuration*100)}%`;
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  t+=dt;
+  if(playing){
+    stepProgress+=dt*speed/STEPS[stepIdx].duration;
+    if(stepProgress>=1){
+      if(stepIdx<STEPS.length-1){
+        stepIdx++;stepProgress=0;
+        updateDetail();renderStepbar();
+      }else{
+        stepProgress=1;playing=false;
+        document.getElementById('playBtn').textContent='▶ 播放';
+      }
+    }
+    progressEl.value=(stepIdx+stepProgress)/STEPS.length*100;
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing)lastT=0;
+};
+document.getElementById('resetBtn').onclick=()=>{
+  stepIdx=0;stepProgress=0;playing=false;
+  document.getElementById('playBtn').textContent='▶ 播放';
+  progressEl.value=0;
+  updateDetail();renderStepbar();draw();
+};
+document.getElementById('stepFwdBtn').onclick=()=>{
+  if(stepIdx<STEPS.length-1){stepIdx++;stepProgress=0;updateDetail();renderStepbar();draw();}
+};
+document.getElementById('stepBackBtn').onclick=()=>{
+  if(stepIdx>0){stepIdx--;stepProgress=0;updateDetail();renderStepbar();draw();}
+};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+progressEl.oninput=()=>{
+  const total=parseFloat(progressEl.value)/100*STEPS.length;
+  stepIdx=Math.min(STEPS.length-1,Math.floor(total));
+  stepProgress=total-stepIdx;
+  updateDetail();renderStepbar();draw();
+};
+
+renderStepbar();updateDetail();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

@@ -3,102 +3,421 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>链表（单向/双向/循环）</title>
+<title>链表 · 单向 / 双向 / 循环 · 插入与删除指针动画</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{
+  --bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;
+  --accent:#3b82f6;--accent2:#74b9ff;--line:#243a5e;
+  --good:#34d399;--warn:#fbbf24;--bad:#f87171;--next:#fbbf24;--prev:#fb923c;
+}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}
+.back:hover{background:rgba(116,185,255,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(59,130,246,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--good)}
+.card.s3::before{background:var(--warn)}
+.card.s4::before{background:var(--prev)}
+.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(59,130,246,.2);color:#bfdbfe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}
+.points li strong{color:var(--accent)}
+.code{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:11px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
+.code .kw{color:#ff7b72}.code .ty{color:#79c0ff}.code .cm{color:#8b949e}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.primary:hover{background:#4b91f8}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range],input[type=number]{accent-color:var(--accent);background:var(--card);color:var(--ink);border:1px solid var(--line);padding:4px 6px;border-radius:4px;width:60px}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">链表（单向/双向/循环）</span>
+  <a class="back" href="../index.html">← 返回信息技术目录</a>
+  <span class="title">链表 · 单向 / 双向 / 循环</span>
+  <span class="subtitle">节点 = data + next (+ prev)</span>
 </header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>单向链表</h4><div class="v">data + next<br>只能向后遍历</div></div>
+  <div class="card s2"><div class="num">2</div><h4>双向链表</h4><div class="v">prev + data + next<br>前后双向遍历</div></div>
+  <div class="card s3"><div class="num">3</div><h4>循环链表</h4><div class="v">尾节点 → 头节点<br>形成环状结构</div></div>
+  <div class="card s4"><div class="num">Σ</div><h4>性能特点</h4><div class="v">插入删除 O(1)<br>查找 O(n)</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
-    <h2>原理说明</h2>
-    <p>链表由节点组成，每节点含数据与指向下一节点的<b>指针</b>。插入/删除只需修改指针指向，无需移动元素；双向链表还有前驱指针，循环链表尾指向头。</p>
-    <div class="legend"><span class='dot' style='background:#7dd3fc'></span>节点&nbsp;<span class='dot' style='background:#fbbf24'></span>指针</div>
-  
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>链表类型</h3><ul><li><b>单向链表</b>：每节点含data+next</li><li><b>双向链表</b>：含prev+data+next</li><li><b>循环链表</b>：尾节点指向头</li><li>插入删除：O(1)（已知位置）</li><li>查找：O(n)（需遍历）</li><li>对比数组：插入快，查找慢</li></ul></div>
-    </aside>
+    <h2><span class="badge" id="stepBadge">单向链表</span><span id="stepTitle">基本结构</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+    <div class="code" id="stepCode"></div>
+  </aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button>
   <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="insertBtn">+ 头插</button>
+  <button id="deleteBtn">− 删除</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或使用插入/删除按钮</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(380,Math.min(540,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const Ls={t:0,nodes:[],step:0};
-function sceneInit(){sceneReset();Ls.nodes=[5,12,20,33];}
-function sceneReset(){Ls.t=0;Ls.step=0;if(!Ls.nodes)Ls.nodes=[];}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='center';
-  ctx.fillText('单链表：节点含数据与指向下一节点的指针',cv.width/2,50);
-  const x0=80,y=cv.height/2;
-  for(let i=0;i<Ls.nodes.length;i++){
-    const x=x0+i*150;
-    ctx.fillStyle='#7dd3fc';ctx.fillRect(x,y-22,60,44);
-    ctx.fillStyle='#06281c';ctx.font='15px sans-serif';ctx.fillText(Ls.nodes[i],x+22,y+4);
-    if(i<Ls.nodes.length-1){ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x+60,y);ctx.lineTo(x+90,y);ctx.stroke();
-      ctx.beginPath();ctx.arc(x+96,y,5,0,7);ctx.fill();ctx.strokeStyle='#fbbf24';ctx.beginPath();ctx.moveTo(x+96,y);ctx.lineTo(x+108,y-6);ctx.moveTo(x+108,y+6);ctx.lineTo(x+96,y);ctx.stroke();}
-    else{ctx.fillStyle='#9fb0c8';ctx.fillText('NULL',x+80,y+4);}
-  }
-  statusEl.textContent='插入/删除只需改变指针指向，无需移动元素';
-}
-function sceneStep(d){if(d>0&&Ls.nodes.length<7){Ls.nodes.splice(2,0,99);}else if(d<0&&Ls.nodes.length>1){Ls.nodes.splice(2,1);}}
+// ====== 节点结构 ======
+let nodes=[]; // {data, prev(索引), next(索引), id}
+let nextId=1;
+let listType='single'; // single / double / circular
+let animProgress=1; // 0~1 当前动画进度
+let animTask=null; // {type:'insert-head'|'insert-tail'|'insert-mid'|'delete', target, ...}
+let highlightId=-1;
 
-let playing=false,lastT=0,speed=1,t=0;
+function makeList(type,dataList){
+  listType=type;
+  nodes=dataList.map((d,i)=>({data:d,prev:type==='double'?(i===0?-1:i-1):-1,next:i===dataList.length-1?(type==='circular'?0:-1):i+1,id:nextId++}));
+}
+
+// ====== 知识点 ======
+const STEPS=[
+  {tag:'单向链表',type:'single',name:'基本结构',body:'<strong>单向链表</strong>每个节点包含 <code>data</code> 数据域和 <code>next</code> 指针域。头节点 head 是入口，尾节点的 next 指向 <code>NULL</code>。',points:{title:'特点',items:['<strong>方向</strong>：只能从头到尾单向遍历','<strong>查找</strong>：O(n)，必须从头开始','<strong>插入/删除</strong>：O(1)（已知位置）','<strong>内存</strong>：不连续，靠指针连接']},code:'<span class="kw">struct</span> <span class="ty">Node</span> {\n  <span class="ty">int</span> data;\n  Node* next;\n};'},
+  {tag:'单向链表',type:'single',name:'头插法',body:'<strong>头插法</strong>：新节点插入到链表最前面。三步：<strong>新节点.next = head → head = 新节点</strong>。',points:{title:'操作步骤',items:['<strong>①</strong> 创建新节点','<strong>②</strong> new.next = head','<strong>③</strong> head = new','<strong>时间</strong>：O(1)，无需遍历']},code:'<span class="cm">// 头插 O(1)</span>\nNode* n = <span class="kw">new</span> Node(val);\nn->next = head;\nhead = n;'},
+  {tag:'单向链表',type:'single',name:'尾插法',body:'<strong>尾插法</strong>：新节点插入到链表末尾。需要先遍历到尾节点，再让 <strong>tail.next = 新节点</strong>。',points:{title:'操作步骤',items:['<strong>①</strong> 遍历找到尾节点','<strong>②</strong> tail.next = new','<strong>时间</strong>：O(n)，需遍历','<strong>优化</strong>：维护 tail 指针可 O(1)']},code:'<span class="cm">// 尾插 O(n)</span>\nNode* t = head;\n<span class="kw">while</span>(t->next) t = t->next;\nt->next = <span class="kw">new</span> Node(val);'},
+  {tag:'单向链表',type:'single',name:'中间插入',body:'<strong>中间插入</strong>：在节点 p 之后插入新节点。关键：<strong>新节点.next = p.next → p.next = 新节点</strong>，<strong>顺序不可颠倒</strong>！',points:{title:'顺序很重要',items:['<strong>①</strong> new.next = p.next','<strong>②</strong> p.next = new','<strong>⚠ 顺序不能反</strong>：先 p.next=new 会丢失原后继','<strong>时间</strong>：查找 O(n) + 插入 O(1)']},code:'<span class="cm">// 在 p 之后插入</span>\nNode* n = <span class="kw">new</span> Node(val);\nn->next = p->next;  <span class="cm">// 先接后</span>\np->next = n;        <span class="cm">// 再断旧</span>'},
+  {tag:'单向链表',type:'single',name:'删除节点',body:'<strong>删除节点</strong>：找到待删节点的前驱 q，执行 <strong>q.next = del.next</strong>。然后释放 del 内存。需要单独处理头节点。',points:{title:'删除步骤',items:['<strong>①</strong> 找前驱 q','<strong>②</strong> q.next = del.next','<strong>③</strong> free(del)','<strong>边界</strong>：删除头节点 → head=head.next']},code:'<span class="cm">// 删除 del（已知前驱 q）</span>\nq->next = del->next;\n<span class="kw">delete</span> del;'},
+  {tag:'双向链表',type:'double',name:'双向结构',body:'<strong>双向链表</strong>每个节点含 <code>prev</code> + <code>data</code> + <code>next</code> 两个指针。可以<strong>向前向后双向遍历</strong>，但占用更多内存。',points:{title:'优势与代价',items:['<strong>优势</strong>：双向遍历，删除已知节点 O(1)','<strong>代价</strong>：每个节点多一个指针','<strong>应用</strong>：LRU 缓存、浏览器前进后退','<strong>Java LinkedList</strong>：就是双向链表']},code:'<span class="kw">struct</span> <span class="ty">Node</span> {\n  <span class="ty">int</span> data;\n  Node *prev, *next;\n};'},
+  {tag:'双向链表',type:'double',name:'双向插入',body:'<strong>双向链表插入</strong>：在 p 之后插入 new。需要修改 <strong>4 个指针</strong>：new 的 prev/next，p.next.prev，p.next。',points:{title:'四步指针操作',items:['<strong>①</strong> new.next = p.next','<strong>②</strong> new.prev = p','<strong>③</strong> p.next.prev = new','<strong>④</strong> p.next = new']},code:'<span class="cm">// p 之后插入 new</span>\nnew->next = p->next;\nnew->prev = p;\np->next->prev = new;\np->next = new;'},
+  {tag:'循环链表',type:'circular',name:'循环结构',body:'<strong>循环链表</strong>：尾节点的 next 指回头节点，形成环。可单向或双向。<strong>无 NULL</strong>，遍历需用计数或标记防止死循环。',points:{title:'应用场景',items:['<strong>约瑟夫环</strong>：经典问题','<strong>资源调度</strong>：轮转调度算法','<strong>缓冲区</strong>：环形缓冲区','<strong>注意</strong>：遍历终止条件为回到起点']},code:'<span class="cm">// 遍历循环链表</span>\nNode* p = head;\n<span class="kw">do</span> {\n  visit(p);\n  p = p->next;\n} <span class="kw">while</span>(p != head);'},
+  {tag:'对比',type:'single',name:'链表 vs 数组',body:'<strong>数组</strong>内存连续，O(1) 随机访问；<strong>链表</strong>内存离散，O(1) 插入删除。各有所长，按场景选择。',points:{title:'性能对比',items:['<strong>访问</strong>：数组 O(1) vs 链表 O(n)','<strong>查找</strong>：都是 O(n)（无序）','<strong>插入删除</strong>：数组 O(n) vs 链表 O(1)','<strong>内存</strong>：数组紧凑 vs 链表额外指针开销']}},
+];
+
+let stepIdx=0;
+
+// ====== 排序节点位置（按链表顺序）======
+function layoutNodes(){
+  const ordered=[];
+  if(nodes.length===0)return ordered;
+  let cur=0,visited=new Set();
+  while(cur!==-1&&!visited.has(cur)){
+    ordered.push(cur);visited.add(cur);
+    cur=nodes[cur].next;
+    if(ordered.length>nodes.length)break;
+  }
+  return ordered;
+}
+
+// ====== 绘制节点 ======
+function drawNode(x,y,data,isDouble,isHighlight,isDel){
+  const w=90,h=44;
+  ctx.save();
+  if(isHighlight){ctx.shadowColor=isDel?'#f87171':'#34d399';ctx.shadowBlur=18;}
+  ctx.fillStyle=isDel?'#7f1d1d':'#1e3a5f';
+  ctx.strokeStyle=isDel?'#f87171':(isHighlight?'#34d399':'#3b82f6');
+  ctx.lineWidth=2;
+  roundRect(x,y,w,h,6);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  // 分隔线（data | next）
+  ctx.strokeStyle='#3b82f6';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(x+w*0.6,y);ctx.lineTo(x+w*0.6,y+h);ctx.stroke();
+  // data
+  drawText(String(data),x+w*0.3,y+h/2,'#fbbf24',14);
+  // next 指针小圆
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(x+w*0.8,y+h*0.65,3,0,7);ctx.fill();
+  if(isDouble){
+    // prev 指针小圆
+    ctx.beginPath();ctx.moveTo(x+w*0.06,y);ctx.lineTo(x+w*0.06,y+h);ctx.stroke();
+    ctx.fillStyle='#fb923c';
+    ctx.beginPath();ctx.arc(x+w*0.2,y+h*0.65,3,0,7);ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawArrow(x1,y1,x2,y2,color,dashed){
+  ctx.strokeStyle=color;ctx.lineWidth=2;
+  if(dashed)ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.setLineDash([]);
+  // 箭头头
+  const a=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-8*Math.cos(a-Math.PI/6),y2-8*Math.sin(a-Math.PI/6));
+  ctx.lineTo(x2-8*Math.cos(a+Math.PI/6),y2-8*Math.sin(a+Math.PI/6));
+  ctx.closePath();ctx.fill();
+}
+
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
+
+// ====== 主绘制 ======
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const W=cv.width,H=cv.height;
+  // 标题
+  const titleMap={single:'单向链表',double:'双向链表',circular:'单向循环链表'};
+  drawText(titleMap[listType],W/2,28,'#74b9ff',16);
+  if(nodes.length===0){
+    drawText('空链表（head → NULL）',W/2,H/2,'#5a6a8a',13);
+    drawText('点击 [+ 头插] 添加节点',W/2,H/2+22,'#7a8aaa',11);
+    return;
+  }
+  const ordered=layoutNodes();
+  // 计算每个节点位置
+  const nodeW=90,gap=70;
+  const totalW=ordered.length*nodeW+(ordered.length-1)*gap;
+  const startX=Math.max(40,(W-totalW)/2);
+  const y=H/2-22;
+  const positions={};
+  ordered.forEach((idx,i)=>{
+    positions[idx]={x:startX+i*(nodeW+gap),y:y};
+  });
+  // 绘制 next 指针箭头
+  ordered.forEach((idx,i)=>{
+    const node=nodes[idx];
+    const pos=positions[idx];
+    if(node.next===-1){
+      // NULL
+      if(listType!=='circular'){
+        drawText('NULL',pos.x+nodeW+30,pos.y+22,'#5a6a8a',11);
+      }
+    } else if(positions[node.next]){
+      const np=positions[node.next];
+      const isLast=i===ordered.length-1;
+      if(listType==='circular'&&isLast){
+        // 循环链表：从最后一个节点画弧回到第一个
+        const firstPos=positions[ordered[0]];
+        ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+        ctx.setLineDash([4,3]);
+        ctx.beginPath();
+        ctx.moveTo(pos.x+nodeW*0.8,pos.y+44);
+        ctx.bezierCurveTo(pos.x+nodeW*0.8,pos.y+90,firstPos.x+45,firstPos.y+90,firstPos.x+45,pos.y+44);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        drawText('循环',pos.x+nodeW/2,pos.y+80,'#fbbf24',10);
+      } else {
+        drawArrow(pos.x+nodeW,pos.y+30,np.x,np.y+22,'#fbbf24');
+      }
+    }
+  });
+  // 绘制 prev 指针箭头（双向）
+  if(listType==='double'){
+    ordered.forEach((idx,i)=>{
+      const node=nodes[idx];
+      const pos=positions[idx];
+      if(node.prev!==-1&&positions[node.prev]){
+        const pp=positions[node.prev];
+        drawArrow(pos.x+18,pos.y+8,pp.x+nodeW,pp.y+8,'#fb923c',true);
+      }
+    });
+  }
+  // 绘制节点
+  ordered.forEach((idx,i)=>{
+    const pos=positions[idx];
+    const isHi=nodes[idx].id===highlightId;
+    const isDel=animTask&&animTask.type==='delete'&&animTask.targetIdx===idx&&animProgress>0.4;
+    drawNode(pos.x,pos.y,nodes[idx].data,listType==='double',isHi,isDel);
+    // 节点编号
+    drawText('node['+i+']',pos.x+nodeW/2,pos.y-12,'#5a6a8a',10);
+  });
+  // head 指针标注
+  if(ordered.length>0){
+    const hp=positions[ordered[0]];
+    drawText('head',hp.x+nodeW*0.3,hp.y-32,'#34d399',12);
+    ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(hp.x+nodeW*0.3,hp.y-22);ctx.lineTo(hp.x+nodeW*0.3,hp.y-2);ctx.stroke();
+    // 箭头头
+    ctx.fillStyle='#34d399';
+    ctx.beginPath();
+    ctx.moveTo(hp.x+nodeW*0.3,hp.y);
+    ctx.lineTo(hp.x+nodeW*0.3-4,hp.y-6);
+    ctx.lineTo(hp.x+nodeW*0.3+4,hp.y-6);
+    ctx.closePath();ctx.fill();
+  }
+  // tail 指针标注
+  if(ordered.length>0&&listType!=='circular'){
+    const tp=positions[ordered[ordered.length-1]];
+    drawText('tail',tp.x+nodeW*0.7,tp.y-32,'#fb923c',12);
+    ctx.strokeStyle='#fb923c';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(tp.x+nodeW*0.7,tp.y-22);ctx.lineTo(tp.x+nodeW*0.7,tp.y-2);ctx.stroke();
+    ctx.fillStyle='#fb923c';
+    ctx.beginPath();
+    ctx.moveTo(tp.x+nodeW*0.7,tp.y);
+    ctx.lineTo(tp.x+nodeW*0.7-4,tp.y-6);
+    ctx.lineTo(tp.x+nodeW*0.7+4,tp.y-6);
+    ctx.closePath();ctx.fill();
+  }
+  // 动画提示
+  if(animTask&&animProgress<1){
+    const msg={
+      'insert-head':'⏳ 头插：new.next = head; head = new',
+      'insert-tail':'⏳ 尾插：tail.next = new',
+      'insert-mid':'⏳ 中间插：new.next = p.next; p.next = new',
+      'delete':'⏳ 删除：q.next = del.next; free(del)',
+    }[animTask.type];
+    drawText(msg, W/2, H-30, '#fbbf24', 12);
+  }
+}
+
+// ====== 动画 ======
+function startAnim(task){
+  animTask=task;animProgress=0;
+  if(task.type==='insert-head'){
+    const newNode={data:task.data,prev:-1,next:0,id:nextId++};
+    nodes.unshift(newNode);
+    // 更新其他节点的 prev 索引（双向）
+    if(listType==='double'){nodes.forEach(n=>{if(n.prev!==-1)n.prev++;});newNode.next=1;newNode.prev=-1;}
+    highlightId=newNode.id;
+  } else if(task.type==='insert-tail'){
+    const idx=nodes.length;
+    const newNode={data:task.data,prev:listType==='double'?idx-1:-1,next:listType==='circular'?0:-1,id:nextId++};
+    if(nodes.length>0){
+      if(listType==='circular'){nodes[nodes.length-1].next=idx;}
+      else{nodes[nodes.length-1].next=idx;}
+    }
+    nodes.push(newNode);
+    highlightId=newNode.id;
+  } else if(task.type==='insert-mid'){
+    const pos=Math.min(2,nodes.length-1);
+    const newNode={data:task.data,prev:-1,next:nodes[pos].next,id:nextId++};
+    nodes[pos].next=nodes.length;
+    if(listType==='double'){newNode.prev=pos;if(newNode.next!==-1)nodes[newNode.next].prev=nodes.length;}
+    nodes.push(newNode);
+    highlightId=newNode.id;
+  } else if(task.type==='delete'){
+    const idx=Math.min(2,nodes.length-1);
+    animTask.targetIdx=idx;
+    // 找前驱
+    const prevIdx=nodes.findIndex(n=>n.next===idx);
+    if(prevIdx!==-1){nodes[prevIdx].next=nodes[idx].next;}
+    if(listType==='double'&&nodes[idx].next!==-1){nodes[nodes[idx].next].prev=prevIdx;}
+  }
+}
+
+function commitDelete(){
+  if(!animTask||animTask.type!=='delete')return;
+  const idx=animTask.targetIdx;
+  if(idx>=0&&idx<nodes.length){
+    nodes.splice(idx,1);
+    // 修正后续索引
+    nodes.forEach(n=>{
+      if(n.next>idx)n.next--;
+      if(n.next===idx)n.next=-1;
+      if(listType==='double'){
+        if(n.prev>idx)n.prev--;
+        if(n.prev===idx)n.prev=-1;
+      }
+    });
+  }
+  highlightId=-1;
+}
+
+function update(dt){
+  if(animTask&&animProgress<1){
+    animProgress+=dt*speed*0.8;
+    if(animProgress>=1){
+      animProgress=1;
+      if(animTask.type==='delete')commitDelete();
+      else{setTimeout(()=>{highlightId=-1;},800);}
+      animTask=null;
+    }
+  }
+}
+
+// ====== 控件 ======
+let playing=false,lastT=0,speed=1;
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
+const insertBtn=document.getElementById('insertBtn'),deleteBtn=document.getElementById('deleteBtn');
+
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{loadStep();};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;loadStep();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;loadStep();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+insertBtn.onclick=()=>{
+  const val=Math.floor(Math.random()*90)+10;
+  if(stepIdx<=1)startAnim({type:'insert-head',data:val});
+  else if(stepIdx===2)startAnim({type:'insert-tail',data:val});
+  else startAnim({type:'insert-mid',data:val});
+  statusEl.textContent='插入节点 '+val+' · 观察指针变化';
+};
+deleteBtn.onclick=()=>{
+  if(nodes.length===0){statusEl.textContent='链表为空，无法删除';return;}
+  startAnim({type:'delete'});
+  statusEl.textContent='删除节点 · 观察前驱 next 指针重定向';
+};
+
+function loadStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.getElementById('stepCode').innerHTML=s.code||'';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  // 初始化链表
+  const dataMap={single:[10,20,30],double:[10,20,30],circular:[10,20,30]};
+  makeList(s.type,s.dataList||dataMap[s.type]||[10,20,30]);
+  highlightId=-1;animTask=null;animProgress=1;
+  draw();
+}
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>8?s.name.slice(0,7)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;loadStep();};
+    bar.appendChild(el);
+  });
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+buildStepbar();
+loadStep();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

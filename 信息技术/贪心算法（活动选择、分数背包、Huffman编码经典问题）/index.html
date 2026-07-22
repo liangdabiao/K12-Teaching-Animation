@@ -1,193 +1,468 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>贪心算法</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>贪心算法 · 活动选择 / 分数背包 / Huffman 编码</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#6C5CE7;--line:#1e3050;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{
+  --bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;
+  --accent:#f97316;--accent2:#74b9ff;--line:#243a5e;
+  --good:#34d399;--warn:#fbbf24;--bad:#f87171;--info:#38bdf8;--purple:#a78bfa;
+}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}
+.back:hover{background:rgba(116,185,255,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(249,115,22,.06),transparent)}
+.card{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--good)}
+.card.s3::before{background:var(--warn)}
+.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:22px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(249,115,22,.2);color:#fed7aa;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}
+.points li strong{color:var(--accent)}
+.code{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:11px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
+.code .kw{color:#ff7b72}.code .ty{color:#79c0ff}.code .cm{color:#8b949e}.code .fn{color:#d2a8ff}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.primary:hover{background:#fb923c}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
-.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
 <header class="topbar">
   <a class="back" href="../index.html">← 返回信息技术目录</a>
-  <span class="title">贪心算法</span>
+  <span class="title">贪心算法 · 经典三例</span>
+  <span class="subtitle">每步取局部最优 → 全局最优</span>
 </header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>贪心策略</h4><div class="v">每步局部最优<br>不回退不撤销</div></div>
+  <div class="card s2"><div class="num">2</div><h4>活动选择</h4><div class="v">按结束时间排序<br>选最早结束的活动</div></div>
+  <div class="card s3"><div class="num">3</div><h4>分数背包</h4><div class="v">按性价比排序<br>尽量多装高价值</div></div>
+  <div class="card s4"><div class="num">4</div><h4>Huffman 编码</h4><div class="v">每次合并频率<br>最低的两个节点</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
   <aside class="panel">
-    <h2>原理说明</h2>
-    <p>贪心算法：每一步都做出当前看起来最优的选择，期望导致全局最优。关键性质：贪心选择性质（局部最优选择能导致全局最优解）+ 最优子结构。经典应用：活动选择、分数背包、Huffman编码、Dijkstra等。</p>
-    <div class="legend"><span><b style="color:#00b894">■</b> 已选中</span><span><b style="color:#d63031">■</b> 冲突/排除</span><span><b style="color:#fdcb6e">■</b> 当前考虑</span></div>
-    <div class="key-points"><h3>贪心 vs 动态规划</h3><ul>
-      <li><b>贪心</b>：不回退，每步选最优，O(nlogn)排序后扫描</li>
-      <li><b>DP</b>：考虑所有子问题，有重叠子问题时更优</li>
-      <li>活动选择：按结束时间排序→选最早结束且不冲突的</li>
-      <li>分数背包：按性价比(价值/重量)排序→贪心装入</li>
-      <li>Huffman：每次选频率最小的两个节点合并</li>
-      <li>⚠️ 贪心不总能得到最优解（如0-1背包）</li>
-    </ul></div>
+    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">贪心算法</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+    <div class="code" id="stepCode"></div>
   </aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
-  <button id="activityBtn">活动选择</button>
-  <button id="huffmanBtn">Huffman</button>
-  <span id="status" class="status"></span>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">观察每步贪心选择如何得到最优解</span>
 </div>
 <script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(500,Math.min(900,r.width-8));cv.height=Math.max(360,Math.min(520,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(560,Math.min(1100,r.width-12));cv.height=Math.max(420,Math.min(560,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-// 活动选择问题
-const activities=[
-  {name:'A1',s:1,f:4},{name:'A2',s:3,f:5},{name:'A3',s:0,f:6},
-  {name:'A4',s:5,f:7},{name:'A5',s:3,f:9},{name:'A6',s:5,f:9},
-  {name:'A7',s:6,f:10},{name:'A8',s:8,f:11},{name:'A9',s:8,f:12},{name:'A10',s:2,f:14}
-];
-// 按结束时间排序
-const sorted=[...activities].sort((a,b)=>a.f-b.f);
-let mode='activity',step=0,selected=[],t=0,playing=false,lastT=0;
+// ====== 工具 ======
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
 
-function resetActivity(){step=0;selected=[];t=0;}
+// ====== 1. 活动选择 ======
+const ACTIVITIES=[
+  {name:'A',s:1,f:4},{name:'B',s:3,f:5},{name:'C',s:0,f:6},
+  {name:'D',s:5,f:7},{name:'E',s:3,f:9},{name:'F',s:5,f:9},
+  {name:'G',s:6,f:10},{name:'H',s:8,f:11},{name:'I',s:8,f:12},{name:'J',s:2,f:14}
+];
+const sortedActs=[...ACTIVITIES].sort((a,b)=>a.f-b.f);
+let actStep=0,actSelected=[];
 
 function stepActivity(){
-  if(step>=sorted.length)return;
-  const act=sorted[step];
-  const conflict=selected.some(s=>act.s<s.f&&s.s<act.f);
-  if(!conflict)selected.push(act);
-  step++;
+  if(actStep>=sortedActs.length)return;
+  const act=sortedActs[actStep];
+  const lastSel=actSelected[actSelected.length-1];
+  const conflict=lastSel&&act.s<lastSel.f;
+  if(!conflict)actSelected.push(act);
+  actStep++;
 }
 
-function drawActivity(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
-  ctx.fillText('活动选择问题（按结束时间贪心）',W/2,25);
-  
-  const barH=28,gap=4;
-  const ox=80,oy=50;
-  const maxT=15,scale=(W-120)/maxT;
-  
+function drawActivityScene(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  drawText('活动选择问题 · 按"结束时间"贪心',W/2,28,'#f97316',16);
+  drawText('策略：选最早结束的活动，腾出更多时间给后续',W/2,52,'#5a6a8a',11);
+  const barH=28,gap=4,oy=80,maxT=15;
+  const scale=(W-160)/maxT;
+  const ox=100;
   // 时间轴
-  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
   for(let i=0;i<=maxT;i++){
     const x=ox+i*scale;
-    ctx.beginPath();ctx.moveTo(x,oy-5);ctx.lineTo(x,oy+sorted.length*(barH+gap)+5);ctx.stroke();
-    ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';ctx.textAlign='center';
-    ctx.fillText(i,x,oy-12);
+    ctx.beginPath();ctx.moveTo(x,oy-5);ctx.lineTo(x,oy+sortedActs.length*(barH+gap)+5);ctx.stroke();
+    drawText(i,x,oy-14,'#5a6a8a',10);
   }
-  
-  sorted.forEach((act,idx)=>{
+  drawText('时间',ox+maxT*scale+30,oy-14,'#5a6a8a',11);
+  // 活动条
+  sortedActs.forEach((act,idx)=>{
     const y=oy+idx*(barH+gap);
     const x1=ox+act.s*scale,x2=ox+act.f*scale;
-    const isDone=idx<step;
-    const isSel=selected.includes(act);
-    const isCurrent=idx===step;
-    
-    let bg='rgba(255,255,255,0.08)';
-    if(isSel)bg='rgba(0,184,148,0.4)';
-    else if(isCurrent)bg='rgba(253,203,110,0.3)';
-    else if(isDone)bg='rgba(214,48,49,0.2)';
-    
+    const isDone=idx<actStep;
+    const isSel=actSelected.includes(act);
+    const isCurrent=idx===actStep;
+    let bg='rgba(255,255,255,.08)';
+    let stroke='#243a5e';
+    if(isSel){bg='rgba(52,211,153,.35)';stroke='#34d399';}
+    else if(isCurrent){bg='rgba(251,191,36,.25)';stroke='#fbbf24';}
+    else if(isDone){bg='rgba(248,113,113,.15)';stroke='#7f1d1d';}
     ctx.fillStyle=bg;ctx.fillRect(x1,y,x2-x1,barH);
-    ctx.strokeStyle=isSel?'#00b894':isCurrent?'#fdcb6e':'#1e3050';
-    ctx.lineWidth=isCurrent?2:1;ctx.strokeRect(x1,y,x2-x1,barH);
-    
-    ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';ctx.textAlign='right';
-    ctx.fillText(act.name,ox-8,y+barH/2+4);
-    ctx.textAlign='center';ctx.font='10px sans-serif';ctx.fillStyle='#8b9dc3';
-    ctx.fillText(`[${act.s},${act.f})`,x1+(x2-x1)/2,y+barH/2+4);
+    ctx.strokeStyle=stroke;ctx.lineWidth=isCurrent?2.5:1;
+    ctx.strokeRect(x1,y,x2-x1,barH);
+    drawText(act.name+'['+act.s+','+act.f+')',ox-12,y+barH/2,'#cbd5e1',10,'right');
+    if(isSel){drawText('✓',x2-10,y+barH/2,'#34d399',13);}
+    if(isCurrent){drawText('考虑中',(x1+x2)/2,y+barH/2,'#fbbf24',10);}
+    if(isDone&&!isSel){drawText('× 冲突',(x1+x2)/2,y+barH/2,'#f87171',10);}
   });
-  
-  ctx.fillStyle='#00b894';ctx.font='bold 13px sans-serif';ctx.textAlign='left';
-  ctx.fillText(`已选: ${selected.map(s=>s.name).join(', ')}`,20,H-20);
-  statusEl.textContent=`步骤: ${step}/${sorted.length} | 已选${selected.length}个活动`;
+  // 结果
+  drawText('已选 '+actSelected.length+' 个活动：'+actSelected.map(a=>a.name).join('→'),W/2,H-30,'#34d399',12);
 }
 
-// Huffman
-const freqs=[{c:'A',f:45},{c:'B',f:13},{c:'C',f:12},{c:'D',f:16},{c:'E',f:9},{c:'F',f:5}];
-let huffNodes=[],huffStep=0;
+// ====== 2. 分数背包 ======
+const FITEMS=[
+  {name:'金',w:10,v:60,ratio:6},{name:'银',w:20,v:100,ratio:5},{name:'铜',w:30,v:120,ratio:4}
+];
+const CAPACITY=50;
+let fracStep=0,fracLoaded=[];
 
-function buildHuffman(){
-  let nodes=freqs.map(f=>({...f,id:f.c,left:null,right:null}));
-  huffNodes=[nodes.map(n=>({...n}))];
+function stepFractional(){
+  if(fracStep>=FITEMS.length)return;
+  const item=FITEMS[fracStep];
+  const loaded=fracLoaded.reduce((s,l)=>s+l.amount,0);
+  const remain=CAPACITY-loaded;
+  const take=Math.min(item.w,remain);
+  fracLoaded.push({...item,amount:take});
+  fracStep++;
+}
+
+function drawFractionalScene(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  drawText('分数背包 · 按"性价比 v/w"贪心',W/2,28,'#f97316',16);
+  drawText('策略：性价比从高到低，能装多少装多少',W/2,52,'#5a6a8a',11);
+  // 物品表（左）
+  const ox=60,oy=90;
+  drawText('物品（已按性价比降序）',ox+150,oy-12,'#74b9ff',12);
+  const headers=['物品','重量','价值','性价比 v/w'];
+  const colW=[60,70,70,100];
+  headers.forEach((h,i)=>{
+    const cx=ox+colW.slice(0,i).reduce((a,b)=>a+b,0);
+    ctx.fillStyle='rgba(249,115,22,.3)';
+    roundRect(cx,oy,colW[i]-2,28,4);ctx.fill();
+    drawText(h,cx+colW[i]/2,oy+14,'#fff',11);
+  });
+  FITEMS.forEach((item,i)=>{
+    const y=oy+32+i*30;
+    const isDone=i<fracStep;
+    const isCurrent=i===fracStep;
+    const vals=[item.name+'币',item.w+'kg',item.v+'元',item.ratio+'元/kg'];
+    vals.forEach((v,j)=>{
+      const cx=ox+colW.slice(0,j).reduce((a,b)=>a+b,0);
+      ctx.fillStyle=isCurrent?'rgba(251,191,36,.2)':(isDone?'rgba(52,211,153,.15)':'rgba(255,255,255,.04)');
+      ctx.fillRect(cx,y,colW[j]-2,28);
+      ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.strokeRect(cx,y,colW[j]-2,28);
+      drawText(v,cx+colW[j]/2,y+14,isDone?'#34d399':'#cbd5e1',11);
+    });
+  });
+  // 背包可视化（右）
+  const bx=W-220,by=90,bw=160,bh=320;
+  ctx.fillStyle='rgba(255,255,255,.03)';ctx.strokeStyle='#f97316';ctx.lineWidth=2;
+  roundRect(bx,by,bw,bh,8);ctx.fill();ctx.stroke();
+  drawText('背包（容量 '+CAPACITY+'kg）',bx+bw/2,by-12,'#f97316',12);
+  // 已装内容
+  let yCursor=by+bh;
+  fracLoaded.forEach((l,i)=>{
+    const ratio=l.amount/l.w;
+    const blockH=(l.amount/CAPACITY)*bh;
+    yCursor-=blockH;
+    const colors={6:'#fbbf24',5:'#cbd5e1',4:'#fb923c'};
+    ctx.fillStyle=colors[l.ratio]+'aa';ctx.strokeStyle=colors[l.ratio];ctx.lineWidth=2;
+    ctx.fillRect(bx+8,yCursor+2,bw-16,blockH-4);
+    ctx.strokeRect(bx+8,yCursor+2,bw-16,blockH-4);
+    drawText(l.name+'币 '+l.amount+'kg',bx+bw/2,yCursor+blockH/2,'#1e293b',11);
+  });
+  // 总值
+  const total=fracLoaded.reduce((s,l)=>s+l.ratio*l.amount,0);
+  drawText('总价值：'+total+' 元',bx+bw/2,by+bh+18,'#34d399',13);
+  drawText('剩余：'+(CAPACITY-fracLoaded.reduce((s,l)=>s+l.amount,0))+' kg',bx+bw/2,by+bh+36,'#5a6a8a',11);
+}
+
+// ====== 3. Huffman 编码 ======
+const HUFF_FREQ=[{c:'A',f:45},{c:'B',f:13},{c:'C',f:12},{c:'D',f:16},{c:'E',f:9},{c:'F',f:5}];
+let huffTree=null;
+let huffSteps=[]; // 每步的状态快照
+let huffStepIdx=0;
+
+function buildHuffmanAll(){
+  // 保存每步的森林状态
+  huffSteps=[];
+  let nodes=HUFF_FREQ.map(f=>({...f,left:null,right:null,id:Math.random()}));
+  huffSteps.push({forest:[...nodes],msg:'初始森林：每个字符独立成树'});
   while(nodes.length>1){
     nodes.sort((a,b)=>a.f-b.f);
     const l=nodes.shift(),r=nodes.shift();
-    const p={c:`${l.c}+${r.c}`,f:l.f+r.f,left:l,right:r,id:l.c+r.c};
-    nodes.push(p);
-    huffNodes.push(nodes.map(n=>({...n})));
+    const parent={c:'*',f:l.f+r.f,left:l,right:r,id:Math.random()};
+    nodes.push(parent);
+    huffSteps.push({forest:[...nodes],merged:{l,r,parent},msg:`合并频率最低：${l.c}(${l.f}) + ${r.c}(${r.f}) → 新节点 ${parent.f}`});
+  }
+  huffTree=nodes[0];
+  huffSteps.push({forest:[huffTree],msg:'✓ Huffman 树构建完成'});
+}
+
+function getCodeMap(){
+  const codes={};
+  function dfs(node,code){
+    if(!node.left&&!node.right){codes[node.c]=code||'0';return;}
+    if(node.left)dfs(node.left,code+'0');
+    if(node.right)dfs(node.right,code+'1');
+  }
+  dfs(huffTree,'');
+  return codes;
+}
+
+function drawHuffmanNode(node,x,y,depth,scale,codeMap){
+  if(!node)return;
+  const isLeaf=!node.left&&!node.right;
+  const r=isLeaf?18:14;
+  ctx.save();
+  if(isLeaf){ctx.shadowColor='#34d399';ctx.shadowBlur=12;}
+  else {ctx.shadowColor='#f97316';ctx.shadowBlur=8;}
+  ctx.fillStyle=isLeaf?'#34d399':'#f97316';
+  ctx.strokeStyle=isLeaf?'#34d399':'#f97316';
+  ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText(node.c,x,y-r*0.2,isLeaf?'#06281c':'#fff',isLeaf?13:11);
+  if(!isLeaf){drawText(node.f,x,y+8,'#fff',10);}
+  ctx.restore();
+  // 子节点
+  const childScale=scale*0.6;
+  const childY=y+70;
+  if(node.left){
+    ctx.strokeStyle='#74b9ff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x-6,y+r-2);ctx.lineTo(x-scale+5,childY-r+2);ctx.stroke();
+    drawText('0',x-scale/2-8,y+35,'#74b9ff',11);
+    drawHuffmanNode(node.left,x-scale,childY,depth+1,childScale,codeMap);
+  }
+  if(node.right){
+    ctx.strokeStyle='#fb923c';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x+6,y+r-2);ctx.lineTo(x+scale-5,childY-r+2);ctx.stroke();
+    drawText('1',x+scale/2+8,y+35,'#fb923c',11);
+    drawHuffmanNode(node.right,x+scale,childY,depth+1,childScale,codeMap);
   }
 }
-buildHuffman();
 
-function drawHuffman(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
-  ctx.fillText('Huffman编码构建过程',W/2,25);
-  
-  const showStep=Math.min(huffStep,huffNodes.length-1);
-  const nodes=huffNodes[showStep];
-  const cellW=60,cellH=40;
-  const ox=(W-nodes.length*cellW)/2;
-  
-  nodes.forEach((n,idx)=>{
-    const x=ox+idx*cellW,y=H*0.3;
-    const isNew=showStep>0&&idx===nodes.length-1;
-    ctx.fillStyle=isNew?'rgba(108,92,231,0.4)':'rgba(255,255,255,0.1)';
-    ctx.fillRect(x,y,cellW-4,cellH);
-    ctx.strokeStyle=isNew?'#6C5CE7':'#1e3050';ctx.lineWidth=isNew?2:1;
-    ctx.strokeRect(x,y,cellW-4,cellH);
-    ctx.fillStyle='#e8edf6';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
-    ctx.fillText(n.c,x+cellW/2-2,y+16);
-    ctx.fillStyle='#fdcb6e';ctx.font='11px sans-serif';
-    ctx.fillText(n.f,x+cellW/2-2,y+32);
-  });
-  
-  ctx.fillStyle='#9fb0c8';ctx.font='12px sans-serif';ctx.textAlign='center';
-  ctx.fillText(`第${showStep}次合并 | 每次选最小的两个节点合并`,W/2,H*0.6);
-  
-  if(showStep===huffNodes.length-1){
-    ctx.fillStyle='#00b894';ctx.font='bold 13px sans-serif';
-    ctx.fillText('构建完成！叶子节点编码=从根到叶的路径(左0右1)',W/2,H*0.75);
+function drawHuffmanScene(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  drawText('Huffman 编码 · 每次合并频率最低的两个',W/2,28,'#f97316',16);
+  // 频率表
+  drawText('字符频率：A:'+HUFF_FREQ[0].f+' B:'+HUFF_FREQ[1].f+' C:'+HUFF_FREQ[2].f+' D:'+HUFF_FREQ[3].f+' E:'+HUFF_FREQ[4].f+' F:'+HUFF_FREQ[5].f,W/2,52,'#5a6a8a',11);
+  if(huffStepIdx>=huffSteps.length-1){
+    // 最终树
+    const codeMap=getCodeMap();
+    drawHuffmanNode(huffTree,W/2,100,0,180,codeMap);
+    // 编码表
+    const codes=getCodeMap();
+    const cy=H-100;
+    drawText('Huffman 编码结果',W/2,cy-16,'#34d399',12);
+    const entries=Object.entries(codes);
+    const cw=Math.min(80,(W-100)/entries.length);
+    entries.forEach(([c,code],i)=>{
+      const x=50+i*cw;
+      ctx.fillStyle='rgba(52,211,153,.1)';ctx.strokeStyle='#34d399';
+      roundRect(x+5,cy,cw-10,46,6);ctx.fill();ctx.stroke();
+      drawText(c,x+cw/2,cy+12,'#34d399',14);
+      drawText(code,x+cw/2,cy+32,'#fbbf24',11);
+    });
+  } else {
+    // 中间步骤：森林
+    const step=huffSteps[huffStepIdx];
+    const forest=step.forest;
+    const fw=Math.min(80,(W-100)/forest.length);
+    forest.forEach((node,i)=>{
+      const x=50+i*fw+fw/2;
+      // 简单画节点
+      const r=22;
+      ctx.fillStyle=node.c==='*'?'#f97316':'#34d399';
+      ctx.strokeStyle=node.c==='*'?'#f97316':'#34d399';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(x,150,r,0,7);ctx.fill();ctx.stroke();
+      drawText(node.c,x,142,'#fff',12);
+      drawText('f='+node.f,x,170,'#cbd5e1',11);
+      if(node.left){
+        // 子树简化显示
+        drawText('→ 含子树',x,200,'#5a6a8a',10);
+      }
+    });
+    drawText('森林（共 '+forest.length+' 棵树）',W/2,110,'#74b9ff',11);
+    // 操作提示
+    drawText(step.msg,W/2,H-60,'#fbbf24',12);
+    drawText('步骤 '+(huffStepIdx+1)+' / '+huffSteps.length,W/2,H-35,'#5a6a8a',11);
   }
-  statusEl.textContent=`Huffman 步骤: ${showStep}/${huffNodes.length-1}`;
+}
+
+// ====== 步骤 ======
+const STEPS=[
+  {tag:'基础',name:'贪心思想',body:'<strong>贪心算法</strong>每一步都做<strong>当前看起来最优</strong>的选择，期望导致全局最优。<strong>不回退</strong>、<strong>不撤销</strong>。',points:{title:'适用条件',items:['<strong>贪心选择性质</strong>：局部最优可导出全局最优','<strong>最优子结构</strong>：问题的最优解包含子问题的最优解','<strong>优势</strong>：通常 O(n log n)','<strong>局限</strong>：不一定总能得到最优解（如 0-1 背包）']},code:'<span class="cm">// 贪心通用框架</span>\n<span class="fn">Greedy</span>(problem) {\n  <span class="kw">while</span> (!solved) {\n    x = <span class="fn">selectBest</span>(candidates);\n    <span class="kw">if</span> (<span class="fn">feasible</span>(x))\n      solution.<span class="fn">add</span>(x);\n  }\n  <span class="kw">return</span> solution;\n}'},
+
+  {tag:'活动选择',name:'问题描述',body:'<strong>活动选择</strong>：n 个活动，每个有开始 sᵢ 与结束 fᵢ 时间，同一时刻只能选一个，<strong>选最多不冲突的活动</strong>。',points:{title:'应用场景',items:['<strong>会议室预订</strong>','<strong>课程表排课</strong>','<strong>任务调度</strong>','<strong>区间调度</strong>经典问题']},code:'<span class="cm">// 活动结构</span>\n<span class="kw">struct</span> <span class="ty">Activity</span> {\n  <span class="ty">int</span> start, finish;\n};'},
+
+  {tag:'活动选择',name:'贪心策略',body:'<strong>策略</strong>：按<strong>结束时间升序</strong>排序，依次选不冲突的最早结束活动。直觉：<strong>结束越早，留给后面的时间越多</strong>。',points:{title:'为何选"结束时间"贪心',items:['<strong>不选开始时间</strong>：开始早的可能持续很久','<strong>不选最短</strong>：短的可能冲突严重','<strong>结束时间</strong>：留下最大空间给后续','<strong>可证明最优</strong>：交换论证']},code:'<span class="cm">// 活动选择贪心</span>\n<span class="fn">sort</span>(acts, by finish); <span class="cm">// 按结束时间排序</span>\n<span class="ty">int</span> count = 0, lastEnd = 0;\n<span class="kw">for</span> (<span class="ty">auto</span>& a : acts) {\n  <span class="kw">if</span> (a.start >= lastEnd) {\n    <span class="fn">select</span>(a);\n    lastEnd = a.finish;\n    count++;\n  }\n}'},
+
+  {tag:'活动选择',name:'演示',body:'点击 <strong>下一步</strong> 观察动画：<strong>绿色</strong>=选中，<strong>黄色</strong>=当前考虑，<strong>红色</strong>=冲突跳过。',points:{title:'观察要点',items:['<strong>排序后</strong>：活动按结束时间从早到晚排列','<strong>贪心决策</strong>：不冲突就选','<strong>无后悔</strong>：选了就不撤销','<strong>结果最优</strong>：所选数量达到最大']}},
+
+  {tag:'分数背包',name:'问题描述',body:'<strong>分数背包</strong>：n 个物品，背包容量 W。物品可<strong>分割</strong>，求总价值最大。<strong>与 0-1 背包的区别</strong>：物品可部分装入。',points:{title:'与 0-1 背包对比',items:['<strong>分数背包</strong>：物品可分割 → 贪心最优','<strong>0-1 背包</strong>：物品不可分 → 必须 DP','<strong>原因</strong>：分数有贪心选择性质','<strong>应用</strong>：资源分配、投资组合']},code:'<span class="cm">// 物品结构</span>\n<span class="kw">struct</span> <span class="ty">Item</span> {\n  <span class="ty">double</span> weight, value;\n  <span class="ty">double</span> ratio() { <span class="kw">return</span> value/weight; }\n};'},
+
+  {tag:'分数背包',name:'贪心策略',body:'<strong>策略</strong>：按<strong>性价比 v/w</strong> 降序排序，依次尽量多装。装完整物品后剩余容量部分装入下一个。',points:{title:'贪心步骤',items:['<strong>①</strong> 计算每个物品性价比 v/w','<strong>②</strong> 按性价比降序排序','<strong>③</strong> 依次装入：能装全装，否则部分','<strong>④</strong> 装满即止','<strong>时间</strong>：O(n log n)']},code:'<span class="cm">// 分数背包贪心</span>\n<span class="fn">sort</span>(items, by ratio desc);\n<span class="ty">double</span> total = 0, remain = W;\n<span class="kw">for</span> (<span class="ty">auto</span>& it : items) {\n  <span class="ty">double</span> take = <span class="fn">min</span>(it.w, remain);\n  total += take * it.ratio();\n  remain -= take;\n  <span class="kw">if</span> (remain == 0) <span class="kw">break</span>;\n}'},
+
+  {tag:'分数背包',name:'演示',body:'点击 <strong>下一步</strong>，观察按性价比降序装入背包：金币 → 银币 → 铜币。',points:{title:'观察要点',items:['<strong>性价比</strong>：金6 > 银5 > 铜4','<strong>全装</strong>：金币 10kg 全装','<strong>全装</strong>：银币 20kg 全装','<strong>部分装</strong>：铜币只装 20kg','<strong>总值</strong>：60+100+80=240']}},
+
+  {tag:'Huffman',name:'问题描述',body:'<strong>Huffman 编码</strong>：给定字符频率，构造<strong>前缀编码</strong>（任一编码不是另一编码的前缀），使总编码长度最短。',points:{title:'应用',items:['<strong>数据压缩</strong>：ZIP/GZIP 底层','<strong>字符频率不均</strong>：高频字符短码','<strong>前缀码</strong>：解码无歧义','<strong>贪心</strong>：每次合并频率最低两个']}},
+
+  {tag:'Huffman',name:'贪心策略',body:'<strong>策略</strong>：每次从森林中选<strong>频率最低的两棵树</strong>合并（新根频率=二者之和），<strong>优先队列（最小堆）</strong>维护森林。',points:{title:'构建步骤',items:['<strong>①</strong> 每字符独立成树，频率即权重','<strong>②</strong> 取最小两个合并','<strong>③</strong> 新树放回森林','<strong>④</strong> 重复直到只剩一棵树','<strong>编码</strong>：左走 0，右走 1']},code:'<span class="cm">// Huffman 构造</span>\n<span class="fn">priority_queue</span> minHeap(by freq);\n<span class="kw">while</span> (heap.size() > 1) {\n  Node* l = heap.<span class="fn">pop</span>();\n  Node* r = heap.<span class="fn">pop</span>();\n  Node* p = <span class="kw">new</span> Node(l.freq+r.freq, l, r);\n  heap.<span class="fn">push</span>(p);\n}'},
+
+  {tag:'Huffman',name:'演示',body:'点击 <strong>下一步</strong>，观察 Huffman 树的逐步构建：<strong>橙色</strong>为合并节点，<strong>绿色</strong>为叶子（字符）。完成后给出编码表。',points:{title:'观察要点',items:['<strong>每次合并</strong>：取频率最低两个','<strong>新节点</strong>：频率=二者之和','<strong>叶子</strong>：原始字符','<strong>编码</strong>：根到叶路径，左 0 右 1','<strong>高频字符</strong>：编码较短（更省空间）']}},
+];
+
+let stepIdx=0;
+let playing=false,lastT=0,speed=1,autoStepTime=0;
+
+function loadStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.getElementById('stepCode').innerHTML=s.code||'';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  // 重置对应场景的进度
+  if(s.tag==='活动选择'&&stepIdx>=3){actStep=0;actSelected=[];}
+  if(s.tag==='分数背包'&&stepIdx>=6){fracStep=0;fracLoaded=[];}
+  if(s.tag==='Huffman'&&stepIdx>=9){huffStepIdx=0;}
 }
 
 function draw(){
-  if(mode==='activity')drawActivity();
-  else drawHuffman();
+  const s=STEPS[stepIdx];
+  if(s.tag==='活动选择')drawActivityScene();
+  else if(s.tag==='分数背包')drawFractionalScene();
+  else if(s.tag==='Huffman')drawHuffmanScene();
+  else {
+    // 基础 / 总结：画一个通用图示
+    const W=cv.width,H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    drawText('贪心三步法',W/2,80,'#f97316',18);
+    const flow=['① 排序','② 局部最优选择','③ 不撤销，继续'];
+    flow.forEach((t,i)=>{
+      const x=W/2-flow.length*150/2+i*150+75;
+      ctx.fillStyle='rgba(249,115,22,.08)';ctx.strokeStyle='#f97316';ctx.lineWidth=2;
+      roundRect(x-65,180,130,60,8);ctx.fill();ctx.stroke();
+      drawText(t,x,210,'#fbbf24',13);
+      if(i<flow.length-1){drawText('→',x+80,210,'#f97316',16);}
+    });
+    drawText('适用条件：贪心选择性质 + 最优子结构',W/2,320,'#9ab0d0',12);
+    drawText('注意：并非所有问题都能用贪心，需证明最优性',W/2,350,'#f87171',11);
+  }
 }
 
-let animId;
-function loop(ts){
-  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;
-  if(t>0.8){t=0;if(mode==='activity')stepActivity();else{if(huffStep<huffNodes.length-1)huffStep++;}}
-  draw();
-  if(playing)animId=requestAnimationFrame(loop);
+function update(dt){
+  if(!playing)return;
+  const s=STEPS[stepIdx];
+  autoStepTime+=dt*speed;
+  if(autoStepTime>=1.2){
+    autoStepTime=0;
+    if(s.tag==='活动选择'&&stepIdx===3){stepActivity();if(actStep>=sortedActs.length)playing=false,playBtn.textContent='▶ 播放';}
+    else if(s.tag==='分数背包'&&stepIdx===6){stepFractional();if(fracStep>=FITEMS.length)playing=false,playBtn.textContent='▶ 播放';}
+    else if(s.tag==='Huffman'&&stepIdx===9){huffStepIdx++;if(huffStepIdx>=huffSteps.length)playing=false,playBtn.textContent='▶ 播放';}
+    else {
+      // 通用：自动前进步骤
+      if(stepIdx<STEPS.length-1){stepIdx++;loadStep();}
+      else {playing=false;playBtn.textContent='▶ 播放';}
+    }
+  }
 }
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
-  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+// ====== 控件 ======
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';autoStepTime=0;};
+resetBtn.onclick=()=>{
+  actStep=0;actSelected=[];
+  fracStep=0;fracLoaded=[];
+  huffStepIdx=0;
+  loadStep();
 };
-document.getElementById('resetBtn').onclick=function(){resetActivity();huffStep=0;draw();};
-document.getElementById('activityBtn').onclick=function(){mode='activity';resetActivity();draw();};
-document.getElementById('huffmanBtn').onclick=function(){mode='huffman';huffStep=0;draw();};
-draw();
-</script></body></html>
+stepFwdBtn.onclick=()=>{
+  const s=STEPS[stepIdx];
+  if(s.tag==='活动选择'&&stepIdx===3){stepActivity();}
+  else if(s.tag==='分数背包'&&stepIdx===6){stepFractional();}
+  else if(s.tag==='Huffman'&&stepIdx===9){huffStepIdx++;}
+  else {if(stepIdx<STEPS.length-1)stepIdx++;loadStep();}
+};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;loadStep();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>8?s.name.slice(0,7)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;loadStep();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();
+buildHuffmanAll();
+loadStep();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

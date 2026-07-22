@@ -105,6 +105,9 @@ python -m http.server 8000
 
 # Node.js
 npx http-server
+
+# 直接部署
+直接放在 cloudflare page , edgeone， github page 则可以
 ```
 
 3. 在浏览器中访问 `http://localhost:8000`

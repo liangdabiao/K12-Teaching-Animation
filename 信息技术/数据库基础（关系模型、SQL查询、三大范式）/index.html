@@ -1,75 +1,501 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>数据库基础（关系模型、SQL查询、三大范式）</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据库基础 · 关系模型 / SQL / 三大范式</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#6C5CE7;--line:#1e3050;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
-main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+:root{
+  --bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;
+  --accent:#6C5CE7;--accent2:#74b9ff;--line:#243a5e;
+  --pk:#fbbf24;--fk:#fb923c;--good:#34d399;--bad:#f87171;--info:#38bdf8;
+}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}
+.back:hover{background:rgba(116,185,255,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(108,92,231,.06),transparent)}
+.card{flex:1;min-width:170px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--info)}
+.card.s3::before{background:var(--good)}
+.card.s4::before{background:var(--pk)}
+.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(108,92,231,.2);color:#c4b5fd;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}
+.points li strong{color:var(--accent)}
+.sql-block{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:12px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
+.sql-block .kw{color:#ff7b72}.sql-block .col{color:#79c0ff}.sql-block .str{color:#a5d6ff}.sql-block .fn{color:#d2a8ff}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.primary:hover{background:#7c6ef0}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
-<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">数据库基础（关系模型、SQL查询、三大范式）</span></header>
-<main><div class="stage"><canvas id="cv"></canvas></div>
-<aside class="panel"><h2>原理说明</h2>
-<p>关系数据库：用二维表组织数据。每张表有行（记录）和列（字段）。主键：唯一标识一条记录。SQL用于操作关系数据库。常用：SELECT/FROM/WHERE/ORDER BY/JOIN。</p>
-<div class="key-points"><h3>核心概念</h3><ul>
-<li><b>三大范式</b>：1NF(属性不可分) 2NF(消除部分依赖) 3NF(消除传递依赖)</li>
-<li><b>SQL</b>：SELECT 列 FROM 表 WHERE 条件</li>
-<li><b>JOIN</b>：INNER JOIN(交集) LEFT JOIN(左全+匹配)</li>
-<li>主键(Primary Key)：唯一+非空</li>
-<li>外键(Foreign Key)：建立表间关联</li>
-<li>索引(Index)：加速查询</li>
-</ul></div></aside></main>
-<div class="controls"><button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><span id="status" class="status"></span></div>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回信息技术目录</a>
+  <span class="title">数据库基础</span>
+  <span class="subtitle">关系模型 · SQL 查询 · 三大范式 · JOIN 可视化</span>
+</header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>关系模型</h4><div class="v">二维表组织数据<br>行=记录 · 列=字段</div></div>
+  <div class="card s2"><div class="num">2</div><h4>SQL 语言</h4><div class="v">DDL / DML / DQL / DCL<br>声明式查询语言</div></div>
+  <div class="card s3"><div class="num">3</div><h4>三大范式</h4><div class="v">1NF · 2NF · 3NF<br>消除冗余与异常</div></div>
+  <div class="card s4"><div class="num">4</div><h4>键与索引</h4><div class="v">主键 PK · 外键 FK<br>索引加速查询</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel" id="panel">
+    <h2><span class="badge" id="stepBadge">关系模型</span><span id="stepTitle">数据如何组织</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+    <div class="sql-block" id="stepSQL"></div>
+  </aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择左侧步骤开始</span>
+</div>
 <script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
-let t=0,playing=false,lastT=0;
 
-let mode='table';
-const students=[{id:1,name:'张三',age:17,score:92},{id:2,name:'李四',age:16,score:85},{id:3,name:'王五',age:17,score:78},{id:4,name:'赵六',age:18,score:95},{id:5,name:'钱七',age:16,score:88}];
-function drawTable(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('关系表：Student',W/2,22);
-  const cols=['学号(PK)','姓名','年龄','成绩'];const colW=Math.min(110,(W-80)/4);const ox=(W-cols.length*colW)/2,oy=50;const rowH=32;
-  cols.forEach((c,i)=>{const x=ox+i*colW;ctx.fillStyle='rgba(108,92,231,0.3)';ctx.fillRect(x,oy,colW-2,rowH);ctx.strokeStyle='#6C5CE7';ctx.strokeRect(x,oy,colW-2,rowH);ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(c,x+colW/2,oy+rowH/2+4);});
-  const showRows=Math.min(Math.floor(t*1.5),students.length);
-  students.slice(0,showRows).forEach((s,r)=>{const y=oy+(r+1)*rowH;const vals=[s.id,s.name,s.age,s.score];vals.forEach((v,i)=>{const x=ox+i*colW;ctx.fillStyle=r%2===0?'rgba(255,255,255,0.04)':'rgba(255,255,255,0.02)';ctx.fillRect(x,y,colW-2,rowH);ctx.strokeStyle='#1e3050';ctx.strokeRect(x,y,colW-2,rowH);ctx.fillStyle='#e8edf6';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(v,x+colW/2,y+rowH/2+4);});});
-}
-function drawSQL(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('SQL查询演示',W/2,22);
-  ctx.fillStyle='#6C5CE7';ctx.font='14px monospace';ctx.textAlign='left';
-  ctx.fillText('SELECT 姓名, 成绩 FROM Student',40,60);
-  ctx.fillText('WHERE 成绩 >= 85 ORDER BY 成绩 DESC',40,82);
-  const result=students.filter(s=>s.score>=85).sort((a,b)=>b.score-a.score);
-  const show=Math.min(Math.floor(t*1.5),result.length);
-  const oy=120;ctx.fillStyle='rgba(108,92,231,0.3)';ctx.fillRect(40,oy,200,28);ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText('姓名',100,oy+18);ctx.fillText('成绩',200,oy+18);
-  result.slice(0,show).forEach((s,i)=>{const y=oy+(i+1)*28;ctx.fillStyle=i%2===0?'rgba(255,255,255,0.04)':'rgba(255,255,255,0.02)';ctx.fillRect(40,y,200,28);ctx.fillStyle='#e8edf6';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(s.name,100,y+18);ctx.fillText(s.score,200,y+18);});
-  ctx.fillStyle='#00b894';ctx.font='12px sans-serif';ctx.textAlign='left';ctx.fillText('查询结果: '+show+'条记录',40,H-20);
-}
-function draw(){if(mode==='table')drawTable();else drawSQL();statusEl.textContent=mode==='table'?'表结构':'SQL查询';}
-cv.parentElement.parentElement.parentElement.querySelector('.controls').insertAdjacentHTML('beforeend','<button id="tableBtn">表结构</button><button id="sqlBtn">SQL查询</button>');
-document.getElementById('tableBtn').onclick=function(){mode='table';t=0;draw();};
-document.getElementById('sqlBtn').onclick=function(){mode='sql';t=0;draw();};
+// ====== 步骤定义 ======
+const STEPS=[
+  {tag:'关系模型',name:'二维表结构',body:'<strong>关系数据库</strong>用<strong>二维表</strong>组织数据。每张表有<strong>行（元组/记录）</strong>和<strong>列（属性/字段）</strong>。',points:{title:'核心概念',items:['<strong>表 Table</strong>：实体数据的集合','<strong>行 Row / Tuple</strong>：一条完整记录','<strong>列 Column / Attribute</strong>：记录的一个属性','<strong>域 Domain</strong>：列的取值范围']}},
 
-let animId;
-function loop(ts){const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();if(playing)animId=requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);};
-document.getElementById('resetBtn').onclick=function(){t=0;draw();};
-draw();
-</script></body></html>
+  {tag:'关系模型',name:'主键与外键',body:'<strong>主键 PK</strong>：唯一标识一条记录，<strong>非空+唯一</strong>。<strong>外键 FK</strong>：引用其他表的主键，建立表间关联。',points:{title:'键约束',items:['<strong>主键 Primary Key</strong>：学号、身份证号','<strong>外键 Foreign Key</strong>：选课表中的学号','<strong>候选键</strong>：可作主键的最小属性集','<strong>联合主键</strong>：多列组合（如选课表）']}},
+
+  {tag:'关系模型',name:'表间关联',body:'<strong>选课表</strong>通过学号外键关联学生表，通过课程号外键关联课程表——这就是关系数据库的精髓：<strong>用外键串起分散的表</strong>。',points:{title:'一对一 / 一对多 / 多对多',items:['<strong>1:1</strong>：学生↔学籍档案','<strong>1:N</strong>：班级→学生','<strong>N:M</strong>：学生↔课程（需中间表）','<strong>中间表</strong>：选课表 = 学号+课程号']}},
+
+  {tag:'SQL',name:'SQL 四大类',body:'<strong>SQL（结构化查询语言）</strong>分为四大类，覆盖<strong>定义、操作、查询、控制</strong>四大功能。',points:{title:'SQL 分类',items:['<strong>DDL 定义</strong>：CREATE / ALTER / DROP','<strong>DML 操作</strong>：INSERT / UPDATE / DELETE','<strong>DQL 查询</strong>：SELECT（最常用）','<strong>DCL 控制</strong>：GRANT / REVOKE（权限）']},sql:'<span class="kw">CREATE TABLE</span> Student (\n  id <span class="kw">INT PRIMARY KEY</span>,\n  name <span class="col">VARCHAR</span>(50) <span class="kw">NOT NULL</span>,\n  age <span class="col">INT</span>\n);'},
+
+  {tag:'SQL',name:'SELECT 查询',body:'<strong>SELECT</strong> 是 SQL 最核心语句。从 FROM 指定表，WHERE 过滤行，ORDER BY 排序，GROUP BY 分组。',points:{title:'查询执行顺序',items:['<strong>FROM</strong> → 确定数据源','<strong>WHERE</strong> → 行级过滤','<strong>GROUP BY</strong> → 分组','<strong>HAVING</strong> → 组级过滤','<strong>SELECT</strong> → 选择列','<strong>ORDER BY</strong> → 排序']},sql:'<span class="kw">SELECT</span> name, score\n<span class="kw">FROM</span> Student\n<span class="kw">WHERE</span> score <span class="kw">>=</span> 85\n<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>;'},
+
+
+  {tag:'SQL',name:'JOIN 多表连接',body:'<strong>JOIN</strong> 把多张表按关联条件横向拼合。<strong>INNER JOIN</strong> 只取交集，<strong>LEFT JOIN</strong> 保留左表全部行。',points:{title:'JOIN 类型',items:['<strong>INNER JOIN</strong>：两表都存在的匹配行','<strong>LEFT JOIN</strong>：左表全+右表匹配','<strong>RIGHT JOIN</strong>：右表全+左表匹配','<strong>FULL JOIN</strong>：两表并集']},sql:'<span class="kw">SELECT</span> s.name, c.course_name\n<span class="kw">FROM</span> Student s\n<span class="kw">INNER JOIN</span> Enrollment e <span class="kw">ON</span> s.id=e.sid\n<span class="kw">INNER JOIN</span> Course c <span class="kw">ON</span> e.cid=c.id;'},
+
+  {tag:'范式',name:'第一范式 1NF',body:'<strong>1NF：每个字段不可再分</strong>（原子性）。同一列不能塞多个值，如"电话"列不能写"手机,座机"。',points:{title:'违反 1NF 的反例',items:['<strong>反例</strong>：联系人列写"张三,李四"','<strong>问题</strong>：无法查询、无法索引','<strong>修正</strong>：拆分为独立行或独立列','<strong>所有关系表默认满足 1NF</strong>']}},
+
+  {tag:'范式',name:'第二范式 2NF',body:'<strong>2NF：在 1NF 基础上，消除非主属性对主键的"部分依赖"</strong>。要求<strong>联合主键</strong>表里，每列必须依赖全部主键，不能只依赖一部分。',points:{title:'部分依赖反例',items:['<strong>反例</strong>：(学号,课程号) → 学号→姓名','<strong>问题</strong>：姓名重复存储，更新异常','<strong>修正</strong>：拆为 学生表 + 选课表','<strong>前提</strong>：必须有联合主键才需检查 2NF']}},
+
+  {tag:'范式',name:'第三范式 3NF',body:'<strong>3NF：在 2NF 基础上，消除非主属性对主键的"传递依赖"</strong>。A→B→C，则 C 传递依赖 A，应拆分。',points:{title:'传递依赖反例',items:['<strong>反例</strong>：学号→院系号→院系名','<strong>问题</strong>：院系名重复，删除院系丢信息','<strong>修正</strong>：拆为 学生表 + 院系表','<strong>实战</strong>：3NF 已能满足绝大多数场景']}},
+
+  {tag:'总结',name:'数据库设计要点',body:'良好的数据库设计遵循：<strong>实体独立成表 → 用外键关联 → 满足三大范式 → 按查询需求建索引</strong>。',points:{title:'设计流程',items:['<strong>① 识别实体</strong>：学生、课程、选课','<strong>② 定义主键</strong>：每个实体都要有','<strong>③ 建立关系</strong>：1:1 / 1:N / N:M','<strong>④ 范式检查</strong>：1NF→2NF→3NF','<strong>⑤ 反范式化</strong>：性能要求时适度冗余']}},
+];
+
+// ====== 状态 ======
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0;
+const STEP_DURATION=3.0;
+
+// ====== 数据 ======
+const students=[
+  {id:1,name:'张三',age:17,score:92,gender:'男'},
+  {id:2,name:'李四',age:16,score:85,gender:'女'},
+  {id:3,name:'王五',age:17,score:78,gender:'男'},
+  {id:4,name:'赵六',age:18,score:95,gender:'女'},
+  {id:5,name:'钱七',age:16,score:88,gender:'男'},
+];
+const courses=[
+  {id:101,name:'数学',teacher:'刘老师'},
+  {id:102,name:'物理',teacher:'陈老师'},
+  {id:103,name:'英语',teacher:'王老师'},
+];
+const enrollments=[
+  {sid:1,cid:101,score:90},
+  {sid:1,cid:102,score:85},
+  {sid:2,cid:101,score:78},
+  {sid:3,cid:103,score:92},
+  {sid:4,cid:101,score:88},
+  {sid:5,cid:102,score:95},
+];
+
+// ====== 工具 ======
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
+
+// 绘制通用表格
+function drawTable(x,y,headers,rows,colW,rowH,opts){
+  opts=opts||{};const headerBg=opts.headerBg||'rgba(108,92,231,.3)';const headerColor=opts.headerColor||'#fff';
+  const rowAlt=opts.rowAlt!==false;const highlightRow=opts.highlightRow;
+  const highlightCol=opts.highlightCol;const pkCol=opts.pkCol;const fkCol=opts.fkCol;
+  // 表标题
+  if(opts.title){drawText(opts.title,x+colW.length*40,y-12,opts.titleColor||'#6C5CE7',13);}
+  // 表头
+  headers.forEach((h,i)=>{
+    const cx=x+i*colW[i];
+    ctx.fillStyle=headerBg;roundRect(cx,y,colW[i]-2,rowH,4);ctx.fill();
+    if(i===pkCol){ctx.fillStyle='var(--pk)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;ctx.stroke();}
+    if(i===fkCol){ctx.strokeStyle='#fb923c';ctx.lineWidth=1.5;ctx.stroke();}
+    drawText(h,cx+colW[i]/2,y+rowH/2,headerColor,11,'center');
+    if(i===pkCol){drawText('🔑',cx+8,y+rowH/2,'#fbbf24',10);}
+    if(i===fkCol){drawText('🔗',cx+8,y+rowH/2,'#fb923c',10);}
+  });
+  // 数据行
+  rows.forEach((r,ri)=>{
+    const ry=y+(ri+1)*rowH;
+    const isHi=highlightRow&&highlightRow.includes(ri);
+    ctx.fillStyle=isHi?'rgba(52,211,153,.18)':(rowAlt&&ri%2===0?'rgba(255,255,255,.04)':'rgba(255,255,255,.02)');
+    ctx.fillRect(x,ry,colW.reduce((a,b)=>a+b,0)-headers.length+2,rowH);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.strokeRect(x,ry,colW.reduce((a,b)=>a+b,0)-headers.length+2,rowH);
+    r.forEach((v,ci)=>{
+      const cx=x+ci*colW[ci];
+      const isColHi=highlightCol&&highlightCol.includes(ci);
+      if(isColHi){ctx.fillStyle='rgba(251,191,36,.12)';ctx.fillRect(cx,ry,colW[ci]-2,rowH);}
+      drawText(v,cx+colW[ci]/2,ry+rowH/2,isHi?'#34d399':'#e8eef8',11,'center');
+    });
+  });
+  return y+(rows.length+1)*rowH;
+}
+
+// ====== 各场景 ======
+// 1. 二维表结构
+function drawTableStructure(t){
+  const W=cv.width,H=cv.height;
+  drawText('关系表：Student（学生表）',W/2,28,'#6C5CE7',16);
+  const showRows=Math.min(students.length,Math.floor(t*1.6)+1);
+  drawTable(W/2-220,60,['学号','姓名','性别','年龄','成绩'],students.slice(0,showRows).map(s=>[s.id,s.name,s.gender,s.age,s.score]),[60,80,60,60,80],28,{pkCol:0});
+  // 标注
+  if(t>0.5){
+    drawText('↓ 行（Row / 元组）',W/2-280,60+28*1.5,'#34d399',11,'center');
+    drawText('列（Column / 属性）→',W/2+180,50,'#74b9ff',11,'center');
+  }
+  if(t>1.2){
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+    ctx.setLineDash([4,3]);
+    ctx.strokeRect(W/2-220,60,60,28); // PK 列框
+    ctx.setLineDash([]);
+    drawText('主键 PK',W/2-190,98,'#fbbf24',11,'center');
+  }
+}
+
+// 2. 主键与外键
+function drawKeysScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('主键与外键：唯一标识 + 表间关联',W/2,28,'#6C5CE7',15);
+  // 学生表（小）
+  const sx=60,sy=70;
+  drawText('Student 表',sx+90,sy-12,'#74b9ff',12);
+  drawTable(sx,sy,['学号','姓名'],students.slice(0,4).map(s=>[s.id,s.name]),[60,80],26,{pkCol:0});
+  // 选课表（中）
+  const ex=W/2-100,ey=70;
+  drawText('Enrollment 表（中间表）',ex+90,ey-12,'#fb923c',12);
+  drawTable(ex,ey,['学号FK','课程号FK','分数'],enrollments.slice(0,4).map(e=>[e.sid,e.cid,e.score]),[60,70,60],26,{fkCol:0,highlightCol:t>0.5?[0,1]:[]});
+  // 课程表（右）
+  const cx=W-220,cy=70;
+  drawText('Course 表',cx+80,cy-12,'#34d399',12);
+  drawTable(cx,cy,['课程号','课程名'],courses.map(c=>[c.id,c.name]),[60,100],26,{pkCol:0});
+  // 连线
+  if(t>0.8){
+    ctx.strokeStyle='rgba(251,146,60,.6)';ctx.lineWidth=2;
+    ctx.setLineDash([5,3]);
+    // 学生.id -> 选课.sid
+    ctx.beginPath();ctx.moveTo(sx+140,sy+50);ctx.bezierCurveTo(ex-20,sy+50,ex-20,ey+50,ex,ey+50);ctx.stroke();
+    // 选课.cid -> 课程.id
+    ctx.beginPath();ctx.moveTo(ex+190,ey+50);ctx.bezierCurveTo(cx-20,ey+50,cx-20,cy+30,cx,cy+30);ctx.stroke();
+    ctx.setLineDash([]);
+    // 关系标签
+    drawText('1 : N',sx+170,sy+38,'#fb923c',10);
+    drawText('N : 1',ex+220,ey+38,'#fb923c',10);
+  }
+}
+
+// 3. SQL 四大类
+function drawSQLCategories(t){
+  const W=cv.width,H=cv.height;
+  drawText('SQL 四大语言分类',W/2,28,'#6C5CE7',16);
+  const cats=[
+    {x:50,y:70,w:200,h:130,c:'#6C5CE7',t:'DDL 数据定义',cmds:['CREATE','DROP','ALTER','TRUNCATE'],desc:'定义/修改表结构'},
+    {x:280,y:70,w:200,h:130,c:'#74b9ff',t:'DML 数据操作',cmds:['INSERT','UPDATE','DELETE'],desc:'增删改表数据'},
+    {x:510,y:70,w:200,h:130,c:'#34d399',t:'DQL 数据查询',cmds:['SELECT','FROM','WHERE'],desc:'查询数据'},
+    {x:740,y:70,w:200,h:130,c:'#fbbf24',t:'DCL 数据控制',cmds:['GRANT','REVOKE'],desc:'权限管理'},
+  ];
+  const idx=Math.min(cats.length-1,Math.floor(t*1.5));
+  cats.forEach((c,i)=>{
+    const active=i<=idx;
+    if(active){ctx.shadowColor=c.c;ctx.shadowBlur=14;}
+    ctx.fillStyle='rgba(255,255,255,.04)';ctx.strokeStyle=c.c;ctx.lineWidth=2;
+    roundRect(c.x,c.y,c.w,c.h,10);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(c.t,c.x+c.w/2,c.y+22,c.c,13);
+    c.cmds.forEach((cmd,j)=>{drawText(cmd,c.x+c.w/2,c.y+50+j*18,'#e8eef8',11);});
+    drawText(c.desc,c.x+c.w/2,c.y+c.h-14,'#9ab0d0',10);
+  });
+  // 选中放大
+  if(idx<cats.length){
+    const c=cats[idx];
+    ctx.strokeStyle='#fff';ctx.lineWidth=3;
+    roundRect(c.x-3,c.y-3,c.w+6,c.h+6,12);ctx.stroke();
+  }
+}
+
+// 4. SELECT 执行顺序
+function drawSelectOrder(t){
+  const W=cv.width,H=cv.height;
+  drawText('SELECT 语句执行顺序',W/2,28,'#6C5997',16);
+  const phases=[
+    {n:'FROM',d:'确定数据源表',c:'#74b9ff'},
+    {n:'WHERE',d:'行级过滤',c:'#fbbf24'},
+    {n:'GROUP BY',d:'分组',c:'#34d399'},
+    {n:'HAVING',d:'组级过滤',c:'#a78bfa'},
+    {n:'SELECT',d:'选择列',c:'#6C5CE7'},
+    {n:'ORDER BY',d:'排序',c:'#fb923c'},
+  ];
+  const showN=Math.min(phases.length,Math.floor(t*2)+1);
+  const totalW=W-120;
+  const stepW=totalW/phases.length;
+  phases.forEach((p,i)=>{
+    const px=60+i*stepW;
+    const active=i<showN;
+    const y=80;
+    ctx.fillStyle=active?p.c:'rgba(255,255,255,.05)';ctx.strokeStyle=p.c;ctx.lineWidth=2;
+    roundRect(px+5,y,stepW-10,80,8);ctx.fill();ctx.stroke();
+    drawText((i+1)+'. '+p.n,px+stepW/2,y+24,active?'#fff':'#5a6a8a',12);
+    drawText(p.d,px+stepW/2,y+54,active?'#cbd5e1':'#3a4a6a',10);
+    // 箭头
+    if(i<phases.length-1){
+      ctx.strokeStyle=active?'#6C5CE7':'#243a5e';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(px+stepW-8,y+40);ctx.lineTo(px+stepW+3,y+40);ctx.stroke();
+    }
+  });
+  // 查询结果演示
+  if(t>1.5){
+    const result=students.filter(s=>s.score>=85).sort((a,b)=>b.score-a.score);
+    const ry=200;
+    drawText('查询：SELECT name,score FROM Student WHERE score≥85 ORDER BY score DESC',W/2,ry-14,'#9ab0d0',11);
+    drawTable(W/2-100,ry,['姓名','成绩'],result.map(s=>[s.name,s.score]),[100,100],26,{});
+  }
+}
+
+// 5. JOIN
+function drawJOINScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('JOIN 多表连接',W/2,28,'#6C5CE7',16);
+  // 韦恩图（两个圆）
+  const cx1=W/2-90,cx2=W/2+90,cy=120,r=70;
+  ctx.fillStyle='rgba(116,185,255,.15)';ctx.strokeStyle='#74b9ff';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx1,cy,r,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(52,211,153,.15)';ctx.strokeStyle='#34d399';
+  ctx.beginPath();ctx.arc(cx2,cy,r,0,7);ctx.fill();ctx.stroke();
+  drawText('Student A',cx1-r*0.4,cy,'#74b9ff',12);
+  drawText('Course B',cx2+r*0.4,cy,'#34d399',12);
+  // 交集高亮
+  ctx.fillStyle='rgba(251,191,36,.4)';
+  ctx.save();
+  ctx.beginPath();ctx.arc(cx1,cy,r,0,7);ctx.clip();
+  ctx.beginPath();ctx.arc(cx2,cy,r,0,7);ctx.fill();
+  ctx.restore();
+  drawText('交集',W/2,cy,'#fbbf24',11);
+  // 四种 JOIN 标签
+  const joins=[
+    {t:'INNER JOIN',d:'A ∩ B（交集）',c:'#fbbf24'},
+    {t:'LEFT JOIN',d:'A 全部 + B 匹配',c:'#74b9ff'},
+    {t:'RIGHT JOIN',d:'B 全部 + A 匹配',c:'#34d399'},
+    {t:'FULL JOIN',d:'A ∪ B（并集）',c:'#fb923c'},
+  ];
+  const idx=Math.min(joins.length-1,Math.floor(t*1.2));
+  joins.forEach((j,i)=>{
+    const jx=60+i*((W-120)/4);
+    const jy=240;
+    const active=i===idx;
+    ctx.fillStyle=active?j.c:'rgba(255,255,255,.05)';ctx.strokeStyle=j.c;ctx.lineWidth=2;
+    roundRect(jx+5,jy,(W-120)/4-10,70,8);ctx.fill();ctx.stroke();
+    drawText(j.t,jx+(W-120)/8,jy+24,active?'#fff':j.c,12);
+    drawText(j.d,jx+(W-120)/8,jy+48,active?'#cbd5e1':'#5a6a8a',10);
+  });
+  // 结果表
+  if(t>0.5){
+    const ry=330;
+    drawText('INNER JOIN 结果：',60,ry-12,'#9ab0d0',12);
+    const joined=enrollments.slice(0,5).map(e=>{const s=students.find(x=>x.id===e.sid);const c=courses.find(x=>x.id===e.cid);return [s?s.name:'-',c?c.name:'-',e.score];});
+    drawTable(60,ry,['姓名','课程','分数'],joined,[90,110,70],24,{});
+  }
+}
+
+// 6. 1NF
+function draw1NFScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('第一范式 1NF：字段不可再分（原子性）',W/2,28,'#f87171',15);
+  // 反例
+  drawText('❌ 违反 1NF',200,70,'#f87171',13);
+  const badRows=[['1','张三','手机:138, 座机:010-123'],['2','李四','手机:139, 座机:010-456']];
+  drawTable(60,90,['学号','姓名','联系方式（违反）'],badRows,[60,80,200],28,{highlightCol:t>0.5?[2]:[]});
+  if(t>0.8){
+    drawText('↓ 修正：拆分为多列',200,250,'#34d399',13);
+    const goodRows=students.slice(0,2).map(s=>[s.id,s.name,'138-00'+s.id,'010-12'+s.id]);
+    drawTable(60,270,['学号','姓名','手机','座机'],goodRows,[60,80,100,100],28,{highlightCol:[2,3]});
+  }
+}
+
+// 7. 2NF
+function draw2NFScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('第二范式 2NF：消除部分依赖',W/2,28,'#f87171',15);
+  // 反例：联合主键 (学号,课程号) → 姓名 只依赖学号
+  drawText('❌ 违反 2NF（联合主键表）',W/2-200,70,'#f87171',12);
+  const badRows=[['1','101','张三','数学','90'],['1','102','张三','物理','85'],['2','101','李四','数学','78']];
+  drawTable(60,90,['学号','课程号','姓名','课程名','分数'],badRows,[55,60,70,80,55],26,{pkCol:[0,1],highlightCol:t>0.5?[2]:[]});
+  if(t>0.3){
+    drawText('⚠ 姓名 只依赖 学号，与 课程号 无关 → 部分依赖',W/2-150,200,'#fbbf24',11);
+  }
+  if(t>1.0){
+    drawText('✓ 修正：拆分为两张表',W/2+200,70,'#34d399',12);
+    drawTable(W/2+80,90,['学号','姓名'],students.slice(0,3).map(s=>[s.id,s.name]),[55,80],26,{pkCol:0});
+    drawTable(W/2+80,190,['学号FK','课程号FK','分数'],enrollments.slice(0,3).map(e=>[e.sid,e.cid,e.score]),[60,70,60],26,{pkCol:[0,1]});
+  }
+}
+
+// 8. 3NF
+function draw3NFScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('第三范式 3NF：消除传递依赖',W/2,28,'#f87171',15);
+  drawText('❌ 违反 3NF（学号→院系号→院系名）',W/2-150,70,'#f87171',12);
+  const badRows=[['1','张三','D01','计算机'],['2','李四','D01','计算机'],['3','王五','D02','数学']];
+  drawTable(60,90,['学号','姓名','院系号','院系名'],badRows,[60,80,70,100],28,{pkCol:0,highlightCol:t>0.5?[3]:[]});
+  if(t>0.3){
+    drawText('⚠ 院系名 传递依赖 学号（经院系号）',W/2-150,210,'#fbbf24',11);
+    // 依赖关系图
+    drawText('学号 → 院系号 → 院系名',W/2-100,245,'#fb923c',12);
+  }
+  if(t>1.0){
+    drawText('✓ 修正：拆分为 学生表 + 院系表',W/2+200,70,'#34d399',12);
+    drawTable(W/2+80,90,['学号','姓名','院系号FK'],students.slice(0,3).map((s,i)=>[s.id,s.name,'D0'+(i%2+1)]),[55,75,90],26,{pkCol:0,fkCol:2});
+    drawTable(W/2+80,200,['院系号','院系名'],[['D01','计算机'],['D02','数学']],[70,110],26,{pkCol:0});
+  }
+}
+
+// 9. 总结
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('数据库设计流程',W/2,40,'#6C5CE7',18);
+  const flow=[
+    {t:'识别实体',c:'#74b9ff'},
+    {t:'定义主键',c:'#6C5CE7'},
+    {t:'建立关系',c:'#34d399'},
+    {t:'范式检查',c:'#fbbf24'},
+    {t:'索引优化',c:'#fb923c'},
+  ];
+  const stepW=(W-200)/flow.length;
+  flow.forEach((s,i)=>{
+    const x=100+i*stepW;
+    ctx.fillStyle='rgba(255,255,255,.04)';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    roundRect(x+10,120,stepW-20,80,10);ctx.fill();ctx.stroke();
+    drawText('①②③④⑤'[i],x+stepW/2,140,s.c,18);
+    drawText(s.t,x+stepW/2,180,'#e8eef8',13);
+    if(i<flow.length-1){
+      ctx.strokeStyle='#6C5CE7';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x+stepW-12,160);ctx.lineTo(x+stepW+5,160);ctx.stroke();
+      drawText('→',x+stepW-3,158,'#6C5CE7',14);
+    }
+  });
+  drawText('实体独立成表 · 外键建立关联 · 范式消除冗余 · 索引加速查询',W/2,260,'#9ab0d0',13);
+  drawText('3NF 已能满足绝大多数业务场景；性能瓶颈时可"反范式化"适度冗余',W/2,290,'#7a8aaa',11);
+}
+
+// ====== 主循环 ======
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const s=STEPS[stepIdx];
+  const localProg=Math.min(1.5,stepTime/STEP_DURATION);
+  if(s.tag==='关系模型'&&stepIdx===0)drawTableStructure(localProg);
+  else if(s.tag==='关系模型'&&stepIdx===1)drawKeysScene(localProg);
+  else if(s.tag==='关系模型'&&stepIdx===2)drawKeysScene(localProg+0.5);
+  else if(s.tag==='SQL'&&stepIdx===3)drawSQLCategories(localProg);
+  else if(s.tag==='SQL'&&stepIdx===4)drawSelectOrder(localProg);
+  else if(s.tag==='SQL'&&stepIdx===5)drawJOINScene(localProg);
+  else if(s.tag==='范式'&&stepIdx===6)draw1NFScene(localProg);
+  else if(s.tag==='范式'&&stepIdx===7)draw2NFScene(localProg);
+  else if(s.tag==='范式'&&stepIdx===8)draw3NFScene(localProg);
+  else if(s.tag==='总结')drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.getElementById('stepSQL').innerHTML=s.sql||'';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+// ====== 控件 ======
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();
+syncStep();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

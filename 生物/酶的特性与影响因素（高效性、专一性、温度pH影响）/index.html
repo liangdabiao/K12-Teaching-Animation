@@ -1,98 +1,675 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>酶的特性与影响因素（高效性、专一性、温度pH影响）</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>酶的特性与影响因素 - 交互式教学动画</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#00b894;--line:#1e3050;}
+:root{
+  --bg:#0a1628;--panel:#111d33;--card:#15243d;--ink:#e8edf6;--muted:#8b9dc3;
+  --accent:#00b894;--accent2:#fdcb6e;--line:#1e3050;
+  --enzyme:#9b59b6;--substrate:#3498db;--product:#27ae60;--inhibitor:#e74c3c;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
-main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+.knowledge-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:14px 18px;background:linear-gradient(180deg,#0e1c33,#0a1628);border-bottom:1px solid var(--line)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.kcard h3{font-size:14px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard b{color:var(--ink)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
 canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.side{width:360px;flex:none;display:flex;flex-direction:column;border-left:1px solid var(--line);background:var(--panel)}
+.tabs{display:flex;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{padding:10px 6px;background:transparent;border:none;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;flex:1;min-width:80px}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(0,184,148,0.05)}
+.tab-panel{flex:1;overflow:auto;padding:14px}
+.tab-panel.hide{display:none}
+.detail h2{font-size:15px;margin-bottom:8px;color:var(--accent2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail h2 .badge{background:rgba(0,184,148,0.15);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:normal}
+.detail .meta{font-size:13px;color:var(--ink);line-height:1.7;margin-bottom:10px}
+.detail .meta b{color:var(--accent2)}
+.detail .section{margin:10px 0;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:12.5px;line-height:1.7;color:var(--muted)}
+.detail .section h4{color:var(--accent);font-size:13px;margin-bottom:6px}
+.detail .section b{color:var(--ink)}
+.detail ul{padding-left:18px}
+.compare-table{font-size:12px;width:100%;border-collapse:collapse;margin-top:8px}
+.compare-table th,.compare-table td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);color:var(--muted)}
+.compare-table th{color:var(--accent);font-weight:600}
+.compare-table b{color:var(--ink)}
 .controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
 button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+button:hover{background:#2c3c5a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.side{width:auto;border-left:none;border-top:1px solid var(--line);max-height:50vh}}
+</style>
+</head>
 <body>
-<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">酶的特性与影响因素（高效性、专一性、温度pH影响）</span></header>
-<main><div class="stage"><canvas id="cv"></canvas></div>
-<aside class="panel"><h2>原理说明</h2>
-<p>酶是活细胞产生的具有催化作用的有机物（绝大多数是蛋白质，少数是RNA）。特性：高效性（催化效率是无机催化剂的10⁷-10¹³倍）、专一性（一种酶只催化一种或一类底物）、作用条件温和（受温度和pH影响）。</p>
-<div class="key-points"><h3>影响因素</h3><ul>
-<li><b>温度</b>：最适温度时活性最高；过高→变性失活；低温→活性降低但不失活</li>
-<li><b>pH</b>：最适pH时活性最高；过酸过碱→变性失活</li>
-<li><b>底物浓度</b>：低浓度时正比；高浓度时酶饱和→速率不再增大</li>
-<li><b>酶浓度</b>：底物充足时与酶浓度成正比</li>
-</ul></div></aside></main>
-<div class="controls"><button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><span id="status" class="status"></span></div>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">酶的特性与影响因素（高效性、专一性、温度pH影响）</span>
+</header>
+
+<div class="knowledge-bar">
+  <div class="kcard"><h3>🧬 酶的本质</h3>
+    <p>酶是<b>活细胞产生</b>的具有催化作用的<b>有机物</b>。<br>绝大多数是<b>蛋白质</b>（如胃蛋白酶），少数是<b>RNA</b>（如核酶）。</p></div>
+  <div class="kcard"><h3>⚡ 三大特性</h3>
+    <p><b>高效性</b>：比无机催化剂快 10⁷~10¹³ 倍<br>
+    <b>专一性</b>：每种酶只催化一种或一类底物<br>
+    <b>作用条件温和</b>：适宜温度和 pH</p></div>
+  <div class="kcard"><h3>🔑 锁钥模型</h3>
+    <p>酶的<b>活性中心</b>形状与底物匹配，<br>形成<b>酶-底物复合物</b>→反应→释放产物。<br>解释了酶的专一性。</p></div>
+  <div class="kcard"><h3>🌡 影响因素</h3>
+    <p><b>温度</b>：最适 35-40°C（人体约 37°C）<br>
+    <b>pH</b>：胃蛋白酶最适 pH=2，胰蛋白酶最适 pH=8<br>
+    <b>底物浓度/酶浓度</b>：影响反应速率</p></div>
+</div>
+
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="side">
+    <div class="tabs">
+      <button class="tab active" data-mode="catalysis">酶促反应</button>
+      <button class="tab" data-mode="specificity">专一性</button>
+      <button class="tab" data-mode="efficiency">高效性</button>
+      <button class="tab" data-mode="temp">温度</button>
+      <button class="tab" data-mode="ph">pH</button>
+      <button class="tab" data-mode="substrate">底物浓度</button>
+    </div>
+    <div class="tab-panel" id="detail"></div>
+  </aside>
+</main>
+
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <span id="stepLabel" style="font-size:13px;color:var(--accent2)"></span>
+  <label>参数 <input id="param" type="range" min="0" max="100" step="1" value="50"></label>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span class="status" id="status"></span>
+</div>
+
 <script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
-let t=0,playing=false,lastT=0;
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const speedEl=document.getElementById('speed');
+const paramEl=document.getElementById('param');
+const stepLabelEl=document.getElementById('stepLabel');
+const detailEl=document.getElementById('detail');
 
-let mode='temp';
+let mode='catalysis';
+let t=0,playing=false,speed=1,lastT=0;
+
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(700,Math.min(1000,r.width-8));
+  cv.height=Math.max(440,Math.min(560,r.height-8));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+const MODES={
+  catalysis:{
+    name:'酶促反应过程',
+    detail:`<h2>酶促反应：E + S → ES → E + P <span class="badge">中间产物学说</span></h2>
+      <div class="meta">酶（E）与底物（S）结合形成<b>酶-底物复合物（ES）</b>，反应后释放产物（P），酶本身不被消耗。</div>
+      <div class="section"><h4>反应式</h4>
+      <b>E + S ⇌ ES → E + P</b><br>
+      E = 酶（enzyme），S = 底物（substrate），P = 产物（product）</div>
+      <div class="section"><h4>关键特点</h4><ul>
+      <li>酶在反应前后<b>数量、性质不变</b>（可重复使用）</li>
+      <li>酶只<b>降低活化能</b>，不改变反应方向</li>
+      <li>酶通过<b>形成 ES 复合物</b>降低反应所需的活化能</li></ul></div>`,
+  },
+  specificity:{
+    name:'酶的专一性',
+    detail:`<h2>专一性：一种酶只催化一种或一类底物 <span class="badge">锁钥模型</span></h2>
+      <div class="meta">酶的<b>活性中心</b>具有特定的空间结构，只有<b>形状匹配</b>的底物才能进入。</div>
+      <div class="section"><h4>类比：锁与钥匙</h4>
+      酶 = 锁，底物 = 钥匙。<b>一把钥匙开一把锁</b>，一种酶催化一种底物。</div>
+      <div class="section"><h4>专一性类型</h4><ul>
+      <li><b>绝对专一性</b>：脲酶只催化尿素分解</li>
+      <li><b>相对专一性</b>：蛋白酶催化多种蛋白质</li>
+      <li><b>立体异构专一性</b>：乳酸脱氢酶只作用 L-乳酸</li></ul></div>
+      <div class="section"><h4>对比：无机催化剂</h4>
+      无机催化剂无专一性，可催化多种反应。</div>`,
+  },
+  efficiency:{
+    name:'酶的高效性',
+    detail:`<h2>高效性：酶比无机催化剂效率高 10⁷~10¹³ 倍 <span class="badge">活化能</span></h2>
+      <div class="meta">酶通过<b>大幅降低活化能</b>，使更多底物分子参与反应，反应速率大大加快。</div>
+      <div class="section"><h4>活化能</h4>
+      反应物转变为产物所需的<b>最低能量阈值</b>。<br>
+      <b>无催化剂</b>：活化能最高<br>
+      <b>无机催化剂</b>：降低活化能较多<br>
+      <b>酶</b>：降低活化能<b>最多</b>→反应最快</div>
+      <div class="section"><h4>实例</h4>
+      过氧化氢（H₂O₂）分解：<br>
+      无催化剂：极慢<br>
+      Fe³⁺ 催化：慢<br>
+      肝脏过氧化氢酶：<b>极快</b>（沸腾冒泡）</div>`,
+  },
+  temp:{
+    name:'温度对酶的影响',
+    detail:`<h2>温度影响酶活性 <span class="badge">最适温度 37°C</span></h2>
+      <div class="meta">在最适温度时酶活性最高；<b>低温</b>酶活性降低但不变性（可恢复）；<b>高温</b>酶空间结构破坏，<b>永久变性失活</b>（不可恢复）。</div>
+      <div class="section"><h4>三段式曲线</h4><ul>
+      <li><b>低温（< 37°C）</b>：酶活性低，分子运动慢，<b>可恢复</b></li>
+      <li><b>最适（≈ 37°C）</b>：活性最高</li>
+      <li><b>高温（> 60°C）</b>：蛋白质变性凝固，<b>不可恢复</b></li></ul></div>
+      <div class="section"><h4>应用</h4><ul>
+      <li>疫苗、酶制剂在<b>低温</b>下保存</li>
+      <li>发面用温水（不烫手）激活酵母</li>
+      <li>高温灭菌（破坏细菌酶系统）</li></ul></div>`,
+  },
+  ph:{
+    name:'pH 对酶的影响',
+    detail:`<h2>pH 影响酶活性 <span class="badge">不同酶最适 pH 不同</span></h2>
+      <div class="meta">过酸或过碱都会使酶<b>变性失活</b>。</div>
+      <div class="section"><h4>常见酶的最适 pH</h4>
+      <table class="compare-table">
+      <tr><th>酶</th><th>最适 pH</th><th>所在部位</th></tr>
+      <tr><td><b>胃蛋白酶</b></td><td>1.5-2.0</td><td>胃（强酸环境）</td></tr>
+      <tr><td><b>唾液淀粉酶</b></td><td>6.8</td><td>口腔（近中性）</td></tr>
+      <tr><td><b>胰蛋白酶</b></td><td>8.0-9.0</td><td>小肠（弱碱性）</td></tr>
+      <tr><td><b>肠肽酶</b></td><td>约 8.0</td><td>小肠</td></tr>
+      </table></div>
+      <div class="section"><h4>原理</h4>
+      pH 改变会影响酶分子中<b>氨基酸侧链的解离状态</b>，破坏活性中心结构。</div>`,
+  },
+  substrate:{
+    name:'底物浓度对速率的影响',
+    detail:`<h2>底物浓度 vs 反应速率 <span class="badge">米氏动力学</span></h2>
+      <div class="meta">底物浓度较低时，速率与底物浓度成正比；<b>酶饱和</b>后，速率不再增加。</div>
+      <div class="section"><h4>三阶段</h4><ul>
+      <li><b>低浓度</b>：速率与[S]成正比（一级反应）</li>
+      <li><b>中浓度</b>：速率增加变慢（混合级）</li>
+      <li><b>高浓度</b>：酶被饱和，速率<b>达到最大值 Vmax</b>（零级反应）</li></ul></div>
+      <div class="section"><h4>Km（米氏常数）</h4>
+      速率达到 Vmax 一半时的底物浓度。<br>
+      <b>Km 越小</b> → 酶与底物亲和力<b>越强</b>。</div>
+      <div class="section"><h4>类似曲线：酶浓度</h4>
+      底物充足时，反应速率与酶浓度成<b>正比</b>。</div>`,
+  },
+};
+
+function updateDetail(){
+  detailEl.innerHTML=`<div class="detail">${MODES[mode].detail}</div>`;
+  stepLabelEl.textContent=MODES[mode].name;
+}
+
+function renderTabs(){
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.mode===mode);
+  });
+}
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{mode=t.dataset.mode;renderTabs();updateDetail();draw();};
+});
+
+// ========== DRAWING ==========
+
+function drawBG(){
+  ctx.fillStyle='#0b0f18';
+  ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 15px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(MODES[mode].name,cv.width/2,24);
+}
+
+// Draw an enzyme as a jagged shape with an active site
+function drawEnzyme(x,y,scale,active,deformed){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(scale,scale);
+  ctx.fillStyle=active?'rgba(155,89,182,0.3)':'rgba(155,89,182,0.15)';
+  ctx.strokeStyle=deformed?'#666':'#9b59b6';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  // irregular blob shape
+  const r=30;
+  for(let i=0;i<=24;i++){
+    const a=i*Math.PI*2/24;
+    const rad=r+Math.sin(a*3)*4+Math.cos(a*5+t*0.5)*2;
+    const px=Math.cos(a)*rad,py=Math.sin(a)*rad;
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // active site (notch)
+  if(!deformed){
+    ctx.fillStyle='rgba(253,203,110,0.3)';
+    ctx.beginPath();
+    ctx.moveTo(-10,-15);
+    ctx.lineTo(10,-15);
+    ctx.lineTo(8,-5);
+    ctx.lineTo(-8,-5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle='#fdcb6e';
+    ctx.lineWidth=1;
+    ctx.stroke();
+  }
+  // label
+  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  ctx.fillText('酶 E',0,4);
+  ctx.restore();
+}
+
+function drawSubstrate(x,y,scale,shape,label,color){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(scale,scale);
+  ctx.fillStyle=color||'#3498db';
+  ctx.strokeStyle='#fff';ctx.lineWidth=1;
+  ctx.beginPath();
+  if(shape==='tri'){
+    ctx.moveTo(0,-10);ctx.lineTo(-9,8);ctx.lineTo(9,8);
+  }else if(shape==='sqr'){
+    ctx.rect(-9,-9,18,18);
+  }else if(shape==='circ'){
+    ctx.arc(0,0,10,0,Math.PI*2);
+  }else if(shape==='hex'){
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3;
+      const px=Math.cos(a)*10,py=Math.sin(a)*10;
+      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+  }
+  ctx.closePath();
+  ctx.fill();ctx.stroke();
+  if(label){
+    ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText(label,0,4);
+  }
+  ctx.restore();
+}
+
+function drawCatalysis(){
+  drawBG();
+  const W=cv.width,H=cv.height;
+  const cy=H/2+10;
+  // phases: 0=approach, 0.3=ES complex, 0.6=reaction, 0.9=product released
+  const cycle=(t*0.4)%1;
+  const ex=W*0.5,ey=cy;
+  // substrate position
+  let sx,subShape='tri',subColor='#3498db',subLabel='S';
+  let prodX,prodShape='circ',prodColor='#27ae60',prodLabel='P';
+  if(cycle<0.3){
+    sx=W*0.15+(ex-50-W*0.15)*(cycle/0.3);
+  }else if(cycle<0.5){
+    // binding
+    sx=ex-15;
+  }else if(cycle<0.7){
+    // ES complex
+    sx=ex-15;
+  }else if(cycle<0.9){
+    // product forming
+    sx=ex-15;
+    subColor=prodColor;subShape='circ';subLabel='P';
+  }else{
+    // product released - moving away right
+    sx=ex-15+(W*0.85-ex+15)*((cycle-0.9)/0.1);
+    subColor=prodColor;subShape='circ';subLabel='P';
+  }
+  // draw substrate/product
+  drawSubstrate(sx,cy,1.3,subShape,subLabel,subColor);
+  // draw enzyme
+  drawEnzyme(ex,ey,1.3,cycle>=0.3&&cycle<0.9,false);
+  // equation label
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  const eqText=cycle<0.5?'E + S →':cycle<0.9?'E·S (酶-底物复合物)':cycle<0.95?'ES → E + P':'E + P';
+  ctx.fillText(eqText,W/2,cy-100);
+  // arrows
+  ctx.strokeStyle='#8b9dc3';ctx.lineWidth=1;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();
+  ctx.moveTo(W*0.15,cy+40);ctx.lineTo(W*0.85,cy+40);
+  ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#8b9dc3';ctx.font='11px sans-serif';
+  ctx.fillText('反应进程 →',W/2,cy+58);
+  // legend
+  drawLegend([
+    {c:'#9b59b6',t:'酶 E'},
+    {c:'#3498db',t:'底物 S'},
+    {c:'#27ae60',t:'产物 P'},
+  ],W-200,40);
+}
+
+function drawSpecificity(){
+  drawBG();
+  const W=cv.width,H=cv.height;
+  const cy=H/2+10;
+  // Two enzymes side by side, each with different active site shape
+  // Enzyme 1 accepts triangle substrate, rejects square
+  // Enzyme 2 accepts square substrate, rejects triangle
+  const e1x=W*0.3,e2x=W*0.7;
+  // substrate position oscillates
+  const cycle=(t*0.5)%1;
+  // enzyme 1 with triangle active site
+  ctx.save();
+  ctx.translate(e1x,cy);
+  ctx.fillStyle='rgba(155,89,182,0.3)';
+  ctx.strokeStyle='#9b59b6';ctx.lineWidth=2;
+  ctx.beginPath();
+  const r=40;
+  for(let i=0;i<=24;i++){
+    const a=i*Math.PI*2/24;
+    const rad=r+Math.sin(a*3)*4;
+    const px=Math.cos(a)*rad,py=Math.sin(a)*rad;
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // triangle active site
+  ctx.fillStyle='rgba(253,203,110,0.3)';
+  ctx.beginPath();
+  ctx.moveTo(-12,-18);ctx.lineTo(12,-18);ctx.lineTo(0,-5);
+  ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#fdcb6e';ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('酶 ①',0,5);
+  ctx.restore();
+  // enzyme 2 with square active site
+  ctx.save();
+  ctx.translate(e2x,cy);
+  ctx.fillStyle='rgba(155,89,182,0.3)';
+  ctx.strokeStyle='#9b59b6';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=24;i++){
+    const a=i*Math.PI*2/24;
+    const rad=40+Math.cos(a*3)*4;
+    const px=Math.cos(a)*rad,py=Math.sin(a)*rad;
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(253,203,110,0.3)';
+  ctx.fillRect(-14,-22,28,16);
+  ctx.strokeStyle='#fdcb6e';ctx.strokeRect(-14,-22,28,16);
+  ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('酶 ②',0,5);
+  ctx.restore();
+  // substrate approaching each enzyme
+  const sub1Cycle=cycle<0.5?cycle*2:(1-cycle)*2;
+  const sub2Cycle=cycle<0.5?(1-cycle*2):((cycle-0.5)*2);
+  // triangle goes to enzyme 1 - fits
+  const s1x=e1x-40+sub1Cycle*30;
+  drawSubstrate(s1x,cy-20,1.2,'tri','S',cycle<0.5?'#3498db':'#27ae60');
+  // square goes to enzyme 2 - fits
+  const s2x=e2x-40+sub2Cycle*30;
+  drawSubstrate(s2x,cy-15,1.2,'sqr','S',cycle>=0.5?'#3498db':'#27ae60');
+  // wrong substrates - rejected (sitting outside)
+  ctx.fillStyle='rgba(231,76,60,0.3)';
+  ctx.font='11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('✗ 不匹配',e1x+60,cy-20);
+  ctx.fillText('✗ 不匹配',e2x-60,cy-20);
+  drawSubstrate(e1x+60,cy+5,0.7,'sqr','', '#e74c3c');
+  drawSubstrate(e2x-60,cy+5,0.7,'tri','','#e74c3c');
+  // labels
+  ctx.fillStyle='#27ae60';ctx.font='bold 12px sans-serif';
+  ctx.fillText('✓ 匹配 → 反应',e1x,cy+70);
+  ctx.fillText('✓ 匹配 → 反应',e2x,cy+70);
+}
+
+function drawEfficiency(){
+  drawBG();
+  const W=cv.width,H=cv.height;
+  // Energy diagram: 3 paths (uncatalyzed, inorganic catalyst, enzyme)
+  const ox=80,oy=H-80,gw=W-160,gh=H-180;
+  // axes
+  ctx.strokeStyle='#5dade2';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('反应进程 →',ox+gw/2,oy+35);
+  ctx.save();ctx.translate(ox-25,oy-gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('能量',0,0);ctx.restore();
+  // levels
+  const reactantY=oy-gh*0.2;
+  const productY=oy-gh*0.3;
+  // reactants and products lines
+  ctx.strokeStyle='#8b9dc3';ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(ox,reactantY);ctx.lineTo(ox+gw,reactantY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,productY);ctx.lineTo(ox+gw,productY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#8b9dc3';ctx.font='11px sans-serif';ctx.textAlign='left';
+  ctx.fillText('反应物',ox+gw-60,reactantY-5);
+  ctx.fillText('产物',ox+gw-60,productY-5);
+  // three energy curves (humps)
+  const peakUncat=oy-gh*0.85;
+  const peakInorg=oy-gh*0.65;
+  const peakEnzyme=oy-gh*0.4;
+  const xStart=ox+gw*0.15,xPeak=ox+gw*0.5,xEnd=ox+gw*0.85;
+  // uncatalyzed (red)
+  ctx.strokeStyle='#e74c3c';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(xStart,reactantY);
+  ctx.quadraticCurveTo(xPeak,peakUncat,xEnd,productY);
+  ctx.stroke();
+  // inorganic catalyst (yellow)
+  ctx.strokeStyle='#f39c12';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(xStart,reactantY);
+  ctx.quadraticCurveTo(xPeak,peakInorg,xEnd,productY);
+  ctx.stroke();
+  // enzyme (green)
+  ctx.strokeStyle='#27ae60';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(xStart,reactantY);
+  ctx.quadraticCurveTo(xPeak,peakEnzyme,xEnd,productY);
+  ctx.stroke();
+  // labels at peaks
+  ctx.fillStyle='#e74c3c';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('无催化剂',xPeak,peakUncat-8);
+  ctx.fillText('（活化能最高）',xPeak,peakUncat+6);
+  ctx.fillStyle='#f39c12';
+  ctx.fillText('无机催化剂',xPeak,peakInorg-8);
+  ctx.fillStyle='#27ae60';
+  ctx.fillText('酶',xPeak,peakEnzyme-8);
+  ctx.fillText('（活化能最低）',xPeak,peakEnzyme+6);
+  // legend
+  drawLegend([
+    {c:'#e74c3c',t:'无催化剂'},
+    {c:'#f39c12',t:'无机催化剂'},
+    {c:'#27ae60',t:'酶催化'},
+  ],W-180,30);
+  // conclusion
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+  ctx.fillText('酶降低活化能最多 → 反应速率最快',W/2,oy+60);
+}
+
+function drawCurve(xLabel,yLabel,curves,annotations,xUnits){
+  drawBG();
+  const W=cv.width,H=cv.height;
+  const ox=70,oy=H-70,gw=W-140,gh=H-160;
+  ctx.strokeStyle='#5dade2';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText(xLabel,ox+gw/2,oy+35);
+  ctx.save();ctx.translate(ox-25,oy-gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText(yLabel,0,0);ctx.restore();
+  // axis labels
+  if(xUnits){
+    xUnits.forEach((u,i)=>{
+      const x=ox+i*gw/(xUnits.length-1);
+      ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';ctx.textAlign='center';
+      ctx.fillText(u,x,oy+18);
+      ctx.strokeStyle='rgba(141,158,178,0.2)';ctx.lineWidth=0.5;
+      ctx.beginPath();ctx.moveTo(x,oy);ctx.lineTo(x,oy+5);ctx.stroke();
+    });
+  }
+  // draw curves
+  curves.forEach(c=>{
+    ctx.strokeStyle=c.color;ctx.lineWidth=2.5;
+    ctx.beginPath();
+    c.points.forEach((p,i)=>{
+      const x=ox+p[0]*gw,y=oy-p[1]*gh;
+      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    // label
+    if(c.labelAt){
+      const x=ox+c.labelAt[0]*gw,y=oy-c.labelAt[1]*gh;
+      ctx.fillStyle=c.color;ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      ctx.fillText(c.name,x,y-8);
+    }
+  });
+  // annotations
+  annotations.forEach(a=>{
+    ctx.fillStyle=a.color;
+    if(a.type==='point'){
+      const x=ox+a.x*gw,y=oy-a.y*gh;
+      ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+      ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+      ctx.fillText(a.text,x,y-12);
+    }else{
+      ctx.font='12px sans-serif';ctx.textAlign='center';
+      ctx.fillText(a.text,ox+a.x*gw,oy-a.y*gh);
+    }
+  });
+}
+
 function drawTemp(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-  ctx.fillText('温度对酶活性的影响',W/2,25);
-  const ox=80,oy=H-60,gw=W-120,gh=H-120;
-  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
-  const progress=Math.min(1,t*0.3);
-  ctx.beginPath();ctx.strokeStyle='#00b894';ctx.lineWidth=2;
-  for(let i=0;i<=gw*progress;i++){const temp=i/gw*80;let activity;if(temp<37)activity=Math.pow(temp/37,2);else if(temp<50)activity=Math.pow(1-(temp-37)/13,2);else activity=0;const x=ox+i,y=oy-activity*gh;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
-  ctx.stroke();
-  ctx.fillStyle='#fdcb6e';ctx.font='12px sans-serif';ctx.fillText('最适温度(37°C)',ox+37/80*gw,oy-gh-10);
-  ctx.fillStyle='#8b9dc3';ctx.textAlign='center';ctx.fillText('温度(°C)',ox+gw/2,oy+25);
+  const tempVal=parseFloat(paramEl.value); // 0-100
+  const temp=tempVal; // °C 0-100
+  let activity;
+  if(temp<37)activity=Math.pow(temp/37,2);
+  else if(temp<60)activity=Math.pow(1-(temp-37)/23,2);
+  else activity=0;
+  drawCurve('温度 (°C)','酶活性相对值',[
+    {
+      color:'#00b894',name:'温度-酶活性曲线',
+      points:Array.from({length:50},(_,i)=>{
+        const t=i*100/49;
+        let a;
+        if(t<37)a=Math.pow(t/37,2);
+        else if(t<60)a=Math.pow(1-(t-37)/23,2);
+        else a=0;
+        return [i/49,a];
+      }),
+      labelAt:[0.37,1.0]
+    }
+  ],[
+    {type:'point',x:0.37,y:1.0,text:'最适 37°C',color:'#fdcb6e'},
+    {type:'point',x:0.60,y:0.0,text:'变性失活',color:'#e74c3c'},
+    {type:'text',x:temp/100,y:activity,text:`当前 ${temp.toFixed(0)}°C\n活性 ${(activity*100).toFixed(0)}%`,color:'#fff'},
+  ],['0','20','37','60','80','100']);
+  // highlight current temp
+  const W=cv.width,H=cv.height;
+  const ox=70,oy=H-70,gw=W-140,gh=H-160;
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(ox+temp/100*gw,oy-activity*gh,6,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(ox+temp/100*gw,oy);ctx.lineTo(ox+temp/100*gw,oy-activity*gh);ctx.stroke();
+  ctx.setLineDash([]);
 }
-function drawPH(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-  ctx.fillText('pH对酶活性的影响',W/2,25);
-  const ox=80,oy=H-60,gw=W-120,gh=H-120;
-  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
-  const progress=Math.min(1,t*0.3);
-  ctx.beginPath();ctx.strokeStyle='#e84393';ctx.lineWidth=2;
-  for(let i=0;i<=gw*progress;i++){const ph=i/gw*14;let activity=Math.exp(-Math.pow(ph-7,2)/4);const x=ox+i,y=oy-activity*gh;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
-  ctx.stroke();
-  ctx.fillStyle='#fdcb6e';ctx.font='12px sans-serif';ctx.fillText('最适pH(7)',ox+7/14*gw,oy-gh-10);
-  ctx.fillStyle='#8b9dc3';ctx.textAlign='center';ctx.fillText('pH',ox+gw/2,oy+25);
-}
-function drawSub(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-  ctx.fillText('底物浓度对反应速率的影响',W/2,25);
-  const ox=80,oy=H-60,gw=W-120,gh=H-120;
-  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
-  const progress=Math.min(1,t*0.3);
-  ctx.beginPath();ctx.strokeStyle='#0984e3';ctx.lineWidth=2;
-  for(let i=0;i<=gw*progress;i++){const s=i/gw*5;const v=s/(1+s);const x=ox+i,y=oy-v*gh;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
-  ctx.stroke();
-  ctx.fillStyle='#fdcb6e';ctx.font='12px sans-serif';ctx.fillText('Vmax(酶饱和)',ox+gw+5,oy-gh+10);
-  ctx.fillStyle='#8b9dc3';ctx.textAlign='center';ctx.fillText('底物浓度',ox+gw/2,oy+25);
-}
-function draw(){if(mode==='temp')drawTemp();else if(mode==='ph')drawPH();else drawSub();statusEl.textContent='模式: '+(mode==='temp'?'温度':mode==='ph'?'pH':'底物浓度');}
-cv.parentElement.parentElement.parentElement.querySelector('.controls').insertAdjacentHTML('beforeend','<button id="tempBtn">温度</button><button id="phBtn">pH</button><button id="subBtn">底物浓度</button>');
-document.getElementById('tempBtn').onclick=function(){mode='temp';t=0;draw();};
-document.getElementById('phBtn').onclick=function(){mode='ph';t=0;draw();};
-document.getElementById('subBtn').onclick=function(){mode='sub';t=0;draw();};
 
-let animId;
-function loop(ts){const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();if(playing)animId=requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);};
-document.getElementById('resetBtn').onclick=function(){t=0;draw();};
-draw();
-</script></body></html>
+function drawPH(){
+  const phVal=parseFloat(paramEl.value)/100*14; // 0-14
+  // assume pepsin (optimal 2) - show as curve
+  let activity=Math.exp(-Math.pow(phVal-7,2)/4);
+  drawCurve('pH','酶活性相对值（唾液淀粉酶）',[
+    {
+      color:'#e84393',name:'pH-酶活性曲线',
+      points:Array.from({length:50},(_,i)=>{
+        const p=i*14/49;
+        return [i/49,Math.exp(-Math.pow(p-7,2)/4)];
+      }),
+      labelAt:[0.5,1.0]
+    }
+  ],[
+    {type:'point',x:7/14,y:1.0,text:'最适 pH=7',color:'#fdcb6e'},
+    {type:'point',x:phVal/14,y:activity,text:`pH=${phVal.toFixed(1)}`,color:'#fff'},
+  ],['0','2','4','6','7','8','10','12','14']);
+  // show special enzyme pH values
+  const W=cv.width,H=cv.height;
+  ctx.fillStyle='#fdcb6e';ctx.font='11px sans-serif';ctx.textAlign='left';
+  ctx.fillText('胃蛋白酶最适 pH=2',W-220,80);
+  ctx.fillText('胰蛋白酶最适 pH=8',W-220,98);
+  // highlight current
+  const ox=70,oy=H-70,gw=W-140,gh=H-160;
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(ox+phVal/14*gw,oy-activity*gh,6,0,Math.PI*2);ctx.fill();
+}
+
+function drawSubstrate(){
+  const sVal=parseFloat(paramEl.value)/100; // 0-1 normalized
+  // Michaelis-Menten: v = Vmax * [S]/(Km + [S])
+  const v=sVal/(0.2+sVal); // Km=0.2
+  drawCurve('底物浓度 [S]','反应速率 v',[
+    {
+      color:'#3498db',name:'v-Vmax 曲线',
+      points:Array.from({length:50},(_,i)=>{
+        const s=i/49;
+        return [s,s/(0.2+s)];
+      }),
+      labelAt:[0.5,0.6]
+    }
+  ],[
+    {type:'point',x:0.2,y:0.5,text:'Km (Vmax/2)',color:'#fdcb6e'},
+    {type:'text',x:0.85,y:1.0,text:'Vmax（酶饱和）',color:'#27ae60'},
+    {type:'point',x:sVal,y:v,text:`v=${v.toFixed(2)}`,color:'#fff'},
+  ],['0','','Km','','','Vmax→']);
+  const W=cv.width,H=cv.height;
+  ctx.fillStyle='#fdcb6e';ctx.font='11px sans-serif';ctx.textAlign='left';
+  ctx.fillText('底物浓度低：v 正比于 [S]',20,H-30);
+  ctx.fillText('底物浓度高：酶被饱和，v 趋于 Vmax',W-260,H-30);
+}
+
+function drawLegend(items,x,y){
+  items.forEach((it,i)=>{
+    ctx.fillStyle=it.c;
+    ctx.fillRect(x,y+i*18,12,3);
+    ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText(it.t,x+18,y+i*18+5);
+  });
+}
+
+function draw(){
+  if(mode==='catalysis')drawCatalysis();
+  else if(mode==='specificity')drawSpecificity();
+  else if(mode==='efficiency')drawEfficiency();
+  else if(mode==='temp')drawTemp();
+  else if(mode==='ph')drawPH();
+  else if(mode==='substrate')drawSubstrate();
+  statusEl.textContent=`模式：${MODES[mode].name}`;
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  t+=dt*speed;
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  speed=playing?parseFloat(speedEl.value):0;
+};
+document.getElementById('resetBtn').onclick=()=>{
+  t=0;paramEl.value=50;
+  draw();
+};
+speedEl.oninput=()=>{if(playing)speed=parseFloat(speedEl.value);};
+paramEl.oninput=()=>{draw();};
+
+renderTabs();updateDetail();
+speed=0;
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

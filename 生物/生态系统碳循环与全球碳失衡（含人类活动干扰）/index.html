@@ -3,105 +3,824 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>生态系统碳循环</title>
+<title>生态系统碳循环与全球碳失衡 - 交互式教学动画</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+:root{
+  --bg:#0a1628;--panel:#111d33;--card:#15243d;--ink:#e8edf6;--muted:#8b9dc3;
+  --accent:#00b894;--accent2:#fdcb6e;--line:#1e3050;
+  --atmos:#5dade2;--producer:#27ae60;--consumer:#e74c3c;--decomposer:#9b59b6;
+  --fossil:#5d4037;--ocean:#3498db;--human:#f39c12;--warming:#e67e22;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
 .back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
 .back:hover{background:#1f2a40}
 .title{font-size:16px;font-weight:600}
-main{flex:1;display:flex;min-height:0}
+.knowledge-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:14px 18px;background:linear-gradient(180deg,#0e1c33,#0a1628);border-bottom:1px solid var(--line)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.kcard h3{font-size:14px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard b{color:var(--ink)}
+.kcard .num{display:inline-block;background:var(--accent);color:#fff;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:bold;flex:none}
+main{flex:1;display:flex;flex-direction:column;min-height:0}
 .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
 canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.tabs{display:flex;gap:4px;padding:10px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap;justify-content:center}
+.tab{padding:8px 14px;background:#1a2942;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:13px;border-radius:6px;cursor:pointer}
+.tab:hover{background:#223656;color:var(--ink)}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.detail{padding:14px 16px;background:var(--panel);border-top:1px solid var(--line);max-height:30vh;overflow:auto}
+.detail h2{font-size:15px;color:var(--accent2);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail h2 .badge{background:rgba(0,184,148,0.15);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:normal}
+.detail .body{font-size:13px;line-height:1.75;color:var(--ink)}
+.detail .body b{color:var(--accent2)}
+.points{margin-top:8px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
+.points h4{color:var(--accent);font-size:13px;margin-bottom:6px}
+.points ul{padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7}
 .controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
 button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+button:hover{background:#2c3c5a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){.knowledge-bar{grid-template-columns:1fr}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">生态系统碳循环</span>
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">生态系统碳循环与全球碳失衡（含人类活动干扰）</span>
 </header>
+
+<div class="knowledge-bar">
+  <div class="kcard"><h3><span class="num">1</span>碳循环</h3>
+    <p>碳在<b>生物群落</b>与<b>无机环境</b>之间循环。<br>
+    无机环境：<b>大气 CO₂</b>、碳酸盐、化石燃料<br>
+    生物群落：有机物（糖、脂、蛋白）</p></div>
+  <div class="kcard"><h3><span class="num">2</span>四大碳库</h3>
+    <p><b>大气圈</b>：少量 CO₂（≈ 800 Gt）<br>
+    <b>水圈</b>：海洋溶解大量 CO₂（≈ 38000 Gt）<br>
+    <b>生物圈</b>：植被、土壤有机物<br>
+    <b>岩石圈</b>：化石燃料（煤、石油、天然气）</p></div>
+  <div class="kcard"><h3><span class="num">3</span>四大过程</h3>
+    <p><b>光合作用</b>：CO₂ → 有机物<br>
+    <b>呼吸作用</b>：有机物 → CO₂<br>
+    <b>分解作用</b>：动植物遗体 → CO₂<br>
+    <b>燃烧</b>：化石燃料/有机物 → CO₂</p></div>
+  <div class="kcard"><h3><span class="num">4</span>全球碳失衡</h3>
+    <p>人类大量燃烧化石燃料 + 砍伐森林 → <br>大气 CO₂ 从工业前 280 ppm 升至 <b>420+ ppm</b><br>→ <b>温室效应</b>加剧 → 全球变暖</p></div>
+</div>
+
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>碳在<b>大气、生产者、消费者、分解者、土壤/化石燃料</b>间循环：植物光合作用固定 CO₂，呼吸与分解释放 CO₂。人类大量燃烧化石燃料使碳释放远超固定，导致全球碳失衡与变暖。</p>
-    <div class="legend"><span class='dot' style='background:#7dd3fc'></span>大气CO₂&nbsp;<span class='dot' style='background:#34d399'></span>植物&nbsp;<span class='dot' style='background:#f59e0b'></span>人类活动</div>
-  
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>碳循环</h3><ul><li>碳在生物与无机环境间循环</li><li>形式：CO₂(大气) ↔ 有机物(生物)</li><li>返回大气：呼吸+分解+燃烧</li><li>温室效应：CO₂增多→全球变暖</li><li>人类活动：化石燃料燃烧打破平衡</li></ul></div>
-    </aside>
 </main>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-mode="natural">🌍 自然碳循环</button>
+  <button class="tab" data-mode="human">🏭 人类活动影响</button>
+  <button class="tab" data-mode="greenhouse">🌡 温室效应</button>
+  <button class="tab" data-mode="data">📊 数据图表</button>
+</div>
+
+<div class="detail" id="detail"></div>
+
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>人类干扰强度 <input id="human" type="range" min="0" max="100" step="1" value="20"></label>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span class="status" id="status"></span>
 </div>
-<script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const Cb={t:0,p:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){Cb.t=0;Cb.p=0;}
-function sceneUpdate(dt){Cb.t+=dt;if(Cb.p<1)Cb.p=Math.min(1,Cb.p+dt*0.2);}
-function arrow(x1,y1,x2,y2,c,lab){ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.fillStyle=c;ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(lab,(x1+x2)/2,(y1+y2)/2-4);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const cx=cv.width/2,cy=cv.height/2;
-  // atmosphere CO2
-  ctx.fillStyle='rgba(125,211,252,0.15)';ctx.fillRect(0,40,cv.width,90);
-  ctx.fillStyle='#7dd3fc';ctx.fillText('大气 CO₂',cx,70);
-  // plants / animals / soil
-  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(cx-180,cy,30,0,7);ctx.fill();ctx.fillText('植物',cx-180,cy+45);
-  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(cx+180,cy,28,0,7);ctx.fill();ctx.fillText('动物',cx+180,cy+45);
-  ctx.fillStyle='#cbd5e1';ctx.fillRect(cx-40,cy+120,80,30);ctx.fillText('土壤/化石燃料',cx,cy+170);
-  arrow(cx,130,cx-180,cy-30,'#34d399','光合作用');
-  arrow(cx-180,cy+30,cx,130,'#f87171','呼吸');
-  arrow(cx+180,cy-30,cx,130,'#f87171','呼吸');
-  arrow(cx,cy+30,cx+180,cy-30,'#f87171','捕食');
-  arrow(cx,130,cx,cy+120,'#f59e0b','人类活动↑');
-  statusEl.textContent='碳在大气-生物-土壤间循环；化石燃料大量燃烧致碳失衡、全球变暖';
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const speedEl=document.getElementById('speed');
+const humanEl=document.getElementById('human');
+const detailEl=document.getElementById('detail');
+
+let mode='natural';
+let humanLevel=20;
+let playing=false;
+let speed=1;
+let lastT=0;
+let t=0;
+
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(800,Math.min(1100,r.width-8));
+  cv.height=Math.max(420,Math.min(540,r.height-8));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+const MODES={
+  natural:{
+    name:'自然碳循环',
+    detail:`<h2>自然碳循环 <span class="badge">生物 ↔ 大气</span></h2>
+      <div class="body">
+      <p>在自然状态下，碳循环<b>保持平衡</b>：光合作用吸收的 CO₂ ≈ 呼吸+分解释放的 CO₂。</p>
+      <div class="points"><h4>碳的流动路径</h4><ul>
+      <li><b>光合作用</b>：大气 CO₂ → 生产者（植物）→ 有机物</li>
+      <li><b>食物链</b>：生产者 → 消费者（动物）→ 各营养级</li>
+      <li><b>呼吸作用</b>：所有生物 → 大气 CO₂</li>
+      <li><b>分解作用</b>：动植物遗体 → 分解者 → CO₂</li>
+      <li><b>海洋交换</b>：大气 CO₂ ⇌ 海洋（溶解/释放）</li></ul></div>
+      <div class="points"><h4>碳的存在形式</h4><ul>
+      <li><b>无机环境</b>：CO₂、碳酸盐（CaCO₃）</li>
+      <li><b>生物体内</b>：糖类、脂质、蛋白质（有机物）</li></ul></div>
+      <div class="points"><h4>关键</h4>
+      <b>碳循环以 CO₂ 形式进入生物群落</b>，通过<b>光合作用</b>完成。<br>
+      生产者是连接无机环境与生物群落的<b>关键环节</b>。</div></div>`,
+  },
+  human:{
+    name:'人类活动影响',
+    detail:`<h2>人类活动对碳循环的干扰 <span class="badge">碳失衡</span></h2>
+      <div class="body">
+      <p>工业革命以来，人类活动<b>打破了自然碳平衡</b>，导致大气 CO₂ 浓度持续上升。</p>
+      <div class="points"><h4>主要人类活动</h4><ul>
+      <li><b>燃烧化石燃料</b>（煤、石油、天然气）→ 释放数亿年积累的碳</li>
+      <li><b>砍伐森林</b>（特别是热带雨林）→ 减少光合作用吸收</li>
+      <li><b>水泥生产</b>：CaCO₃ → CaO + CO₂↑</li>
+      <li><b>土地利用变化</b>：农业、城市化</li></ul></div>
+      <div class="points"><h4>后果</h4><ul>
+      <li>大气 CO₂ 浓度从 280 ppm（1750年）→ 420+ ppm（2024年）</li>
+      <li>温室效应加剧</li>
+      <li>全球变暖：平均气温升高 1.1°C 以上</li>
+      <li>海洋酸化（CO₂ 溶于水形成碳酸）</li></ul></div>
+      <div class="points"><h4>缓解措施</h4><ul>
+      <li>减少化石燃料使用（发展清洁能源）</li>
+      <li>植树造林、保护森林</li>
+      <li>碳捕集与封存（CCS）</li>
+      <li>《巴黎协定》目标：温升 < 1.5°C</li></ul></div></div>`,
+  },
+  greenhouse:{
+    name:'温室效应',
+    detail:`<h2>温室效应 <span class="badge">全球变暖</span></h2>
+      <div class="body">
+      <p>大气中的 CO₂、CH₄、水蒸气等允许太阳短波辐射通过，但<b>吸收地表反射的长波红外辐射</b>，使地表温度升高。</p>
+      <div class="points"><h4>温室气体</h4><ul>
+      <li><b>CO₂</b>（二氧化碳）：贡献最大，约 60%</li>
+      <li><b>CH₄</b>（甲烷）：增温效应是 CO₂ 的 25 倍</li>
+      <li><b>N₂O</b>（一氧化二氮）：来自农业、工业</li>
+      <li><b>水蒸气</b>：天然温室气体</li>
+      <li><b>氟利昂</b>：人造，破坏臭氧层+强温室效应</li></ul></div>
+      <div class="points"><h4>影响</h4><ul>
+      <li>极地冰川融化，海平面上升</li>
+      <li>极端天气频发（飓风、干旱、洪涝）</li>
+      <li>生态系统破坏，物种灭绝加速</li>
+      <li>农业产量波动</li>
+      <li>热带疾病扩散</li></ul></div>
+      <div class="points"><h4>注意</h4>
+      温室效应本身是<b>自然现象</b>（没有它地球均温 -18°C），<br>
+      问题在于<b>人类加剧</b>了它。</div></div>`,
+  },
+  data:{
+    name:'数据图表',
+    detail:`<h2>大气 CO₂ 浓度变化 <span class="badge">基林曲线</span></h2>
+      <div class="body">
+      <p>自 1958 年 Charles Keeling 在夏威夷莫纳罗亚观测站开始连续测量大气 CO₂ 浓度。</p>
+      <div class="points"><h4>关键数据点</h4><ul>
+      <li><b>工业革命前（1750）</b>：约 280 ppm</li>
+      <li><b>1958 年</b>：约 315 ppm（基林开始测量）</li>
+      <li><b>2024 年</b>：约 421 ppm</li>
+      <li>预计 2050 年：可达 550 ppm（如不控制）</li></ul></div>
+      <div class="points"><h4>锯齿状波动</h4>
+      每年有 5-7 ppm 的<b>季节性波动</b>：<br>
+      • 北半球春季（4-5 月）：植物开始光合作用 → CO₂ 下降<br>
+      • 北半球冬季（10-3 月）：植物休眠 + 取暖燃烧 → CO₂ 上升<br>
+      <b>原因</b>：北半球陆地植物多，主导全球 CO₂ 季节变化。</div>
+      <div class="points"><h4>其他指标</h4><ul>
+      <li>全球平均温度：比工业革命前升高 +1.1°C 以上</li>
+      <li>海平面上升：约 3 mm/年（且加速）</li>
+      <li>海洋 pH：从 8.2 降至 8.05（酸化）</li></ul></div></div>`,
+  },
+};
+
+function updateDetail(){
+  detailEl.innerHTML=`<div class="detail">${MODES[mode].detail}</div>`;
 }
 
-let playing=false,lastT=0,speed=1,t=0;
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
-const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    mode=t.dataset.type;
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+    updateDetail();draw();
+  };
+});
+
+// Drawing
+
+function drawArrow(x1,y1,x2,y2,color,label,particleSpeed,particleColor){
+  ctx.strokeStyle=color;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  // arrowhead
+  const ang=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-Math.cos(ang-0.4)*10,y2-Math.sin(ang-0.4)*10);
+  ctx.lineTo(x2-Math.cos(ang+0.4)*10,y2-Math.sin(ang+0.4)*10);
+  ctx.closePath();ctx.fill();
+  // particles flowing
+  if(particleSpeed){
+    const dx=x2-x1,dy=y2-y1;
+    const len=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/len,uy=dy/len;
+    const px=-uy,py=ux;
+    const num=Math.floor(len/20);
+    for(let i=0;i<num;i++){
+      const phase=((t*particleSpeed+i/num)%1);
+      const ppx=x1+dx*phase;
+      const ppy=y1+dy*phase;
+      ctx.fillStyle=particleColor||color;
+      ctx.beginPath();ctx.arc(ppx,ppy,3,0,Math.PI*2);ctx.fill();
+    }
+  }
+  // label
+  if(label){
+    ctx.fillStyle=color;ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    const mx=(x1+x2)/2,my=(y1+y2)/2;
+    ctx.fillText(label,mx,my-8);
+  }
+}
+
+function drawNaturalCarbon(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  // Sky
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(93,173,226,0.3)');
+  grad.addColorStop(0.5,'rgba(135,206,235,0.1)');
+  grad.addColorStop(1,'rgba(34,139,34,0.2)');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('🌍 自然碳循环（动态平衡）',W/2,28);
+
+  // Atmosphere (top)
+  const atmosY=H*0.15;
+  ctx.fillStyle='rgba(93,173,226,0.4)';
+  ctx.fillRect(0,atmosY-30,W,80);
+  ctx.fillStyle='#5dade2';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  ctx.fillText('大气 CO₂',W/2,atmosY+12);
+  ctx.font='11px sans-serif';
+  ctx.fillText('（无机环境中的碳）',W/2,atmosY+30);
+
+  // Producers (left)
+  const prodX=W*0.2,prodY=H*0.65;
+  drawTree(prodX-30,prodY,80,6,'#27ae60','broadleaf');
+  drawTree(prodX+20,prodY+5,70,5,'#228b22','broadleaf');
+  drawGrass(prodX+50,prodY+10,15);
+  drawGrass(prodX+55,prodY+12,12);
+  drawGrass(prodX+60,prodY+8,18);
+  ctx.fillStyle='#27ae60';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('生产者（植物）',prodX,prodY+60);
+  ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
+  ctx.fillText('通过光合作用固碳',prodX,prodY+75);
+
+  // Consumers (right)
+  const consX=W*0.55,consY=H*0.65;
+  drawAnimal(consX-20,consY-10,'rabbit');
+  drawAnimal(consX+30,consY-15,'bird');
+  drawAnimal(consX,consY+20,'fox');
+  ctx.fillStyle='#e74c3c';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('消费者（动物）',consX,consY+60);
+  ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
+  ctx.fillText('通过捕食获得碳',consX,consY+75);
+
+  // Decomposers (far right)
+  const decX=W*0.88,decY=H*0.65;
+  // mushroom-like fungi
+  drawFungus(decX-15,decY,1);
+  drawFungus(decX+10,decY+10,0.8);
+  drawFungus(decX+25,decY-5,0.9);
+  ctx.fillStyle='#9b59b6';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('分解者（细菌/真菌）',decX,decY+50);
+  ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
+  ctx.fillText('分解遗体，释放 CO₂',decX,decY+65);
+
+  // Arrows - all the carbon flows
+  // Photosynthesis: atmosphere -> producer
+  drawArrow(W*0.3,atmosY+50,prodX-20,prodY-50,'#27ae60','光合作用',0.6,'#27ae60');
+  // Respiration: producer -> atmosphere
+  drawArrow(prodX+20,prodY-50,W*0.35,atmosY+50,'#e74c3c','呼吸',0.4,'#e74c3c');
+  // Predation: producer -> consumer
+  drawArrow(prodX+50,prodY-10,consX-30,consY,'#f39c12','捕食',0.5,'#f39c12');
+  // Consumer respiration
+  drawArrow(consX,consY-40,W*0.5,atmosY+50,'#e74c3c','',0.4,'#e74c3c');
+  // Consumer -> decomposer
+  drawArrow(consX+40,consY,decX-20,decY,'#9b59b6','遗体',0.3,'#9b59b6');
+  // Decomposer -> atmosphere
+  drawArrow(decX,decY-40,W*0.65,atmosY+50,'#9b59b6','分解',0.4,'#9b59b6');
+  // Producer -> decomposer (litter)
+  drawArrow(prodX+30,prodY+10,decX-30,decY+10,'#9b59b6','',0.3,'#9b59b6');
+
+  // Legend
+  drawLegend([
+    {c:'#27ae60',t:'光合作用（吸 CO₂）'},
+    {c:'#e74c3c',t:'呼吸作用（放 CO₂）'},
+    {c:'#9b59b6',t:'分解作用'},
+    {c:'#f39c12',t:'捕食（食物链）'},
+  ],20,H-90);
+}
+
+function drawHuman(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  // Sky
+  const humanInt=humanLevel/100;
+  const skyColor=`rgba(${93+humanInt*100},${173-humanInt*70},${226-humanInt*100},0.4)`;
+  ctx.fillStyle=skyColor;
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('🏭 人类活动干扰碳循环',W/2,28);
+
+  // Atmosphere
+  const atmosY=H*0.15;
+  ctx.fillStyle=`rgba(231,76,60,${0.2+humanInt*0.4})`;
+  ctx.fillRect(0,atmosY-30,W,80);
+  ctx.fillStyle='#e74c3c';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  ctx.fillText(`大气 CO₂（${280+humanInt*200} ppm）`,W/2,atmosY+12);
+  ctx.font='11px sans-serif';
+  ctx.fillText('（持续上升 ⚠）',W/2,atmosY+30);
+
+  // Factory (left)
+  const factoryX=W*0.2,factoryY=H*0.6;
+  ctx.fillStyle='#5d4037';
+  ctx.fillRect(factoryX-40,factoryY-60,80,60);
+  // chimney
+  ctx.fillRect(factoryX+20,factoryY-90,15,40);
+  // windows
+  ctx.fillStyle='#fdcb6e';
+  ctx.fillRect(factoryX-30,factoryY-50,10,10);
+  ctx.fillRect(factoryX-15,factoryY-50,10,10);
+  ctx.fillRect(factoryX,factoryY-50,10,10);
+  ctx.fillStyle='#8b6e4e';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('工厂',factoryX,factoryY+15);
+  ctx.fillText('（燃烧化石燃料）',factoryX,factoryY+30);
+  // smoke from chimney
+  for(let i=0;i<8;i++){
+    const phase=((t*0.5+i*0.2)%1);
+    const smx=factoryX+27;
+    const smy=factoryY-90-phase*70;
+    const r=4+phase*8;
+    ctx.fillStyle=`rgba(50,50,50,${0.6-phase*0.5})`;
+    ctx.beginPath();ctx.arc(smx,smy,r,0,Math.PI*2);ctx.fill();
+  }
+
+  // Deforestation (right)
+  const forestX=W*0.55,forestY=H*0.6;
+  // cut stumps
+  for(let i=0;i<4;i++){
+    const x=forestX-30+i*25;
+    ctx.fillStyle='#5d4037';
+    ctx.fillRect(x-5,forestY-5,10,8);
+    ctx.strokeStyle='#3d2818';ctx.lineWidth=1;
+    ctx.beginPath();ctx.ellipse(x,forestY-5,7,3,0,0,Math.PI*2);ctx.stroke();
+  }
+  // chainsaw / axe symbol
+  ctx.fillStyle='#e74c3c';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  ctx.fillText('🪓',forestX+50,forestY-10);
+  ctx.fillStyle='#8b6e4e';ctx.font='bold 11px sans-serif';
+  ctx.fillText('砍伐森林',forestX,forestY+25);
+  ctx.fillText('（减少吸收）',forestX,forestY+40);
+
+  // Few remaining trees
+  const remainX=W*0.85,remainY=H*0.6;
+  if(humanInt<0.7){
+    drawTree(remainX-15,remainY,40,4,'#27ae60','broadleaf');
+    drawTree(remainX+15,remainY+5,35,3,'#228b22','broadleaf');
+  }else{
+    // only stumps left
+    ctx.fillStyle='#5d4037';
+    ctx.fillRect(remainX-20,remainY-5,10,8);
+    ctx.fillRect(remainX+10,remainY-5,10,8);
+  }
+  ctx.fillStyle='#27ae60';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('剩余森林',remainX,remainY+30);
+
+  // Arrows showing imbalance
+  // Factory -> atmosphere (CO2)
+  drawArrow(factoryX,factoryY-90,W*0.4,atmosY+50,'#e74c3c','大量 CO₂↑↑',0.8,'#e74c3c');
+  // Deforestation -> atmosphere (less absorption)
+  drawArrow(atmosY+50,factoryY-90+ (forestX-atmosY*0),forestX,factoryY-90,'#e74c3c','',0, '#e74c3c');
+  // Remaining trees absorb less
+  drawArrow(W*0.65,atmosY+50,remainX,remainY-30,'#27ae60',`吸收↓${(1-humanInt*0.8).toFixed(1)}`,0.3*(1-humanInt*0.8),'#27ae60');
+
+  // Imbalance indicator
+  ctx.fillStyle='#e67e22';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+  ctx.fillText(`碳释放：碳吸收 = ${(1+humanInt*4).toFixed(1)} : 1`,W/2,H-30);
+  if(humanInt>0.5){
+    ctx.fillStyle='#e74c3c';ctx.font='bold 12px sans-serif';
+    ctx.fillText('⚠ 严重碳失衡 → 全球变暖加速',W/2,H-12);
+  }
+}
+
+function drawGreenhouse(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const humanInt=humanLevel/100;
+
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('🌡 温室效应机理',W/2,28);
+
+  // Sun (top-left)
+  const sunX=W*0.15,sunY=H*0.15;
+  ctx.fillStyle='#fdcb6e';
+  ctx.beginPath();ctx.arc(sunX,sunY,25,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(253,203,110,0.3)';
+  ctx.beginPath();ctx.arc(sunX,sunY,40,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('太阳',sunX,sunY-40);
+
+  // Atmosphere layer
+  const atmosTopY=H*0.3,atmosBotY=H*0.4;
+  ctx.fillStyle=`rgba(231,76,60,${0.1+humanInt*0.3})`;
+  ctx.fillRect(0,atmosTopY,W,atmosBotY-atmosTopY);
+  ctx.strokeStyle='#e74c3c';ctx.lineWidth=1;
+  ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(0,atmosBotY);ctx.lineTo(W,atmosBotY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#e74c3c';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText(`大气层（CO₂=${280+humanInt*200}ppm）`,W/2,atmosTopY-5);
+
+  // Earth surface (bottom)
+  const earthY=H*0.8;
+  ctx.fillStyle='#27ae60';
+  ctx.fillRect(0,earthY,W,H-earthY);
+  ctx.fillStyle='#8b6e4e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('地球表面',W/2,H-10);
+
+  // Incoming shortwave radiation (sun -> earth)
+  drawRadiation(sunX+25,sunY+25,W*0.4,earthY-15,'#fdcb6e','短波辐射',0.8);
+  // Passes through atmosphere (small reflection)
+  if(humanInt<0.3){
+    // some shortwave reflected back
+    ctx.strokeStyle='rgba(135,206,235,0.6)';
+    ctx.lineWidth=1.5;
+    for(let i=0;i<3;i++){
+      const phase=((t*0.5+i*0.3)%1);
+      const px=W*0.5+phase*W*0.3;
+      const py=atmosBotY-phase*30;
+      ctx.beginPath();
+      ctx.moveTo(px,py);
+      ctx.lineTo(px+8,py-5);
+      ctx.stroke();
+    }
+  }
+
+  // Outgoing longwave radiation (earth -> space)
+  // Blocked by CO2 (absorbed)
+  const escapeFrac=1-humanInt*0.7;
+  drawRadiation(W*0.55,earthY-5,W*0.7,atmosTopY,'#e74c3c','长波红外辐射↑',0.4);
+  // Most absorbed by atmosphere
+  ctx.strokeStyle=`rgba(231,76,60,${0.3+humanInt*0.5})`;
+  ctx.lineWidth=2;
+  for(let i=0;i<3;i++){
+    const phase=((t*0.4+i*0.33)%1);
+    const startX=W*0.5+i*30;
+    const startY=earthY-5;
+    const endY=atmosBotY+phase*(atmosTopY-atmosBotY)*0.5;
+    ctx.beginPath();
+    ctx.moveTo(startX,startY);
+    ctx.lineTo(startX+(Math.random()*4-2),endY);
+    ctx.stroke();
+    // reflected back down
+    ctx.beginPath();
+    ctx.moveTo(startX,endY);
+    ctx.lineTo(startX+(Math.random()*4-2),earthY-5);
+    ctx.stroke();
+  }
+  ctx.fillStyle='#e74c3c';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText(`CO₂ 吸收并反射回来 ${(humanInt*100).toFixed(0)}%`,W*0.65,atmosBotY-10);
+
+  // Temperature gauge
+  const tempRise=humanInt*3;
+  const gaugeX=W-100,gaugeY=H*0.5;
+  ctx.fillStyle='rgba(21,36,61,0.8)';
+  if(ctx.roundRect)ctx.roundRect(gaugeX-50,gaugeY-40,100,80,8);
+  else ctx.rect(gaugeX-50,gaugeY-40,100,80);
+  ctx.fill();
+  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('全球均温',gaugeX,gaugeY-25);
+  ctx.fillStyle=tempRise>2?'#e74c3c':'#e67e22';
+  ctx.font='bold 16px sans-serif';
+  ctx.fillText(`+${tempRise.toFixed(1)}°C`,gaugeX,gaugeY-5);
+  ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
+  ctx.fillText('（vs 工业前）',gaugeX,gaugeY+12);
+  if(tempRise>1.5){
+    ctx.fillStyle='#e74c3c';ctx.font='bold 10px sans-serif';
+    ctx.fillText('⚠ 超 1.5°C 临界',gaugeX,gaugeY+28);
+  }
+
+  // Legend
+  drawLegend([
+    {c:'#fdcb6e',t:'入射短波辐射（通过大气）'},
+    {c:'#e74c3c',t:'出射长波辐射（被 CO₂ 吸收）'},
+  ],20,H-50);
+}
+
+function drawData(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText('📊 大气 CO₂ 浓度变化（基林曲线）',W/2,28);
+
+  // chart area
+  const ox=80,oy=H-80,gw=W-160,gh=H-200;
+  // axes
+  ctx.strokeStyle='#5dade2';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('年份',ox+gw/2,oy+35);
+  ctx.save();ctx.translate(ox-25,oy-gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('CO₂ 浓度 (ppm)',0,0);ctx.restore();
+  // x labels
+  const years=[1750,1900,1958,1980,2000,2024,2050];
+  years.forEach((y,i)=>{
+    const x=ox+i*gw/(years.length-1);
+    ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillText(y,x,oy+18);
+    ctx.strokeStyle='rgba(141,158,178,0.2)';ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(x,oy);ctx.lineTo(x,oy+4);ctx.stroke();
+  });
+  // y labels
+  const co2Levels=[280,320,360,400,440,480,520];
+  co2Levels.forEach((c,i)=>{
+    const y=oy-i*gh/(co2Levels.length-1);
+    ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillText(c,ox-5,y+3);
+    ctx.strokeStyle='rgba(141,158,178,0.1)';ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+gw,y);ctx.stroke();
+  });
+  // threshold lines
+  // 350 ppm (safe)
+  const y350=oy-(350-280)/(520-280)*gh;
+  ctx.strokeStyle='rgba(39,174,96,0.5)';ctx.lineWidth=1;
+  ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(ox,y350);ctx.lineTo(ox+gw,y350);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#27ae60';ctx.font='10px sans-serif';ctx.textAlign='left';
+  ctx.fillText('安全线 350 ppm',ox+5,y350-3);
+
+  // Data points (Keeling curve approximation)
+  // x: year 1750-2050 → 0-1
+  // y: co2 280-520
+  function toX(year){return ox+(year-1750)/(2050-1750)*gw;}
+  function toY(co2){return oy-(co2-280)/(520-280)*gh;}
+  // Historical data
+  const dataPoints=[
+    {year:1750,co2:280},
+    {year:1800,co2:282},
+    {year:1850,co2:285},
+    {year:1900,co2:295},
+    {year:1920,co2:302},
+    {year:1940,co2:310},
+    {year:1958,co2:315},
+    {year:1970,co2:325},
+    {year:1980,co2:338},
+    {year:1990,co2:354},
+    {year:2000,co2:369},
+    {year:2010,co2:389},
+    {year:2015,co2:401},
+    {year:2020,co2:413},
+    {year:2024,co2:421},
+    // predicted
+    {year:2030,co2:440},
+    {year:2040,co2:470},
+    {year:2050,co2:500},
+  ];
+  // separate past (solid) from future (dashed)
+  ctx.strokeStyle='#e74c3c';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let i=0;i<dataPoints.length;i++){
+    const d=dataPoints[i];
+    const x=toX(d.year),y=toY(d.co2);
+    if(d.year<=2024){
+      if(i===0)ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+  }
+  ctx.stroke();
+  // predicted (dashed)
+  ctx.strokeStyle='#e67e22';ctx.lineWidth=2;
+  ctx.setLineDash([5,5]);
+  ctx.beginPath();
+  let started=false;
+  for(let i=0;i<dataPoints.length;i++){
+    const d=dataPoints[i];
+    if(d.year<2024)continue;
+    const x=toX(d.year),y=toY(d.co2);
+    if(!started){ctx.moveTo(toX(2024),toY(421));started=true;}
+    ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Seasonal sawtooth (zoomed inset)
+  // Draw a small inset showing seasonal variation
+  const insX=W-180,insY=80,insW=140,insH=80;
+  ctx.fillStyle='rgba(21,36,61,0.8)';
+  if(ctx.roundRect)ctx.roundRect(insX,insY,insW,insH,8);
+  else ctx.rect(insX,insY,insW,insH);
+  ctx.fill();
+  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('季节性波动（放大）',insX+insW/2,insY+12);
+  // sawtooth curve
+  ctx.strokeStyle='#e74c3c';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  for(let i=0;i<=insW-10;i++){
+    const t=i/(insW-10);
+    const yearPhase=t*4*Math.PI;
+    // northern hemisphere seasonal pattern
+    const variation=-Math.cos(yearPhase)*4+Math.sin(yearPhase*2)*1;
+    const base=420+variation+(t*15);
+    const x=insX+5+i;
+    const y=insY+insH-10-(base-410)*3;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.fillStyle='#8b9dc3';ctx.font='9px sans-serif';ctx.textAlign='center';
+  ctx.fillText('北半球春季低、冬季高',insX+insW/2,insY+insH-3);
+
+  // Annotations
+  ctx.fillStyle='#5dade2';ctx.beginPath();ctx.arc(toX(1958),toY(315),5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#5dade2';ctx.font='bold 10px sans-serif';ctx.textAlign='left';
+  ctx.fillText('基林开始测量(1958)',toX(1958)+8,toY(315));
+  ctx.fillStyle='#e74c3c';
+  ctx.beginPath();ctx.arc(toX(2024),toY(421),5,0,Math.PI*2);ctx.fill();
+  ctx.fillText(`现在 (${421}ppm)`,toX(2024)+8,toY(421));
+  ctx.fillStyle='#e67e22';
+  ctx.fillText('预测（如不控制）',toX(2040)+5,toY(470)-5);
+
+  // legend
+  drawLegend([
+    {c:'#e74c3c',t:'实测 CO₂ 浓度'},
+    {c:'#e67e22',t:'预测（高排放情景）'},
+    {c:'#27ae60',t:'安全阈值 350 ppm'},
+  ],20,80);
+}
+
+// Helper drawing functions
+
+function drawTree(x,y,height,trunkW,color,shape){
+  ctx.fillStyle='#5d4037';
+  ctx.fillRect(x-trunkW/2,y-height,trunkW,height);
+  ctx.strokeStyle='#3d2818';ctx.lineWidth=1;
+  ctx.strokeRect(x-trunkW/2,y-height,trunkW,height);
+  ctx.fillStyle=color;
+  if(shape==='pine'){
+    for(let layer=0;layer<3;layer++){
+      const layerY=y-height+layer*height*0.25;
+      const layerW=20-layer*4;
+      ctx.beginPath();
+      ctx.moveTo(x,layerY-height*0.3);
+      ctx.lineTo(x-layerW,layerY);
+      ctx.lineTo(x+layerW,layerY);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }else{
+    ctx.beginPath();
+    ctx.arc(x,y-height-5,height*0.3,0,Math.PI*2);
+    ctx.fill();
+  }
+}
+
+function drawGrass(x,y,h){
+  ctx.strokeStyle='#27ae60';ctx.lineWidth=1.5;
+  for(let i=0;i<3;i++){
+    const px=x+(i-1)*2;
+    const sway=Math.sin(t*2+i)*2;
+    ctx.beginPath();
+    ctx.moveTo(px,y);
+    ctx.quadraticCurveTo(px+sway,y-h*0.6,px+sway*1.5,y-h);
+    ctx.stroke();
+  }
+}
+
+function drawAnimal(x,y,type){
+  if(type==='rabbit'){
+    ctx.fillStyle='#8b6e4e';
+    ctx.beginPath();ctx.ellipse(x,y,8,5,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(x-5,y-3,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#6d5640';
+    ctx.fillRect(x-7,y-7,1.5,5);
+    ctx.fillRect(x-4,y-7,1.5,5);
+  }else if(type==='bird'){
+    ctx.fillStyle='#3498db';
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#3498db';ctx.lineWidth=1.5;
+    const flap=Math.sin(t*8)*5;
+    ctx.beginPath();
+    ctx.moveTo(x-2,y);ctx.lineTo(x-10,y-flap);
+    ctx.moveTo(x+2,y);ctx.lineTo(x+10,y-flap);
+    ctx.stroke();
+  }else if(type==='fox'){
+    ctx.fillStyle='#e67e22';
+    ctx.beginPath();ctx.ellipse(x,y,12,7,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(x-10,y-3,5,0,Math.PI*2);ctx.fill();
+    // ears
+    ctx.beginPath();
+    ctx.moveTo(x-13,y-7);ctx.lineTo(x-12,y-12);ctx.lineTo(x-10,y-7);
+    ctx.closePath();ctx.fill();
+    // tail
+    ctx.beginPath();
+    ctx.moveTo(x+10,y);ctx.lineTo(x+20,y-5);ctx.lineTo(x+20,y+5);
+    ctx.closePath();ctx.fill();
+  }
+}
+
+function drawFungus(x,y,scale){
+  scale=scale||1;
+  // cap
+  ctx.fillStyle='#9b59b6';
+  ctx.beginPath();
+  ctx.arc(x,y-8,8*scale,Math.PI,0);
+  ctx.fill();
+  // stem
+  ctx.fillStyle='#ddd';
+  ctx.fillRect(x-2*scale,y-8,4*scale,12*scale);
+}
+
+function drawRadiation(x1,y1,x2,y2,color,label,particleSpeed){
+  ctx.strokeStyle=color+'aa';ctx.lineWidth=1.5;
+  ctx.setLineDash([6,3]);
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.setLineDash([]);
+  // moving wave packets
+  const dx=x2-x1,dy=y2-y1;
+  const len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len;
+  const px=-uy,py=ux;
+  for(let i=0;i<5;i++){
+    const phase=((t*particleSpeed+i*0.2)%1);
+    const cx=x1+dx*phase;
+    const cy=y1+dy*phase;
+    // wavy line segment
+    ctx.strokeStyle=color;
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let s=-8;s<=8;s++){
+      const xx=cx+ux*s+px*Math.sin(s*0.5+t*5)*2;
+      const yy=cy+uy*s+py*Math.sin(s*0.5+t*5)*2;
+      if(s===-8)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+    }
+    ctx.stroke();
+  }
+  if(label){
+    ctx.fillStyle=color;ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText(label,(x1+x2)/2,(y1+y2)/2-10);
+  }
+}
+
+function drawLegend(items,x,y){
+  items.forEach((it,i)=>{
+    ctx.fillStyle=it.c;
+    ctx.fillRect(x,y+i*18,12,3);
+    ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText(it.t,x+18,y+i*18+5);
+  });
+}
+
+function draw(){
+  if(mode==='natural')drawNaturalCarbon();
+  else if(mode==='human')drawHuman();
+  else if(mode==='greenhouse')drawGreenhouse();
+  else if(mode==='data')drawData();
+  statusEl.textContent=`${MODES[mode].name} | 人类干扰 ${humanLevel}%`;
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  t+=dt*speed;
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+};
+document.getElementById('resetBtn').onclick=()=>{
+  humanLevel=20;humanEl.value=20;
+  draw();
+};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+humanEl.oninput=()=>{humanLevel=parseFloat(humanEl.value);draw();};
+
+updateDetail();
+speed=0;
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

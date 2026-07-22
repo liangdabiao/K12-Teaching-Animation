@@ -3,108 +3,658 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>有氧呼吸三阶段</title>
+<title>有氧呼吸三阶段 · 糖酵解→丙酮酸氧化→电子传递链</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{
+  --bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;
+  --accent:#00b894;--accent2:#74b9ff;--line:#243a5e;
+  --glucose:#60a5fa;--pyruvate:#34d399;--acoA:#a78bfa;
+  --atp:#fbbf24;--nadh:#fb923c;--fadh2:#22d3ee;--co2:#94a3b8;--o2:#38bdf8;--hplus:#f87171;
+}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}
+.back:hover{background:rgba(116,185,255,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(0,184,148,.05),transparent)}
+.card{flex:1;min-width:170px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--pyruvate)}
+.card.s3::before{background:var(--accent2)}
+.card.s4::before{background:var(--atp)}
+.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0;position:relative}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#06281c;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}
+.points li strong{color:var(--accent)}
+.energy-board{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0;background:rgba(0,0,0,.2);padding:8px;border-radius:8px}
+.eb-item{text-align:center;padding:4px;border-radius:6px;background:rgba(255,255,255,.03)}
+.eb-item .lbl{font-size:10px;color:var(--muted)}
+.eb-item .val{font-size:18px;font-weight:700}
+.eb-atp .val{color:var(--atp)}
+.eb-nadh .val{color:var(--nadh)}
+.eb-fadh2 .val{color:var(--fadh2)}
+.eb-co2 .val{color:var(--co2)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:11px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:4px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:90px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06281c;font-weight:600;border-color:transparent}
+.step .stage-tag{font-size:10px;color:var(--muted);margin-bottom:2px}
+.step.active .stage-tag{color:rgba(6,40,28,.7)}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#06281c;font-weight:600}
+button.primary:hover{background:#00d1a4}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
   <a class="back" href="../index.html">← 返回学科目录</a>
   <span class="title">有氧呼吸三阶段</span>
+  <span class="subtitle">C₆H₁₂O₆ + 6O₂ + 36ADP → 6CO₂ + 6H₂O + 36ATP</span>
 </header>
+<div class="cards">
+  <div class="card s1"><div class="num">1</div><h4>糖酵解</h4><div class="v">细胞质基质 · 葡萄糖(6C)→2丙酮酸(3C)<br>净产 <strong style="color:var(--atp)">2 ATP</strong> + 2 NADH</div></div>
+  <div class="card s2"><div class="num">2</div><h4>丙酮酸氧化 + 三羧酸循环</h4><div class="v">线粒体基质 · 2丙酮酸→6CO₂<br>产 2 ATP + 8 NADH + 2 FADH₂</div></div>
+  <div class="card s3"><div class="num">3</div><h4>电子传递链 + 氧化磷酸化</h4><div class="v">线粒体内膜 · [H]+O₂→H₂O<br>产 <strong style="color:var(--atp)">约 34 ATP</strong></div></div>
+  <div class="card s4"><div class="num">Σ</div><h4>总能量收益</h4><div class="v">1 葡萄糖彻底氧化<br>≈ <strong style="color:var(--atp);font-size:14px">36 ATP</strong>（理论38，实际约36）</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>有氧呼吸在细胞质基质与线粒体中进行三阶段：①糖酵解（细胞质，2ATP）；②丙酮酸氧化（线粒体基质）；③电子传递链（内膜，大量ATP）。1分子葡萄糖彻底氧化约产 36 ATP。</p>
-    <div class="legend"><span class='dot' style='background:#34d399'></span>糖酵解&nbsp;<span class='dot' style='background:#7dd3fc'></span>丙酮酸氧化&nbsp;<span class='dot' style='background:#a78bfa'></span>电子传递链</div>
-  
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>有氧呼吸三阶段</h3><ul><li>①糖酵解（细胞质基质）：葡萄糖→丙酮酸+2ATP</li><li>②三羧酸循环（线粒体）：丙酮酸→CO₂+[H]+2ATP</li><li>③电子传递链（线粒体内膜）：[H]+O₂→H₂O+34ATP</li><li>总计：1葡萄糖→38ATP(理论)或36ATP(实际)</li></ul></div>
-    </aside>
+  <aside class="panel" id="panel">
+    <h2><span class="badge" id="stepBadge">阶段1</span><span id="stepTitle">糖酵解</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="energy-board">
+      <div class="eb-item eb-atp"><div class="lbl">ATP 净产</div><div class="val" id="cntATP">0</div></div>
+      <div class="eb-item eb-nadh"><div class="lbl">NADH</div><div class="val" id="cntNADH">0</div></div>
+      <div class="eb-item eb-fadh2"><div class="lbl">FADH₂</div><div class="val" id="cntFADH2">0</div></div>
+      <div class="eb-item eb-co2"><div class="lbl">CO₂</div><div class="val" id="cntCO2">0</div></div>
+    </div>
+    <div class="points" id="stepPoints"></div>
+  </aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button>
   <button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放开始追踪一个葡萄糖分子的能量之旅</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(420,Math.min(1100,r.width-12));cv.height=Math.max(380,Math.min(580,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const Rs={t:0,stage:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){Rs.t=0;Rs.stage=0;}
-function sceneUpdate(dt){Rs.t+=dt;if(Rs.stage<3)Rs.stage=Math.min(3,Rs.stage+dt*0.5);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const cy=cv.height/2;
-  const stages=[
-    {x:140,c:'#34d399',t:'①糖酵解(细胞质)',s:'2ATP'},
-    {x:cv.width/2,c:'#7dd3fc',t:'②丙酮酸氧化(线粒体)',s:'2ATP'},
-    {x:cv.width-140,c:'#a78bfa',t:'③电子传递链',s:'32ATP'}
-  ];
-  stages.forEach((st,i)=>{
-    ctx.fillStyle=st.c;ctx.beginPath();ctx.arc(st.x,cy,40,0,7);ctx.fill();
-    ctx.fillStyle='#06281c';ctx.font='12px sans-serif';ctx.textAlign='center';
-    ctx.fillText('阶段'+(i+1),st.x,cy-4);
-    ctx.fillStyle='#cdd7ea';ctx.fillText(st.t,st.x,cy+70);
-    ctx.fillText(st.s+(i<=Rs.stage?'(进行中)':''),st.x,cy+90);
-    if(i<2){ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(st.x+45,cy);ctx.lineTo(stages[i+1].x-45,cy);ctx.stroke();
-      ctx.fillStyle='#fbbf24';ctx.fillText(i===0?'丙酮酸':'[H]+O₂',(st.x+stages[i+1].x)/2,cy-12);}
+// ====== 知识点：步骤定义 ======
+const STEPS=[
+  // 阶段1：糖酵解
+  {tag:'阶段1',stage:1,name:'糖酵解·投资期',body:'葡萄糖在细胞质基质中先消耗 2 ATP 磷酸化，活化为六碳二磷酸糖，能量投入阶段。',points:{title:'磷酸化活化',items:['<strong>场所</strong>：细胞质基质','<strong>投入</strong>：1 葡萄糖 + 2 ATP','<strong>关键</strong>：耗能活化，为裂解做准备']},target:{atp:-2,nadh:0,fadh2:0,co2:0}},
+  {tag:'阶段1',stage:1,name:'糖酵解·裂解',body:'六碳二磷酸糖裂解为两分子三碳化合物（G3P，磷酸甘油醛）。',points:{title:'六碳裂为三碳',items:['<strong>中间产物</strong>：2 × 3C 磷酸甘油醛','后续每个 G3P 都进入氧化步骤']}},
+  {tag:'阶段1',stage:1,name:'糖酵解·氧化产能',body:'2 G3P 被氧化为 2 丙酮酸，同时生成 <strong style="color:var(--atp)">4 ATP</strong>（净产 2）与 <strong style="color:var(--nadh)">2 NADH</strong>。',points:{title:'底物水平磷酸化',items:['<strong>净产</strong>：2 ATP（产4-耗2）','<strong>副产</strong>：2 NADH（携高能电子）','<strong>终产物</strong>：2 丙酮酸（3C）']},target:{atp:2,nadh:2,fadh2:0,co2:0}},
+  // 阶段2：丙酮酸氧化 + 三羧酸循环
+  {tag:'阶段2',stage:2,name:'丙酮酸进入线粒体',body:'丙酮酸穿过线粒体外膜与内膜，进入线粒体基质，准备氧化脱羧。',points:{title:'空间转移',items:['<strong>新场所</strong>：线粒体基质','糖酵解产物正式进入氧化中心']}},
+  {tag:'阶段2',stage:2,name:'丙酮酸氧化脱羧',body:'2 丙酮酸脱去 2 个 CO₂，与辅酶 A 结合形成 <strong style="color:var(--acoA)">2 乙酰辅酶A</strong>，同时生成 <strong style="color:var(--nadh)">2 NADH</strong>。',points:{title:'脱羧反应',items:['<strong>产物</strong>：2 乙酰CoA（2C 进入循环）','<strong>释放</strong>：2 CO₂（这是最早释放的 CO₂）','<strong>产</strong>：2 NADH']},target:{atp:0,nadh:2,fadh2:0,co2:2}},
+  {tag:'阶段2',stage:2,name:'三羧酸循环（TCA）',body:'乙酰CoA 进入循环，与草酰乙酸结合为柠檬酸，经多步反应逐步脱羧脱氢，每圈产生 3 NADH + 1 FADH₂ + 1 ATP（GTP），释放 2 CO₂。2 个乙酰CoA 转两圈。',points:{title:'循环氧化',items:['<strong>净产（两圈）</strong>：6 NADH + 2 FADH₂ + 2 ATP','<strong>释放</strong>：4 CO₂','<strong>关键酶</strong>：琥珀酸脱氢酶（膜结合）','<strong>总累计 CO₂</strong>：6 个（糖的 6 个 C 全部释放）']},target:{atp:2,nadh:6,fadh2:2,co2:4}},
+  // 阶段3：电子传递链 + 氧化磷酸化
+  {tag:'阶段3',stage:3,name:'电子传递链·NADH 供电子',body:'线粒体内膜上的复合物 Ⅰ 接受 NADH 的电子，电子沿 Ⅰ→Ⅲ→Ⅳ 传递，能量驱动 H⁺ 从基质泵入膜间隙。',points:{title:'电子流与质子泵',items:['<strong>场所</strong>：线粒体内膜','<strong>复合物</strong>：Ⅰ、Ⅲ、Ⅳ','<strong>每对电子</strong>：泵出 ~10 H⁺']}},
+  {tag:'阶段3',stage:3,name:'电子传递链·FADH₂ 与 O₂',body:'FADH₂ 经复合物 Ⅱ 进入链（泵出较少 H⁺）。最终电子受体是 <strong style="color:var(--o2)">O₂</strong>，与 H⁺ 结合生成 <strong style="color:var(--accent2)">H₂O</strong>。',points:{title:'最终电子受体',items:['<strong>O₂</strong>：有氧呼吸的关键','<strong>产物</strong>：6 H₂O（来自 6 O₂）','无 O₂ 则整个 ETC 停滞']}},
+  {tag:'阶段3',stage:3,name:'氧化磷酸化·ATP 合酶',body:'膜间隙 H⁺ 浓度高于基质，形成电化学梯度。H⁺ 通过 ATP 合酶回流，驱动转子旋转，合成大量 ATP。',points:{title:'化学渗透学说',items:['<strong>Peter Mitchell</strong> 1961 年提出','<strong>梯度</strong>：膜间隙 H⁺ 浓度高','<strong>ATP 合酶</strong>：分子马达，每秒可合成 ~100 ATP','<strong>贡献</strong>：约 34 ATP']},target:{atp:34,nadh:0,fadh2:0,co2:0}},
+  {tag:'总结',stage:4,name:'能量总账',body:'1 分子葡萄糖彻底氧化：产生 <strong style="color:var(--atp)">约 36 ATP</strong>，释放 <strong>6 CO₂ + 6 H₂O</strong>。能量利用率远高于无氧呼吸。',points:{title:'能量账本',items:['<strong>阶段1</strong>：净 2 ATP + 2 NADH','<strong>阶段2</strong>：2 ATP + 8 NADH + 2 FADH₂ + 6 CO₂','<strong>阶段3</strong>：~34 ATP + 6 H₂O','<strong>合计</strong>：~ 36 ATP','<strong>理论值</strong>：38（NADH 进基质耗 2）']}},
+];
+
+// ====== 状态 ======
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0;
+const STEP_DURATION=3.2; // 每步秒数
+let counters={atp:0,nadh:0,fadh2:0,co2:0}; // 累计
+let displayed={atp:0,nadh:0,fadh2:0,co2:0}; // 动画显示值
+let particles=[]; // 当前步骤的粒子
+let atpSynthaseAngle=0;
+let etcProgress=0; // 电子传递链进度（持续动画）
+let glycolysisProgress=0; // 糖酵解阶段进度
+
+// ====== 构建步骤按钮 ======
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML=`<div class="stage-tag">${s.tag}</div><div>${s.name.length>10?s.name.slice(0,9)+'…':s.name}</div>`;
+    el.onclick=()=>{stepIdx=i;syncStep();render();draw();};
+    bar.appendChild(el);
   });
-  // ATP counter
-  ctx.fillStyle='#fbbf24';ctx.font='15px sans-serif';ctx.fillText('总产 ATP ≈ 36',cv.width/2,cy-120);
-  statusEl.textContent='有氧呼吸三阶段：糖酵解→丙酮酸氧化→电子传递链，释放大量能量';
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  // 重建计数：逐步累计 target
+  counters={atp:0,nadh:0,fadh2:0,co2:0};
+  for(let i=0;i<=stepIdx;i++){
+    const t=STEPS[i].target||{};
+    if(t.atp)counters.atp+=t.atp;
+    if(t.nadh)counters.nadh+=t.nadh;
+    if(t.fadh2)counters.fadh2+=t.fadh2;
+    if(t.co2)counters.co2+=t.co2;
+  }
+  // 处理糖酵解投资期：先-2然后+2，所以显示净2
+  // 我们的累计模型：步骤1 atp=-2，步骤3 atp=+2 → 净0；这是错的
+  // 重新建模：把糖酵解的 net 2 ATP 放到步骤3（target.atp=2）
+  // 上面已经这么写了，OK
+  particles=[];
+  stepTime=0;
+}
+
+function render(){
+  document.getElementById('cntATP').textContent=Math.max(0,Math.round(displayed.atp));
+  document.getElementById('cntNADH').textContent=Math.round(displayed.nadh);
+  document.getElementById('cntFADH2').textContent=Math.round(displayed.fadh2);
+  document.getElementById('cntCO2').textContent=Math.round(displayed.co2);
+}
+
+// ====== 绘图工具 ======
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawLabel(t,x,y,c,fs){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t,x,y);}
+
+function drawGlucose(x,y,r,glow){
+  ctx.save();
+  if(glow){ctx.shadowColor='#60a5fa';ctx.shadowBlur=18;}
+  // 六边形（葡萄糖环）
+  ctx.fillStyle='#1e3a8a';ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/2;const px=x+r*Math.cos(a),py=y+r*Math.sin(a);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // -OH -CH2OH 简化点
+  ctx.fillStyle='#93c5fd';
+  for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/2;ctx.beginPath();ctx.arc(x+r*0.65*Math.cos(a),y+r*0.65*Math.sin(a),2,0,7);ctx.fill();}
+  drawLabel('葡萄糖',x,y,'#dbeafe',11);
+  ctx.restore();
+}
+function drawPyruvate(x,y,r,active){
+  ctx.save();
+  if(active){ctx.shadowColor='#34d399';ctx.shadowBlur=12;}
+  // 三角形（3C）
+  ctx.fillStyle='#064e3b';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(x,y-r);
+  ctx.lineTo(x+r*0.9,y+r*0.6);
+  ctx.lineTo(x-r*0.9,y+r*0.6);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  drawLabel('丙酮酸',x,y,'#a7f3d0',10);
+  ctx.restore();
+}
+function drawAcetylCoA(x,y){
+  ctx.fillStyle='#4c1d95';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(x-22,y-12,44,24,6);ctx.fill();ctx.stroke();
+  drawLabel('乙酰CoA',x,y,'#ddd6fe',10);
+}
+function drawATP(x,y,used){
+  ctx.save();
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.fillStyle=used?'#78350f':'#fbbf24';
+  ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle='#92400e';ctx.lineWidth=1.5;ctx.stroke();
+  drawLabel('ATP',x,y,'#451a03',9);
+  ctx.restore();
+}
+function drawNADH(x,y,depleted){
+  ctx.fillStyle=depleted?'#7c2d12':'#fb923c';
+  ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.fill();
+  ctx.strokeStyle='#9a3412';ctx.lineWidth=1.5;ctx.stroke();
+  drawLabel(depleted?'NAD⁺':'NADH',x,y,'#7c2d12',8);
+}
+function drawFADH2(x,y){
+  ctx.fillStyle='#22d3ee';ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.fill();
+  ctx.strokeStyle='#0e7490';ctx.lineWidth=1.5;ctx.stroke();
+  drawLabel('FADH₂',x,y,'#083344',8);
+}
+function drawCO2(x,y){
+  ctx.fillStyle='#94a3b8';ctx.beginPath();ctx.arc(x,y,8,0,7);ctx.fill();
+  drawLabel('CO₂',x,y,'#1e293b',8);
+}
+function drawO2(x,y){
+  ctx.fillStyle='#0c4a6e';ctx.strokeStyle='#38bdf8';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x,y,10,0,7);ctx.fill();ctx.stroke();
+  drawLabel('O₂',x,y,'#7dd3fc',9);
+}
+function drawH2O(x,y){
+  ctx.fillStyle='#1e3a5f';ctx.strokeStyle='#60a5fa';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x,y,8,0,7);ctx.fill();ctx.stroke();
+  drawLabel('H₂O',x,y,'#93c5fd',8);
+}
+
+// 细胞质区域
+function drawCytoplasm(x,y,w,h){
+  ctx.fillStyle='rgba(96,165,250,.05)';ctx.strokeStyle='rgba(96,165,250,.25)';ctx.lineWidth=1.5;
+  roundRect(x,y,w,h,14);ctx.fill();ctx.stroke();
+  drawLabel('细胞质基质',x+80,y+18,'#60a5fa',12);
+}
+
+// 线粒体（详细结构）
+function drawMitochondrion(x,y,w,h,activeRegion){
+  ctx.save();
+  // 外膜
+  ctx.fillStyle='rgba(217,119,6,.08)';ctx.strokeStyle='#d97706';ctx.lineWidth=2;
+  roundRect(x,y,w,h,18);ctx.fill();ctx.stroke();
+  drawLabel('线粒体',x+50,y-10,'#fbbf24',13);
+  // 内膜（带嵴）—— 多条曲线模拟嵴
+  const ix=x+14,iy=y+14,iw=w-28,ih=h-28;
+  ctx.strokeStyle=activeRegion==='inner'?'#ef4444':'#b45309';ctx.lineWidth=2.2;
+  ctx.save();
+  ctx.beginPath();
+  // 嵴：左右贯穿的波浪线
+  const folds=5;
+  for(let i=0;i<folds;i++){
+    const fx=ix+(iw/(folds-1))*i;
+    ctx.moveTo(fx,iy);
+    ctx.bezierCurveTo(fx-15,iy+ih*0.35,fx+15,iy+ih*0.65,fx,iy+ih);
+  }
+  ctx.stroke();
+  ctx.restore();
+  // 基质高亮
+  if(activeRegion==='matrix'){
+    ctx.fillStyle='rgba(251,191,36,.08)';
+    roundRect(ix,iy,iw,ih,12);ctx.fill();
+  }
+  drawLabel('线粒体内膜（嵴）',x+w/2,y+h+14,'#b45309',11);
+  drawLabel('基质',x+30,y+h/2,'#92400e',11);
+  ctx.restore();
+}
+
+// ====== 各场景绘制 ======
+function drawGlycolysisScene(progress){
+  const W=cv.width,H=cv.height;
+  // 细胞质
+  drawCytoplasm(40,60,W-80,H-120);
+  // 葡萄糖位置
+  const gx=140,gy=H/2;
+  drawGlucose(gx,gy,30,true);
+  // 中间过程：G3P（六碳→两个三碳）
+  const t=progress;
+  if(t>0.25){
+    // G3P 两个
+    const g3pY1=gy-40,g3pY2=gy+40;
+    const alpha=Math.min(1,(t-0.25)*3);
+    ctx.globalAlpha=alpha;
+    drawPyruvate(gx+200,g3pY1,18,false);
+    drawPyruvate(gx+200,g3pY2,18,false);
+    ctx.globalAlpha=1;
+    drawLabel('G3P',gx+200,g3pY1-32,'#a7f3d0',10);
+    drawLabel('G3P',gx+200,g3pY2+32,'#a7f3d0',10);
+  }
+  // 丙酮酸终产物
+  const px=gx+360;
+  if(t>0.5){
+    drawPyruvate(px,gy-50,22,t<0.85);
+    drawPyruvate(px,gy+50,22,t<0.85);
+    // 箭头
+    drawArrow(gx+30,gy,gx+170,gy,'#60a5fa',Math.min(1,t*3));
+    drawArrow(gx+220,gy-40,px-25,gy-50,'#34d399',Math.min(1,(t-0.5)*3));
+    drawArrow(gx+220,gy+40,px-25,gy+50,'#34d399',Math.min(1,(t-0.5)*3));
+  }
+  // ATP 投入与产出
+  if(t<0.3){
+    // 投入 2 ATP
+    drawATP(gx-50,gy-30,true);
+    drawATP(gx-50,gy+30,true);
+    drawLabel('消耗 2 ATP',gx-50,gy+60,'#92400e',11);
+  } else if(t>0.6){
+    // 产出 4 ATP
+    for(let i=0;i<4;i++){
+      const ax=px+90+(i%2)*22;
+      const ay=gy-60+Math.floor(i/2)*120;
+      drawATP(ax,ay,false);
+    }
+    drawLabel('净产 2 ATP',px+100,gy+90,'#fbbf24',12);
+  }
+  // NADH
+  if(t>0.7){
+    drawNADH(gx+250,gy-100,false);
+    drawNADH(gx+270,gy+100,false);
+    drawLabel('产 2 NADH',gx+260,gy-130,'#fb923c',11);
+  }
+}
+
+function drawPyruvateOxidationScene(progress){
+  const W=cv.width,H=cv.height;
+  // 细胞质（左侧小）
+  drawCytoplasm(40,60,180,H-120);
+  // 线粒体（右侧大）
+  const mx=260,my=80,mw=W-320,mh=H-160;
+  drawMitochondrion(mx,my,mw,mh,'matrix');
+  // 丙酮酸从细胞质进入线粒体
+  const t=progress;
+  // 起点
+  const sx=130,sy=H/2;
+  drawPyruvate(sx,sy-20,16,false);
+  drawPyruvate(sx,sy+20,16,false);
+  // 移动中的丙酮酸
+  if(t>0.1){
+    const moveProg=Math.min(1,(t-0.1)/0.3);
+    drawPyruvate(sx+(mx+50-sx)*moveProg,sy,16,moveProg<1);
+    // 进入线粒体基质
+    drawArrow(180,sy,mx+30,sy,'#34d399',moveProg);
+  }
+  // 基质中的反应
+  if(t>0.4){
+    const rx=mx+mw*0.35,ry=my+mh*0.5;
+    // 丙酮酸 → 乙酰CoA + CO2 + NADH
+    drawPyruvate(rx-60,ry,18,t<0.7);
+    if(t>0.5){
+      drawAcetylCoA(rx+30,ry);
+      drawCO2(rx-20,ry-60);
+      drawNADH(rx+30,ry-50,false);
+      drawArrow(rx-40,ry,rx+10,ry,'#a78bfa',Math.min(1,(t-0.5)*3));
+    }
+    drawLabel('氧化脱羧',rx-20,ry+40,'#a78bfa',11);
+  }
+  // 三羧酸循环图（右侧）
+  if(t>0.65){
+    const cx=mx+mw*0.78,cy=my+mh*0.5;
+    const cr=Math.min(mw,mh)*0.18;
+    // 循环圈
+    ctx.strokeStyle='#fb923c';ctx.lineWidth=2.5;
+    ctx.setLineDash([6,4]);
+    ctx.lineDashOffset = -progress*40;
+    ctx.beginPath();ctx.arc(cx,cy,cr,0,7);ctx.stroke();
+    ctx.setLineDash([]);
+    // 草酰乙酸 起点
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.arc(cx,cy-cr,7,0,7);ctx.fill();
+    drawLabel('草酰乙酸',cx,cy-cr-14,'#fbbf24',10);
+    // 柠檬酸
+    ctx.fillStyle='#a78bfa';
+    ctx.beginPath();ctx.arc(cx+cr,cy,7,0,7);ctx.fill();
+    drawLabel('柠檬酸',cx+cr+18,cy,'#a78bfa',10);
+    // α-酮戊二酸
+    ctx.fillStyle='#34d399';
+    ctx.beginPath();ctx.arc(cx,cy+cr,7,0,7);ctx.fill();
+    drawLabel('α-酮戊二酸',cx,cy+cr+14,'#34d399',10);
+    // 琥珀酸
+    ctx.fillStyle='#22d3ee';
+    ctx.beginPath();ctx.arc(cx-cr,cy,7,0,7);ctx.fill();
+    drawLabel('琥珀酸',cx-cr-22,cy,'#22d3ee',10);
+    // 循环中央
+    drawLabel('TCA 循环',cx,cy,'#fb923c',12);
+    drawLabel('（两圈）',cx,cy+16,'#9ab0d0',10);
+    // 副产物飘出
+    const pops=Math.floor((t-0.65)*12);
+    for(let i=0;i<Math.min(pops,6);i++){
+      const a=Date.now()*0.001+i;
+      drawCO2(cx+cr*0.7+Math.cos(a)*10,cy-cr*0.5-Math.sin(a)*5);
+    }
+  }
+}
+
+function drawETCScene(progress){
+  const W=cv.width,H=cv.height;
+  // 线粒体内膜放大
+  const mx=60,my=80,mw=W-120,mh=H-200;
+  // 框架
+  ctx.fillStyle='rgba(180,83,9,.1)';ctx.strokeStyle='#b45309';ctx.lineWidth=2;
+  roundRect(mx,my,mw,mh,14);ctx.fill();ctx.stroke();
+  drawLabel('线粒体内膜（放大）',mx+100,my-10,'#fbbf24',13);
+  // 内膜作为水平线
+  const memY=my+mh*0.55;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(mx+20,memY);ctx.lineTo(mx+mw-20,memY);ctx.stroke();
+  // 上方：膜间隙
+  ctx.fillStyle='rgba(248,113,113,.08)';
+  ctx.fillRect(mx+20,my+10,mw-40,memY-my-10);
+  drawLabel('膜间隙（H⁺ 高浓度）',mx+mw-130,my+28,'#f87171',11);
+  // 下方：基质
+  ctx.fillStyle='rgba(251,191,36,.05)';
+  ctx.fillRect(mx+20,memY+4,mw-40,my+mh-memY-14);
+  drawLabel('基质（H⁺ 低浓度）',mx+mw-110,my+mh-18,'#fbbf24',11);
+
+  // 复合物 I, III, IV（嵌入膜中）
+  const complexes=[
+    {x:mx+mw*0.22,label:'Ⅰ',color:'#ef4444',name:'NADH 脱氢酶'},
+    {x:mx+mw*0.42,label:'Ⅱ',color:'#22d3ee',name:'琥珀酸脱氢酶'},
+    {x:mx+mw*0.62,label:'Ⅲ',color:'#a78bfa',name:'细胞色素 bc₁'},
+    {x:mx+mw*0.80,label:'Ⅳ',color:'#34d399',name:'细胞色素 c 氧化酶'},
+  ];
+  complexes.forEach(c=>{
+    ctx.fillStyle=c.color;ctx.strokeStyle='#1e293b';ctx.lineWidth=2;
+    roundRect(c.x-26,memY-30,52,60,8);ctx.fill();ctx.stroke();
+    drawLabel(c.label,c.x,memY,'#fff',16);
+    drawLabel(c.name,c.x,memY+42,'#9ab0d0',10);
+  });
+
+  // ATP 合酶（最右）
+  const atpX=mx+mw*0.93;
+  ctx.fillStyle='#3b82f6';ctx.strokeStyle='#1e3a8a';ctx.lineWidth=2;
+  // 基部
+  roundRect(atpX-16,memY-6,32,30,6);ctx.fill();ctx.stroke();
+  // 转子（旋转）
+  ctx.save();
+  ctx.translate(atpX,memY-16);
+  ctx.rotate(atpSynthaseAngle);
+  ctx.fillStyle='#06b6d4';
+  for(let i=0;i<6;i++){
+    ctx.rotate(Math.PI/3);
+    roundRect(6,-4,14,8,3);ctx.fill();
+  }
+  ctx.fillStyle='#0891b2';
+  ctx.beginPath();ctx.arc(0,0,8,0,7);ctx.fill();
+  ctx.restore();
+  // 头部
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.arc(atpX,memY-30,14,0,7);ctx.fill();
+  drawLabel('ATP',atpX,memY-30,'#083344',9);
+  drawLabel('ATP 合酶',atpX,memY+42,'#06b6d4',10);
+
+  // 电子流动粒子（沿复合物）
+  const electronT=(Date.now()*0.0008)%1;
+  // NADH → Ⅰ
+  drawNADH(mx+50,memY+60,false);
+  drawLabel('NADH',mx+50,memY+82,'#fb923c',10);
+  drawElectronFlow(mx+60,memY+60,complexes[0].x-26,memY,'#fb923c',electronT);
+  // Ⅰ → Ⅲ
+  drawElectronFlow(complexes[0].x+26,memY,complexes[2].x-26,memY,'#fbbf24',electronT);
+  // Ⅱ → Ⅲ（FADH2 路径）
+  drawNADH(complexes[1].x-50,memY+60,true); // FADH2 represented
+  drawFADH2(complexes[1].x-50,memY+60);
+  drawLabel('FADH₂',complexes[1].x-50,memY+82,'#22d3ee',10);
+  drawElectronFlow(complexes[1].x,memY-30,complexes[2].x-26,memY,'#22d3ee',electronT);
+  // Ⅲ → Ⅳ
+  drawElectronFlow(complexes[2].x+26,memY,complexes[3].x-26,memY,'#a78bfa',electronT);
+  // Ⅳ → O₂
+  drawO2(complexes[3].x+50,memY+60);
+  drawLabel('O₂（最终受体）',complexes[3].x+50,memY+82,'#38bdf8',10);
+  drawElectronFlow(complexes[3].x+26,memY,complexes[3].x+45,memY+50,'#34d399',electronT);
+  drawH2O(complexes[3].x+80,memY+40);
+  drawLabel('H₂O',complexes[3].x+80,memY+22,'#60a5fa',10);
+
+  // H+ 泵出动画
+  const pumpT=(Date.now()*0.002)%1;
+  drawProtonFlow(complexes[0].x,memY,-1,pumpT);
+  drawProtonFlow(complexes[2].x,memY,-1,(pumpT+0.3)%1);
+  drawProtonFlow(complexes[3].x,memY,-1,(pumpT+0.6)%1);
+  // H+ 回流（经 ATP 合酶）
+  drawProtonFlow(atpX,memY,-1,(pumpT+0.5)%1); // 泵出
+  drawProtonFlow(atpX,memY,+1,pumpT); // 回流驱动合成
+  // 合成的 ATP
+  const atpProduced=Math.floor(etcProgress*34);
+  if(atpProduced>0){
+    for(let i=0;i<Math.min(atpProduced,8);i++){
+      const ang=i*Math.PI/4;
+      drawATP(atpX+30+Math.cos(ang)*20,memY-30+Math.sin(ang)*20,false);
+    }
+    if(atpProduced>8){
+      drawLabel('+'+(atpProduced-8),atpX+55,memY-30,'#fbbf24',12);
+    }
+  }
+}
+
+function drawElectronFlow(x1,y1,x2,y2,color,t){
+  // 3 个粒子沿路径
+  for(let i=0;i<3;i++){
+    const lt=(t+i/3)%1;
+    const px=x1+(x2-x1)*lt;
+    const py=y1+(y2-y1)*lt+Math.sin(lt*Math.PI)*-6;
+    ctx.fillStyle=color;
+    ctx.shadowColor=color;ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+  }
+}
+function drawProtonFlow(x,y,dir,t){
+  // dir=-1 向上（膜间隙），dir=+1 向下（回流）
+  const py=y+dir*-30*t;
+  ctx.fillStyle='#f87171';
+  ctx.shadowColor='#f87171';ctx.shadowBlur=6;
+  ctx.beginPath();ctx.arc(x+Math.sin(t*6)*4,py,3,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+}
+function drawArrow(x1,y1,x2,y2,color,prog){
+  if(prog<=0)return;
+  const ex=x1+(x2-x1)*prog,ey=y1+(y2-y1)*prog;
+  ctx.strokeStyle=color;ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(ex,ey);ctx.stroke();
+  // 箭头头
+  if(prog>0.2){
+    const a=Math.atan2(y2-y1,x2-x1);
+    ctx.fillStyle=color;
+    ctx.beginPath();
+    ctx.moveTo(ex,ey);
+    ctx.lineTo(ex-10*Math.cos(a-Math.PI/6),ey-10*Math.sin(a-Math.PI/6));
+    ctx.lineTo(ex-10*Math.cos(a+Math.PI/6),ey-10*Math.sin(a+Math.PI/6));
+    ctx.closePath();ctx.fill();
+  }
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  ctx.textAlign='center';
+  // 大标题
+  drawLabel('1 分子葡萄糖的能量账本',W/2,60,'#fbbf24',22);
+  // 三个阶段框
+  const stages=[
+    {x:80,y:120,w:W/3-100,h:H-200,c:'#34d399',title:'① 糖酵解',items:['细胞质基质','2 丙酮酸','净产 2 ATP','2 NADH']},
+    {x:W/3+10,y:120,w:W/3-100,h:H-200,c:'#a78bfa',title:'② TCA 循环',items:['线粒体基质','6 CO₂','2 ATP','8 NADH + 2 FADH₂']},
+    {x:W*2/3-10,y:120,w:W/3-100,h:H-200,c:'#06b6d4',title:'③ ETC + 氧化磷酸化',items:['线粒体内膜','6 H₂O','约 34 ATP','化学渗透驱动']},
+  ];
+  stages.forEach(s=>{
+    ctx.fillStyle='rgba(255,255,255,.03)';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    roundRect(s.x,s.y,s.w,s.h,12);ctx.fill();ctx.stroke();
+    drawLabel(s.title,s.x+s.w/2,s.y+30,s.c,15);
+    s.items.forEach((it,i)=>{
+      drawLabel(it,s.x+s.w/2,s.y+70+i*30,'#cbd5e1',12);
+    });
+  });
+  // 加号
+  ctx.fillStyle='#fbbf24';ctx.font='32px sans-serif';ctx.textAlign='center';
+  ctx.fillText('+',W/3-5,H/2);
+  ctx.fillText('+',W*2/3-15,H/2);
+  // 总计
+  ctx.fillStyle='#fbbf24';ctx.font='bold 18px sans-serif';
+  ctx.fillText('≈ 36 ATP',W/2,H-30);
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=20;
+  ctx.fillText('≈ 36 ATP',W/2,H-30);
+  ctx.shadowBlur=0;
+}
+
+// ====== 主循环 ======
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const s=STEPS[stepIdx];
+  const localProg=Math.min(1,stepTime/STEP_DURATION);
+  if(s.stage===1){
+    glycolysisProgress=localProg;
+    drawGlycolysisScene(localProg);
+  } else if(s.stage===2){
+    drawPyruvateOxidationScene(localProg);
+  } else if(s.stage===3){
+    etcProgress=localProg;
+    drawETCScene(localProg);
+  } else if(s.stage===4){
+    drawSummaryScene();
+  }
+}
+
+function update(dt){
+  if(!playing)return;
+  stepTime+=dt*speed;
+  atpSynthaseAngle+=dt*speed*6;
+  // 计数器平滑动画
+  ['atp','nadh','fadh2','co2'].forEach(k=>{
+    displayed[k]+=(counters[k]-displayed[k])*Math.min(1,dt*4);
+  });
+  render();
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){
+      stepIdx++;syncStep();
+    } else {
+      playing=false;playBtn.textContent='▶ 播放';
+      statusEl.textContent='动画完成 · 总产能 ≈ 36 ATP';
+    }
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ====== 控制 ======
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{
+  stepIdx=0;playing=false;stepTime=0;
+  counters={atp:0,nadh:0,fadh2:0,co2:0};displayed={atp:0,nadh:0,fadh2:0,co2:0};
+  atpSynthaseAngle=0;etcProgress=0;glycolysisProgress=0;
+  playBtn.textContent='▶ 播放';
+  syncStep();render();draw();
+};
+stepFwdBtn.onclick=()=>{
+  if(stepIdx<STEPS.length-1){stepIdx++;syncStep();render();draw();}
+};
+stepBackBtn.onclick=()=>{
+  if(stepIdx>0){stepIdx--;syncStep();render();draw();}
+};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+// ====== 初始化 ======
+buildStepbar();
+syncStep();
+render();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

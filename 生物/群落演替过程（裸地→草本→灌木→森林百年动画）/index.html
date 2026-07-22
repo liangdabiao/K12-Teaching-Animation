@@ -3,103 +3,629 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>群落演替过程</title>
+<title>群落演替过程 - 交互式教学动画</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+:root{
+  --bg:#0a1628;--panel:#111d33;--card:#15243d;--ink:#e8edf6;--muted:#8b9dc3;
+  --accent:#00b894;--accent2:#fdcb6e;--line:#1e3050;
+  --lichen:#a8a8a8;--moss:#2ecc71;--herb:#27ae60;--shrub:#16a085;--tree:#15803d;
+  --pine:#0f5132;--broadleaf:#228b22;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
 .back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
 .back:hover{background:#1f2a40}
 .title{font-size:16px;font-weight:600}
-main{flex:1;display:flex;min-height:0}
+.knowledge-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:14px 18px;background:linear-gradient(180deg,#0e1c33,#0a1628);border-bottom:1px solid var(--line)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.kcard h3{font-size:14px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard b{color:var(--ink)}
+.kcard .num{display:inline-block;background:var(--accent);color:#fff;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:bold;flex:none}
+main{flex:1;display:flex;flex-direction:column;min-height:0}
 .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
 canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.tabs{display:flex;gap:4px;padding:10px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap;justify-content:center}
+.tab{padding:8px 14px;background:#1a2942;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:13px;border-radius:6px;cursor:pointer}
+.tab:hover{background:#223656;color:var(--ink)}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.detail{padding:14px 16px;background:var(--panel);border-top:1px solid var(--line);max-height:30vh;overflow:auto}
+.detail h2{font-size:15px;color:var(--accent2);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail h2 .badge{background:rgba(0,184,148,0.15);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:normal}
+.detail .body{font-size:13px;line-height:1.75;color:var(--ink)}
+.detail .body b{color:var(--accent2)}
+.points{margin-top:8px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
+.points h4{color:var(--accent);font-size:13px;margin-bottom:6px}
+.points ul{padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7}
+.compare-table{font-size:12px;width:100%;border-collapse:collapse;margin-top:6px}
+.compare-table th,.compare-table td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);color:var(--muted)}
+.compare-table th{color:var(--accent);font-weight:600}
+.compare-table b{color:var(--ink)}
 .controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
 button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+button:hover{background:#2c3c5a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){.knowledge-bar{grid-template-columns:1fr}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">群落演替过程</span>
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">群落演替过程（裸地→草本→灌木→森林百年动画）</span>
 </header>
+
+<div class="knowledge-bar">
+  <div class="kcard"><h3><span class="num">1</span>群落演替</h3>
+    <p>随时间推移，一个群落被另一个群落<b>替代</b>的过程。<br>演替方向：<b>物种增多 → 结构复杂 → 稳定性提高</b><br>最终趋向相对稳定的<b>顶极群落</b>。</p></div>
+  <div class="kcard"><h3><span class="num">2</span>初生演替</h3>
+    <p>从未有任何生物生长过的<b>裸岩、沙丘、火山岩</b>开始。<br>典型：<b>裸岩 → 地衣 → 苔藓 → 草本 → 灌木 → 森林</b><br>特点：<b>时间长</b>，从零开始建立生态系统。</p></div>
+  <div class="kcard"><h3><span class="num">3</span>次生演替</h3>
+    <p>原有群落虽已破坏，但<b>土壤条件保留</b>（甚至种子、孢子）。<br>典型：弃耕农田、火灾后森林、洪水后草原<br>特点：<b>速度较快</b>，土壤中已有有机质和繁殖体。</p></div>
+  <div class="kcard"><h3><span class="num">4</span>人类活动影响</h3>
+    <p><b>破坏性</b>：砍伐森林、过度放牧、草原沙化、围湖造田<br><b>建设性</b>：退耕还林、封山育林、治理沙漠<br>人类活动往往<b>改变演替速度和方向</b>。</p></div>
+</div>
+
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>群落演替是随时间推移，一个群落被另一个替代的过程。初生演替如裸岩→<b>草本→灌木→森林</b>，物种丰富度与群落结构逐步复杂，最终趋向相对稳定的顶极群落。</p>
-    <div class="legend"><span class='dot' style='background:#34d399'></span>草本&nbsp;<span class='dot' style='background:#22c55e'></span>灌木&nbsp;<span class='dot' style='background:#15803d'></span>森林</div>
-  
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>群落演替</h3><ul><li><b>初生演替</b>：裸岩→地衣→苔藓→草本→灌木→森林</li><li><b>次生演替</b>：火灾/砍伐后恢复</li><li>演替方向：物种增多→结构复杂→稳定性↑</li><li>人类活动影响演替速度和方向</li></ul></div>
-    </aside>
 </main>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-type="primary">🌲 初生演替（裸岩→森林）</button>
+  <button class="tab" data-type="secondary">🌾 次生演替（弃耕农田）</button>
+  <button class="tab" data-type="compare">⚖ 两者对比</button>
+</div>
+
+<div class="detail" id="detail"></div>
+
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>演替进度（年） <input id="progress" type="range" min="0" max="100" step="0.5" value="0"></label>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span class="status" id="status"></span>
 </div>
-<script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const Su={t:0,p:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){Su.t=0;Su.p=0;}
-function sceneUpdate(dt){Su.t+=dt;if(Su.p<1)Su.p=Math.min(1,Su.p+dt*0.15);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const ground=cv.height-70;
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,ground);ctx.lineTo(cv.width,ground);ctx.stroke();
-  const stage=Math.floor(Su.p*4); // 0裸地 1草本 2灌木 3森林
-  ctx.fillStyle='#cdd7ea';ctx.font='14px sans-serif';ctx.textAlign='center';
-  const names=['裸岩/裸地','草本植物阶段','灌木阶段','森林阶段'];
-  ctx.fillText(names[stage],cv.width/2,50);
-  // draw plants by stage
-  for(let i=0;i<12;i++){const x=60+i*70;
-    if(stage>=1){ctx.fillStyle='#34d399';ctx.fillRect(x-2,ground-20,4,20);ctx.beginPath();ctx.arc(x,ground-24,8,0,7);ctx.fill();}
-    if(stage>=2&&i%2===0){ctx.fillStyle='#22c55e';ctx.fillRect(x-3,ground-50,6,50);ctx.beginPath();ctx.arc(x,ground-54,14,0,7);ctx.fill();}
-    if(stage>=3){ctx.fillStyle='#15803d';ctx.fillRect(x-5,ground-110,10,110);ctx.beginPath();ctx.arc(x,ground-114,26,0,7);ctx.fill();}
-  }
-  statusEl.textContent='群落演替：裸地→草本→灌木→森林，结构与物种多样性逐渐复杂';
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const speedEl=document.getElementById('speed');
+const progressEl=document.getElementById('progress');
+const detailEl=document.getElementById('detail');
+const tabsEl=document.getElementById('tabs');
+
+let mode='primary';
+let progress=0; // 0-100, represents ecological progress
+let playing=false;
+let speed=1;
+let lastT=0;
+let t=0;
+
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(800,Math.min(1100,r.width-8));
+  cv.height=Math.max(420,Math.min(500,r.height-8));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+const PRIMARY_STAGES=[
+  {p:0,p_max:5,name:'裸岩',years:'0-5 年',desc:'火山岩、冰川退却后的裸岩。无土壤、无生物。'},
+  {p:5,p_max:20,name:'地衣阶段',years:'5-50 年',desc:'<b>地衣（先锋生物）</b>首先定居：分泌地衣酸腐蚀岩石，逐渐形成薄层土壤。'},
+  {p:20,p_max:50,name:'苔藓阶段',years:'50-100 年',desc:'土壤加厚，苔藓生长，进一步积累有机质。'},
+  {p:50,p_max:80,name:'草本植物阶段',years:'100-300 年',desc:'草本植物出现，土壤更深厚，昆虫和小动物迁入。'},
+  {p:80,p_max:95,name:'灌木阶段',years:'300-1000 年',desc:'灌木取代草本，遮挡阳光，鸟类和小型哺乳动物增多。'},
+  {p:95,p_max:100,name:'森林阶段（顶极）',years:'1000+ 年',desc:'乔木成为优势种，形成稳定森林群落。'},
+];
+
+const SECONDARY_STAGES=[
+  {p:0,p_max:5,name:'弃耕农田',years:'第 1 年',desc:'农作物被弃，土壤肥沃，<b>有杂草种子</b>。'},
+  {p:5,p_max:30,name:'1-2 年：杂草',years:'1-2 年',desc:'一年生杂草（如藜、苋）迅速占据，形成草地。'},
+  {p:30,p_max:60,name:'多年生草本',years:'3-5 年',desc:'多年生草本取代一年生杂草。'},
+  {p:60,p_max:85,name:'灌木阶段',years:'5-15 年',desc:'灌木种子萌发，逐渐取代草本。'},
+  {p:85,p_max:100,name:'森林阶段',years:'15-50+ 年',desc:'阳性树种（松、桦）先长出，最终被耐阴树种（栎、樟）取代，形成顶极森林。'},
+];
+
+function getStages(){
+  return mode==='primary'?PRIMARY_STAGES:SECONDARY_STAGES;
 }
 
-let playing=false,lastT=0,speed=1,t=0;
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
-const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+function getCurrentStageIdx(){
+  const stages=getStages();
+  for(let i=stages.length-1;i>=0;i--){
+    if(progress>=stages[i].p)return i;
+  }
+  return 0;
+}
+
+function updateDetail(){
+  const stages=getStages();
+  if(mode==='compare'){
+    detailEl.innerHTML=`<h2>初生演替 vs 次生演替 <span class="badge">对比</span></h2>
+    <table class="compare-table">
+    <tr><th>对比项</th><th>初生演替</th><th>次生演替</th></tr>
+    <tr><td><b>起始条件</b></td><td>从未有过生物的裸岩、沙丘、火山岩</td><td>原有群落被毁，但<b>土壤保留</b></td></tr>
+    <tr><td><b>土壤</b></td><td><b>无</b>，需从岩石风化开始</td><td><b>有</b>，含有机质和繁殖体</td></tr>
+    <tr><td><b>速度</b></td><td>缓慢（数千年）</td><td><b>较快</b>（数十年）</td></tr>
+    <tr><td><b>先锋生物</b></td><td>地衣（腐蚀岩石）</td><td>杂草（一年生→多年生）</td></tr>
+    <tr><td><b>起点</b></td><td>从零开始</td><td>从土壤/种子库开始</td></tr>
+    <tr><td><b>终点</b></td><td colspan="2" style="text-align:center">均为顶极群落（与当地气候相适应）</td></tr>
+    </table>
+    <div class="points"><h4>关键差异</h4><ul>
+    <li>初生演替比次生演替<b>漫长</b>得多</li>
+    <li>次生演替<b>跳过</b>了土壤形成阶段</li>
+    <li>两者的<b>演替方向</b>相同：物种增多→结构复杂→稳定</li></ul></div>`;
+    return;
+  }
+  const stageIdx=getCurrentStageIdx();
+  const stage=stages[stageIdx];
+  let body=`<p>${stage.desc}</p>`;
+  // timeline
+  body+='<div class="points"><h4>演替时间线</h4><ul>';
+  stages.forEach((s,i)=>{
+    const marker=i===stageIdx?'▶ ':'';
+    body+=`<li>${marker}<b>${s.name}</b>（${s.years}）</li>`;
+  });
+  body+='</ul></div>';
+  body+=`<div class="points"><h4>演替规律</h4><ul>
+    <li>物种<b>丰富度</b>逐渐增加</li>
+    <li>群落<b>结构</b>逐渐复杂（垂直分层明显）</li>
+    <li><b>稳定性</b>逐渐提高</li>
+    <li>最终趋向<b>顶极群落</b>（受当地气候决定）</li></ul></div>`;
+  detailEl.innerHTML=`<h2>${stage.name} <span class="badge">${stage.years}</span></h2><div class="body">${body}</div>`;
+}
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    mode=t.dataset.type;
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+    updateDetail();draw();
+  };
+});
+
+// Drawing functions
+
+function drawGround(W,H,soilColor){
+  const gy=H*0.82;
+  // soil layer
+  const grad=ctx.createLinearGradient(0,gy,0,H);
+  grad.addColorStop(0,soilColor);
+  grad.addColorStop(1,'#3a2818');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,gy,W,H-gy);
+  // rocks (for primary succession early stages)
+  if(mode==='primary'&&progress<30){
+    for(let i=0;i<20;i++){
+      const x=Math.random()*W;
+      const y=gy+5+Math.random()*(H-gy-10);
+      const r=4+Math.random()*8;
+      ctx.fillStyle='#5a5a5a';
+      ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.stroke();
+    }
+  }
+  return gy;
+}
+
+function drawSky(W,H,bright){
+  const grad=ctx.createLinearGradient(0,0,0,H*0.82);
+  if(bright){
+    grad.addColorStop(0,'#87ceeb');
+    grad.addColorStop(1,'#b6e0f0');
+  }else{
+    grad.addColorStop(0,'#1a2a3a');
+    grad.addColorStop(1,'#2a3a4a');
+  }
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,W,H*0.82);
+  // sun
+  if(bright){
+    ctx.fillStyle='#fdcb6e';
+    ctx.beginPath();ctx.arc(W*0.85,H*0.15,22,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(253,203,110,0.3)';
+    ctx.beginPath();ctx.arc(W*0.85,H*0.15,40,0,Math.PI*2);ctx.fill();
+  }
+}
+
+function drawLichen(x,groundY){
+  ctx.fillStyle='#7a7a7a';
+  ctx.beginPath();
+  ctx.ellipse(x,groundY-2,8,4,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#a8a8a8';
+  ctx.beginPath();
+  ctx.ellipse(x-2,groundY-4,4,2,0,0,Math.PI*2);
+  ctx.fill();
+}
+
+function drawMoss(x,groundY){
+  ctx.fillStyle='#2ecc71';
+  for(let i=0;i<5;i++){
+    const px=x+(i-2)*3;
+    ctx.beginPath();
+    ctx.moveTo(px,groundY);
+    ctx.lineTo(px-1,groundY-8);
+    ctx.lineTo(px+1,groundY-8);
+    ctx.closePath();
+    ctx.fill();
+  }
+}
+
+function drawGrass(x,groundY,height){
+  ctx.strokeStyle='#27ae60';ctx.lineWidth=1.5;
+  for(let i=0;i<5;i++){
+    const px=x+(i-2)*3;
+    const sway=Math.sin(t*2+i)*3;
+    ctx.beginPath();
+    ctx.moveTo(px,groundY);
+    ctx.quadraticCurveTo(px+sway,groundY-height*0.6,px+sway*1.5,groundY-height);
+    ctx.stroke();
+  }
+}
+
+function drawFlower(x,groundY){
+  drawGrass(x,groundY,15);
+  // petals
+  ctx.fillStyle='#e84393';
+  ctx.beginPath();
+  ctx.arc(x,groundY-15,3,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#fdcb6e';
+  ctx.beginPath();
+  ctx.arc(x,groundY-15,1.5,0,Math.PI*2);
+  ctx.fill();
+}
+
+function drawShrub(x,groundY,scale){
+  scale=scale||1;
+  ctx.fillStyle='#16a085';
+  ctx.beginPath();
+  ctx.arc(x,groundY-15*scale,18*scale,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#1abc9c';
+  ctx.beginPath();
+  ctx.arc(x-12*scale,groundY-10*scale,12*scale,0,Math.PI*2);
+  ctx.arc(x+12*scale,groundY-10*scale,12*scale,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#0e8074';
+  ctx.beginPath();
+  ctx.arc(x,groundY-25*scale,10*scale,0,Math.PI*2);
+  ctx.fill();
+}
+
+function drawTree(x,groundY,height,trunkWidth,treeColor,canopyShape){
+  trunkWidth=trunkWidth||8;
+  treeColor=treeColor||'#15803d';
+  // trunk
+  ctx.fillStyle='#5d4037';
+  ctx.fillRect(x-trunkWidth/2,groundY-height,trunkWidth,height);
+  ctx.strokeStyle='#3d2818';ctx.lineWidth=1;ctx.strokeRect(x-trunkWidth/2,groundY-height,trunkWidth,height);
+  // canopy
+  ctx.fillStyle=treeColor;
+  if(canopyShape==='pine'){
+    // triangular canopy (pine)
+    for(let layer=0;layer<3;layer++){
+      const layerY=groundY-height+layer*height*0.25;
+      const layerW=30-layer*5;
+      ctx.beginPath();
+      ctx.moveTo(x,layerY-height*0.3);
+      ctx.lineTo(x-layerW,layerY);
+      ctx.lineTo(x+layerW,layerY);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }else{
+    // round canopy (broadleaf)
+    ctx.beginPath();
+    ctx.arc(x,groundY-height-10,height*0.35,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle=treeColor;
+    ctx.beginPath();
+    ctx.arc(x-height*0.2,groundY-height-5,height*0.25,0,Math.PI*2);
+    ctx.arc(x+height*0.2,groundY-height-5,height*0.25,0,Math.PI*2);
+    ctx.fill();
+  }
+}
+
+function drawSmallAnimal(x,y,type){
+  ctx.fillStyle='#8b6e4e';
+  if(type==='bird'){
+    ctx.beginPath();
+    ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle='#8b6e4e';ctx.lineWidth=1.5;
+    const flap=Math.sin(t*8)*5;
+    ctx.beginPath();
+    ctx.moveTo(x-2,y);ctx.lineTo(x-10,y-flap);
+    ctx.moveTo(x+2,y);ctx.lineTo(x+10,y-flap);
+    ctx.stroke();
+  }else if(type==='rabbit'){
+    ctx.beginPath();
+    ctx.ellipse(x,y,8,5,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x-5,y-3,3,0,Math.PI*2);
+    ctx.fill();
+    // ears
+    ctx.fillStyle='#6d5640';
+    ctx.fillRect(x-7,y-7,1.5,5);
+    ctx.fillRect(x-4,y-7,1.5,5);
+  }else if(type==='insect'){
+    ctx.fillStyle='#e67e22';
+    ctx.beginPath();
+    ctx.arc(x,y,2,0,Math.PI*2);
+    ctx.fill();
+  }
+}
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(mode==='compare'){
+    drawComparison(W,H);
+    statusEl.textContent='初生演替 vs 次生演替 对比';
+    return;
+  }
+  // sky
+  const bright=progress>20;
+  drawSky(W,H,bright);
+  // ground
+  const groundColor=mode==='primary'?(progress<20?'#5a5a5a':'#3a2818'):'#4a3120';
+  const gy=drawGround(W,H,groundColor);
+
+  // Determine which stage we're in
+  const stages=getStages();
+  const stageIdx=getCurrentStageIdx();
+  const stage=stages[stageIdx];
+
+  // Draw organisms based on stage
+  ctx.save();
+  if(mode==='primary'){
+    if(progress<5){
+      // bare rock
+    }else if(progress<20){
+      // lichens (pioneer)
+      for(let i=0;i<8;i++){
+        const x=W*0.1+Math.random()*W*0.8;
+        drawLichen(x,gy);
+      }
+    }else if(progress<50){
+      // lichens + moss
+      for(let i=0;i<5;i++)drawLichen(W*0.1+i*W*0.18,gy);
+      for(let i=0;i<8;i++)drawMoss(W*0.05+Math.random()*W*0.9,gy);
+    }else if(progress<80){
+      // grasses and small plants
+      for(let i=0;i<15;i++){
+        const x=W*0.05+i*W*0.06+Math.random()*10;
+        drawGrass(x,gy,20+Math.random()*15);
+      }
+      for(let i=0;i<3;i++)drawFlower(W*0.2+i*W*0.25,gy);
+      for(let i=0;i<2;i++)drawMoss(W*0.1+i*W*0.4,gy);
+      // insects
+      drawSmallAnimal(W*0.3,gy-15,'insect');
+    }else if(progress<95){
+      // shrubs dominate
+      for(let i=0;i<5;i++)drawShrub(W*0.1+i*W*0.2,gy,1);
+      // some grass between
+      for(let i=0;i<8;i++)drawGrass(W*0.05+i*W*0.12,gy,15);
+      // birds
+      drawSmallAnimal(W*0.3,H*0.3,'bird');
+      drawSmallAnimal(W*0.7,H*0.4,'bird');
+    }else{
+      // forest climax
+      // large trees
+      drawTree(W*0.15,gy,180,12,'#15803d','broadleaf');
+      drawTree(W*0.4,gy,200,14,'#0f5132','pine');
+      drawTree(W*0.6,gy,170,10,'#228b22','broadleaf');
+      drawTree(W*0.85,gy,190,12,'#1e7a3d','broadleaf');
+      // understory shrubs
+      for(let i=0;i<4;i++)drawShrub(W*0.1+i*W*0.25,gy,0.7);
+      // animals
+      drawSmallAnimal(W*0.3,H*0.25,'bird');
+      drawSmallAnimal(W*0.55,H*0.35,'bird');
+      drawSmallAnimal(W*0.7,gy-5,'rabbit');
+    }
+  }else{
+    // secondary succession - starts with bare farmland with soil
+    if(progress<5){
+      // rows of cut crops
+      ctx.strokeStyle='#8b6e4e';ctx.lineWidth=2;
+      for(let i=0;i<W/15;i++){
+        ctx.beginPath();
+        ctx.moveTo(i*15,gy-5);
+        ctx.lineTo(i*15,gy-15);
+        ctx.stroke();
+      }
+    }else if(progress<30){
+      // weeds (annuals)
+      for(let i=0;i<20;i++)drawGrass(W*0.02+i*W/22,gy,15+Math.random()*10);
+      for(let i=0;i<4;i++)drawFlower(W*0.1+i*W*0.2,gy);
+    }else if(progress<60){
+      // perennial grasses
+      for(let i=0;i<18;i++)drawGrass(W*0.02+i*W/20,gy,30+Math.random()*15);
+      for(let i=0;i<6;i++)drawFlower(W*0.05+i*W*0.18,gy);
+      // insects
+      drawSmallAnimal(W*0.3,gy-15,'insect');
+      drawSmallAnimal(W*0.6,gy-15,'insect');
+    }else if(progress<85){
+      // shrubs
+      for(let i=0;i<5;i++)drawShrub(W*0.1+i*W*0.2,gy,1);
+      for(let i=0;i<6;i++)drawGrass(W*0.05+i*W*0.16,gy,15);
+      drawSmallAnimal(W*0.4,H*0.35,'bird');
+    }else{
+      // forest
+      drawTree(W*0.2,gy,150,10,'#0f5132','pine');
+      drawTree(W*0.5,gy,180,12,'#228b22','broadleaf');
+      drawTree(W*0.8,gy,160,11,'#15803d','broadleaf');
+      for(let i=0;i<3;i++)drawShrub(W*0.15+i*W*0.3,gy,0.7);
+      drawSmallAnimal(W*0.35,H*0.3,'bird');
+      drawSmallAnimal(W*0.65,gy-5,'rabbit');
+    }
+  }
+  ctx.restore();
+
+  // Title and stage info
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText(`${mode==='primary'?'🌲 初生演替':'🌾 次生演替'} - ${stage.name}`,W/2,24);
+
+  // Timeline at top
+  drawTimeline(W,H,stages,stageIdx);
+
+  // Time elapsed
+  const yearsText=getYearsText();
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+  ctx.fillText(yearsText,W/2,H-10);
+
+  statusEl.textContent=`${stage.name} | ${stage.years} | 进度 ${progress.toFixed(0)}%`;
+}
+
+function getYearsText(){
+  if(mode==='primary'){
+    if(progress<5)return '约 0-5 年';
+    if(progress<20)return '约 5-50 年';
+    if(progress<50)return '约 50-100 年';
+    if(progress<80)return '约 100-300 年';
+    if(progress<95)return '约 300-1000 年';
+    return '约 1000+ 年（顶极群落）';
+  }else{
+    if(progress<5)return '第 1 年';
+    if(progress<30)return '1-2 年';
+    if(progress<60)return '3-5 年';
+    if(progress<85)return '5-15 年';
+    return '15-50+ 年';
+  }
+}
+
+function drawTimeline(W,H,stages,stageIdx){
+  const tlY=44;
+  const tlX1=W*0.1,tlX2=W*0.9;
+  // base line
+  ctx.strokeStyle='#3a5070';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(tlX1,tlY);ctx.lineTo(tlX2,tlY);ctx.stroke();
+  // stage markers
+  stages.forEach((s,i)=>{
+    const x=tlX1+(tlX2-tlX1)*(s.p/100);
+    const active=i<=stageIdx;
+    ctx.fillStyle=active?'#00b894':'#3a5070';
+    ctx.beginPath();ctx.arc(x,tlY,active?6:4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=active?'#fff':'#8b9dc3';
+    ctx.font=(i===stageIdx?'bold ':'')+'10px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(s.name,x,tlY+18);
+  });
+  // progress marker
+  const px=tlX1+(tlX2-tlX1)*(progress/100);
+  ctx.fillStyle='#fdcb6e';
+  ctx.beginPath();
+  ctx.moveTo(px,tlY-10);
+  ctx.lineTo(px-5,tlY-20);
+  ctx.lineTo(px+5,tlY-20);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawComparison(W,H){
+  // Split into two halves
+  // LEFT: primary succession
+  // RIGHT: secondary succession
+  const divider=W/2;
+  // backgrounds
+  ctx.fillStyle='#1a2538';
+  ctx.fillRect(0,0,divider,H);
+  ctx.fillStyle='#1a2538';
+  ctx.fillRect(divider,0,divider,H);
+  // divider line
+  ctx.strokeStyle='#3a5070';ctx.lineWidth=2;
+  ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(divider,0);ctx.lineTo(divider,H);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // titles
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  ctx.fillText('🌲 初生演替',divider/2,24);
+  ctx.fillText('🌾 次生演替',divider+divider/2,24);
+
+  // primary (left)
+  // final climax state at top
+  drawSceneAt(0,30,divider,H-60,'primary',100);
+  // secondary (right)
+  drawSceneAt(divider,30,divider,H-60,'secondary',100);
+
+  // labels
+  ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';ctx.textAlign='left';
+  const primaryLabels=['裸岩 (0年)','地衣 (50年)','苔藓 (100年)','草本 (300年)','灌木 (1000年)','森林 (1000+年)'];
+  const secondaryLabels=['弃耕农田 (1年)','杂草 (2年)','多年生 (5年)','灌木 (15年)','阳性树 (30年)','顶极森林 (50+年)'];
+  primaryLabels.forEach((l,i)=>{
+    ctx.fillStyle='#8b9dc3';
+    ctx.fillText(l,10,60+i*22);
+  });
+  secondaryLabels.forEach((l,i)=>{
+    ctx.fillStyle='#8b9dc3';
+    ctx.fillText(l,divider+10,60+i*22);
+  });
+}
+
+function drawSceneAt(x,y,w,h,m,prog){
+  // simplified mini-scene
+  const gy=y+h-10;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x,y,w,h);
+  ctx.clip();
+  // sky
+  ctx.fillStyle='#87ceeb';
+  ctx.fillRect(x,y,w,h*0.7);
+  // ground
+  ctx.fillStyle=m==='primary'?'#5a5a5a':'#4a3120';
+  ctx.fillRect(x,gy,w,y+h-gy);
+  if(m==='primary'){
+    drawTree(x+w*0.2,gy,80,5,'#15803d','broadleaf');
+    drawTree(x+w*0.5,gy,90,6,'#0f5132','pine');
+    drawTree(x+w*0.8,gy,75,5,'#228b22','broadleaf');
+  }else{
+    drawTree(x+w*0.25,gy,70,5,'#0f5132','pine');
+    drawTree(x+w*0.6,gy,85,6,'#228b22','broadleaf');
+    drawTree(x+w*0.85,gy,70,5,'#15803d','broadleaf');
+  }
+  ctx.restore();
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  t+=dt;
+  if(playing){
+    progress+=dt*speed*5; // ~20 sec to complete
+    if(progress>=100){
+      progress=100;playing=false;
+      document.getElementById('playBtn').textContent='▶ 播放';
+    }
+    progressEl.value=progress;
+    updateDetail();
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+};
+document.getElementById('resetBtn').onclick=()=>{
+  progress=0;playing=false;
+  document.getElementById('playBtn').textContent='▶ 播放';
+  progressEl.value=0;
+  updateDetail();draw();
+};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+progressEl.oninput=()=>{progress=parseFloat(progressEl.value);updateDetail();draw();};
+
+updateDetail();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

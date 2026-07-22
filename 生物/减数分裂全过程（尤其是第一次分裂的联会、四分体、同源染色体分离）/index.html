@@ -3,103 +3,674 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>减数分裂全过程</title>
+<title>减数分裂全过程 - 交互式教学动画</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+:root{
+  --bg:#0a1628;--panel:#111d33;--card:#15243d;--ink:#e8edf6;--muted:#8b9dc3;
+  --accent:#00b894;--accent2:#fdcb6e;--line:#1e3050;
+  --paternal:#3498db;--maternal:#e74c3c;--sister:#9b59b6;
+  --cyto:#5dade2;--spindle:#f1c40f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
 .back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
 .back:hover{background:#1f2a40}
 .title{font-size:16px;font-weight:600}
+.knowledge-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;padding:14px 18px;background:linear-gradient(180deg,#0e1c33,#0a1628);border-bottom:1px solid var(--line)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.kcard h3{font-size:14px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard b{color:var(--ink)}
+.kcard .num{display:inline-block;background:var(--accent);color:#fff;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:bold;flex:none}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0;flex-direction:column}
+.canvas-wrap{position:relative;width:100%;flex:1;display:flex;align-items:center;justify-content:center}
 canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.stepbar{display:flex;gap:4px;padding:10px 12px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap;justify-content:center}
+.step-btn{padding:7px 12px;background:#1a2942;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.step-btn:hover{background:#223656;color:var(--ink)}
+.step-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.step-btn.done{background:#1e3a5f;color:var(--accent)}
+.detail{padding:14px 16px;background:var(--panel);border-top:1px solid var(--line);max-height:30vh;overflow:auto}
+.detail h2{font-size:15px;color:var(--accent2);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.detail h2 .badge{background:rgba(0,184,148,0.15);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:normal}
+.detail .body{font-size:13px;line-height:1.75;color:var(--ink)}
+.detail .body p{margin:6px 0}
+.detail .body b{color:var(--accent2)}
+.points{margin-top:8px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
+.points h4{color:var(--accent);font-size:13px;margin-bottom:6px}
+.points ul{padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7}
+.points li{margin:3px 0}
+.legend{display:flex;gap:12px;padding:6px 12px;background:var(--panel);border-top:1px solid var(--line);font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend .dot{width:10px;height:10px;border-radius:2px;display:inline-block}
 .controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
 button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+button:hover{background:#2c3c5a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){.knowledge-bar{grid-template-columns:1fr}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">减数分裂全过程</span>
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">减数分裂全过程（联会、四分体、交叉互换、同源染色体分离）</span>
 </header>
+
+<div class="knowledge-bar">
+  <div class="kcard"><h3><span class="num">1</span>减数分裂的本质</h3>
+    <p><b>染色体复制一次，细胞连续分裂两次</b>，产生的子细胞（精子/卵细胞）染色体数目<b>减半</b>（2n→n）。<br>意义：保证有性生殖后代染色体数目稳定；增加遗传多样性。</p></div>
+  <div class="kcard"><h3><span class="num">2</span>减数第一次分裂（核心）</h3>
+    <p><b>同源染色体</b>（大小形态相同，一条来自父方一条来自母方）行为：<br>①<b>联会</b>→形成<b>四分体</b>（2条同源染色体=4条染色单体）<br>②可能发生<b>交叉互换</b><br>③<b>同源染色体分离，非同源染色体自由组合</b></p></div>
+  <div class="kcard"><h3><span class="num">3</span>减数第二次分裂</h3>
+    <p><b>类似有丝分裂</b>：着丝点分裂，<b>姐妹染色单体分离</b>。<br>注意：减II细胞中已无同源染色体（已在减I分离）。</p></div>
+  <div class="kcard"><h3><span class="num">4</span>关键数量变化</h3>
+    <p><b>精原细胞(2n)→</b>初级精母细胞(2n，复制后DNA 4n)<b>→</b>次级精母细胞(n，DNA 2n)<b>→</b>精细胞(n，DNA n)<br>1个精原细胞→4个精细胞；1个卵原细胞→1卵细胞+3极体</p></div>
+</div>
+
 <main>
-  <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>减数分裂是产生配子的特殊分裂方式。减数第一次分裂：同源染色体联会（形成四分体）→交叉互换→同源染色体分离。减数第二次分裂：着丝点分裂→姐妹染色单体分离。最终1个精原细胞→4个精子。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">━</b> 来自父方的染色体</span><span class="li"><b style="color:#d63031">━</b> 来自母方的染色体</span><span class="li"><b style="color:#00b894">╳</b> 交叉互换</span></div>
-  <div class="key-points"><h3>核心知识</h3><ul><li>减I前期：同源染色体联会→形成四分体</li><li>四分体时期可发生非姐妹染色单体交叉互换</li><li>减I后期：同源染色体分离（等位基因分离）</li><li>减II后期：着丝点分裂（姐妹染色单体分离）</li><li>结果：染色体数目减半，DNA含量减半</li><li>1精原→4精子；1卵原→1卵细胞+3极体</li></ul></div></aside>
+  <div class="stage">
+    <div class="canvas-wrap"><canvas id="cv"></canvas></div>
+  </div>
 </main>
+
+<div class="stepbar" id="stepbar"></div>
+
+<div class="detail" id="detail"></div>
+
+<div class="legend">
+  <span><span class="dot" style="background:var(--paternal)"></span>父方染色体（蓝）</span>
+  <span><span class="dot" style="background:var(--maternal)"></span>母方染色体（红）</span>
+  <span><span class="dot" style="background:var(--sister)"></span>姐妹染色单体（同色）</span>
+  <span><span class="dot" style="background:var(--spindle)"></span>纺锤丝</span>
+  <span><span class="dot" style="background:var(--accent2)"></span>交叉互换片段</span>
+</div>
+
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button>
   <button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <label>进度 <input id="progress" type="range" min="0" max="100" step="0.1" value="0"></label>
+  <span class="status" id="status"></span>
 </div>
-<script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const M={t:0,step:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){M.t=0;M.step=0;}
-function sceneUpdate(dt){M.t+=dt;}
-function sceneStep(d){M.step=Math.max(0,Math.min(5,M.step+d));}
-function chromo(x,y,c){ctx.strokeStyle=c;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-10,y);ctx.lineTo(x,y-25);ctx.lineTo(x+10,y);ctx.stroke();}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const cx=cv.width/2,cy=cv.height/2;
-  ctx.fillStyle='#cdd7ea';ctx.font='14px sans-serif';ctx.textAlign='center';
-  const names=['① 间期复制','② 减Ⅰ前期：联会→四分体','③ 减Ⅰ中期：同源染色体排列','④ 减Ⅰ后期：同源分离','⑤ 减Ⅱ：姐妹染色单体分开','⑥ 形成4个精子'];
-  ctx.fillText(names[M.step],cx,50);
-  // draw cells
-  const cols=2,rows=3;
-  for(let s=0;s<=M.step;s++){
-    const gx=cx-220+(s%3)*220, gy=120+Math.floor(s/3)*180;
-    ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.arc(gx,gy,55,0,7);ctx.stroke();
-    const n=2+ (s>=4?2:0);
-    for(let i=0;i<n;i++){chromo(gx-20+i*20,gy+ (i%2?10:-10), i%2?'#f87171':'#34d399');}
-  }
-  statusEl.textContent='减数分裂：染色体复制一次，细胞连续分裂两次，子细胞染色体减半';
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const speedEl=document.getElementById('speed');
+const progressEl=document.getElementById('progress');
+const stepbarEl=document.getElementById('stepbar');
+const detailEl=document.getElementById('detail');
+
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(700,Math.min(1100,r.width-8));
+  cv.height=Math.max(400,Math.min(540,r.height-8));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+// Two pairs of homologous chromosomes (2n=4 for clarity)
+// Pair A: long (blue/red), Pair B: short (blue/red)
+const STEPS=[
+  {
+    tag:'interphase',name:'间期',
+    title:'① 间期：DNA复制+蛋白质合成',
+    body:`<p>精原细胞（2n=4）染色体复制：每条染色体形成<b>由着丝点连接的两条姐妹染色单体</b>。DNA含量加倍（2n→4n），但<b>染色体数仍为2n</b>（着丝点未分裂）。</p>
+    <div class="points"><h4>必背要点</h4><ul>
+    <li>复制后：1条染色体=2条姐妹染色单体（共1个着丝点）</li>
+    <li>染色体数 = 着丝点数 = 4（2n）</li>
+    <li>DNA数 = 8（4n，因为每条染色单体含1个DNA）</li>
+    <li>同源染色体已存在但尚未配对</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'pro1-pair',name:'前期：联会',
+    title:'② 减I前期：同源染色体联会',
+    body:`<p>同源染色体<b>两两配对</b>，称为<b>联会（synapsis）</b>。配对的一对同源染色体称为<b>二价体</b>。</p>
+    <div class="points"><h4>关键概念：同源染色体</h4><ul>
+    <li><b>大小、形态相同</b>的两条染色体</li>
+    <li>一条来自父方（蓝），一条来自母方（红）</li>
+    <li>人类有23对（46条）同源染色体</li>
+    <li>联会后形成<b>四分体</b>（含4条染色单体）</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'pro1-tetrad',name:'四分体',
+    title:'③ 四分体时期（可发生交叉互换）',
+    body:`<p>联会后的一对同源染色体含4条染色单体，称为<b>四分体</b>。<b>非姐妹染色单体</b>之间可发生<b>交叉互换</b>，这是遗传多样性的重要来源。</p>
+    <div class="points"><h4>交叉互换要点</h4><ul>
+    <li>发生在<b>非姐妹染色单体</b>之间（一条父方+一条母方）</li>
+    <li>互换的是<b>相同基因位置</b>的片段</li>
+    <li>结果：基因重组，产生新的性状组合</li>
+    <li>姐妹染色单体之间不会交叉互换</li></ul></div>`,
+    duration:4,
+  },
+  {
+    tag:'meta1',name:'中期I',
+    title:'④ 减I中期：同源染色体成对排列在赤道板两侧',
+    body:`<p>四分体排列在细胞中央<b>赤道板</b>的两侧。同源染色体<b>成对</b>存在（注意与有丝分裂中期：染色体<b>单独</b>排列在赤道板上的区别）。</p>
+    <div class="points"><h4>辨析：减I中期 vs 有丝分裂中期</h4><ul>
+    <li><b>减I中期</b>：同源染色体<b>成对</b>，排在赤道板<b>两侧</b></li>
+    <li><b>有丝分裂中期</b>：染色体<b>单独</b>，着丝点排在赤道板<b>上</b></li>
+    <li>此时是观察染色体形态的最佳时期</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'ana1',name:'后期I',
+    title:'⑤ 减I后期：同源染色体分离（等位基因分离）',
+    body:`<p>⚠ <b>核心事件</b>：同源染色体<b>分离</b>，非同源染色体<b>自由组合</b>，分别向细胞两极移动。<b>姐妹染色单体仍连在一起</b>（着丝点未分裂）。</p>
+    <div class="points"><h4>原理：孟德尔基因分离定律的细胞学基础</h4><ul>
+    <li>同源染色体上的<b>等位基因</b>随同源染色体分离而分离</li>
+    <li>非同源染色体上的<b>非等位基因</b>自由组合</li>
+    <li>结果：产生n=2的次级精母细胞（已无同源染色体）</li></ul></div>`,
+    duration:4,
+  },
+  {
+    tag:'telo1',name:'末期I',
+    title:'⑥ 减I末期：形成2个次级精母细胞',
+    body:`<p>细胞质分裂，形成<b>2个次级精母细胞</b>。每个细胞中染色体数目减半（2n→n=2），<b>没有同源染色体</b>，但每条染色体仍由两条姐妹染色单体组成（DNA尚未减半）。</p>
+    <div class="points"><h4>数量追踪</h4><ul>
+    <li>初级精母细胞：染色体=4，DNA=8</li>
+    <li>次级精母细胞：染色体=<b>2</b>，DNA=<b>4</b></li>
+    <li>每个次级精母细胞中：2条染色体（一条父方来源，一条母方来源），无同源</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'meta2',name:'中期II',
+    title:'⑦ 减II中期：染色体单独排在赤道板上',
+    body:`<p>类似有丝分裂中期，染色体（着丝点）排在赤道板上。每个细胞中只有n=2条染色体（无同源染色体）。</p>
+    <div class="points"><h4>关键区分</h4><ul>
+    <li>减II：<b>无同源染色体</b>，染色体数减半（n=2）</li>
+    <li>有丝分裂：有同源染色体，染色体数2n=4</li>
+    <li>姐妹染色单体仍由着丝点连在一起</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'ana2',name:'后期II',
+    title:'⑧ 减II后期：着丝点分裂，姐妹染色单体分离',
+    body:`<p>⚠ <b>核心事件</b>：<b>着丝点分裂</b>，姐妹染色单体分离，分别移向两极。<b>此时染色体数目暂时加倍</b>（n→2n）。</p>
+    <div class="points"><h4>注意</h4><ul>
+    <li>减II后期染色体数 = 2n = 4（短暂）</li>
+    <li>DNA数不变</li>
+    <li>移向两极的两条染色体完全相同（来自同一染色单体）</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'telo2',name:'末期II',
+    title:'⑨ 减II末期：形成4个精细胞',
+    body:`<p>细胞质分裂，每个次级精母细胞形成2个精细胞。最终：<b>1个精原细胞→4个精细胞</b>，每个精细胞染色体数为n=2（DNA也为n）。</p>
+    <div class="points"><h4>最终结果</h4><ul>
+    <li>精细胞染色体数=n=2（人类n=23）</li>
+    <li>DNA数=n=2</li>
+    <li>由于减I后期非同源染色体自由组合，4个精细胞的染色体组合多样</li>
+    <li>精细胞经变形成为精子</li></ul></div>`,
+    duration:3,
+  },
+];
+
+let stepIdx=0;
+let stepProgress=0; // 0~1 within current step
+let playing=false;
+let speed=1;
+let lastT=0;
+
+function renderStepbar(){
+  stepbarEl.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const btn=document.createElement('button');
+    btn.className='step-btn'+(i===stepIdx?' active':(i<stepIdx?' done':''));
+    btn.textContent=s.name;
+    btn.onclick=()=>{stepIdx=i;stepProgress=0;updateDetail();renderStepbar();draw();};
+    stepbarEl.appendChild(btn);
+  });
 }
 
-let playing=false,lastT=0,speed=1,t=0;
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
-const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+function updateDetail(){
+  const s=STEPS[stepIdx];
+  detailEl.innerHTML=`<h2>${s.title}<span class="badge">第 ${stepIdx+1}/${STEPS.length} 步</span></h2><div class="body">${s.body}</div>`;
+}
+
+// Drawing chromosomes
+// A chromosome consists of 2 sister chromatids joined at centromere
+// Each homologous pair: one paternal (blue), one maternal (red)
+// We have 2 pairs: long pair (A1,A2) and short pair (B1,B2)
+
+const C_LONG=42;  // long chromatid half-length
+const C_SHORT=26; // short chromatid half-length
+const C_W=6;      // chromatid half-width
+
+function drawChromosome(x,y,angle,length,isPaternal,isMaternal,showChromatids,crossData){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(angle);
+  const color=isPaternal?'#3498db':(isMaternal?'#e74c3c':'#9b59b6');
+  const darkColor=isPaternal?'#1f6aa3':(isMaternal?'#a83020':'#6c3d7a');
+  if(showChromatids){
+    // two sister chromatids
+    for(let s=-1;s<=1;s+=2){
+      ctx.fillStyle=color;
+      ctx.strokeStyle=darkColor;
+      ctx.lineWidth=1;
+      const xOff=s*3;
+      ctx.beginPath();
+      ctx.moveTo(xOff-C_W,-length);
+      ctx.lineTo(xOff+C_W,-length);
+      ctx.lineTo(xOff+C_W,-6);
+      ctx.lineTo(xOff+C_W+1,6);
+      ctx.lineTo(xOff+C_W,length);
+      ctx.lineTo(xOff-C_W,length);
+      ctx.lineTo(xOff-C_W-1,6);
+      ctx.lineTo(xOff-C_W,-6);
+      ctx.closePath();
+      ctx.fill();ctx.stroke();
+    }
+    // centromere
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=color;
+    ctx.beginPath();ctx.arc(0,0,2,0,Math.PI*2);ctx.fill();
+  }else{
+    // single chromatid (after centromere division)
+    ctx.fillStyle=color;
+    ctx.strokeStyle=darkColor;
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(-C_W,-length);
+    ctx.lineTo(C_W,-length);
+    ctx.lineTo(C_W+1,6);
+    ctx.lineTo(C_W+1,length);
+    ctx.lineTo(-C_W-1,length);
+    ctx.lineTo(-C_W-1,6);
+    ctx.closePath();
+    ctx.fill();ctx.stroke();
+    // centromere
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawSpindleLine(x1,y1,x2,y2,alpha){
+  ctx.strokeStyle=`rgba(241,196,15,${alpha})`;
+  ctx.lineWidth=1.2;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.stroke();
+}
+
+function drawCell(cx,cy,r,label,highlight){
+  ctx.save();
+  // membrane
+  ctx.strokeStyle='#5dade2';
+  ctx.lineWidth=2;
+  ctx.fillStyle='rgba(93,173,226,0.06)';
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();ctx.stroke();
+  if(label){
+    ctx.fillStyle='#8b9dc3';
+    ctx.font='12px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(label,cx,cy+r+18);
+  }
+  ctx.restore();
+}
+
+function drawTitle(text){
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 15px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(text,cv.width/2,24);
+}
+
+function drawDNAGauge(){
+  // top-right info panel showing chromosome/DNA counts
+  const x=cv.width-130,y=44;
+  ctx.fillStyle='rgba(21,36,61,0.85)';
+  ctx.strokeStyle='#1e3050';
+  ctx.lineWidth=1;
+  ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(x,y,120,72,8);
+  else ctx.rect(x,y,120,72);
+  ctx.fill();ctx.stroke();
+  ctx.fillStyle='#8b9dc3';
+  ctx.font='11px sans-serif';
+  ctx.textAlign='left';
+  const counts=getCounts();
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 12px sans-serif';
+  ctx.fillText('数量追踪',x+8,y+16);
+  ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';
+  ctx.fillText(`染色体数：${counts.chromo}`,x+8,y+34);
+  ctx.fillText(`DNA数：${counts.dna}`,x+8,y+50);
+  ctx.fillText(`染色单体：${counts.chromatid}`,x+8,y+66);
+}
+
+function getCounts(){
+  // returns current counts based on step
+  const p=Math.min(1,stepProgress);
+  switch(STEPS[stepIdx].tag){
+    case 'interphase': // before replication 2n=4 / DNA=4 → after replication 2n=4 / DNA=8
+      return {chromo:4,dna:Math.round(4+p*4),chromatid:Math.round(p*8)};
+    case 'pro1-pair':
+    case 'pro1-tetrad':
+    case 'meta1':
+      return {chromo:4,dna:8,chromatid:8};
+    case 'ana1':
+    case 'telo1': // each cell now n=2, DNA=4 per cell
+      return {chromo:2,dna:4,chromatid:4};
+    case 'meta2':
+      return {chromo:2,dna:4,chromatid:4};
+    case 'ana2': // centromere divides, chromo temporarily 2n=4 in each cell
+      return {chromo:4,dna:4,chromatid:0};
+    case 'telo2':
+      return {chromo:2,dna:2,chromatid:0};
+    default:return {chromo:0,dna:0,chromatid:0};
+  }
+}
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2+10;
+  const r=Math.min(W,H)*0.28;
+  const tag=STEPS[stepIdx].tag;
+  const p=Math.min(1,Math.max(0,stepProgress));
+
+  drawTitle(STEPS[stepIdx].title);
+
+  // Layout per step
+  if(tag==='interphase'){
+    drawCell(cx,cy,r,'精原细胞（复制中）');
+    // 4 chromosomes (2n=4), pair up slowly
+    const showChromatids=p>0.4;
+    const positions=[
+      {x:cx-60,y:cy-20,len:C_LONG,paternal:true},
+      {x:cx-30,y:cy+20,len:C_LONG,paternal:false},
+      {x:cx+30,y:cy-20,len:C_SHORT,paternal:true},
+      {x:cx+60,y:cy+20,len:C_SHORT,paternal:false},
+    ];
+    positions.forEach((c,i)=>{
+      const appearT=Math.max(0,(p-i*0.1)*1.5);
+      if(appearT>0){
+        drawChromosome(c.x,c.y,0.1*Math.sin(t+i),c.len,c.paternal,c.paternal===false,showChromatids&&p>0.4);
+      }
+    });
+    // DNA replication visualization
+    if(p>0.4){
+      ctx.fillStyle='rgba(0,184,148,0.7)';
+      ctx.font='11px sans-serif';ctx.textAlign='center';
+      ctx.fillText('DNA复制中…',cx,cy+r+30);
+    }
+  }
+  else if(tag==='pro1-pair'){
+    drawCell(cx,cy,r,'初级精母细胞');
+    // Pairing: A1+A2 meet, B1+B2 meet
+    const pairP=Math.min(1,p*1.2);
+    // Pair A (long)
+    const ax=cx-60+(0)*pairP;
+    const axM=cx-60+30*pairP;
+    drawChromosome(cx-45+15*pairP,cy-30,0.1,C_LONG,true,true,true);
+    drawChromosome(cx-45-15*pairP,cy-10,0.1,C_LONG,false,false,true);
+    // Pair B (short)
+    drawChromosome(cx+45-15*pairP,cy-30,-0.1,C_SHORT,true,true,true);
+    drawChromosome(cx+45+15*pairP,cy-10,-0.1,C_SHORT,false,false,true);
+    if(p>0.5){
+      ctx.fillStyle='rgba(0,184,148,0.9)';
+      ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      ctx.fillText('同源染色体联会中…',cx,cy+r+30);
+    }
+  }
+  else if(tag==='pro1-tetrad'){
+    drawCell(cx,cy,r,'初级精母细胞（四分体）');
+    // tetrad: two pairs, side by side
+    // Pair A on left, Pair B on right
+    const tx1=cx-100,tx2=cx+100;
+    const ty=cy;
+    // Pair A: paternal and maternal close together
+    drawChromosome(tx1-10,ty,0.05,C_LONG,true,true,true);
+    drawChromosome(tx1+10,ty,-0.05,C_LONG,false,false,true);
+    // Pair B
+    drawChromosome(tx2-10,ty,0.05,C_SHORT,true,true,true);
+    drawChromosome(tx2+10,ty,-0.05,C_SHORT,false,false,true);
+    // labels
+    ctx.fillStyle='#3498db';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('父方',tx1-30,ty-C_LONG-12);
+    ctx.fillStyle='#e74c3c';
+    ctx.fillText('母方',tx1+30,ty-C_LONG-12);
+    ctx.fillStyle='#8b9dc3';
+    ctx.font='11px sans-serif';
+    ctx.fillText('四分体A（长）',tx1,ty+C_LONG+18);
+    ctx.fillText('四分体B（短）',tx2,ty+C_SHORT+18);
+    // crossing over animation at certain time
+    const crossPhase=(p*2)%1;
+    if(p>0.3){
+      const flashAlpha=Math.sin(p*Math.PI*4)*0.5+0.5;
+      ctx.strokeStyle=`rgba(253,203,110,${flashAlpha})`;
+      ctx.lineWidth=3;
+      ctx.beginPath();
+      // X-shape between paternal long chromatid and maternal long chromatid
+      const cy_top=ty-C_LONG*0.4;
+      ctx.moveTo(tx1-7+Math.sin(t*3)*3,cy_top-8);
+      ctx.lineTo(tx1+7-Math.sin(t*3)*3,cy_top+8);
+      ctx.stroke();
+      if(p>0.5){
+        ctx.fillStyle='#fdcb6e';
+        ctx.font='bold 11px sans-serif';
+        ctx.fillText('✦ 交叉互换',tx1,ty-C_LONG-30);
+      }
+    }
+  }
+  else if(tag==='meta1'){
+    drawCell(cx,cy,r,'初级精母细胞（中期I）');
+    // Equatorial plate: homologous pairs line up, one on each side
+    const equatorY=cy;
+    // Pair A: paternal left, maternal right
+    drawChromosome(cx-60,equatorY-5,Math.PI/2,C_LONG,true,true,true);
+    drawChromosome(cx-40,equatorY+5,Math.PI/2,C_LONG,false,false,true);
+    // Pair B: paternal left, maternal right
+    drawChromosome(cx+20,equatorY-5,Math.PI/2,C_SHORT,true,true,true);
+    drawChromosome(cx+40,equatorY+5,Math.PI/2,C_SHORT,false,false,true);
+    // equatorial plate line
+    ctx.strokeStyle='rgba(253,203,110,0.3)';
+    ctx.lineWidth=1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(cx-100,cy);ctx.lineTo(cx+100,cy);ctx.stroke();
+    ctx.setLineDash([]);
+    // Spindle fibers from poles
+    drawSpindleLine(cx-r*0.6,cy-r*0.6,cx-50,cy,0.6);
+    drawSpindleLine(cx+r*0.6,cy-r*0.6,cx+50,cy,0.6);
+    drawSpindleLine(cx-r*0.6,cy+r*0.6,cx-50,cy,0.6);
+    drawSpindleLine(cx+r*0.6,cy+r*0.6,cx+50,cy,0.6);
+    // poles
+    ctx.fillStyle='rgba(241,196,15,0.6)';
+    ctx.beginPath();ctx.arc(cx-r*0.7,cy-r*0.7,5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+r*0.7,cy-r*0.7,5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx-r*0.7,cy+r*0.7,5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+r*0.7,cy+r*0.7,5,0,Math.PI*2);ctx.fill();
+  }
+  else if(tag==='ana1'){
+    drawCell(cx,cy,r*1.05,'初级精母细胞（后期I）');
+    // Homologous chromosomes separate to opposite poles
+    // paternal A goes left, maternal A goes right; paternal B goes right (free combination), maternal B goes left
+    // Show free combination: A1 + B2 → left, A2 + B1 → right
+    const sepP=p;
+    const lx=cx-90*sepP;
+    const rx=cx+90*sepP;
+    // Left side: A1 (paternal, long) + B2 (maternal, short)
+    drawChromosome(lx,cy-25,0,C_LONG,true,true,true);
+    drawChromosome(lx+30,cy+25,0,C_SHORT,false,false,true);
+    // Right side: A2 (maternal, long) + B1 (paternal, short)
+    drawChromosome(rx,cy-25,0,C_LONG,false,false,true);
+    drawChromosome(rx-30,cy+25,0,C_SHORT,true,true,true);
+    // spindle pulling
+    drawSpindleLine(cx-r*0.85,cy,lx,cy-25,0.7);
+    drawSpindleLine(cx+r*0.85,cy,rx,cy-25,0.7);
+    // movement arrows
+    if(p<0.8){
+      ctx.fillStyle='rgba(0,184,148,0.8)';
+      ctx.font='14px sans-serif';ctx.textAlign='center';
+      ctx.fillText('←',lx-25,cy-20);
+      ctx.fillText('→',rx+25,cy-20);
+    }
+    if(p>0.5){
+      ctx.fillStyle='#e74c3c';
+      ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      ctx.fillText('同源染色体分离！',cx,cy-r-15);
+    }
+  }
+  else if(tag==='telo1'){
+    // Two daughter cells
+    const r2=r*0.7;
+    const cy1=cy-40;
+    const cy2=cy+50;
+    drawCell(cx-110,cy1,r2,'次级精母细胞①');
+    drawCell(cx+110,cy2,r2,'次级精母细胞②');
+    // Cell 1: A1 (paternal long) + B2 (maternal short) - chromatids still joined
+    drawChromosome(cx-130,cy1-10,0,C_LONG*0.85,true,true,true);
+    drawChromosome(cx-90,cy1+10,0,C_SHORT*0.85,false,false,true);
+    // Cell 2: A2 (maternal long) + B1 (paternal short)
+    drawChromosome(cx+90,cy2-10,0,C_LONG*0.85,false,false,true);
+    drawChromosome(cx+130,cy2+10,0,C_SHORT*0.85,true,true,true);
+    ctx.fillStyle='#00b894';
+    ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('染色体数减半：2n→n（每个细胞n=2）',cx,cy+r2+50);
+  }
+  else if(tag==='meta2'){
+    // Two cells side by side, each in metaphase II
+    const r2=r*0.65;
+    drawCell(cx-110,cy,r2,'次级精母细胞①（中期II）');
+    drawCell(cx+110,cy,r2,'次级精母细胞②（中期II）');
+    // Cell 1: chromosomes at equator
+    drawChromosome(cx-130,cy,Math.PI/2,C_LONG*0.85,true,true,true);
+    drawChromosome(cx-90,cy,Math.PI/2,C_SHORT*0.85,false,false,true);
+    // Cell 2
+    drawChromosome(cx+90,cy,Math.PI/2,C_LONG*0.85,false,false,true);
+    drawChromosome(cx+130,cy,Math.PI/2,C_SHORT*0.85,true,true,true);
+    // equator lines
+    ctx.strokeStyle='rgba(253,203,110,0.3)';
+    ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(cx-150,cy);ctx.lineTo(cx-70,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+70,cy);ctx.lineTo(cx+150,cy);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#8b9dc3';
+    ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('染色体单独排列',cx-110,cy+r2+18);
+    ctx.fillText('染色体单独排列',cx+110,cy+r2+18);
+  }
+  else if(tag==='ana2'){
+    const r2=r*0.7;
+    drawCell(cx-110,cy,r2,'次级精母细胞①（后期II）');
+    drawCell(cx+110,cy,r2,'次级精母细胞②（后期II）');
+    // centromere divides, chromatids separate
+    const sepP=p;
+    // Cell 1: A1 splits → two long paternal; B2 splits → two short maternal
+    drawChromosome(cx-130-sepP*30,cy-15,0,C_LONG*0.85,true,true,false);
+    drawChromosome(cx-90+sepP*30,cy-15,0,C_LONG*0.85,true,true,false);
+    drawChromosome(cx-130-sepP*30,cy+15,0,C_SHORT*0.85,false,false,false);
+    drawChromosome(cx-90+sepP*30,cy+15,0,C_SHORT*0.85,false,false,false);
+    // Cell 2: A2 splits → two long maternal; B1 splits → two short paternal
+    drawChromosome(cx+90-sepP*30,cy-15,0,C_LONG*0.85,false,false,false);
+    drawChromosome(cx+130+sepP*30,cy-15,0,C_LONG*0.85,false,false,false);
+    drawChromosome(cx+90-sepP*30,cy+15,0,C_SHORT*0.85,true,true,false);
+    drawChromosome(cx+130+sepP*30,cy+15,0,C_SHORT*0.85,true,true,false);
+    // spindle
+    drawSpindleLine(cx-170,cy,cx-150-sepP*30,cy-15,0.5);
+    drawSpindleLine(cx-50,cy,cx-70+sepP*30,cy-15,0.5);
+    drawSpindleLine(cx+50,cy,cx+70-sepP*30,cy-15,0.5);
+    drawSpindleLine(cx+170,cy,cx+150+sepP*30,cy-15,0.5);
+    if(p>0.4){
+      ctx.fillStyle='#e74c3c';
+      ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+      ctx.fillText('着丝点分裂！姐妹染色单体分离',cx,cy-r2-15);
+    }
+  }
+  else if(tag==='telo2'){
+    // 4 sperm cells
+    const r3=r*0.5;
+    const positions=[
+      {x:cx-180,y:cy-60,label:'精细胞①',chro:[{len:C_LONG*0.7,pat:true},{len:C_SHORT*0.7,pat:false}]},
+      {x:cx-60,y:cy+60,label:'精细胞②',chro:[{len:C_LONG*0.7,pat:true},{len:C_SHORT*0.7,pat:false}]},
+      {x:cx+60,y:cy-60,label:'精细胞③',chro:[{len:C_LONG*0.7,pat:false},{len:C_SHORT*0.7,pat:true}]},
+      {x:cx+180,y:cy+60,label:'精细胞④',chro:[{len:C_LONG*0.7,pat:false},{len:C_SHORT*0.7,pat:true}]},
+    ];
+    positions.forEach((cell,i)=>{
+      drawCell(cell.x,cell.y,r3,cell.label);
+      cell.chro.forEach((c,j)=>{
+        drawChromosome(cell.x-10+j*20,cell.y,0,c.len,c.pat,c.pat,false);
+      });
+    });
+    ctx.fillStyle='#00b894';
+    ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+    ctx.fillText('1精原细胞→4精细胞，染色体数n=2',cx,cv.height-30);
+  }
+
+  // DNA gauge
+  drawDNAGauge();
+
+  statusEl.textContent=`第${stepIdx+1}步：${STEPS[stepIdx].name} | 进度${Math.round(p*100)}%`;
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  if(playing){
+    t+=dt;
+    stepProgress+=dt*speed/STEPS[stepIdx].duration;
+    if(stepProgress>=1){
+      if(stepIdx<STEPS.length-1){
+        stepIdx++;stepProgress=0;
+        updateDetail();renderStepbar();
+      }else{
+        stepProgress=1;playing=false;
+        document.getElementById('playBtn').textContent='▶ 播放';
+      }
+    }
+    progressEl.value=(stepIdx+stepProgress)/STEPS.length*100;
+    draw();
+  }else{
+    t+=dt; // keep ambient animation
+    draw();
+  }
+  requestAnimationFrame(loop);
+}
+
+// Controls
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing){lastT=0;}
+};
+document.getElementById('resetBtn').onclick=()=>{
+  stepIdx=0;stepProgress=0;playing=false;
+  document.getElementById('playBtn').textContent='▶ 播放';
+  progressEl.value=0;
+  updateDetail();renderStepbar();draw();
+};
+document.getElementById('stepFwdBtn').onclick=()=>{
+  if(stepIdx<STEPS.length-1){stepIdx++;stepProgress=0;updateDetail();renderStepbar();draw();}
+};
+document.getElementById('stepBackBtn').onclick=()=>{
+  if(stepIdx>0){stepIdx--;stepProgress=0;updateDetail();renderStepbar();draw();}
+};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+progressEl.oninput=()=>{
+  const total=parseFloat(progressEl.value)/100*STEPS.length;
+  stepIdx=Math.min(STEPS.length-1,Math.floor(total));
+  stepProgress=total-stepIdx;
+  updateDetail();renderStepbar();draw();
+};
+
+// init
+let t=0;
+renderStepbar();
+updateDetail();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

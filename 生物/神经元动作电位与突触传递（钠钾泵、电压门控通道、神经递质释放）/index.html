@@ -3,103 +3,558 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>神经元动作电位与突触传递</title>
+<title>神经元动作电位与突触传递 - 交互式教学动画</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+:root{
+  --bg:#0a1628;--panel:#111d33;--card:#15243d;--ink:#e8edf6;--muted:#8b9dc3;
+  --accent:#00b894;--accent2:#fdcb6e;--line:#1e3050;
+  --resting:#5dade2;--depolar:#e74c3c;--repolar:#27ae60;--hyperpol:#9b59b6;
+  --na:#f87171;--k:#34d399;--atp:#fbbf24;
+  --neurotransmitter:#fdcb6e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
 .back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
 .back:hover{background:#1f2a40}
 .title{font-size:16px;font-weight:600}
-main{flex:1;display:flex;min-height:0}
+.knowledge-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:14px 18px;background:linear-gradient(180deg,#0e1c33,#0a1628);border-bottom:1px solid var(--line)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.kcard h3{font-size:14px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard b{color:var(--ink)}
+.kcard .num{display:inline-block;background:var(--accent);color:#fff;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:bold;flex:none}
+main{flex:1;display:flex;flex-direction:column;min-height:0}
 .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
 canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.stepbar{display:flex;gap:4px;padding:10px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap;justify-content:center}
+.step-btn{padding:7px 12px;background:#1a2942;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.step-btn:hover{background:#223656;color:var(--ink)}
+.step-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.step-btn.done{background:#1e3a5f;color:var(--accent)}
+.detail{padding:14px 16px;background:var(--panel);border-top:1px solid var(--line);max-height:30vh;overflow:auto}
+.detail h2{font-size:15px;color:var(--accent2);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail h2 .badge{background:rgba(0,184,148,0.15);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:normal}
+.detail .body{font-size:13px;line-height:1.75;color:var(--ink)}
+.detail .body b{color:var(--accent2)}
+.points{margin-top:8px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
+.points h4{color:var(--accent);font-size:13px;margin-bottom:6px}
+.points ul{padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7}
 .controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
 button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+button:hover{background:#2c3c5a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){.knowledge-bar{grid-template-columns:1fr}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">神经元动作电位与突触传递</span>
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">神经元动作电位与突触传递（钠钾泵、电压门控通道、神经递质释放）</span>
 </header>
+
+<div class="knowledge-bar">
+  <div class="kcard"><h3><span class="num">1</span>静息电位</h3>
+    <p>未受刺激时，膜两侧电位差为<b>内负外正</b>（约 <b>-70 mV</b>）。<br>原因：<b>K⁺ 外流</b>（K⁺ 通道开放，少量外漏）+ 细胞内大分子负电荷。<br>Na⁺/K⁺ 泵维持离子梯度（3 Na⁺ 出，2 K⁺ 入）。</p></div>
+  <div class="kcard"><h3><span class="num">2</span>动作电位（4 相）</h3>
+    <p><b>静息</b>（-70mV）→ <b>去极化</b>（Na⁺ 内流→+30mV）→ <b>复极化</b>（K⁺ 外流→-70mV）→ <b>超极化/恢复</b>。<br>关键：<b>电压门控通道</b>开放，离子顺浓度梯度流动。</p></div>
+  <div class="kcard"><h3><span class="num">3</span>突触传递</h3>
+    <p>电信号→化学信号→电信号：<br>① 动作电位到达突触小体<br>② Ca²⁺ 内流<br>③ 突触小泡<b>胞吐</b>释放递质<br>④ 递质与突触后膜受体结合<br>⑤ 引起下一个神经元兴奋或抑制</p></div>
+  <div class="kcard"><h3><span class="num">4</span>单向传递</h3>
+    <p>兴奋在神经纤维上：<b>双向传导</b>（离体）<br>兴奋在反射弧中：<b>单向传递</b><br>突触是"单向阀"：递质只在突触前膜释放，受体只在后膜<br><b>突触延搁</b>：约 0.5 ms</p></div>
+</div>
+
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>神经冲动传导：静息电位（K⁺外流，内负外正约-70mV）→受刺激→Na⁺内流→去极化→动作电位（约+30mV）→沿轴突传导→到达突触→释放神经递质→下一个神经元兴奋或抑制。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">+极</b> 去极化（Na⁺内流）</span><span class="li"><b style="color:#d63031">-极</b> 复极化（K⁺外流）</span><span class="li"><b style="color:#00b894">●</b> 神经递质</span><span class="li"><b style="color:#fdcb6e">⚡</b> 动作电位</span></div>
-  <div class="key-points"><h3>核心知识</h3><ul><li>静息电位：K⁺外流→内负外正（极化状态）</li><li>动作电位：Na⁺内流→内正外负（去极化）</li><li>传导方向：树突→胞体→轴突→突触</li><li>突触传递：电信号→化学信号→电信号</li><li>递质释放：胞吐（需要能量）</li><li>特点：单向传递、突触延搁</li></ul></div></aside>
 </main>
+
+<div class="stepbar" id="stepbar"></div>
+
+<div class="detail" id="detail"></div>
+
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button>
   <button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <label>进度 <input id="progress" type="range" min="0" max="100" step="0.5" value="0"></label>
+  <span class="status" id="status"></span>
 </div>
-<script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const Nu={t:0,p:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){Nu.t=0;Nu.p=0;}
-function sceneUpdate(dt){Nu.t+=dt;if(Nu.p<1)Nu.p=Math.min(1,Nu.p+dt*0.2);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const x=120,y=cv.height/2;
-  ctx.strokeStyle='#7dd3fc';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+120,y);ctx.lineTo(x+160,y-50);ctx.lineTo(x+280,y-50);ctx.lineTo(x+340,y);ctx.stroke();
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('轴突',x+60,y-16);ctx.fillText('突触末梢',x+300,y-64);
-  ctx.fillStyle='#f87171';for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(x+60+i*40,y+24,9,0,7);ctx.fill();ctx.fillStyle='#cdd7ea';ctx.fillText('Na⁺',x+60+i*40,y+44);ctx.fillStyle='#f87171';}
-  ctx.fillStyle='#34d399';for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(x+60+i*40,y+70,9,0,7);ctx.fill();ctx.fillStyle='#cdd7ea';ctx.fillText('K⁺',x+60+i*40,y+90);ctx.fillStyle='#34d399';}
-  const gx=440,gy=cv.height/2,w=380,h=180;
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.strokeRect(gx,gy-h/2,w,h);
-  ctx.fillStyle='#9fb0c8';ctx.fillText('膜电位(mV)',gx+w/2,gy-h/2-8);
-  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.beginPath();
-  for(let i=0;i<=w;i++){const u=i/w;let v;
-    if(u<0.25)v=-70;else if(u<0.45)v=-70+(u-0.25)/0.2*100;else if(u<0.6)v=30-(u-0.45)/0.15*100;else v=-70;
-    const yy=gy-(v+90)/200*h;i?ctx.lineTo(gx+i,yy):ctx.moveTo(gx+i,yy);}
-  ctx.stroke();
-  ctx.fillStyle='#cdd7ea';ctx.fillText('Na⁺内流去极化 → K⁺外流复极化 → 钠钾泵恢复静息',gx+w/2,gy+h/2+24);
-  statusEl.textContent='静息(-70mV)：Na⁺内流去极化、K⁺外流复极化，钠钾泵维持离子梯度';
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const speedEl=document.getElementById('speed');
+const progressEl=document.getElementById('progress');
+const stepbarEl=document.getElementById('stepbar');
+const detailEl=document.getElementById('detail');
+
+let stepIdx=0;
+let stepProgress=0;
+let playing=false;
+let speed=1;
+let lastT=0;
+let t=0;
+
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(800,Math.min(1100,r.width-8));
+  cv.height=Math.max(420,Math.min(540,r.height-8));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+const STEPS=[
+  {
+    tag:'resting',name:'① 静息电位',
+    title:'① 静息电位：内负外正，-70 mV',
+    body:`<p>神经元未受刺激时，膜两侧存在电位差，称为<b>静息电位</b>。表现为<b>外正内负</b>（膜内约 -70 mV）。</p>
+    <div class="points"><h4>静息电位成因</h4><ul>
+    <li>细胞内 <b>K⁺ 浓度高</b>，细胞外 <b>Na⁺ 浓度高</b></li>
+    <li>静息时 <b>K⁺ 通道开放</b>，K⁺ 顺浓度梯度<b>外流</b></li>
+    <li>细胞内蛋白质带负电荷，无法外流</li>
+    <li>结果：膜外正、膜内负</li></ul></div>
+    <div class="points"><h4>钠钾泵（Na⁺/K⁺-ATP酶）</h4>
+    消耗 <b>ATP</b>，将 <b>3 个 Na⁺ 泵出，2 个 K⁺ 泵入</b>，维持离子梯度。</div>`,
+    duration:3,
+  },
+  {
+    tag:'depolar',name:'② 去极化',
+    title:'② 去极化：Na⁺ 内流，膜电位升至 +30 mV',
+    body:`<p>神经元受刺激时，膜电位达到<b>阈值（-55 mV）</b>，<b>电压门控 Na⁺ 通道开放</b>，Na⁺ <b>顺浓度梯度内流</b>，膜电位迅速升至 <b>+30 mV</b>（去极化）。</p>
+    <div class="points"><h4>关键概念</h4><ul>
+    <li><b>阈值</b>：引发动作电位的最低刺激强度（约 -55 mV）</li>
+    <li><b>"全或无"</b>：达到阈值就产生完整动作电位，否则不产生</li>
+    <li>Na⁺ 内流是<b>正反馈</b>：去极化→更多 Na⁺ 通道开放→更快去极化</li>
+    <li>峰值约 <b>+30 mV</b>（接近 Na⁺ 的平衡电位）</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'repolar',name:'③ 复极化',
+    title:'③ 复极化：K⁺ 外流，膜电位恢复 -70 mV',
+    body:`<p>+30 mV 时，Na⁺ 通道失活关闭，<b>电压门控 K⁺ 通道开放</b>，K⁺ <b>顺浓度梯度外流</b>，膜电位恢复到负值（复极化）。</p>
+    <div class="points"><h4>复极化过程</h4><ul>
+    <li>Na⁺ 通道<b>失活</b>（不是关闭）</li>
+    <li>K⁺ 外流使膜电位下降</li>
+    <li>膜电位暂时降到 <b>-80 mV（超极化）</b></li>
+    <li>然后回到静息水平 -70 mV</li></ul></div>
+    <div class="points"><h4>不应期</h4><ul>
+    <li><b>绝对不应期</b>：Na⁺ 通道失活期，无论多强刺激都不能产生动作电位</li>
+    <li><b>相对不应期</b>：Na⁺ 通道部分恢复，强刺激可产生动作电位</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'pump',name:'④ 钠钾泵恢复',
+    title:'④ 钠钾泵工作：恢复离子梯度',
+    body:`<p>动作电位结束后，<b>钠钾泵</b>消耗 ATP，将进入细胞的 Na⁺ 泵出、流出的 K⁺ 泵入，恢复静息时的离子分布。</p>
+    <div class="points"><h4>钠钾泵特点</h4><ul>
+    <li><b>主动运输</b>（逆浓度梯度）</li>
+    <li>消耗 <b>ATP</b></li>
+    <li>每循环一次：3 Na⁺ 出，2 K⁺ 入</li>
+    <li>是<b>生电性</b>泵（净流出 1 个正电荷）</li></ul></div>
+    <div class="points"><h4>注意</h4>
+    动作电位的上升和下降主要由<b>离子顺浓度梯度流动</b>完成（被动运输），钠钾泵只在动作电位后恢复离子梯度。</div>`,
+    duration:2,
+  },
+  {
+    tag:'propagate',name:'⑤ 动作电位传导',
+    title:'⑤ 动作电位沿轴突传导',
+    body:`<p>动作电位以<b>局部电流</b>形式沿轴突传导。已兴奋部位（去极化）与未兴奋部位（静息）之间形成<b>局部电流</b>，刺激未兴奋部位产生新的动作电位。</p>
+    <div class="points"><h4>传导特点</h4><ul>
+    <li><b>双向传导</b>：在离体神经纤维上，兴奋向两侧传导</li>
+    <li><b>单向传导</b>：在反射弧中受突触限制</li>
+    <li><b>有髓纤维</b>：跳跃式传导（节点之间），速度快可达 100 m/s</li>
+    <li><b>无髓纤维</b>：连续传导，速度较慢（约 1 m/s）</li>
+    <li><b>不衰减</b>：动作电位幅度不变</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'synapse',name:'⑥ 突触传递',
+    title:'⑥ 突触传递：电信号→化学信号→电信号',
+    body:`<p>动作电位到达突触小体时，引发突触小泡释放<b>神经递质</b>，递质扩散到突触间隙，与下一个神经元（或效应器）的突触后膜受体结合，引发新的电位变化。</p>
+    <div class="points"><h4>突触结构</h4><ul>
+    <li><b>突触前膜</b>：上一个神经元的轴突末梢膜</li>
+    <li><b>突触间隙</b>：两膜之间的间隙（约 20-30 nm）</li>
+    <li><b>突触后膜</b>：下一个神经元的胞体或树突膜</li></ul></div>
+    <div class="points"><h4>传递过程</h4><ul>
+    <li>① 动作电位到达→ <b>Ca²⁺ 内流</b></li>
+    <li>② 突触小泡移向前膜→ <b>胞吐释放递质</b>（消耗 ATP）</li>
+    <li>③ 递质扩散过间隙</li>
+    <li>④ 与后膜受体结合→ 引起 <b>Na⁺ 内流（兴奋）</b>或 <b>Cl⁻ 内流（抑制）</b></li>
+    <li>⑤ 递质被酶分解（如 AChE 分解乙酰胆碱）</li></ul></div>`,
+    duration:4,
+  },
+];
+
+function renderStepbar(){
+  stepbarEl.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const btn=document.createElement('button');
+    btn.className='step-btn'+(i===stepIdx?' active':(i<stepIdx?' done':''));
+    btn.textContent=s.name;
+    btn.onclick=()=>{stepIdx=i;stepProgress=0;updateDetail();renderStepbar();draw();};
+    stepbarEl.appendChild(btn);
+  });
 }
 
-let playing=false,lastT=0,speed=1,t=0;
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
-const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+function updateDetail(){
+  const s=STEPS[stepIdx];
+  detailEl.innerHTML=`<h2>${s.title}<span class="badge">第 ${stepIdx+1}/${STEPS.length} 步</span></h2><div class="body">${s.body}</div>`;
+}
+
+// Drawing
+
+function drawAxon(x1,y1,x2,y2,activePhase,axonWidth){
+  axonWidth=axonWidth||24;
+  // base axon membrane
+  ctx.fillStyle='rgba(255,255,255,0.06)';
+  ctx.strokeStyle='#5dade2';ctx.lineWidth=2;
+  ctx.save();
+  ctx.beginPath();
+  const dx=x2-x1,dy=y2-y1;
+  const len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len;
+  const px=-uy,py=ux; // perpendicular
+  ctx.moveTo(x1+px*axonWidth,y1+py*axonWidth);
+  ctx.lineTo(x2+px*axonWidth,y2+py*axonWidth);
+  ctx.lineTo(x2-px*axonWidth,y2-py*axonWidth);
+  ctx.lineTo(x1-px*axonWidth,y1-py*axonWidth);
+  ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // inside color depends on depolarization phase
+  if(activePhase==='depol'){
+    // inside becomes positive (red)
+    ctx.fillStyle='rgba(231,76,60,0.4)';
+    ctx.fill();
+  }else if(activePhase==='repol'){
+    ctx.fillStyle='rgba(39,174,96,0.3)';
+    ctx.fill();
+  }
+  ctx.restore();
+  return {ux,uy,px,py,len};
+}
+
+function drawIonParticle(x,y,color,label){
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.arc(x,y,8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  ctx.fillText(label,x,y+3);
+}
+
+function drawPotentialCurve(curX,cy,w,h,voltage,phase){
+  // Draw voltage vs time graph with current marker
+  const ox=curX,oy=cy+h/2;
+  // axes
+  ctx.strokeStyle='#5dade2';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-h/2-10);ctx.lineTo(ox,oy+h/2+10);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox-10,oy);ctx.lineTo(ox+w+10,oy);ctx.stroke();
+  // labels
+  ctx.fillStyle='#8b9dc3';ctx.font='11px sans-serif';ctx.textAlign='right';
+  ctx.fillText('+30mV',ox-5,oy-h*0.5);
+  ctx.fillText('0',ox-5,oy);
+  ctx.fillText('-55',ox-5,oy+h*0.25);
+  ctx.fillText('-70mV',ox-5,oy+h*0.5);
+  // threshold line
+  ctx.strokeStyle='rgba(253,203,110,0.4)';ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(ox,oy+h*0.25);ctx.lineTo(ox+w,oy+h*0.25);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#fdcb6e';ctx.font='10px sans-serif';ctx.textAlign='left';
+  ctx.fillText('阈值 -55mV',ox+5,oy+h*0.25-3);
+  // curve
+  function voltageToY(v){
+    // v in [-80, +30] → y in [h/2, -h/2]
+    return oy-((v+25)/100)*h;
+  }
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let i=0;i<=w;i++){
+    const u=i/w;
+    let v;
+    if(u<0.2)v=-70;
+    else if(u<0.3)v=-70+(u-0.2)/0.1*15; // approach threshold
+    else if(u<0.4)v=-55+(u-0.3)/0.1*85; // depol to +30
+    else if(u<0.55)v=30-(u-0.4)/0.15*100; // repol to -70
+    else if(u<0.7)v=-70-(u-0.55)/0.15*10; // hyperpol
+    else v=-80+(u-0.7)/0.3*10; // back to -70
+    const y=voltageToY(v);
+    if(i===0)ctx.moveTo(ox+i,y);else ctx.lineTo(ox+i,y);
+  }
+  ctx.stroke();
+  // current voltage marker
+  const curY=voltageToY(voltage);
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(ox+w*0.85,curY,6,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(ox,curY);ctx.lineTo(ox+w*0.85,curY);ctx.stroke();
+  ctx.setLineDash([]);
+  // phase label
+  ctx.fillStyle='#e8edf6';ctx.font='bold 12px sans-serif';ctx.textAlign='left';
+  ctx.fillText(phase,ox+5,oy-h/2-12);
+}
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const tag=STEPS[stepIdx].tag;
+  const p=stepProgress;
+
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText(STEPS[stepIdx].title,W/2,24);
+
+  // Get current voltage based on step
+  let voltage=-70,phase='静息';
+  if(tag==='resting'){voltage=-70;phase='静息电位 -70 mV';}
+  else if(tag==='depolar'){
+    voltage=-70+p*100;
+    if(voltage<30){phase=`去极化 ${voltage.toFixed(0)} mV`;}
+    else{voltage=30;phase='峰值 +30 mV';}
+  }
+  else if(tag==='repolar'){
+    if(p<0.6){voltage=30-p/0.6*100;phase=`复极化 ${voltage.toFixed(0)} mV`;}
+    else{voltage=-70-(p-0.6)/0.4*10;phase='超极化';}
+  }
+  else if(tag==='pump'){voltage=-70;phase='钠钾泵恢复';}
+  else if(tag==='propagate'){voltage=-70;phase='动作电位传导';}
+  else if(tag==='synapse'){voltage=-70;phase='突触传递';}
+
+  // Top-left: ion channels drawing
+  drawMembraneDiagram(W*0.04,H*0.15,W*0.5,H*0.5,tag,p,voltage);
+
+  // Right: voltage curve
+  drawPotentialCurve(W*0.58,H*0.18,W*0.38,H*0.55,voltage,phase);
+
+  // Bottom: ion counts display
+  drawIonCounts(W*0.04,H*0.72,W*0.92,H*0.22,tag);
+}
+
+function drawMembraneDiagram(x,y,w,h,tag,p,voltage){
+  // Draw a section of axon membrane with channels
+  ctx.save();
+  ctx.fillStyle='rgba(21,36,61,0.6)';
+  if(ctx.roundRect)ctx.roundRect(x,y,w,h,10);
+  else ctx.rect(x,y,w,h);
+  ctx.fill();
+  // membrane (two layers)
+  const memY=y+h/2;
+  ctx.strokeStyle='#5dade2';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(x+20,memY-25);
+  ctx.lineTo(x+w-20,memY-25);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x+20,memY+25);
+  ctx.lineTo(x+w-20,memY+25);
+  ctx.stroke();
+  // labels
+  ctx.fillStyle='#8b9dc3';ctx.font='11px sans-serif';ctx.textAlign='left';
+  ctx.fillText('膜外（+）',x+20,y+18);
+  ctx.fillStyle='#e8edf6';
+  ctx.fillText('膜内',x+20,memY+5);
+  ctx.fillText(voltage>0?'（+）':'（-）',x+75,memY+5);
+  ctx.fillStyle='#8b9dc3';
+  ctx.fillText('膜外（+）',x+20,y+h-10);
+  // title
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText('细胞膜与离子通道',x+w/2,y+15);
+
+  // Membrane color based on depolarization
+  if(voltage>0){
+    ctx.fillStyle='rgba(231,76,60,0.15)';
+    ctx.fillRect(x+20,memY-25,w-40,50);
+  }
+
+  // Channels
+  const channelY1=memY-25;
+  const channelY2=memY+25;
+  // Na+ channel
+  let naOpen=tag==='depolar';
+  let naInact=tag==='repolar'||tag==='pump';
+  drawChannel(x+w*0.2,channelY1,channelY2,'#f87171','Na⁺',naOpen,naInact);
+  // K+ channel
+  let kOpen=tag==='repolar'||tag==='resting';
+  drawChannel(x+w*0.4,channelY1,channelY2,'#34d399','K⁺',kOpen,false);
+  // Na-K pump
+  let pumpActive=tag==='pump'||tag==='resting';
+  drawPump(x+w*0.7,channelY1,channelY2,pumpActive&&tag==='pump');
+  // synaptic (only show in synapse mode)
+  if(tag==='synapse'){
+    // Hide channels, show synaptic cleft
+    // Actually show it as a separate drawing in another call
+  }
+
+  // Ion particles animation
+  // Na+ inside (when depolarizing)
+  if(tag==='depolar'){
+    for(let i=0;i<5;i++){
+      const ph=((t*0.7+i*0.2)%1);
+      const px=x+w*0.2+(Math.random()*4-2);
+      const py=channelY1+(channelY2-channelY1)*ph;
+      drawIonParticle(px,py,'#f87171','Na⁺');
+    }
+  }
+  if(tag==='repolar'){
+    for(let i=0;i<5;i++){
+      const ph=((t*0.7+i*0.2)%1);
+      const px=x+w*0.4+(Math.random()*4-2);
+      const py=channelY2-(channelY2-channelY1)*ph;
+      drawIonParticle(px,py,'#34d399','K⁺');
+    }
+  }
+  if(tag==='pump'){
+    for(let i=0;i<3;i++){
+      const ph=((t*0.4+i*0.33)%1);
+      const px=x+w*0.7+(Math.random()*4-2);
+      const py=channelY2-(channelY2-channelY1)*ph;
+      drawIonParticle(px,py,'#f87171','Na⁺');
+    }
+    for(let i=0;i<2;i++){
+      const ph=((t*0.4+i*0.5+0.5)%1);
+      const px=x+w*0.7+(Math.random()*4-2);
+      const py=channelY1+(channelY2-channelY1)*ph;
+      drawIonParticle(px,py,'#34d399','K⁺');
+    }
+    // ATP
+    ctx.fillStyle='#fbbf24';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('ATP→ADP',x+w*0.7,channelY1-15);
+  }
+
+  ctx.restore();
+}
+
+function drawChannel(x,y1,y2,color,label,open,inact){
+  // Channel as two rectangles (transmembrane protein)
+  ctx.fillStyle=open?color:color+'88';
+  if(inact)ctx.fillStyle='#666';
+  ctx.fillRect(x-8,y1,16,8);
+  ctx.fillRect(x-8,y2-8,16,8);
+  // connection
+  if(open){
+    ctx.strokeStyle=color;ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(x,y1+8);ctx.lineTo(x,y2-8);
+    ctx.stroke();
+  }else{
+    ctx.strokeStyle=inact?'#666':color+'66';
+    ctx.lineWidth=1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath();
+    ctx.moveTo(x,y1+8);ctx.lineTo(x,y2-8);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // label
+  ctx.fillStyle=color;ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText(label,x,y1-12);
+  if(open){
+    ctx.fillStyle='#fff';
+    ctx.fillText('↑ 开放',x,y2+22);
+  }else if(inact){
+    ctx.fillStyle='#888';
+    ctx.fillText('× 失活',x,y2+22);
+  }else{
+    ctx.fillStyle='#666';
+    ctx.fillText('关闭',x,y2+22);
+  }
+}
+
+function drawPump(x,y1,y2,active){
+  ctx.fillStyle=active?'#9b59b6':'#9b59b688';
+  ctx.fillRect(x-12,y1,24,8);
+  ctx.fillRect(x-12,y2-8,24,8);
+  ctx.strokeStyle=active?'#9b59b6':'#9b59b688';
+  ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x,y1+8);ctx.lineTo(x,y2-8);ctx.stroke();
+  ctx.fillStyle='#9b59b6';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('钠钾泵',x,y1-12);
+  if(active){
+    ctx.fillStyle='#fbbf24';ctx.font='9px sans-serif';
+    ctx.fillText('Na⁺ 出',x-15,y2+22);
+    ctx.fillText('K⁺ 入',x+15,y2+34);
+  }
+}
+
+function drawIonCounts(x,y,w,h,tag){
+  ctx.save();
+  ctx.fillStyle='rgba(21,36,61,0.6)';
+  if(ctx.roundRect)ctx.roundRect(x,y,w,h,10);
+  else ctx.rect(x,y,w,h);
+  ctx.fill();
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 12px sans-serif';ctx.textAlign='left';
+  ctx.fillText('当前阶段：'+STEPS[stepIdx].title,x+10,y+18);
+  // key events
+  ctx.fillStyle='#e8edf6';ctx.font='12px sans-serif';
+  const events={
+    'resting':['静息状态','K⁺ 通道开放（漏钾通道）','Na⁺/K⁺ 泵维持梯度','膜电位 ≈ -70 mV'],
+    'depolar':['电压门控 Na⁺ 通道开放','Na⁺ 顺浓度梯度<b>内流</b>','膜电位迅速升高','达到峰值 +30 mV'],
+    'repolar':['Na⁺ 通道失活','电压门控 K⁺ 通道开放','K⁺ 顺浓度梯度<b>外流</b>','膜电位恢复 -70 mV'],
+    'pump':['动作电位结束','钠钾泵消耗 ATP','3 Na⁺ 泵出，2 K⁺ 泵入','恢复静息离子梯度'],
+    'propagate':['兴奋部位与未兴奋部位形成局部电流','刺激相邻部位去极化','动作电位沿轴突传导','<b>双向传导</b>（离体神经纤维）'],
+    'synapse':['动作电位到达突触小体','<b>Ca²⁺ 内流</b>','突触小泡<b>胞吐</b>释放递质','递质与后膜受体结合引发新电位'],
+  };
+  const evs=events[tag]||[];
+  evs.forEach((e,i)=>{
+    ctx.fillStyle=i%2?'#8b9dc3':'#3498db';
+    ctx.font='12px sans-serif';
+    ctx.fillText('• '+e.replace(/<b>/g,'').replace(/<\/b>/g,''),x+10+i%2*w/2,y+40+Math.floor(i/2)*22);
+  });
+  ctx.restore();
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  t+=dt;
+  if(playing){
+    stepProgress+=dt*speed/STEPS[stepIdx].duration;
+    if(stepProgress>=1){
+      if(stepIdx<STEPS.length-1){
+        stepIdx++;stepProgress=0;
+        updateDetail();renderStepbar();
+      }else{
+        stepProgress=1;playing=false;
+        document.getElementById('playBtn').textContent='▶ 播放';
+      }
+    }
+    progressEl.value=(stepIdx+stepProgress)/STEPS.length*100;
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing)lastT=0;
+};
+document.getElementById('resetBtn').onclick=()=>{
+  stepIdx=0;stepProgress=0;playing=false;
+  document.getElementById('playBtn').textContent='▶ 播放';
+  progressEl.value=0;
+  updateDetail();renderStepbar();draw();
+};
+document.getElementById('stepFwdBtn').onclick=()=>{
+  if(stepIdx<STEPS.length-1){stepIdx++;stepProgress=0;updateDetail();renderStepbar();draw();}
+};
+document.getElementById('stepBackBtn').onclick=()=>{
+  if(stepIdx>0){stepIdx--;stepProgress=0;updateDetail();renderStepbar();draw();}
+};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+progressEl.oninput=()=>{
+  const total=parseFloat(progressEl.value)/100*STEPS.length;
+  stepIdx=Math.min(STEPS.length-1,Math.floor(total));
+  stepProgress=total-stepIdx;
+  updateDetail();renderStepbar();draw();
+};
+
+renderStepbar();updateDetail();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

@@ -1,80 +1,837 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>植物激素调节（生长素发现、顶端优势、向光性机理）</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>植物激素调节（生长素发现、顶端优势、向光性机理）- 交互式教学动画</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#00b894;--line:#1e3050;}
+:root{
+  --bg:#0a1628;--panel:#111d33;--card:#15243d;--ink:#e8edf6;--muted:#8b9dc3;
+  --accent:#00b894;--accent2:#fdcb6e;--line:#1e3050;
+  --iaa:#e84393;--iaa-light:#fda4c5;--stem:#27ae60;--stem-dark:#1e8449;
+  --light:#fdcb6e;--dark-side:#5d4037;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
-main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
+.back:hover{background:#1f2a40}
+.title{font-size:16px;font-weight:600}
+.knowledge-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:14px 18px;background:linear-gradient(180deg,#0e1c33,#0a1628);border-bottom:1px solid var(--line)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.kcard h3{font-size:14px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard b{color:var(--ink)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
 canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
+.side{width:340px;flex:none;display:flex;flex-direction:column;border-left:1px solid var(--line);background:var(--panel)}
+.tabs{display:flex;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{padding:10px 8px;background:transparent;border:none;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;flex:1;min-width:80px}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(0,184,148,0.05)}
+.tab-panel{flex:1;overflow:auto;padding:14px}
+.tab-panel.hide{display:none}
+.detail h2{font-size:15px;margin-bottom:8px;color:var(--accent2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail h2 .badge{background:rgba(0,184,148,0.15);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:normal}
+.detail .meta{font-size:13px;color:var(--ink);line-height:1.7;margin-bottom:10px}
+.detail .meta b{color:var(--accent2)}
+.detail .section{margin:10px 0;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:12.5px;line-height:1.7;color:var(--muted)}
+.detail .section h4{color:var(--accent);font-size:13px;margin-bottom:6px}
+.detail .section b{color:var(--ink)}
+.detail ul{padding-left:18px}
+.detail ol{padding-left:20px}
+.experiment-step{padding:8px 10px;background:rgba(255,255,255,0.04);border-left:3px solid var(--accent);margin:6px 0;font-size:12.5px;line-height:1.7}
+.experiment-step b{color:var(--accent2)}
+.hormone-table{width:100%;font-size:12px;border-collapse:collapse;margin-top:6px}
+.hormone-table th,.hormone-table td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line)}
+.hormone-table th{color:var(--accent);font-weight:600}
+.hormone-table td b{color:var(--ink)}
 .controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
 button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+button:hover{background:#2c3c5a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{background:#00a383}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.side{width:auto;border-left:none;border-top:1px solid var(--line);max-height:50vh}}
+</style>
+</head>
 <body>
-<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">植物激素调节（生长素发现、顶端优势、向光性机理）</span></header>
-<main><div class="stage"><canvas id="cv"></canvas></div>
-<aside class="panel"><h2>原理说明</h2>
-<p>生长素(IAA)：在胚芽鞘尖端产生，向下极性运输。单侧光→生长素背光侧分布多→背光侧生长快→向光弯曲。顶端优势：顶芽产生生长素向下运输→抑制侧芽生长。</p>
-<div class="key-points"><h3>五大类植物激素</h3><ul>
-<li><b>生长素(IAA)</b>：促进细胞伸长→向光性/顶端优势</li>
-<li><b>赤霉素(GA)</b>：促进细胞伸长→植株增高/种子萌发</li>
-<li><b>细胞分裂素</b>：促进细胞分裂→延缓衰老</li>
-<li><b>脱落酸(ABA)</b>：抑制细胞分裂→促进叶/果实脱落</li>
-<li><b>乙烯</b>：促进果实成熟→唯一气体激素</li>
-<li>生长素两重性：低浓度促进、高浓度抑制</li>
-</ul></div></aside></main>
-<div class="controls"><button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><span id="status" class="status"></span></div>
+<header class="topbar">
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">植物激素调节（生长素发现、顶端优势、向光性机理）</span>
+</header>
+
+<div class="knowledge-bar">
+  <div class="kcard"><h3>🌱 生长素（IAA）</h3>
+    <p>首要被发现：<b>吲哚乙酸（IAA）</b>。<b>合成部位</b>：芽、嫩叶、发育中的种子。<b>主要作用</b>：<b>促进细胞伸长</b>（不是分裂）。</p></div>
+  <div class="kcard"><h3>☀ 向光性机理</h3>
+    <p><b>单侧光</b>→生长素在<b>胚芽鞘尖端</b>发生<b>横向运输</b>→<b>背光侧分布多</b>→向下极性运输→<b>背光侧细胞伸长快</b>→向光弯曲。</p></div>
+  <div class="kcard"><h3>🌲 顶端优势</h3>
+    <p><b>顶芽</b>产生的生长素向下<b>极性运输</b>→在侧芽处<b>积累浓度过高</b>→<b>抑制侧芽生长</b>（生长素两重性）。</p></div>
+  <div class="kcard"><h3>⚖ 生长素两重性</h3>
+    <p><b>低浓度促进生长，高浓度抑制生长</b>。<br>应用：顶端优势、除草剂（2,4-D高浓度杀双子叶杂草）、扦插生根。</p></div>
+</div>
+
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="side">
+    <div class="tabs">
+      <button class="tab active" data-mode="photo">向光性</button>
+      <button class="tab" data-mode="discovery">发现史</button>
+      <button class="tab" data-mode="apical">顶端优势</button>
+      <button class="tab" data-mode="dual">两重性</button>
+      <button class="tab" data-mode="hormones">五大激素</button>
+    </div>
+    <div class="tab-panel" id="detail"></div>
+  </aside>
+</main>
+
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button>
+  <button id="resetBtn">↺ 重置</button>
+  <span id="stepLabel" style="font-size:13px;color:var(--accent2)"></span>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <label>进度 <input id="progress" type="range" min="0" max="100" step="0.5" value="0"></label>
+  <span class="status" id="status"></span>
+</div>
+
 <script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
-let t=0,playing=false,lastT=0;
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const speedEl=document.getElementById('speed');
+const progressEl=document.getElementById('progress');
+const stepLabelEl=document.getElementById('stepLabel');
+const detailEl=document.getElementById('detail');
 
 let mode='photo';
-function drawPhoto(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-  ctx.fillText('植物向光性（生长素背光侧分布多）',W/2,22);
-  const p=Math.min(1,t*0.2);
-  ctx.fillStyle='#fdcb6e';ctx.beginPath();ctx.arc(W*0.15,H*0.2,20,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fdcb6e';ctx.font='12px sans-serif';ctx.fillText('单侧光',W*0.15,H*0.2+35);
-  for(let i=0;i<5;i++){ctx.strokeStyle='rgba(253,203,110,0.3)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*0.15+20,H*0.2);ctx.lineTo(W*0.45,H*0.3+i*20);ctx.stroke();}
-  const baseX=W*0.5,baseY=H*0.85,bendAngle=p*0.3;
-  ctx.strokeStyle='#00b894';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(baseX,baseY);
-  const tipX=baseX-Math.sin(bendAngle)*150,tipY=baseY-Math.cos(bendAngle)*150;
-  ctx.quadraticCurveTo(baseX-10,baseY-75,tipX,tipY);ctx.stroke();
-  ctx.beginPath();ctx.arc(tipX,tipY,6,0,Math.PI*2);ctx.fillStyle='#00b894';ctx.fill();
-  if(p>0.3){ctx.fillStyle='#e84393';ctx.font='11px sans-serif';ctx.fillText('→IAA多(背光侧)',tipX+40,tipY+20);}
-  ctx.fillStyle='#9fb0c8';ctx.font='11px sans-serif';ctx.fillText('背光侧生长素多→生长快→向光弯曲',W/2,H-12);
-}
-function drawApical(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-  ctx.fillText('顶端优势',W/2,22);
-  const p=Math.min(1,t*0.3);
-  const sx=W*0.35,sy=H*0.85;
-  ctx.strokeStyle='#00b894';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx,sy-200*p);ctx.stroke();
-  if(p>0.3){ctx.beginPath();ctx.arc(sx,sy-200*p,8,0,Math.PI*2);ctx.fillStyle='#fdcb6e';ctx.fill();ctx.fillStyle='#fff';ctx.font='10px sans-serif';ctx.fillText('顶芽',sx+20,sy-200*p+4);}
-  if(p>0.7){const rx=W*0.65,ry=H*0.85;ctx.strokeStyle='#00b894';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(rx,ry);ctx.lineTo(rx,ry-120);ctx.stroke();ctx.strokeStyle='#00b894';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(rx,ry-80);ctx.lineTo(rx+30,ry-100);ctx.stroke();ctx.fillStyle='#00b894';ctx.font='10px sans-serif';ctx.fillText('去顶→侧芽生长',rx+10,ry-110);}
-}
-function draw(){if(mode==='photo')drawPhoto();else drawApical();statusEl.textContent=mode==='photo'?'向光性':'顶端优势';}
-cv.parentElement.parentElement.parentElement.querySelector('.controls').insertAdjacentHTML('beforeend','<button id="photoBtn">向光性</button><button id="apicalBtn">顶端优势</button>');
-document.getElementById('photoBtn').onclick=function(){mode='photo';t=0;draw();};
-document.getElementById('apicalBtn').onclick=function(){mode='apical';t=0;draw();};
+let modeStep=0;
+let modeProgress=0;
+let playing=false;
+let speed=1;
+let lastT=0;
+let t=0;
 
-let animId;
-function loop(ts){const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();if(playing)animId=requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);};
-document.getElementById('resetBtn').onclick=function(){t=0;draw();};
-draw();
-</script></body></html>
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(700,Math.min(1000,r.width-8));
+  cv.height=Math.max(440,Math.min(560,r.height-8));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+const MODES={
+  photo:{
+    name:'向光性机理',
+    steps:[
+      {title:'① 正常胚芽鞘（直立生长）',body:`
+        <p>无单侧光刺激时，胚芽鞘尖端产生的生长素<b>均匀地向下极性运输</b>，两侧细胞伸长速率一致，胚芽鞘<b>直立生长</b>。</p>
+        <div class="section"><h4>关键点</h4><ul>
+        <li>感受光刺激的部位：<b>胚芽鞘尖端</b></li>
+        <li>生长素产生部位：<b>胚芽鞘尖端</b></li>
+        <li>弯曲生长部位：<b>尖端下面的一段（伸长区）</b></li></ul></div>`},
+      {title:'② 单侧光照射',body:`
+        <p><b>单侧光</b>从右侧照射，引起胚芽鞘尖端内的生长素发生<b>横向运输</b>：从向光侧→背光侧。</p>
+        <div class="section"><h4>横向运输 vs 极性运输</h4><ul>
+        <li><b>横向运输</b>：在尖端完成，受单侧光诱导</li>
+        <li><b>极性运输</b>：从形态学上端→下端（主动运输，需能量）</li>
+        <li>非极性运输：在某些组织中也可双向</li></ul></div>`},
+      {title:'③ 生长素分布不均（背光侧多）',body:`
+        <p>横向运输结果：<b>背光侧（左侧）生长素浓度高</b>，向光侧（右侧）生长素浓度低。生长素继续向下极性运输，导致下部伸长区两侧浓度不均。</p>
+        <div class="section"><h4>实验证据</h4><ul>
+        <li>温特实验：尖端琼脂块放偏一侧→弯曲生长</li>
+        <li>同位素标记：14C-IAA证明背光侧多</li></ul></div>`},
+      {title:'④ 背光侧细胞伸长快→向光弯曲',body:`
+        <p>生长素浓度高→<b>细胞伸长快</b>。背光侧伸长比向光侧快，导致胚芽鞘<b>向光源方向弯曲</b>。</p>
+        <div class="section"><h4>辨析</h4><ul>
+        <li>根的向地性与茎的负向地性机理类似但反应相反（根对生长素敏感）</li>
+        <li><b>茎的向光性</b>：背光侧生长素多→促进伸长→向光弯曲</li>
+        <li><b>根的背光性</b>：背光侧生长素多→抑制生长→背光弯曲</li></ul></div>`},
+    ]
+  },
+  discovery:{
+    name:'生长素发现史',
+    steps:[
+      {title:'① 达尔文实验（1880）',body:`
+        <p><b>达尔文父子</b>研究金丝雀虉草胚芽鞘的向光性。</p>
+        <div class="experiment-step"><b>实验1：</b>胚芽鞘 intact+单侧光 → <b>向光弯曲</b></div>
+        <div class="experiment-step"><b>实验2：</b>切去尖端+单侧光 → <b>不弯曲、不生长</b></div>
+        <div class="experiment-step"><b>实验3：</b>尖端用锡箔罩住+单侧光 → <b>不弯曲</b></div>
+        <div class="experiment-step"><b>实验4：</b>尖端以下用锡箔罩住+单侧光 → <b>向光弯曲</b></div>
+        <div class="section"><h4>结论</h4><b>胚芽鞘尖端</b>是感受单侧光刺激的部位，尖端产生某种<b>"影响"</b>传到下部造成弯曲。</div>`},
+      {title:'② 詹森实验（1910）',body:`
+        <p><b>詹森</b>证明尖端产生的"影响"可以通过琼脂片向下传递。</p>
+        <div class="experiment-step"><b>实验：</b>胚芽鞘尖端与下部之间插入<b>琼脂片</b> → <b>仍能向光弯曲</b></div>
+        <div class="experiment-step"><b>对照：</b>插入<b>云母片</b>（不可透） → <b>不弯曲</b></div>
+        <div class="section"><h4>结论</h4>尖端产生的"影响"<b>是一种化学物质</b>，可通过琼脂扩散。</div>`},
+      {title:'③ 拜耳实验（1914）',body:`
+        <p><b>拜耳</b>证明尖端产生的"影响"在下方分布不均时引起弯曲。</p>
+        <div class="experiment-step"><b>实验：</b>切下尖端，<b>偏向一侧</b>放回（无单侧光）→ <b>对侧弯曲生长</b></div>
+        <div class="section"><h4>结论</h4>尖端产生的物质<b>在下部分布不均匀</b>时导致弯曲。<br>这为温特的提取实验奠定了基础。</div>`},
+      {title:'④ 温特实验（1928）',body:`
+        <p><b>温特</b>从胚芽鞘尖端分离出"影响"物质。</p>
+        <div class="experiment-step"><b>实验：</b>切下尖端放在<b>琼脂块</b>上→取出尖端→把琼脂块偏向放于去尖端的胚芽鞘一侧（黑暗中） → <b>对侧弯曲</b></div>
+        <div class="experiment-step"><b>对照：</b>空白琼脂块 → <b>不弯曲、不生长</b></div>
+        <div class="section"><h4>结论</h4>尖端确实产生了某种化学物质，温特将其命名为<b>"生长素"</b>。</div>`},
+      {title:'⑤ 1934：郭葛分离出生长素',body:`
+        <p><b>1934年，郭葛等人</b>从人尿中首次分离出<b>吲哚乙酸（IAA）</b>，这就是生长素的化学本质。</p>
+        <div class="section"><h4>生长素特点</h4><ul>
+        <li>化学本质：<b>吲哚乙酸（IAA）</b></li>
+        <li>发现历程：达尔文→詹森→拜耳→温特→郭葛</li>
+        <li>是植物激素中<b>首次被发现</b>的</li>
+        <li>后续发现：赤霉素、细胞分裂素、脱落酸、乙烯</li></ul></div>`},
+    ]
+  },
+  apical:{
+    name:'顶端优势',
+    steps:[
+      {title:'① 顶芽优先生长',body:`
+        <p>植物主茎的<b>顶芽</b>优先生长，<b>侧芽</b>处于休眠或生长受抑制状态，这种现象称为<b>顶端优势</b>。</p>
+        <div class="section"><h4>现象</h4><ul>
+        <li>顶芽：生长快速、节间伸长</li>
+        <li>侧芽：受抑制，位于叶腋处</li>
+        <li>意义：植物向上生长，争夺阳光</li></ul></div>`},
+      {title:'② 顶芽产生生长素向下运输',body:`
+        <p>顶芽是生长素的<b>主要合成部位</b>。生长素具有<b>极性运输</b>特性：从形态学上端（顶芽）→形态学下端（侧芽部位）。</p>
+        <div class="section"><h4>极性运输</h4><ul>
+        <li>方向：形态学上端→下端</li>
+        <li>方式：<b>主动运输</b>（需消耗ATP）</li>
+        <li>载体：PIN蛋白家族（位于细胞下端）</li></ul></div>`},
+      {title:'③ 侧芽处生长素浓度过高→抑制',body:`
+        <p>生长素向下运输在<b>侧芽部位积累</b>。由于生长素有<b>两重性</b>，对顶芽（低浓度）促进，对侧芽（高浓度）<b>抑制</b>。</p>
+        <div class="section"><h4>两重性</h4><ul>
+        <li><b>低浓度</b>：促进细胞伸长、扦插生根、果实发育</li>
+        <li><b>高浓度</b>：抑制生长（甚至杀死双子叶植物）</li>
+        <li>不同器官敏感程度：<b>根>芽>茎</b></li></ul></div>`},
+      {title:'④ 摘除顶芽→解除顶端优势',body:`
+        <p>摘除顶芽后，<b>生长素来源切断</b>，侧芽部位生长素浓度降低→侧芽解除抑制→开始生长。</p>
+        <div class="section"><h4>农业应用</h4><ul>
+        <li><b>摘心/打顶</b>：棉花、番茄、茶叶—促进侧枝生长，提高产量</li>
+        <li><b>果树修剪</b>：塑造树形，多结果实</li>
+        <li><b>盆景造型</b>：控制株型</li></ul></div>`},
+    ]
+  },
+  dual:{
+    name:'生长素两重性',
+    steps:[
+      {title:'浓度曲线（根/芽/茎对比）',body:`
+        <p>生长素对同一植物不同器官的作用浓度不同。<b>根最敏感，茎最不敏感</b>。</p>
+        <div class="section"><h4>关键浓度</h4><ul>
+        <li>根的最适浓度：约 10⁻¹⁰ mol/L</li>
+        <li>芽的最适浓度：约 10⁻⁸ mol/L</li>
+        <li>茎的最适浓度：约 10⁻⁵ mol/L</li>
+        <li>超过最适浓度→促进作用减弱</li>
+        <li>更高浓度→抑制生长</li></ul></div>`},
+    ]
+  },
+  hormones:{
+    name:'五大类植物激素',
+    steps:[
+      {title:'五大类植物激素对比',body:`
+        <table class="hormone-table">
+        <tr><th>激素</th><th>主要合成部位</th><th>主要作用</th></tr>
+        <tr><td><b style="color:#e84393">生长素(IAA)</b></td><td>芽、嫩叶、种子</td><td>促进伸长、扦插生根、果实发育</td></tr>
+        <tr><td><b style="color:#3498db">赤霉素(GA)</b></td><td>芽、根尖、幼叶</td><td>促进伸长、种子萌发、解除休眠</td></tr>
+        <tr><td><b style="color:#27ae60">细胞分裂素(CTK)</b></td><td>根尖</td><td>促进细胞分裂、延缓衰老</td></tr>
+        <tr><td><b style="color:#f39c12">脱落酸(ABA)</b></td><td>根冠、萎蔫叶片</td><td>抑制生长、促进气孔关闭、促进脱落</td></tr>
+        <tr><td><b style="color:#e67e22">乙烯</b></td><td>各部位（成熟果实多）</td><td><b>唯一气体激素</b>、促进果实成熟</td></tr>
+        </table>
+        <div class="section"><h4>合成部位规律</h4><ul>
+        <li>生长素、赤霉素：<b>幼嫩部位</b>（芽、嫩叶）</li>
+        <li>细胞分裂素：<b>根尖</b>（向上运输）</li>
+        <li>脱落酸：<b>衰老、萎蔫部位</b></li>
+        <li>乙烯：<b>各部位均可</b>，成熟果实多</li></ul></div>`},
+    ]
+  },
+};
+
+function updateDetail(){
+  const m=MODES[mode];
+  const step=m.steps[modeStep];
+  detailEl.innerHTML=`<div class="detail"><h2>${step.title}<span class="badge">${m.name} ${modeStep+1}/${m.steps.length}</span></h2><div class="meta">${step.body}</div></div>`;
+  stepLabelEl.textContent=step.title;
+}
+
+function renderTabs(){
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.mode===mode);
+  });
+}
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    mode=t.dataset.mode;
+    modeStep=0;modeProgress=0;
+    progressEl.value=0;
+    renderTabs();updateDetail();draw();
+  };
+});
+
+// ========== DRAWING ==========
+
+function drawBackground(W,H){
+  ctx.fillStyle='#0b0f18';
+  ctx.fillRect(0,0,W,H);
+}
+
+function drawSunLight(W,H){
+  // sun
+  const sx=W*0.92,sy=H*0.18;
+  const grad=ctx.createRadialGradient(sx,sy,0,sx,sy,80);
+  grad.addColorStop(0,'rgba(253,203,110,0.6)');
+  grad.addColorStop(1,'rgba(253,203,110,0)');
+  ctx.fillStyle=grad;
+  ctx.beginPath();ctx.arc(sx,sy,80,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fdcb6e';
+  ctx.beginPath();ctx.arc(sx,sy,22,0,Math.PI*2);ctx.fill();
+  // sun rays
+  ctx.strokeStyle='rgba(253,203,110,0.3)';
+  ctx.lineWidth=1.5;
+  for(let i=0;i<6;i++){
+    ctx.beginPath();
+    ctx.moveTo(sx,sy);
+    ctx.lineTo(sx-100-i*15,sy+50+i*30);
+    ctx.stroke();
+  }
+  // label
+  ctx.fillStyle='#fdcb6e';
+  ctx.font='bold 13px sans-serif';
+  ctx.textAlign='right';
+  ctx.fillText('☀ 单侧光',sx-20,sy-30);
+}
+
+function drawSoil(W,H){
+  const sy=H*0.85;
+  ctx.fillStyle='#5d4037';
+  ctx.fillRect(0,sy,W,H-sy);
+  ctx.fillStyle='rgba(0,0,0,0.2)';
+  for(let i=0;i<30;i++){
+    ctx.fillRect(Math.random()*W,sy+Math.random()*(H-sy),3,1.5);
+  }
+  ctx.fillStyle='#8b6e4e';
+  ctx.font='11px sans-serif';
+  ctx.textAlign='left';
+}
+
+function drawColeoptile(x,y,bendAngle,length,showTip,showCap){
+  // x,y is base
+  // Draw curved stem using bezier
+  ctx.save();
+  ctx.strokeStyle='#27ae60';
+  ctx.lineWidth=10;
+  ctx.lineCap='round';
+  const tipX=x+Math.sin(bendAngle)*length;
+  const tipY=y-Math.cos(bendAngle)*length;
+  const ctrlX=x+Math.sin(bendAngle*0.3)*length*0.5;
+  const ctrlY=y-length*0.5;
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.quadraticCurveTo(ctrlX,ctrlY,tipX,tipY);
+  ctx.stroke();
+  // inner highlight
+  ctx.strokeStyle='rgba(255,255,255,0.15)';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(x-2,y);
+  ctx.quadraticCurveTo(ctrlX-2,ctrlY,tipX-2,tipY);
+  ctx.stroke();
+  // tip
+  if(showTip){
+    ctx.fillStyle='#1e8449';
+    ctx.beginPath();ctx.arc(tipX,tipY,6,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#145a32';ctx.lineWidth=1;ctx.stroke();
+  }
+  if(showCap){
+    // foil cap on tip
+    ctx.fillStyle='#95a5a6';
+    ctx.beginPath();ctx.arc(tipX,tipY,8,Math.PI,0);ctx.fill();
+    ctx.fillStyle='#7f8c8d';
+    ctx.fillRect(tipX-8,tipY-8,16,3);
+    ctx.fillStyle='#bdc3c7';
+    ctx.font='9px sans-serif';ctx.textAlign='center';
+    ctx.fillText('锡箔',tipX,tipY-12);
+  }
+  ctx.restore();
+  return {tipX,tipY};
+}
+
+function drawIAAFlow(tipX,tipY,baseX,baseY,leftConc,rightConc,p){
+  // IAA particles flowing down from tip
+  // leftConc, rightConc: 0~1, fraction of particles going to each side
+  ctx.save();
+  for(let i=0;i<14;i++){
+    const phase=(i/14+t*0.3)%1;
+    const side=i<14*leftConc/(leftConc+rightConc+0.01)?-1:1;
+    const px=tipX+side*4+(baseX-tipX)*phase;
+    const py=tipY+(baseY-tipY)*phase;
+    const alpha=phase<0.1?phase*10:(phase>0.9?(1-phase)*10:1);
+    ctx.fillStyle=`rgba(232,67,147,${alpha*0.7})`;
+    ctx.beginPath();ctx.arc(px,py,2,0,Math.PI*2);ctx.fill();
+  }
+  // concentration bars at the elongation zone
+  if(leftConc>0||rightConc>0){
+    const zoneY=baseY-length*0.6;
+    // show as colored bands
+    ctx.fillStyle='rgba(232,67,147,'+leftConc*0.4+')';
+    ctx.fillRect(tipX-30,zoneY-3,12,6);
+    ctx.fillStyle='rgba(232,67,147,'+rightConc*0.4+')';
+    ctx.fillRect(tipX+18,zoneY-3,12,6);
+  }
+  ctx.restore();
+}
+
+let length=180;
+
+function drawPhoto(){
+  const W=cv.width,H=cv.height;
+  drawBackground(W,H);
+  drawSoil(W,H);
+  if(modeStep>0)drawSunLight(W,H);
+
+  const baseX=W*0.4;
+  const baseY=H*0.85;
+  const step=modeStep;
+  const p=modeProgress;
+
+  let bendAngle=0;
+  let leftConc=0.5,rightConc=0.5;
+  let showTip=true,showCap=false;
+
+  if(step===0){
+    // normal straight growth
+    bendAngle=0;
+    leftConc=0.5;rightConc=0.5;
+  }else if(step===1){
+    // light from right, IAA starts transverse
+    bendAngle=0;
+    leftConc=0.5+0.3*p;rightConc=0.5-0.3*p;
+  }else if(step===2){
+    // IAA asymmetry established
+    bendAngle=0;
+    leftConc=0.85;rightConc=0.15;
+  }else if(step===3){
+    // bending toward light
+    const bend=Math.min(0.6,p*0.8);
+    bendAngle=bend;
+    leftConc=0.85;rightConc=0.15;
+  }
+
+  const tip=drawColeoptile(baseX,baseY,bendAngle,length,showTip,showCap);
+  drawIAAFlow(tip.tipX,tip.tipY,baseX,baseY,leftConc,rightConc,p);
+
+  // labels
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 14px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(MODES.photo.steps[step].title,W/2,28);
+
+  // annotations
+  if(step>=2){
+    ctx.fillStyle='#e84393';
+    ctx.font='bold 12px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('←背光侧IAA多',tip.tipX-50,tip.tipY+50);
+    ctx.fillStyle='#8b9dc3';
+    ctx.fillText('向光侧IAA少→',tip.tipX+50,tip.tipY+50);
+  }
+  if(step===3){
+    ctx.fillStyle='#27ae60';
+    ctx.font='bold 12px sans-serif';
+    ctx.fillText('背光侧伸长快→向光弯曲',tip.tipX,tip.tipY+80);
+  }
+}
+
+function drawDiscovery(){
+  const W=cv.width,H=cv.height;
+  drawBackground(W,H);
+  drawSoil(W,H);
+  const step=modeStep;
+
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 14px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(MODES.discovery.steps[step].title,W/2,28);
+
+  // 2x2 grid of experimental setups
+  const setups=[];
+  if(step===0){
+    // Darwin experiments - 4 setups
+    setups.push({x:0.2,y:0.7,label:'①完整',bend:0.3,showTip:true,showCap:false,light:true});
+    setups.push({x:0.4,y:0.7,label:'②去尖',bend:0,showTip:false,showCap:false,light:true,stub:true});
+    setups.push({x:0.6,y:0.7,label:'③尖端遮光',bend:0,showTip:true,showCap:true,light:true});
+    setups.push({x:0.8,y:0.7,label:'④尖下遮光',bend:0.3,showTip:true,showCap:false,capBelow:true,light:true});
+  }else if(step===1){
+    // Jansen
+    setups.push({x:0.3,y:0.7,label:'①琼脂片（可透）',bend:0.3,showTip:true,agar:true,light:true});
+    setups.push({x:0.7,y:0.7,label:'②云母片（不可透）',bend:0,showTip:true,mica:true,light:true,stub:true});
+  }else if(step===2){
+    // Bayer
+    setups.push({x:0.3,y:0.7,label:'①尖端偏向一侧',bend:-0.4,showTip:true,tipOffset:-1,light:false});
+    setups.push({x:0.7,y:0.7,label:'②对比：正放',bend:0,showTip:true,light:false});
+  }else if(step===3){
+    // Went
+    setups.push({x:0.3,y:0.7,label:'①含尖端物质的琼脂块',bend:-0.4,showTip:false,agarBlock:'tip',light:false});
+    setups.push({x:0.7,y:0.7,label:'②空白琼脂块',bend:0,showTip:false,agarBlock:'blank',light:false,stub:true});
+  }else if(step===4){
+    // Final summary - structure of IAA
+    setups.push({x:0.5,y:0.7,label:'生长素（IAA）',bend:0.1,showTip:true,light:false});
+    ctx.fillStyle='#e84393';
+    ctx.font='bold 16px sans-serif';
+    ctx.fillText('吲哚乙酸 (IAA)',W/2,H/2-30);
+    ctx.fillStyle='#8b9dc3';
+    ctx.font='12px sans-serif';
+    ctx.fillText('化学本质：C₁₀H₉NO₂',W/2,H/2);
+    ctx.fillText('1934年郭葛首次分离',W/2,H/2+20);
+  }
+
+  setups.forEach(s=>{
+    const x=W*s.x,y=H*s.y;
+    if(s.light)drawSunLightSmall(W,H);
+    if(s.stub){
+      // cut coleoptile - no growth
+      ctx.strokeStyle='#27ae60';ctx.lineWidth=10;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-length*0.4);ctx.stroke();
+    }else{
+      const tip=drawColeoptile(x,y,s.bend,length,s.showTip,s.showCap);
+      if(s.agarBlock==='tip'){
+        // agar block on side
+        ctx.fillStyle='#fda4c5';
+        ctx.fillRect(x-12,y-length*0.4,12,16);
+        ctx.strokeStyle='#e84393';ctx.lineWidth=1;
+        ctx.strokeRect(x-12,y-length*0.4,12,16);
+        ctx.fillStyle='#e84393';ctx.font='9px sans-serif';ctx.textAlign='center';
+        ctx.fillText('IAA',x-6,y-length*0.4+9);
+      }else if(s.agarBlock==='blank'){
+        ctx.fillStyle='#bbb';
+        ctx.fillRect(x-6,y-length*0.4,12,16);
+        ctx.strokeStyle='#666';ctx.strokeRect(x-6,y-length*0.4,12,16);
+      }else if(s.agar){
+        // agar sheet in middle
+        ctx.fillStyle='rgba(253,164,197,0.5)';
+        ctx.fillRect(x-4,y-length*0.55,8,20);
+      }else if(s.mica){
+        ctx.fillStyle='#222';
+        ctx.fillRect(x-3,y-length*0.55,6,20);
+      }
+    }
+    // label
+    ctx.fillStyle='#e8edf6';
+    ctx.font='12px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(s.label,x,y+22);
+  });
+}
+
+function drawSunLightSmall(W,H){
+  const sx=W*0.9,sy=H*0.15;
+  ctx.fillStyle='#fdcb6e';
+  ctx.beginPath();ctx.arc(sx,sy,14,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(253,203,110,0.25)';
+  ctx.lineWidth=1;
+  for(let i=0;i<5;i++){
+    ctx.beginPath();
+    ctx.moveTo(sx,sy);
+    ctx.lineTo(sx-80-i*10,sy+80+i*15);
+    ctx.stroke();
+  }
+}
+
+function drawApical(){
+  const W=cv.width,H=cv.height;
+  drawBackground(W,H);
+  drawSoil(W,H);
+  const step=modeStep;
+  const p=modeProgress;
+
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 14px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(MODES.apical.steps[step].title,W/2,28);
+
+  // Main stem
+  const mainX=W*0.45;
+  const mainBaseY=H*0.9;
+  const mainLength=Math.min(H*0.6,300);
+  // grow over steps
+  const grown=step===0?p:1;
+  const tipY=mainBaseY-mainLength*grown;
+  ctx.strokeStyle='#27ae60';
+  ctx.lineWidth=12;
+  ctx.lineCap='round';
+  ctx.beginPath();
+  ctx.moveTo(mainX,mainBaseY);
+  ctx.lineTo(mainX,tipY);
+  ctx.stroke();
+  // top bud
+  ctx.fillStyle='#1e8449';
+  ctx.beginPath();ctx.arc(mainX,tipY,8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#27ae60';
+  ctx.font='11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('顶芽',mainX+30,tipY+3);
+
+  // Side buds - some grow, some suppressed
+  const sideBuds=[
+    {x:mainX-50,y:mainBaseY-mainLength*0.35,suppressed:step<3},
+    {x:mainX+50,y:mainBaseY-mainLength*0.55,suppressed:step<3},
+    {x:mainX-50,y:mainBaseY-mainLength*0.75,suppressed:step<3},
+  ];
+  sideBuds.forEach((b,i)=>{
+    // side stem
+    if(b.suppressed){
+      // very short suppressed bud
+      ctx.fillStyle='#5d4037';
+      ctx.beginPath();ctx.arc(b.x,b.y,5,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#5d4037';
+      ctx.lineWidth=3;
+      ctx.beginPath();
+      ctx.moveTo(mainX,b.y);ctx.lineTo(b.x,b.y);
+      ctx.stroke();
+      ctx.fillStyle='#8b9dc3';
+      ctx.font='10px sans-serif';ctx.textAlign='center';
+      ctx.fillText('抑制',b.x,b.y+15);
+    }else{
+      // growing
+      const growT=step===3?p:1;
+      const dir=b.x<mainX?-1:1;
+      const len=60*growT;
+      ctx.strokeStyle='#27ae60';
+      ctx.lineWidth=5;
+      ctx.beginPath();
+      ctx.moveTo(mainX,b.y);
+      ctx.lineTo(b.x,b.y);
+      ctx.lineTo(b.x+dir*0,b.y-len);
+      ctx.stroke();
+      ctx.fillStyle='#1e8449';
+      ctx.beginPath();ctx.arc(b.x,b.y-len,4,0,Math.PI*2);ctx.fill();
+    }
+  });
+
+  // IAA flow down
+  if(step>=1){
+    const particleCount=15;
+    for(let i=0;i<particleCount;i++){
+      const phase=(i/particleCount+t*0.4)%1;
+      const py=tipY+(mainBaseY-tipY)*phase;
+      const alpha=phase<0.1?phase*10:(phase>0.9?(1-phase)*10:1);
+      ctx.fillStyle=`rgba(232,67,147,${alpha*0.8})`;
+      ctx.beginPath();ctx.arc(mainX,py,2.5,0,Math.PI*2);ctx.fill();
+    }
+    // arrow showing direction
+    ctx.fillStyle='#e84393';
+    ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('↓ IAA极性运输',mainX-50,tipY+50);
+  }
+
+  // If cut (step 3)
+  if(step===3 && p>0.1){
+    // show cut mark
+    ctx.strokeStyle='#e74c3c';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(mainX-15,tipY+10);
+    ctx.lineTo(mainX+15,tipY+15);
+    ctx.stroke();
+    ctx.fillStyle='#e74c3c';
+    ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('✂ 摘除顶芽',mainX,tipY-15);
+  }
+}
+
+function drawDual(){
+  const W=cv.width,H=cv.height;
+  ctx.fillStyle='#0b0f18';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+  ctx.fillText('生长素浓度与植物器官反应曲线',W/2,30);
+
+  // axis
+  const ox=100,oy=H-80,gw=W-200,gh=H-160;
+  ctx.strokeStyle='#5dade2';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
+  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';
+  ctx.textAlign='center';ctx.fillText('生长素浓度（mol/L）→',ox+gw/2,oy+38);
+  ctx.save();ctx.translate(ox-30,oy-gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('促进/抑制程度',0,0);ctx.restore();
+  // axis labels
+  const concs=['10⁻¹⁰','10⁻⁹','10⁻⁸','10⁻⁷','10⁻⁶','10⁻⁵','10⁻⁴','10⁻³'];
+  concs.forEach((c,i)=>{
+    const x=ox+i*gw/(concs.length-1);
+    ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillText(c,x,oy+18);
+    ctx.strokeStyle='rgba(141,158,178,0.2)';ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(x,oy);ctx.lineTo(x,oy+5);ctx.stroke();
+  });
+  // zero line
+  ctx.strokeStyle='rgba(141,158,178,0.4)';ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(ox,oy-gh/2);ctx.lineTo(ox+gw,oy-gh/2);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';ctx.textAlign='right';
+  ctx.fillText('0（不生长）',ox-4,oy-gh/2+3);
+  ctx.fillStyle='#27ae60';ctx.fillText('↑促进',ox-4,oy-gh/2-12);
+  ctx.fillStyle='#e74c3c';ctx.fillText('↓抑制',ox-4,oy-gh/2+24);
+
+  // curves
+  // log scale x
+  function xForConc(c){
+    // c is exponent, e.g., -10 → 0, -3 → 7
+    return ox+((c+10)/7)*gw;
+  }
+  // Each organ: optimal concentration + curve
+  const organs=[
+    {name:'根',color:'#9b59b6',optimal:-10,curvature:0.5},
+    {name:'芽',color:'#3498db',optimal:-8,curvature:0.4},
+    {name:'茎',color:'#27ae60',optimal:-5,curvature:0.3},
+  ];
+  organs.forEach(o=>{
+    ctx.strokeStyle=o.color;ctx.lineWidth=2.5;
+    ctx.beginPath();
+    for(let e=-10;e<=-3;e+=0.05){
+      const intensity=Math.exp(-Math.pow(e-o.optimal,2)*o.curvature);
+      // positive = promotion (above zero line), beyond optimal goes negative
+      const suppress=Math.max(0,(e-o.optimal-2)*0.3);
+      const yVal=intensity-suppress;
+      const x=xForConc(e);
+      const y=oy-gh/2-yVal*gh*0.45;
+      if(e===-10)ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // label
+    ctx.fillStyle=o.color;ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText(o.name,xForConc(o.optimal),oy-gh*0.85);
+  });
+  // legend
+  organs.forEach((o,i)=>{
+    const lx=ox+10,ly=oy-gh+10+i*18;
+    ctx.fillStyle=o.color;
+    ctx.fillRect(lx,ly,12,3);
+    ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText(o.name+'最适浓度 10⁻'+(o.optimal===-10?'¹⁰':o.optimal===-8?'⁸':'⁵')+' mol/L',lx+18,ly+5);
+  });
+}
+
+function drawHormones(){
+  const W=cv.width,H=cv.height;
+  ctx.fillStyle='#0b0f18';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+  ctx.fillText('五大类植物激素',W/2,30);
+
+  // 5 cards
+  const hormones=[
+    {name:'生长素',sym:'IAA',color:'#e84393',syn:'芽、嫩叶、种子',act:'促进伸长、扦插生根、果实发育',feat:'发现最早、两重性'},
+    {name:'赤霉素',sym:'GA',color:'#3498db',syn:'芽、根尖、幼叶',act:'促进伸长、种子萌发',feat:'解除休眠'},
+    {name:'细胞分裂素',sym:'CTK',color:'#27ae60',syn:'根尖',act:'促进细胞分裂',feat:'延缓衰老'},
+    {name:'脱落酸',sym:'ABA',color:'#f39c12',syn:'根冠、萎蔫叶',act:'抑制生长、促气孔关闭',feat:'抗逆激素'},
+    {name:'乙烯',sym:'ETH',color:'#e67e22',syn:'各部位',act:'促果实成熟',feat:'唯一气体激素'},
+  ];
+  const cardW=W*0.18;
+  const cardH=H*0.7;
+  const gap=(W-cardW*5)/6;
+  hormones.forEach((h,i)=>{
+    const x=gap+i*(cardW+gap);
+    const y=H*0.15;
+    ctx.fillStyle='rgba(21,36,61,0.9)';
+    ctx.strokeStyle=h.color;
+    ctx.lineWidth=2;
+    if(ctx.roundRect)ctx.roundRect(x,y,cardW,cardH,10);
+    else ctx.rect(x,y,cardW,cardH);
+    ctx.fill();ctx.stroke();
+    // header
+    ctx.fillStyle=h.color;
+    if(ctx.roundRect)ctx.roundRect(x,y,cardW,40,[10,10,0,0]);
+    else ctx.fillRect(x,y,cardW,40);
+    ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText(h.name,x+cardW/2,y+25);
+    // symbol
+    ctx.fillStyle=h.color;ctx.font='bold 22px sans-serif';
+    ctx.fillText(h.sym,x+cardW/2,y+70);
+    // fields
+    const lines=[
+      {label:'合成部位',val:h.syn,size:10},
+      {label:'主要作用',val:h.act,size:10},
+      {label:'特点',val:h.feat,size:11},
+    ];
+    let ly=y+95;
+    lines.forEach(l=>{
+      ctx.fillStyle='#8b9dc3';ctx.font=l.size+'px sans-serif';ctx.textAlign='left';
+      ctx.fillText('● '+l.label,x+10,ly);
+      ctx.fillStyle='#e8edf6';ctx.font=l.size+'px sans-serif';
+      // wrap text
+      const words=l.val.split('');
+      let line='';
+      let lineY=ly+14;
+      for(let c of words){
+        if(ctx.measureText(line+c).width>cardW-20){
+          ctx.fillText(line,x+10,lineY);
+          line=c;lineY+=12;
+        }else line+=c;
+      }
+      ctx.fillText(line,x+10,lineY);
+      ly=lineY+22;
+    });
+  });
+}
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  if(mode==='photo')drawPhoto();
+  else if(mode==='discovery')drawDiscovery();
+  else if(mode==='apical')drawApical();
+  else if(mode==='dual')drawDual();
+  else if(mode==='hormones')drawHormones();
+  statusEl.textContent=`${MODES[mode].name} | 第${modeStep+1}步 / ${MODES[mode].steps.length} | 进度${Math.round(modeProgress*100)}%`;
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  t+=dt;
+  if(playing){
+    modeProgress+=dt*speed*0.4; // ~2.5s per step
+    if(modeProgress>=1){
+      if(modeStep<MODES[mode].steps.length-1){
+        modeStep++;modeProgress=0;
+        updateDetail();
+      }else{
+        modeProgress=1;playing=false;
+        document.getElementById('playBtn').textContent='▶ 播放';
+      }
+    }
+    progressEl.value=(modeStep+modeProgress)/MODES[mode].steps.length*100;
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+};
+document.getElementById('resetBtn').onclick=()=>{
+  modeStep=0;modeProgress=0;playing=false;
+  document.getElementById('playBtn').textContent='▶ 播放';
+  progressEl.value=0;
+  updateDetail();draw();
+};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+progressEl.oninput=()=>{
+  const total=parseFloat(progressEl.value)/100*MODES[mode].steps.length;
+  modeStep=Math.min(MODES[mode].steps.length-1,Math.floor(total));
+  modeProgress=total-modeStep;
+  updateDetail();draw();
+};
+
+renderTabs();updateDetail();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

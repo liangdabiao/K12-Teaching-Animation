@@ -3,105 +3,708 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>基因工程全过程</title>
+<title>基因工程全过程 - 交互式教学动画</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+:root{
+  --bg:#0a1628;--panel:#111d33;--card:#15243d;--ink:#e8edf6;--muted:#8b9dc3;
+  --accent:#00b894;--accent2:#fdcb6e;--line:#1e3050;
+  --target-gene:#27ae60;--vector:#3498db;--recombinant:#9b59b6;--host:#f39c12;
+  --enzyme-cut:#e74c3c;--ligase:#fbbf24;--product:#34d399;
+  --dna-A:#e74c3c;--dna-T:#3498db;--dna-G:#fbbf24;--dna-C:#27ae60;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
 .back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
 .back:hover{background:#1f2a40}
 .title{font-size:16px;font-weight:600}
-main{flex:1;display:flex;min-height:0}
+.knowledge-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:14px 18px;background:linear-gradient(180deg,#0e1c33,#0a1628);border-bottom:1px solid var(--line)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.kcard h3{font-size:14px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kcard b{color:var(--ink)}
+.kcard .num{display:inline-block;background:var(--accent);color:#fff;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:bold;flex:none}
+main{flex:1;display:flex;flex-direction:column;min-height:0}
 .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
 canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.stepbar{display:flex;gap:4px;padding:10px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap;justify-content:center}
+.step-btn{padding:7px 12px;background:#1a2942;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.step-btn:hover{background:#223656;color:var(--ink)}
+.step-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.step-btn.done{background:#1e3a5f;color:var(--accent)}
+.detail{padding:14px 16px;background:var(--panel);border-top:1px solid var(--line);max-height:30vh;overflow:auto}
+.detail h2{font-size:15px;color:var(--accent2);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail h2 .badge{background:rgba(0,184,148,0.15);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:normal}
+.detail .body{font-size:13px;line-height:1.75;color:var(--ink)}
+.detail .body b{color:var(--accent2)}
+.points{margin-top:8px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
+.points h4{color:var(--accent);font-size:13px;margin-bottom:6px}
+.points ul{padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7}
 .controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
 button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+button:hover{background:#2c3c5a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){.knowledge-bar{grid-template-columns:1fr}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">基因工程全过程</span>
+  <a class="back" href="../index.html">← 返回生物目录</a>
+  <span class="title">基因工程全过程（限制酶剪切→载体+目的基因→重组→转化→表达）</span>
 </header>
+
+<div class="knowledge-bar">
+  <div class="kcard"><h3><span class="num">1</span>三种工具酶</h3>
+    <p><b>限制性核酸内切酶（限制酶）</b>：识别特定序列，切割双链 DNA，形成<b>黏性末端</b>或平末端。<br>
+    <b>DNA 连接酶</b>：催化 DNA 片段<b>相邻 5'-P 与 3'-OH 形成磷酸二酯键</b>。<br>
+    <b>DNA 聚合酶</b>：PCR 体外扩增 DNA。</p></div>
+  <div class="kcard"><h3><span class="num">2</span>载体（质粒）</h3>
+    <p>能将目的基因<b>携带入受体细胞</b>并复制的 DNA 分子。常用：<b>质粒</b>、λ 噬菌体、动植物病毒。<br>
+    <b>载体条件</b>：能复制、有标记基因、有多个限制酶切位点、能表达。</p></div>
+  <div class="kcard"><h3><span class="num">3</span>四大步骤</h3>
+    <p>① <b>提取</b>目的基因<br>
+    ② <b>构建</b>表达载体（限制酶+连接酶）<br>
+    ③ <b>导入</b>受体细胞（转化）<br>
+    ④ <b>检测与鉴定</b>（标记基因筛选+表达鉴定）</p></div>
+  <div class="kcard"><h3><span class="num">4</span>应用实例</h3>
+    <p><b>原核生物</b>：生产人胰岛素、干扰素、生长激素<br>
+    <b>转基因植物</b>：抗虫棉（Bt毒蛋白基因）、抗病、抗除草剂<br>
+    <b>基因治疗</b>：将正常基因导入患者的体细胞</p></div>
+</div>
+
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>基因工程基本步骤：①用<b>限制酶</b>获取目的基因并切割载体；②DNA连接酶连接；③将重组DNA导入受体细胞；④筛选含目的基因的细胞；⑤目的基因表达获得产物。</p>
-    <div class="legend"><span class='dot' style='background:#34d399'></span>目的基因&nbsp;<span class='dot' style='background:#a78bfa'></span>重组DNA&nbsp;<span class='dot' style='background:#7dd3fc'></span>载体</div>
-  
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>基因工程步骤</h3><ul><li>①提取目的基因（限制酶切割）</li><li>②构建表达载体（限制酶+DNA连接酶）</li><li>③导入受体细胞（转化）</li><li>④检测与鉴定</li><li>工具：限制酶、DNA连接酶、载体</li></ul></div>
-    </aside>
 </main>
+
+<div class="stepbar" id="stepbar"></div>
+
+<div class="detail" id="detail"></div>
+
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button>
   <button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <label>进度 <input id="progress" type="range" min="0" max="100" step="0.5" value="0"></label>
+  <span class="status" id="status"></span>
 </div>
-<script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
-window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const G={t:0,step:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){G.t=0;G.step=0;}
-function sceneUpdate(dt){G.t+=dt;}
-function sceneStep(d){G.step=Math.max(0,Math.min(4,G.step+d));}
-function dna(x,y,col){ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+40,y);ctx.lineTo(x+40,y-30);ctx.lineTo(x+80,y-30);ctx.stroke();}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const cx=cv.width/2;
-  ctx.fillStyle='#cdd7ea';ctx.font='14px sans-serif';ctx.textAlign='center';
-  const names=['① 限制酶剪切目的基因与载体','② 载体与目的基因连接','③ 重组DNA导入受体','④ 筛选并表达','⑤ 获得转基因产物'];
-  ctx.fillText(names[G.step],cx,46);
-  const stages=[
-    ()=>{dna(cx-200,200,'#34d399');dna(cx+40,260,'#7dd3fc');ctx.fillStyle='#fbbf24';ctx.fillText('限制酶切割',cx-120,160);},
-    ()=>{dna(cx-120,200,'#a78bfa');ctx.fillText('DNA连接酶',cx-120,160);},
-    ()=>{ctx.strokeStyle='#7f93b5';ctx.beginPath();ctx.arc(cx,260,50,0,7);ctx.stroke();ctx.fillStyle='#a78bfa';ctx.fillText('受体细胞',cx,260);},
-    ()=>{ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(cx,260,30,0,7);ctx.fill();ctx.fillText('表达',cx,260);},
-    ()=>{ctx.fillStyle='#34d399';ctx.fillRect(cx-60,240,120,40);ctx.fillStyle='#06281c';ctx.fillText('产物',cx,265);}
-  ];
-  for(let s=0;s<=G.step;s++)stages[s]();
-  statusEl.textContent='基因工程：获取目的基因→构建载体→导入受体→筛选表达';
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+const speedEl=document.getElementById('speed');
+const progressEl=document.getElementById('progress');
+const stepbarEl=document.getElementById('stepbar');
+const detailEl=document.getElementById('detail');
+
+let stepIdx=0;
+let stepProgress=0;
+let playing=false;
+let speed=1;
+let lastT=0;
+let t=0;
+
+function fit(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(800,Math.min(1100,r.width-8));
+  cv.height=Math.max(420,Math.min(520,r.height-8));
+}
+window.addEventListener('resize',()=>{fit();draw();});
+fit();
+
+const STEPS=[
+  {
+    tag:'extract',name:'① 获取目的基因',
+    title:'① 获取目的基因 + 切割载体',
+    body:`<p>用<b>同一种限制酶</b>分别切割<b>含目的基因的 DNA</b>和<b>质粒载体</b>，产生<b>相同的黏性末端</b>。</p>
+    <div class="points"><h4>限制酶识别位点（以 EcoRI 为例）</h4>
+    识别序列：<b>5'-GAATTC-3'</b><br>
+    切割位置：G ↓ AATTC（两条链错开切割）<br>
+    产生 <b>5'-AATT-3' 黏性末端</b>（单链突出）</div>
+    <div class="points"><h4>目的基因的来源</h4><ul>
+    <li><b>直接从生物基因组中切割</b>（需已知序列）</li>
+    <li><b>人工合成</b>（mRNA 逆转录成 cDNA）</li>
+    <li><b>PCR 体外扩增</b>（DNA 聚合酶）</li></ul></div>
+    <div class="points"><h4>关键点</h4>
+    <b>同一限制酶</b>切割目的基因和载体 → <b>相同黏性末端</b>，可互补配对。这是后续连接的前提。</div>`,
+    duration:3,
+  },
+  {
+    tag:'cut',name:'② 限制酶切割',
+    title:'② 限制酶切割：形成相同的黏性末端',
+    body:`<p>限制酶<b>识别特定的回文序列</b>，在两条链上各自<b>错开切割</b>，产生黏性末端。</p>
+    <div class="points"><h4>EcoRI 限制酶切割示意</h4>
+    切割前：<br>
+    <b>5'-G ↓ AATTC-3'</b><br>
+    <b>3'-CTTAA ↑ G-5'</b><br><br>
+    切割后（黏性末端用 — 表示）：<br>
+    <b>5'-G</b>      <b>AATTC-3'</b><br>
+    <b>3'-CTTAA</b>  <b>G-5'</b></div>
+    <div class="points"><h4>不同限制酶产生不同末端</h4><ul>
+    <li><b>EcoRI</b>（GAATTC）：黏性末端 5'-AATT<br>
+    <li><b>BamHI</b>（GGATCC）：黏性末端 5'-GATC<br>
+    <li><b>HaeIII</b>（GGCC）：平末端（无单链突出）</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'ligate',name:'③ DNA连接酶',
+    title:'③ DNA连接酶：目的基因与载体连接',
+    body:`<p>目的基因的黏性末端与质粒的黏性末端<b>碱基互补配对</b>，<b>DNA 连接酶</b>催化形成磷酸二酯键，形成<b>重组 DNA</b>。</p>
+    <div class="points"><h4>连接过程</h4><ul>
+    <li>黏性末端<b>碱基配对</b>（氢键）</li>
+    <li>DNA 连接酶催化<b>磷酸二酯键</b>形成</li>
+    <li>共 2 个磷酸二酯键（上下两条链各一个）</li></ul></div>
+    <div class="points"><h4>两种 DNA 连接酶</h4><ul>
+    <li><b>E.coli DNA 连接酶</b>：只能连接黏性末端</li>
+    <li><b>T4 DNA 连接酶</b>：可连接黏性末端<b>和平末端</b></li></ul></div>
+    <div class="points"><h4>注意</h4>
+    重组后的质粒 = <b>载体 + 目的基因 + 标记基因</b>。载体上的标记基因用于后续筛选。</div>`,
+    duration:3,
+  },
+  {
+    tag:'transform',name:'④ 导入受体',
+    title:'④ 导入受体细胞（转化）',
+    body:`<p>将<b>重组 DNA</b>导入受体细胞的过程称为<b>转化</b>。不同受体细胞导入方法不同。</p>
+    <div class="points"><h4>不同受体的导入方法</h4><ul>
+    <li><b>原核细胞（细菌）</b>：用<b>Ca²⁺ 处理</b>使细胞壁通透性增加（感受态细胞）</li>
+    <li><b>植物细胞</b>：常用<b>农杆菌转化法</b>（Ti 质粒）</li>
+    <li><b>动物细胞</b>：常用<b>显微注射法</b>（直接注入受精卵）</li></ul></div>
+    <div class="points"><h4>转化效率</h4>
+    转化后并不是所有细胞都成功导入重组质粒：<br>
+    • 未导入质粒的细胞<br>
+    • 导入空载体（不含目的基因）的细胞<br>
+    • 导入重组质粒的细胞（<b>成功</b>）<br>
+    <b>需要通过标记基因筛选</b>。</div>`,
+    duration:3,
+  },
+  {
+    tag:'select',name:'⑤ 筛选鉴定',
+    title:'⑤ 筛选与鉴定：找出阳性克隆',
+    body:`<p>利用<b>标记基因</b>筛选出成功导入重组质粒的细胞。</p>
+    <div class="points"><h4>常用筛选方法（蓝白斑筛选）</h4><ul>
+    <li>质粒含 <b>lacZ' 基因</b>（产 β-半乳糖苷酶）</li>
+    <li>培养基中加 X-gal 和 IPTG</li>
+    <li>未重组菌落：<b>蓝色</b>（lacZ' 完好，分解 X-gal）</li>
+    <li>重组菌落：<b>白色</b>（目的基因插入破坏了 lacZ'）</li></ul></div>
+    <div class="points"><h4>抗生素筛选</h4>
+    质粒含<b>抗氨苄青霉素基因</b>：<br>
+    • 在含氨苄青霉素培养基上<b>能生长</b>的菌落 = 导入了质粒<br>
+    • 但还需进一步鉴定是否含<b>目的基因</b></div>
+    <div class="points"><h4>鉴定方法</h4><ul>
+    <li><b>DNA 分子杂交</b>（核酸探针）</li>
+    <li><b>PCR 扩增</b>检测目的基因</li>
+    <li><b>抗原-抗体杂交</b>检测蛋白质产物</li></ul></div>`,
+    duration:3,
+  },
+  {
+    tag:'express',name:'⑥ 表达产物',
+    title:'⑥ 目的基因表达：获得转基因产品',
+    body:`<p>导入成功的受体细胞中，目的基因<b>转录+翻译</b>，产生目标蛋白质（如人胰岛素）。</p>
+    <div class="points"><h4>表达要素</h4><ul>
+    <li>需要<b>启动子</b>（RNA 聚合酶识别位点）</li>
+    <li>需要<b>终止子</b></li>
+    <li>核糖体结合位点（原核表达）</li></ul></div>
+    <div class="points"><h4>经典应用</h4><ul>
+    <li><b>人胰岛素</b>：1978 年首次用 E.coli 生产，糖尿病治疗</li>
+    <li><b>乙肝疫苗</b>：用酵母表达乙肝表面抗原</li>
+    <li><b>干扰素</b>：抗病毒、抗肿瘤</li>
+    <li><b>转基因抗虫棉</b>：导入 Bt 毒蛋白基因，抗棉铃虫</li></ul></div>
+    <div class="points"><h4>意义</h4>
+    打破了物种界限，实现<b>定向改造生物</b>。但也涉及<b>生物安全、伦理</b>问题。</div>`,
+    duration:3,
+  },
+];
+
+function renderStepbar(){
+  stepbarEl.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const btn=document.createElement('button');
+    btn.className='step-btn'+(i===stepIdx?' active':(i<stepIdx?' done':''));
+    btn.textContent=s.name;
+    btn.onclick=()=>{stepIdx=i;stepProgress=0;updateDetail();renderStepbar();draw();};
+    stepbarEl.appendChild(btn);
+  });
 }
 
-let playing=false,lastT=0,speed=1,t=0;
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
-const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+function updateDetail(){
+  const s=STEPS[stepIdx];
+  detailEl.innerHTML=`<h2>${s.title}<span class="badge">第 ${stepIdx+1}/${STEPS.length} 步</span></h2><div class="body">${s.body}</div>`;
+}
+
+// Drawing functions
+
+function drawDNAStrand(x,y,seqStrand1,seqStrand2,cutPos,highlightCut,showCuts){
+  // Draw a DNA segment with bases and sugar-phosphate backbone
+  const baseSpacing=12;
+  const len=seqStrand1.length;
+  ctx.save();
+  // backbone
+  ctx.strokeStyle='#5dade2';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(x,y-10);ctx.lineTo(x+(len-1)*baseSpacing,y-10);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x,y+10);ctx.lineTo(x+(len-1)*baseSpacing,y+10);
+  ctx.stroke();
+  // bases
+  const baseColors={'A':'#e74c3c','T':'#3498db','G':'#fbbf24','C':'#27ae60'};
+  for(let i=0;i<len;i++){
+    const bx=x+i*baseSpacing;
+    // top base
+    const topBase=seqStrand1[i];
+    const botBase=seqStrand2[i];
+    // top base
+    ctx.fillStyle=baseColors[topBase]||'#fff';
+    ctx.font='bold 11px monospace';ctx.textAlign='center';
+    ctx.fillText(topBase,bx,y-3);
+    // bot base
+    ctx.fillStyle=baseColors[botBase]||'#fff';
+    ctx.fillText(botBase,bx,y+8);
+    // hydrogen bonds
+    ctx.strokeStyle='rgba(255,255,255,0.3)';
+    ctx.lineWidth=0.5;
+    ctx.beginPath();
+    ctx.moveTo(bx,y-1);ctx.lineTo(bx,y+5);
+    ctx.stroke();
+  }
+  // cut indicator
+  if(showCuts&&cutPos!==undefined){
+    const cutX=x+cutPos*baseSpacing-baseSpacing/2;
+    ctx.strokeStyle='#e74c3c';
+    ctx.lineWidth=2;
+    ctx.setLineDash([3,2]);
+    ctx.beginPath();
+    ctx.moveTo(cutX,y-15);
+    ctx.lineTo(cutX,y+15);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    if(highlightCut){
+      // zigzag cut symbol
+      ctx.fillStyle='#e74c3c';
+      ctx.font='bold 14px sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('⚡',cutX,y-22);
+    }
+  }
+  ctx.restore();
+}
+
+function drawScissors(x,y,scale){
+  scale=scale||1;
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(scale,scale);
+  // simplified scissors
+  ctx.strokeStyle='#e74c3c';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(-8,5,5,0,Math.PI*2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(-8,-5,5,0,Math.PI*2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(-3,2);ctx.lineTo(12,8);
+  ctx.moveTo(-3,-2);ctx.lineTo(12,-8);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawEnzyme(x,y,color,label,active){
+  ctx.save();
+  ctx.translate(x,y);
+  if(active){
+    const grad=ctx.createRadialGradient(0,0,5,0,0,30);
+    grad.addColorStop(0,'rgba(251,191,36,0.6)');
+    grad.addColorStop(1,'rgba(251,191,36,0)');
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.arc(0,0,30,0,Math.PI*2);ctx.fill();
+  }
+  ctx.fillStyle=color;
+  ctx.strokeStyle=active?'#fbbf24':'#fff';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  // irregular blob
+  for(let i=0;i<=12;i++){
+    const a=i*Math.PI*2/12;
+    const r=18+Math.sin(a*3)*3;
+    if(i===0)ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);
+    else ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+  }
+  ctx.closePath();
+  ctx.fill();ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText(label,0,3);
+  ctx.restore();
+}
+
+function drawPlasmid(x,y,r,withInsert,insertProgress){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.strokeStyle='#3498db';ctx.lineWidth=3;
+  ctx.fillStyle='rgba(52,152,219,0.1)';
+  if(withInsert){
+    // broken circle - gap at top
+    const gapStart=Math.PI*1.4;
+    const gapEnd=Math.PI*1.6;
+    const insertSize=Math.PI*0.2;
+    // left arc
+    ctx.beginPath();
+    ctx.arc(0,0,r,gapEnd,gapStart+insertSize);
+    ctx.stroke();
+    // right arc
+    ctx.beginPath();
+    ctx.arc(0,0,r,gapStart+insertSize+insertSize,gapEnd+Math.PI*2);
+    ctx.stroke();
+    // insert (green gene)
+    if(insertProgress>0){
+      ctx.strokeStyle='#27ae60';
+      ctx.lineWidth=4;
+      const ang1=gapStart;
+      const ang2=gapStart+insertSize*2*insertProgress;
+      ctx.beginPath();
+      ctx.arc(0,0,r,ang1,ang2);
+      ctx.stroke();
+      ctx.fillStyle='#27ae60';
+      ctx.font='bold 9px sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('目的基因',0,-r-10);
+    }
+    // labels
+    ctx.fillStyle='#3498db';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('质粒',0,r+15);
+  }else{
+    ctx.beginPath();
+    ctx.arc(0,0,r,0,Math.PI*2);
+    ctx.fill();ctx.stroke();
+    ctx.fillStyle='#3498db';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('质粒',0,r+15);
+    // marker gene symbol
+    ctx.fillStyle='rgba(155,89,182,0.4)';
+    ctx.beginPath();
+    ctx.arc(r*0.6,0,8,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='8px sans-serif';
+    ctx.fillText('Ampᴿ',r*0.6,2);
+  }
+  ctx.restore();
+}
+
+function drawBacterium(x,y,w,h,recombinant){
+  ctx.save();
+  ctx.fillStyle=recombinant?'rgba(155,89,182,0.3)':'rgba(243,156,18,0.3)';
+  ctx.strokeStyle=recombinant?'#9b59b6':'#f39c12';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(x-w/2,y-h/2,w,h,h/2);
+  else ctx.ellipse(x,y,w/2,h/2,0,0,Math.PI*2);
+  ctx.fill();ctx.stroke();
+  // flagellum
+  ctx.strokeStyle=recombinant?'#9b59b6':'#f39c12';
+  ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.moveTo(x+w/2,y);
+  for(let i=0;i<5;i++){
+    ctx.lineTo(x+w/2+i*5,y+Math.sin(t*5+i)*3);
+  }
+  ctx.stroke();
+  // label
+  ctx.fillStyle=recombinant?'#9b59b6':'#f39c12';
+  ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText(recombinant?'重组菌':'普通菌',x,y-h/2-8);
+  // plasmid inside
+  if(recombinant){
+    ctx.strokeStyle='#27ae60';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(x-10,y,10,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='#9b59b6';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(x+10,y,8,0,Math.PI*2);ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const tag=STEPS[stepIdx].tag;
+  const p=stepProgress;
+
+  ctx.fillStyle='#e8edf6';
+  ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+  ctx.fillText(STEPS[stepIdx].title,W/2,24);
+
+  // Setup layout
+  if(tag==='extract'){
+    // Show source DNA (with target gene highlighted) and plasmid
+    // Source DNA
+    drawDNAStrand(W*0.1,H*0.3,'GGAATTCATGCGATTCGATCCGTAATTC','CCTTAAGTACGCTAAGCTAGGCATTAGG',6,false,false);
+    // highlight target gene
+    ctx.fillStyle='rgba(39,174,96,0.3)';
+    ctx.fillRect(W*0.1+6*12,H*0.3-15,15*12,30);
+    ctx.fillStyle='#27ae60';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('目的基因（绿色高亮）',W*0.1+13*12,H*0.3-25);
+    ctx.fillStyle='#8b9dc3';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('供体 DNA',W*0.1,H*0.3-40);
+    // plasmid
+    drawPlasmid(W*0.85,H*0.3,40,false,0);
+    // title
+    ctx.fillStyle='#fdcb6e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('① 取目的基因 + 质粒',W/2,H*0.55);
+    // hint
+    ctx.fillStyle='#8b9dc3';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('准备阶段：将供体DNA和质粒准备好',W/2,H*0.62);
+  }
+  else if(tag==='cut'){
+    // Show EcoRI cutting both DNA and plasmid
+    // Source DNA cut
+    drawDNAStrand(W*0.05,H*0.3,'GGAATTCATGCG','CCTTAAGTACGCA',6,true,true);
+    // show cut points
+    ctx.fillStyle='#e74c3c';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('↓ EcoRI',W*0.05+6*12,H*0.3-30);
+    // after cut - show two fragments with sticky ends
+    drawDNAStrand(W*0.05,H*0.55,'G     AATTCATGCG','CTTAA     GTACGCA',1,false,false);
+    drawDNAStrand(W*0.3,H*0.55,'G','C',0,false,false);
+    // plasmid cut
+    drawPlasmid(W*0.85,H*0.3,40,true,0);
+    ctx.fillStyle='#e74c3c';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('EcoRI 切割',W*0.85,H*0.3-60);
+    // scissors animation
+    const sissorP=Math.sin(t*3)*5;
+    drawScissors(W*0.05+6*12+sissorP,H*0.3-50,1);
+    drawScissors(W*0.85-30+sissorP,H*0.3-50,1);
+    // arrow to next step
+    ctx.fillStyle='#27ae60';ctx.font='bold 11px sans-serif';
+    ctx.fillText('相同的黏性末端：5\'-AATT',W/2,H*0.85);
+  }
+  else if(tag==='ligate'){
+    // Show ligation process
+    // plasmid with target gene inserting
+    const insertP=Math.min(1,p*1.5);
+    drawPlasmid(W*0.5,H*0.4,55,true,insertP);
+    // ligase enzyme
+    const ligaseActive=p<0.7;
+    drawEnzyme(W*0.7,H*0.4,'#fbbf24','DNA连接酶',ligaseActive);
+    // arrow
+    ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.lineWidth=2;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath();
+    ctx.moveTo(W*0.6,H*0.4);
+    ctx.lineTo(W*0.66,H*0.4);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // show sticky ends pairing
+    if(p<0.5){
+      ctx.fillStyle='#8b9dc3';ctx.font='10px monospace';ctx.textAlign='center';
+      ctx.fillText('5\'-AATT',W*0.5,H*0.55);
+      ctx.fillText('3\'-TTAA',W*0.5,H*0.62);
+      ctx.fillStyle='#27ae60';
+      ctx.fillText('↑ 黏性末端碱基互补配对',W*0.5,H*0.7);
+    }else{
+      ctx.fillStyle='#27ae60';ctx.font='bold 12px sans-serif';
+      ctx.fillText('DNA连接酶催化磷酸二酯键形成',W/2,H*0.7);
+    }
+    // result label
+    ctx.fillStyle='#9b59b6';ctx.font='bold 13px sans-serif';
+    ctx.fillText('→ 重组 DNA',W/2,H*0.85);
+  }
+  else if(tag==='transform'){
+    // Show recombinant DNA entering bacteria
+    // recombinant plasmid
+    drawPlasmid(W*0.2,H*0.4,40,true,1);
+    ctx.fillStyle='#9b59b6';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('重组质粒',W*0.2,H*0.4+60);
+    // bacteria
+    drawBacterium(W*0.7,H*0.4,80,40,false);
+    ctx.fillStyle='#f39c12';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('受体细菌',W*0.7,H*0.4-30);
+    // Ca2+ treatment
+    ctx.fillStyle='#5dade2';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Ca²⁺ 处理（感受态）',W/2,H*0.4-20);
+    // arrow showing entry
+    const phase=(t*0.4)%1;
+    if(phase<0.8){
+      // plasmid moving toward bacterium
+      const px=W*0.2+phase*(W*0.5);
+      ctx.globalAlpha=1-phase;
+      drawPlasmid(px,H*0.4,40*(1-phase*0.5),true,1);
+      ctx.globalAlpha=1;
+    }
+    // result - bacterium with plasmid
+    if(t%2>1){
+      drawBacterium(W*0.7,H*0.4,80,40,true);
+    }
+    ctx.fillStyle='#27ae60';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('转化：质粒进入细菌',W/2,H*0.7);
+    ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
+    ctx.fillText('原核：Ca²⁺处理 | 植物：农杆菌 | 动物：显微注射',W/2,H*0.78);
+  }
+  else if(tag==='select'){
+    // Show plate with colonies - blue and white
+    const plateX=W*0.5,plateY=H*0.45;
+    // agar plate
+    ctx.fillStyle='rgba(21,36,61,0.8)';
+    ctx.strokeStyle='#5dade2';ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.ellipse(plateX,plateY,W*0.3,H*0.3,0,0,Math.PI*2);
+    ctx.fill();ctx.stroke();
+    ctx.fillStyle='#5dade2';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('含氨苄青霉素+X-gal培养基',plateX,plateY-H*0.3-10);
+    // colonies
+    const colonies=[
+      {x:plateX-80,y:plateY-50,color:'#3498db',label:'',recombinant:false},
+      {x:plateX-30,y:plateY-60,color:'#3498db',label:'',recombinant:false},
+      {x:plateX+40,y:plateY-50,color:'#fff',label:'',recombinant:true},
+      {x:plateX-60,y:plateY+10,color:'#3498db',label:'',recombinant:false},
+      {x:plateX-10,y:plateY+30,color:'#fff',label:'',recombinant:true},
+      {x:plateX+50,y:plateY+20,color:'#3498db',label:'',recombinant:false},
+      {x:plateX+80,y:plateY-20,color:'#fff',label:'',recombinant:true},
+      {x:plateX-90,y:plateY+40,color:'#3498db',label:'',recombinant:false},
+      {x:plateX+20,y:plateY-20,color:'#3498db',label:'',recombinant:false},
+    ];
+    colonies.forEach(c=>{
+      ctx.fillStyle=c.color;
+      ctx.beginPath();ctx.arc(c.x,c.y,8,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=c.recombinant?'#27ae60':'#2980b9';
+      ctx.lineWidth=1;ctx.stroke();
+    });
+    // marker/arrow for one white colony
+    const targetColony=colonies[2];
+    const pulseAlpha=Math.sin(t*3)*0.3+0.7;
+    ctx.strokeStyle=`rgba(231,76,60,${pulseAlpha})`;
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(targetColony.x,targetColony.y,16,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#e74c3c';ctx.font='bold 11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('← 阳性克隆',targetColony.x+20,targetColony.y+5);
+    // legend
+    ctx.fillStyle='#3498db';
+    ctx.beginPath();ctx.arc(W*0.1,H*0.85,6,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('蓝斑：空载体',W*0.1+12,H*0.85+4);
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(W*0.3,H*0.85,6,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#27ae60';ctx.stroke();
+    ctx.fillStyle='#e8edf6';
+    ctx.fillText('白斑：重组菌 ✓',W*0.3+12,H*0.85+4);
+  }
+  else if(tag==='express'){
+    // Show final product (insulin production)
+    // Multiple bacteria producing product
+    drawBacterium(W*0.15,H*0.3,80,40,true);
+    drawBacterium(W*0.15,H*0.55,80,40,true);
+    // arrow showing expression
+    ctx.strokeStyle='#27ae60';ctx.lineWidth=2;
+    for(let i=0;i<5;i++){
+      const phase=((t*0.7+i*0.2)%1);
+      const px=W*0.22+phase*W*0.5;
+      const py=H*0.4+Math.sin(phase*Math.PI*2)*30;
+      ctx.fillStyle=`rgba(52,211,153,${1-phase*0.3})`;
+      ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fill();
+    }
+    // product container
+    const prodX=W*0.8,prodY=H*0.45;
+    ctx.fillStyle='rgba(52,211,153,0.3)';
+    ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(prodX-50,prodY-50,100,100,10);
+    else ctx.rect(prodX-50,prodY-50,100,100);
+    ctx.fill();ctx.stroke();
+    // product symbol (insulin molecule)
+    ctx.strokeStyle='#27ae60';ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let i=0;i<4;i++){
+      const a=i*Math.PI/2+t*0.3;
+      const px=prodX+Math.cos(a)*15;
+      const py=prodY+Math.sin(a)*15;
+      if(i===0)ctx.moveTo(px,py);
+      else ctx.lineTo(px,py);
+    }
+    ctx.closePath();ctx.stroke();
+    ctx.fillStyle='#27ae60';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+    ctx.fillText('胰岛素',prodX,prodY-65);
+    ctx.fillStyle='#e8edf6';ctx.font='11px sans-serif';
+    ctx.fillText('（人胰岛素）',prodX,prodY+70);
+    // transcription/translation labels
+    ctx.fillStyle='#fdcb6e';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('转录 + 翻译',W*0.5,H*0.2);
+    ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
+    ctx.fillText('目的基因→mRNA→蛋白质',W*0.5,H*0.28);
+    // final message
+    ctx.fillStyle='#27ae60';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+    ctx.fillText('🎉 转基因产品（如：人胰岛素、干扰素、抗虫棉）',W/2,H-15);
+  }
+
+  // DNA gauge showing step progress (bottom-right)
+  const indicator={
+    extract:'获取',
+    cut:'切割',
+    ligate:'连接',
+    transform:'转化',
+    select:'筛选',
+    express:'表达',
+  }[tag];
+  ctx.fillStyle='rgba(21,36,61,0.8)';
+  if(ctx.roundRect)ctx.roundRect(W-100,H-50,90,30,8);
+  else ctx.rect(W-100,H-50,90,30);
+  ctx.fill();
+  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;
+  ctx.stroke();
+  ctx.fillStyle='#fdcb6e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+  ctx.fillText(`阶段：${indicator} ${stepIdx+1}/6`,W-55,H-30);
+
+  statusEl.textContent=`步骤 ${stepIdx+1}/6 | ${STEPS[stepIdx].name} | 进度 ${Math.round(p*100)}%`;
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  t+=dt;
+  if(playing){
+    stepProgress+=dt*speed/STEPS[stepIdx].duration;
+    if(stepProgress>=1){
+      if(stepIdx<STEPS.length-1){
+        stepIdx++;stepProgress=0;
+        updateDetail();renderStepbar();
+      }else{
+        stepProgress=1;playing=false;
+        document.getElementById('playBtn').textContent='▶ 播放';
+      }
+    }
+    progressEl.value=(stepIdx+stepProgress)/STEPS.length*100;
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('playBtn').onclick=function(){
+  playing=!playing;
+  this.textContent=playing?'⏸ 暂停':'▶ 播放';
+  if(playing)lastT=0;
+};
+document.getElementById('resetBtn').onclick=()=>{
+  stepIdx=0;stepProgress=0;playing=false;
+  document.getElementById('playBtn').textContent='▶ 播放';
+  progressEl.value=0;
+  updateDetail();renderStepbar();draw();
+};
+document.getElementById('stepFwdBtn').onclick=()=>{
+  if(stepIdx<STEPS.length-1){stepIdx++;stepProgress=0;updateDetail();renderStepbar();draw();}
+};
+document.getElementById('stepBackBtn').onclick=()=>{
+  if(stepIdx>0){stepIdx--;stepProgress=0;updateDetail();renderStepbar();draw();}
+};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+progressEl.oninput=()=>{
+  const total=parseFloat(progressEl.value)/100*STEPS.length;
+  stepIdx=Math.min(STEPS.length-1,Math.floor(total));
+  stepProgress=total-stepIdx;
+  updateDetail();renderStepbar();draw();
+};
+
+renderStepbar();updateDetail();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

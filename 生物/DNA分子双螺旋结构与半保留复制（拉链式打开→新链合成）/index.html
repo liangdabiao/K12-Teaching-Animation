@@ -1,1306 +1,1385 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNA双螺旋结构与半保留复制教学动画</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #0a1929 0%, #1a3a5f 100%);
-            color: #e0f7ff;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            max-width: 900px;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #4fc3f7, #29b6f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
-        
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            max-width: 1200px;
-            width: 100%;
-        }
-        
-        .animation-area {
-            flex: 1;
-            min-width: 700px;
-            background: rgba(10, 25, 47, 0.8);
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(41, 182, 246, 0.2);
-        }
-        
-        .controls-panel {
-            width: 300px;
-            background: rgba(15, 30, 55, 0.9);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(79, 195, 247, 0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .panel-section {
-            background: rgba(25, 45, 75, 0.6);
-            border-radius: 10px;
-            padding: 15px;
-            border-left: 4px solid #29b6f6;
-        }
-        
-        h2 {
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            color: #4fc3f7;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        h2 i {
-            font-style: normal;
-            font-size: 1.2rem;
-        }
-        
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #1565c0, #0d47a1);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            flex: 1;
-            min-width: 120px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-        
-        button:hover {
-            background: linear-gradient(135deg, #1976d2, #1565c0);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        button.primary {
-            background: linear-gradient(135deg, #29b6f6, #0288d1);
-        }
-        
-        button.secondary {
-            background: linear-gradient(135deg, #7e57c2, #5e35b1);
-        }
-        
-        .slider-container {
-            margin: 15px 0;
-        }
-        
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: rgba(79, 195, 247, 0.2);
-            outline: none;
-            -webkit-appearance: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #29b6f6;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(41, 182, 246, 0.8);
-        }
-        
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #29b6f6;
-        }
-        
-        .legend {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .color-box {
-            width: 16px;
-            height: 16px;
-            border-radius: 3px;
-        }
-        
-        .info-box {
-            background: rgba(25, 45, 75, 0.8);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
-            border-top: 2px solid #29b6f6;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            min-height: 100px;
-        }
-        
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #90caf9;
-        }
-        
-        .step {
-            text-align: center;
-            flex: 1;
-            padding: 5px;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-        
-        .step.active {
-            background: rgba(41, 182, 246, 0.2);
-            color: #4fc3f7;
-            font-weight: bold;
-        }
-        
-        canvas {
-            display: block;
-            border-radius: 10px;
-            background: rgba(5, 15, 30, 0.9);
-        }
-        
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            max-width: 900px;
-        }
-        
-        @media (max-width: 1100px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .animation-area, .controls-panel {
-                width: 100%;
-                min-width: unset;
-            }
-        }
-    </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DNA双螺旋结构与半保留复制 - 交互式教学动画</title>
+<style>
+:root {
+    --bg-deep: #050e1c;
+    --bg-mid: #0a1929;
+    --bg-card: rgba(18, 36, 64, 0.85);
+    --border-soft: rgba(79, 195, 247, 0.18);
+    --accent: #4fc3f7;
+    --accent-warm: #ffb74d;
+    --text-main: #e3f2fd;
+    --text-muted: #90caf9;
+    --mother: #42a5f5;
+    --new: #ff7043;
+    --base-A: #ef5350;
+    --base-T: #ffa726;
+    --base-G: #66bb6a;
+    --base-C: #ab47bc;
+    --helicase: #ffca28;
+    --polymerase: #ec407a;
+    --ligase: #26c6da;
+    --primase: #a1887f;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, #1a3a5f 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, #0d2540 0%, transparent 60%),
+        var(--bg-deep);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 20px 16px 40px;
+    line-height: 1.65;
+}
+.back-btn {
+    position: fixed; top: 14px; left: 14px; z-index: 100;
+    background: rgba(18, 22, 34, 0.82); color: #7dd3fc;
+    text-decoration: none; font: 600 13px/1 system-ui, sans-serif;
+    padding: 8px 14px; border-radius: 8px;
+    border: 1px solid rgba(125, 211, 252, 0.4);
+    transition: all 0.2s;
+}
+.back-btn:hover { background: rgba(125, 211, 252, 0.15); transform: translateX(-2px); }
+.header {
+    text-align: center; max-width: 1100px; margin: 0 auto 24px;
+    padding-top: 36px;
+}
+.header h1 {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    background: linear-gradient(90deg, #4fc3f7 0%, #80deea 50%, #ffb74d 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent; margin-bottom: 8px; font-weight: 800;
+}
+.header .subtitle { color: var(--text-muted); font-size: 1.05rem; }
+
+/* 知识卡片 - 引导学生快速理解核心概念 */
+.knowledge-section {
+    max-width: 1200px; margin: 0 auto 24px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+.k-card {
+    background: var(--bg-card);
+    border-radius: 14px; padding: 18px 20px;
+    border: 1px solid var(--border-soft);
+    border-top: 3px solid var(--accent);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+.k-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(79, 195, 247, 0.2); }
+.k-card .icon { font-size: 1.8rem; margin-bottom: 6px; }
+.k-card h3 { font-size: 1.1rem; color: var(--accent); margin-bottom: 8px; }
+.k-card p { font-size: 0.92rem; color: #cfe8ff; }
+.k-card strong { color: #fff; }
+.k-card.warm { border-top-color: var(--accent-warm); }
+.k-card.warm h3 { color: var(--accent-warm); }
+
+/* 主体布局 */
+.main-container {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 320px;
+    gap: 20px;
+}
+.animation-wrapper {
+    background: var(--bg-card);
+    border-radius: 16px; padding: 16px;
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+#dnaCanvas {
+    display: block; width: 100%; height: auto;
+    aspect-ratio: 900 / 580;
+    border-radius: 10px;
+    background: #050e1c;
+}
+
+/* 步骤指示条 */
+.step-bar {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 6px; margin-top: 14px;
+}
+.step-item {
+    cursor: pointer; text-align: center;
+    padding: 10px 6px; border-radius: 8px;
+    background: rgba(25, 45, 75, 0.5);
+    border: 1px solid rgba(79, 195, 247, 0.15);
+    transition: all 0.25s;
+    position: relative;
+}
+.step-item:hover { background: rgba(40, 70, 110, 0.6); }
+.step-item.active {
+    background: linear-gradient(135deg, rgba(79, 195, 247, 0.25), rgba(255, 183, 77, 0.15));
+    border-color: var(--accent);
+    box-shadow: 0 0 14px rgba(79, 195, 247, 0.4);
+}
+.step-item.done { border-color: rgba(102, 187, 106, 0.5); }
+.step-num {
+    width: 26px; height: 26px; line-height: 26px;
+    border-radius: 50%; margin: 0 auto 6px;
+    background: rgba(79, 195, 247, 0.2);
+    color: var(--accent); font-weight: 700; font-size: 0.9rem;
+}
+.step-item.active .step-num {
+    background: var(--accent); color: #052233;
+}
+.step-label { font-size: 0.78rem; color: var(--text-muted); }
+.step-item.active .step-label { color: #fff; font-weight: 600; }
+
+/* 控制面板 */
+.controls-panel { display: flex; flex-direction: column; gap: 14px; }
+.panel-section {
+    background: var(--bg-card);
+    border-radius: 12px; padding: 16px;
+    border: 1px solid var(--border-soft);
+}
+.panel-section h3 {
+    font-size: 1rem; color: var(--accent);
+    margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-soft);
+}
+.btn-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.btn {
+    flex: 1; padding: 9px 12px; border: none; border-radius: 8px;
+    cursor: pointer; font-weight: 600; font-size: 0.9rem;
+    background: rgba(40, 70, 110, 0.6);
+    color: var(--text-main);
+    transition: all 0.2s;
+}
+.btn:hover { background: rgba(60, 90, 140, 0.8); transform: translateY(-1px); }
+.btn-primary {
+    background: linear-gradient(135deg, #29b6f6, #0288d1);
+    color: #fff;
+}
+.btn-primary:hover { background: linear-gradient(135deg, #4fc3f7, #03a9f4); }
+
+.slider-group { margin-bottom: 10px; }
+.slider-group label {
+    display: flex; justify-content: space-between;
+    font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;
+}
+.slider-group label span:last-child { color: var(--accent); font-weight: 600; }
+input[type="range"] {
+    width: 100%; height: 6px; border-radius: 3px;
+    background: rgba(79, 195, 247, 0.2);
+    outline: none; -webkit-appearance: none; appearance: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+    box-shadow: 0 0 10px rgba(79, 195, 247, 0.7);
+}
+input[type="range"]::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: none;
+}
+
+.checkbox-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 0; cursor: pointer; font-size: 0.9rem;
+}
+.checkbox-item input {
+    width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer;
+}
+
+.legend-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.82rem; color: #cfe8ff;
+}
+.legend-color {
+    width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0;
+}
+.legend-color.mother { background: var(--mother); }
+.legend-color.new { background: var(--new); }
+
+/* 详细步骤说明 - 教学重点 */
+.explanation-panel {
+    max-width: 1200px; margin: 20px auto 0;
+    background: linear-gradient(135deg, rgba(18, 36, 64, 0.95), rgba(10, 25, 47, 0.95));
+    border-radius: 16px; padding: 24px 28px;
+    border: 1px solid var(--border-soft);
+    border-left: 4px solid var(--accent-warm);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+.explanation-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 14px; flex-wrap: wrap;
+}
+.step-tag {
+    background: var(--accent-warm); color: #2a1a05;
+    padding: 4px 12px; border-radius: 14px;
+    font-weight: 700; font-size: 0.85rem;
+}
+.explanation-header h2 {
+    color: #fff; font-size: 1.3rem; font-weight: 700;
+}
+.explanation-body {
+    font-size: 1rem; color: #d6ebff;
+    margin-bottom: 14px; line-height: 1.75;
+}
+.explanation-body strong { color: var(--accent-warm); }
+.key-points {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px; padding-top: 12px;
+    border-top: 1px dashed rgba(79, 195, 247, 0.25);
+}
+.key-point {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.9rem; color: var(--text-muted);
+}
+.key-point::before {
+    content: '✓'; color: var(--base-G); font-weight: 700; flex-shrink: 0;
+}
+
+.footer {
+    text-align: center; margin-top: 30px;
+    color: var(--text-muted); font-size: 0.85rem; opacity: 0.7;
+}
+
+/* 响应式 */
+@media (max-width: 980px) {
+    .main-container { grid-template-columns: 1fr; }
+    .controls-panel { order: 2; }
+}
+</style>
 </head>
-<body><!--p3-backnav--><a class="p3-backnav" href="../index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(18,22,34,.82);color:#7dd3fc;text-decoration:none;font:600 13px/1 system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid rgba(125,211,252,.4)">← 返回学科目录</a>
-    <div class="header">
-        <h1>DNA双螺旋结构与半保留复制</h1>
-        <p class="subtitle">交互式教学动画 - 探索生命遗传密码的复制机制</p>
+<body>
+<a class="back-btn" href="../index.html">← 返回学科目录</a>
+
+<header class="header">
+    <h1>DNA双螺旋结构与半保留复制</h1>
+    <p class="subtitle">理解生命遗传密码的复制机制 · 完整交互式教学动画</p>
+</header>
+
+<!-- 知识引导卡片 -->
+<section class="knowledge-section">
+    <div class="k-card">
+        <div class="icon">🧬</div>
+        <h3>DNA是什么？</h3>
+        <p>DNA（脱氧核糖核酸）是由<strong>两条反向平行</strong>的链绕中心轴盘绕而成的<strong>右手双螺旋</strong>。骨架（脱氧核糖-磷酸）在外侧，碱基朝内通过氢键配对，形成螺旋"阶梯"。</p>
     </div>
-    
-    <div class="container">
-        <div class="animation-area">
-            <canvas id="dnaCanvas" width="700" height="500"></canvas>
-        </div>
-        
-        <div class="controls-panel">
-            <div class="panel-section">
-                <h2><i>⚙️</i> 动画控制</h2>
-                <div class="button-group">
-                    <button id="playBtn" class="primary">▶️ 播放</button>
-                    <button id="pauseBtn">⏸️ 暂停</button>
-                    <button id="resetBtn">🔄 重置</button>
-                </div>
-                
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>进度控制</span>
-                        <span id="progressText">0%</span>
-                    </div>
-                    <input type="range" id="progressSlider" min="0" max="100" value="0">
-                </div>
-                
-                <div class="button-group">
-                    <button id="prevStepBtn">◀️ 上一步</button>
-                    <button id="nextStepBtn">▶️ 下一步</button>
-                </div>
-                
-                <div class="step-indicator">
-                    <div class="step active" data-step="0">结构</div>
-                    <div class="step" data-step="1">解旋</div>
-                    <div class="step" data-step="2">引物</div>
-                    <div class="step" data-step="3">合成</div>
-                    <div class="step" data-step="4">连接</div>
-                    <div class="step" data-step="5">完成</div>
-                </div>
-            </div>
-            
-            <div class="panel-section">
-                <h2><i>👁️</i> 视角与显示</h2>
-                <div class="button-group">
-                    <button id="viewStructure" class="secondary">🔭 结构视角</button>
-                    <button id="viewReplication">🔬 复制叉视角</button>
-                </div>
-                
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="highlightParent" checked>
-                        <label for="highlightParent">高亮母链（半保留验证）</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showEnzymes" checked>
-                        <label for="showEnzymes">显示酶与分子</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="showLabels" checked>
-                        <label for="showLabels">显示标签</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="panel-section">
-                <h2><i>🎨</i> 图例</h2>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="color-box" style="background-color: #cccccc;"></div>
-                        <span>DNA骨架</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background-color: #ff5252;"></div>
-                        <span>腺嘌呤 (A)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background-color: #ffeb3b;"></div>
-                        <span>胸腺嘧啶 (T)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background-color: #448aff;"></div>
-                        <span>鸟嘌呤 (G)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background-color: #69f0ae;"></div>
-                        <span>胞嘧啶 (C)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background-color: #ff9800;"></div>
-                        <span>解旋酶</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background-color: #b388ff;"></div>
-                        <span>DNA聚合酶</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background-color: #8d6e63;"></div>
-                        <span>RNA引物</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="panel-section">
-                <h2><i>ℹ️</i> 当前步骤说明</h2>
-                <div class="info-box" id="infoText">
-                    观察完整的DNA双螺旋结构。注意两条反向平行的链，以及A-T、G-C碱基对的互补配对。
-                </div>
-            </div>
-        </div>
+    <div class="k-card warm">
+        <div class="icon">⚗️</div>
+        <h3>碱基互补配对原则</h3>
+        <p><strong style="color:#ef5350">A</strong>(腺嘌呤) ⇌ <strong style="color:#ffa726">T</strong>(胸腺嘧啶)，形成 <strong>2</strong> 个氢键<br>
+        <strong style="color:#66bb6a">G</strong>(鸟嘌呤) ⇌ <strong style="color:#ab47bc">C</strong>(胞嘧啶)，形成 <strong>3</strong> 个氢键<br>
+        <span style="opacity:0.85">这一原则是复制与转录的基础。</span></p>
     </div>
-    
-    <div class="footer">
-        <p>教学动画设计：DNA半保留复制过程 | 交互式生物学教学工具 | 使用HTML5 Canvas实现</p>
+    <div class="k-card">
+        <div class="icon">🔬</div>
+        <h3>半保留复制</h3>
+        <p>复制时两条母链分开，各自作模板合成新链。最终得到的每个子代DNA都包含<strong>一条母链</strong>和<strong>一条新链</strong> —— 这就是<strong>半保留复制</strong>，由Meselson-Stahl实验证实。</p>
+    </div>
+</section>
+
+<!-- 主体：动画 + 控制 -->
+<main class="main-container">
+    <div class="animation-wrapper">
+        <canvas id="dnaCanvas" width="900" height="580"></canvas>
+        <div class="step-bar" id="stepBar"></div>
     </div>
 
-    <script>
-        // 获取Canvas和上下文
-        const canvas = document.getElementById('dnaCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // 动画状态
-        let animationState = {
-            currentStep: 0, // 0:结构, 1:解旋, 2:引物, 3:合成, 4:连接, 5:完成
-            progress: 0, // 当前步骤内的进度 0-100
-            isPlaying: false,
-            viewMode: 'structure', // 'structure' 或 'replication'
-            highlightParent: true,
-            showEnzymes: true,
-            showLabels: true
+    <aside class="controls-panel">
+        <div class="panel-section">
+            <h3>▶ 动画控制</h3>
+            <div class="btn-row">
+                <button id="playBtn" class="btn btn-primary">▶ 播放</button>
+                <button id="resetBtn" class="btn">↻ 重置</button>
+            </div>
+            <div class="slider-group">
+                <label><span>播放速度</span><span id="speedValue">1.0×</span></label>
+                <input type="range" id="speedSlider" min="0.3" max="3" step="0.1" value="1">
+            </div>
+            <div class="slider-group">
+                <label><span>总体进度</span><span id="progressValue">第1步 / 6</span></label>
+                <input type="range" id="progressSlider" min="0" max="1000" value="0">
+            </div>
+            <div class="btn-row">
+                <button id="prevBtn" class="btn">◀ 上一步</button>
+                <button id="nextBtn" class="btn">下一步 ▶</button>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <h3>👁 显示选项</h3>
+            <label class="checkbox-item">
+                <input type="checkbox" id="showEnzymes" checked>
+                <span>显示酶分子</span>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="showLabels" checked>
+                <span>显示方向标签 (5'/3')</span>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="showBases" checked>
+                <span>显示碱基字母</span>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="autoRotate" checked>
+                <span>自动旋转 3D 视角</span>
+            </label>
+        </div>
+
+        <div class="panel-section">
+            <h3>🎨 图例</h3>
+            <div class="legend-grid">
+                <div class="legend-item"><div class="legend-color mother"></div><span>母链（模板）</span></div>
+                <div class="legend-item"><div class="legend-color new"></div><span>新合成链</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#ef5350"></div><span>A 腺嘌呤</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#ffa726"></div><span>T 胸腺嘧啶</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#66bb6a"></div><span>G 鸟嘌呤</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#ab47bc"></div><span>C 胞嘧啶</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#ffca28"></div><span>解旋酶</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#ec407a"></div><span>DNA聚合酶</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#a1887f"></div><span>引物酶/引物</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#26c6da"></div><span>DNA连接酶</span></div>
+            </div>
+        </div>
+    </aside>
+</main>
+
+<!-- 详细步骤说明 -->
+<section class="explanation-panel">
+    <div class="explanation-header">
+        <span class="step-tag" id="stepTag">第 1 步</span>
+        <h2 id="stepTitle">完整的DNA双螺旋结构</h2>
+    </div>
+    <div class="explanation-body" id="stepBody"></div>
+    <div class="key-points" id="stepPoints"></div>
+</section>
+
+<footer class="footer">
+    <p>高中生物教学动画 · DNA的结构与复制专题 · 单文件 HTML5 Canvas 实现</p>
+</footer>
+
+<script>
+(function () {
+    'use strict';
+
+    // ==================== 常量配置 ====================
+    const CANVAS_W = 900, CANVAS_H = 580;
+
+    // DNA 几何参数
+    const DNA = {
+        basePairs: 22,
+        helixRadius: 38,
+        baseSpacing: 22,
+        twistPerBase: Math.PI / 6.5,   // ~28度，呈现清晰螺旋
+        // 母链0（5'→3'，从上到下）的碱基序列
+        sequence: 'ATGCGATTCGATCCGTAATCGC'.split(''),
+    };
+
+    // 颜色
+    const COLOR = {
+        motherBackbone: '#42a5f5',
+        motherBackboneDim: 'rgba(66, 165, 245, 0.55)',
+        newBackbone: '#ff7043',
+        newBackboneDim: 'rgba(255, 112, 67, 0.55)',
+        base: { A: '#ef5350', T: '#ffa726', G: '#66bb6a', C: '#ab47bc' },
+        newBase: { A: '#f0888a', T: '#ffc480', G: '#9ad29e', C: '#c895d4' },
+        HbondMother: 'rgba(220, 240, 255, 0.45)',
+        HbondNew: 'rgba(255, 220, 180, 0.55)',
+        helicase: '#ffca28',
+        polymerase: '#ec407a',
+        ligase: '#26c6da',
+        primase: '#a1887f',
+        primer: '#bcaaa4',
+        bg: '#050e1c',
+    };
+
+    // 步骤定义
+    const STEPS = [
+        {
+            tag: '第 1 步', name: '完整结构', title: '完整的DNA双螺旋结构',
+            body: '观察这个完整的DNA分子。它由<strong>两条反向平行的链</strong>绕中心轴盘绕成<strong>右手螺旋</strong>。每条链的骨架（脱氧核糖与磷酸交替连接）位于螺旋外侧，碱基（A、T、G、C）朝内，通过氢键互补配对。注意观察：<strong>大沟</strong>与<strong>小沟</strong>交替出现，这是DNA分子的重要结构特征。',
+            points: [
+                '两条链反向平行：一条5\'→3\'，另一条3\'→5\'',
+                '右手螺旋，每螺旋一圈约10个碱基对',
+                'A=T（2个氢键），G≡C（3个氢键）',
+                '大沟与小区交替，与蛋白质识别相关',
+            ],
+            duration: 4.5,
+        },
+        {
+            tag: '第 2 步', name: '解旋酶解旋', title: '解旋酶打开双链 · 形成复制叉',
+            body: '<strong>解旋酶</strong>像"拉链头"一样结合到DNA的复制起始位点，消耗ATP打断两条链之间的氢键。双链DNA局部被解开，形成<strong>Y字形</strong>的<strong>复制叉</strong>。两条母链的碱基得以暴露，为接下来的合成提供模板。',
+            points: [
+                '解旋酶沿DNA移动，单向或双向解开',
+                '氢键断裂，双链分离',
+                '复制叉是DNA合成的"施工现场"',
+                '母链碱基暴露，等待新碱基配对',
+            ],
+            duration: 4.5,
+        },
+        {
+            tag: '第 3 步', name: 'RNA引物', title: '引物酶合成RNA引物',
+            body: 'DNA聚合酶不能从零开始合成新链，必须依赖一段短的<strong>RNA引物</strong>提供3\'-OH末端。<strong>引物酶</strong>在模板链的特定位置合成一段约5-10个核苷酸的RNA，随后DNA聚合酶才能在此基础上延伸DNA链。',
+            points: [
+                '引物酶合成短RNA片段（5-10 nt）',
+                '为DNA聚合酶提供起始的3\'-OH',
+                'RNA引物后续会被切除并替换为DNA',
+                '每条模板链都需要引物起始',
+            ],
+            duration: 3.5,
+        },
+        {
+            tag: '第 4 步', name: '新链合成', title: 'DNA聚合酶按5\'→3\'合成新链',
+            body: '<strong>DNA聚合酶</strong>以母链为模板，按照碱基互补配对原则（A-T, G-C），将游离的脱氧核苷酸连接到新链的3\'-OH端，新链按<strong>5\'→3\'方向</strong>延伸。由于两条母链方向相反，而聚合酶只能单向合成：<br>• <strong>领头链（前导链）</strong>：顺着复制叉前进方向连续合成；<br>• <strong>滞后链（后随链）</strong>：逆着复制叉方向分段合成，形成<strong>冈崎片段</strong>。',
+            points: [
+                'DNA聚合酶只能 5\' → 3\' 合成',
+                '需 Mg²⁺ 催化，消耗 dNTP',
+                '领头链：连续合成',
+                '滞后链：分段合成冈崎片段',
+            ],
+            duration: 6.0,
+        },
+        {
+            tag: '第 5 步', name: '连接酶封口', title: 'DNA连接酶连接冈崎片段',
+            body: 'RNA引物被DNA聚合酶切除并以DNA填补。随后，<strong>DNA连接酶</strong>催化相邻冈崎片段之间形成<strong>磷酸二酯键</strong>，将滞后链上不连续的片段拼接为一条完整的新链。至此，每条母链都拥有了一条完整互补的新链。',
+            points: [
+                'RNA引物被切除并替换为DNA',
+                'DNA连接酶消耗ATP/NAD+形成磷酸二酯键',
+                '滞后链变为连续完整的新链',
+                '此时每个子代DNA分子已基本成型',
+            ],
+            duration: 4.0,
+        },
+        {
+            tag: '第 6 步', name: '复制完成', title: '半保留复制完成 · 形成两个子代DNA',
+            body: '复制完成！原本的一个DNA分子变成了<strong>两个完全相同</strong>的DNA分子。每个子代DNA都由<strong>一条母链</strong>（蓝色，来自原来的DNA）和<strong>一条新合成的链</strong>（橙色）组成。这种"母链保留+新链合成"的方式即<strong>半保留复制</strong>，由1958年Meselson-Stahl实验用同位素N¹⁵/N¹⁴首次证实，保证了遗传信息在细胞分裂中的精确传递。',
+            points: [
+                '一个DNA → 两个完全相同的子代DNA',
+                '每个子代：1条母链 + 1条新链',
+                'Meselson-Stahl实验（1958）证实',
+                '遗传信息精确、稳定地传递',
+            ],
+            duration: 0,
+        },
+    ];
+
+    // ==================== 状态 ====================
+    const state = {
+        step: 0,
+        stepProgress: 0,   // 当前步骤内 0-1
+        isPlaying: false,
+        speed: 1,
+        rotation: 0,      // 自动旋转角度
+        showEnzymes: true,
+        showLabels: true,
+        showBases: true,
+        autoRotate: true,
+        lastTime: 0,
+    };
+
+    // ==================== Canvas 初始化 ====================
+    const canvas = document.getElementById('dnaCanvas');
+    const ctx = canvas.getContext('2d');
+    // 高分辨率屏幕适配
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = CANVAS_W * dpr;
+    canvas.height = CANVAS_H * dpr;
+    canvas.style.width = '100%';
+    ctx.scale(dpr, dpr);
+
+    // ==================== 工具函数 ====================
+    function complement(base) { return { A: 'T', T: 'A', G: 'C', C: 'G' }[base]; }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function easeInOut(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    // ==================== 3D 几何 ====================
+    /**
+     * 计算某条母链上某碱基的 3D 坐标
+     * strand: 0 或 1
+     * forkI: 复制叉位置（<0 表示无解旋）
+     * openAmount: 解旋程度 0-1
+     */
+    function getStrandPoint(i, strand, params) {
+        const {
+            forkI = -1,
+            openAmount = 0,
+            centerX = 0, centerY = 0,
+            rotation = 0,
+            sep = 0,  // 终态分离距离
+        } = params;
+
+        const t = i * DNA.twistPerBase + rotation;
+        const phase = (strand === 0 ? 0 : Math.PI);
+        const angle = t + phase;
+        const R = DNA.helixRadius;
+
+        let x = R * Math.cos(angle);
+        let z = R * Math.sin(angle);
+        let y = (i - DNA.basePairs / 2) * DNA.baseSpacing;
+
+        // 复制叉打开：在已打开区域两条母链分叉
+        if (forkI >= 0 && i < forkI) {
+            const distFromFork = forkI - i;
+            // 距叉越远，分得越开（拉链打开的形态）
+            const diverge = Math.min(distFromFork * 4.5, 55) * openAmount;
+            const sign = (strand === 0 ? -1 : 1);
+            x += sign * diverge;
+            // 打开后z压缩（变扁），呈现"摊开"的效果
+            z *= Math.max(0.1, 1 - openAmount * 0.85);
+        }
+
+        // 终态两个子代DNA的分离
+        if (sep > 0) {
+            const sign = (strand === 0 ? -1 : 1);
+            x += sign * sep;
+        }
+
+        return { x: centerX + x, y: centerY + y, z };
+    }
+
+    // 透视投影：z 越大（越靠近观察者）画得越大
+    function project(p) {
+        const perspective = 600;
+        const distance = Math.max(150, perspective - p.z);
+        const scale = perspective / distance;
+        return {
+            x: p.x,
+            y: p.y,
+            scale,
+            depth: (p.z + DNA.helixRadius) / (2 * DNA.helixRadius), // 0-1
         };
-        
-        // DNA数据
-        const dnaData = {
-            basePairs: 20, // 碱基对数量
-            helixRadius: 100, // 螺旋半径
-            baseSpacing: 15, // 碱基对间距
-            twistAngle: Math.PI / 10, // 每对碱基的旋转角度
-            replicationStart: 10, // 复制起始位置（碱基对索引）
-            replicationProgress: 0, // 复制进度 0-1
-            newStrandProgress: 0 // 新链合成进度 0-1
-        };
-        
-        // 颜色定义
-        const colors = {
-            backbone: '#cccccc',
-            adenine: '#ff5252',
-            thymine: '#ffeb3b',
-            guanine: '#448aff',
-            cytosine: '#69f0ae',
-            newAdenine: '#ff8a80',
-            newThymine: '#fff59d',
-            newGuanine: '#82b1ff',
-            newCytosine: '#b9f6ca',
-            helicase: '#ff9800',
-            polymerase: '#b388ff',
-            primer: '#8d6e63',
-            background: '#050f1e'
-        };
-        
-        // 酶和分子位置
-        const enzymes = {
-            helicase: { x: 0, y: 0, active: false },
-            polymeraseLeading: { x: 0, y: 0, active: false },
-            polymeraseLagging: { x: 0, y: 0, active: false },
-            primers: [],
-            nucleotides: []
-        };
-        
-        // 步骤信息
-        const stepInfo = [
-            "观察完整的DNA双螺旋结构。注意两条反向平行的链，以及A-T、G-C碱基对的互补配对。",
-            "解旋酶结合到DNA上，像拉链一样打开双螺旋结构，形成复制叉。氢键断裂，两条链分离。",
-            "RNA引物结合到每条模板链的起始位置，为DNA聚合酶提供起始点。引物由引物酶合成。",
-            "DNA聚合酶以每条母链为模板，按照碱基互补配对原则（A-T, G-C）添加新的核苷酸，合成新链。领头链连续合成，滞后链不连续合成（冈崎片段）。",
-            "DNA连接酶将滞后链上的冈崎片段连接起来，形成完整的新链。同时RNA引物被去除并替换为DNA。",
-            "复制完成！生成两个完全相同的DNA分子，每个分子包含一条母链和一条新链，这就是半保留复制。"
-        ];
-        
-        // 初始化
-        function init() {
-            updateStepIndicator();
-            updateInfoText();
-            generateRandomBases();
-            generateNucleotides();
-            draw();
-            
-            // 设置动画循环
-            requestAnimationFrame(animate);
+    }
+
+    // ==================== 复制进度信息 ====================
+    function getReplicationInfo() {
+        const step = state.step;
+        const p = state.stepProgress;
+        const N = DNA.basePairs;
+        const startFork = N * 0.5; // 从中点开始解旋
+
+        switch (step) {
+            case 0: // 完整结构
+                return { forkI: -1, openAmount: 0, newSynth: 0, showHelicase: false, showPol: false, showPrimase: false, showLigase: false, showFragments: false };
+            case 1: // 解旋
+                return {
+                    forkI: startFork + p * N * 0.45,
+                    openAmount: 1,
+                    newSynth: 0,
+                    showHelicase: true,
+                };
+            case 2: // 引物
+                return {
+                    forkI: startFork + N * 0.45 + p * 3,
+                    openAmount: 1,
+                    newSynth: 0,
+                    showHelicase: true,
+                    showPrimase: true,
+                };
+            case 3: // 合成
+                return {
+                    forkI: startFork + N * 0.48 + p * N * 0.35,
+                    openAmount: 1,
+                    newSynth: p,
+                    showHelicase: true,
+                    showPol: true,
+                    showFragments: true,
+                };
+            case 4: // 连接
+                return {
+                    forkI: startFork + N * 0.83 + p * N * 0.15,
+                    openAmount: 1,
+                    newSynth: 1,
+                    showHelicase: true,
+                    showPol: true,
+                    showLigase: p > 0.3,
+                    showFragments: p < 0.5,
+                };
+            case 5: // 完成
+                return {
+                    forkI: -1,
+                    openAmount: 0,
+                    newSynth: 1,
+                    finalState: true,
+                };
         }
-        
-        // 生成随机碱基序列
-        function generateRandomBases() {
-            dnaData.bases = [];
-            for (let i = 0; i < dnaData.basePairs; i++) {
-                // 随机选择碱基对
-                const pairType = Math.floor(Math.random() * 2); // 0: A-T, 1: G-C
-                dnaData.bases.push({
-                    type: pairType,
-                    opened: false,
-                    newBase1: null, // 第一条新链上的碱基
-                    newBase2: null  // 第二条新链上的碱基
-                });
-            }
+    }
+
+    // ==================== 绘制函数 ====================
+    function drawBackground() {
+        // 渐变背景
+        const grd = ctx.createRadialGradient(CANVAS_W / 2, CANVAS_H / 2, 50, CANVAS_W / 2, CANVAS_H / 2, 600);
+        grd.addColorStop(0, '#0e2240');
+        grd.addColorStop(1, COLOR.bg);
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+        // 细网格
+        ctx.strokeStyle = 'rgba(79, 195, 247, 0.04)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < CANVAS_W; x += 40) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CANVAS_H); ctx.stroke();
         }
-        
-        // 生成游离核苷酸
-        function generateNucleotides() {
-            enzymes.nucleotides = [];
-            const nucleotideCount = 30;
-            
-            for (let i = 0; i < nucleotideCount; i++) {
-                const type = Math.floor(Math.random() * 4); // 0:A, 1:T, 2:G, 3:C
-                let color;
-                switch(type) {
-                    case 0: color = colors.adenine; break;
-                    case 1: color = colors.thymine; break;
-                    case 2: color = colors.guanine; break;
-                    case 3: color = colors.cytosine; break;
-                }
-                
-                enzymes.nucleotides.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    type: type,
-                    color: color,
-                    targetX: 0,
-                    targetY: 0,
-                    moving: false,
-                    used: false
-                });
-            }
+        for (let y = 0; y < CANVAS_H; y += 40) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CANVAS_W, y); ctx.stroke();
         }
-        
-        // 绘制DNA
-        function draw() {
-            // 清空画布
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // 绘制背景
-            ctx.fillStyle = colors.background;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // 根据视角模式调整绘制
-            if (animationState.viewMode === 'structure') {
-                drawDNAStructure();
-            } else {
-                drawReplicationFork();
-            }
-            
-            // 绘制酶和分子
-            if (animationState.showEnzymes) {
-                drawEnzymesAndMolecules();
-            }
-            
-            // 绘制标签
-            if (animationState.showLabels) {
-                drawLabels();
-            }
-        }
-        
-        // 绘制DNA结构
-        function drawDNAStructure() {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // 计算当前复制进度对应的碱基对
-            const replicationIndex = dnaData.replicationStart + 
-                Math.floor(dnaData.replicationProgress * (dnaData.basePairs - dnaData.replicationStart));
-            
-            // 绘制每条链的骨架
-            for (let chain = 0; chain < 2; chain++) {
-                ctx.beginPath();
-                ctx.strokeStyle = colors.backbone;
-                ctx.lineWidth = 3;
-                
-                for (let i = 0; i < dnaData.basePairs; i++) {
-                    const angle = i * dnaData.twistAngle;
-                    const radius = dnaData.helixRadius;
-                    const x = centerX + (chain === 0 ? radius : -radius) * Math.cos(angle);
-                    const y = centerY + i * dnaData.baseSpacing - (dnaData.basePairs * dnaData.baseSpacing) / 2;
-                    
-                    if (i === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                    
-                    // 绘制碱基
-                    if (i < dnaData.bases.length) {
-                        const base = dnaData.bases[i];
-                        
-                        // 计算配对碱基的位置
-                        const pairAngle = angle + (chain === 0 ? Math.PI : 0);
-                        const pairX = centerX + (chain === 0 ? -radius : radius) * Math.cos(pairAngle);
-                        const pairY = y;
-                        
-                        // 绘制碱基对连接线
-                        if (!base.opened || i > replicationIndex) {
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.moveTo(x, y);
-                            ctx.lineTo(pairX, pairY);
-                            
-                            // 根据碱基类型设置颜色
-                            let baseColor;
-                            if (base.type === 0) { // A-T
-                                baseColor = chain === 0 ? colors.adenine : colors.thymine;
-                            } else { // G-C
-                                baseColor = chain === 0 ? colors.guanine : colors.cytosine;
-                            }
-                            
-                            // 如果是新合成的碱基，使用较浅的颜色
-                            if (base.newBase1 !== null || base.newBase2 !== null) {
-                                if (chain === 0 && base.newBase1 !== null) {
-                                    baseColor = base.newBase1 === 0 ? colors.newAdenine : colors.newGuanine;
-                                } else if (chain === 1 && base.newBase2 !== null) {
-                                    baseColor = base.newBase2 === 1 ? colors.newThymine : colors.newCytosine;
-                                }
-                            }
-                            
-                            // 如果高亮母链，新链变淡
-                            if (animationState.highlightParent && 
-                                (base.newBase1 !== null || base.newBase2 !== null)) {
-                                ctx.globalAlpha = 0.4;
-                            }
-                            
-                            ctx.strokeStyle = baseColor;
-                            ctx.lineWidth = 2;
-                            ctx.stroke();
-                            ctx.restore();
-                        }
-                        
-                        // 在碱基位置绘制小圆点
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.arc(x, y, 4, 0, Math.PI * 2);
-                        
-                        let dotColor;
-                        if (base.type === 0) { // A-T
-                            dotColor = chain === 0 ? colors.adenine : colors.thymine;
-                        } else { // G-C
-                            dotColor = chain === 0 ? colors.guanine : colors.cytosine;
-                        }
-                        
-                        // 如果是新合成的碱基，使用较浅的颜色
-                        if (base.newBase1 !== null || base.newBase2 !== null) {
-                            if (chain === 0 && base.newBase1 !== null) {
-                                dotColor = base.newBase1 === 0 ? colors.newAdenine : colors.newGuanine;
-                            } else if (chain === 1 && base.newBase2 !== null) {
-                                dotColor = base.newBase2 === 1 ? colors.newThymine : colors.newCytosine;
-                            }
-                        }
-                        
-                        // 如果高亮母链，新链变淡
-                        if (animationState.highlightParent && 
-                            (base.newBase1 !== null || base.newBase2 !== null)) {
-                            ctx.globalAlpha = 0.4;
-                        }
-                        
-                        ctx.fillStyle = dotColor;
-                        ctx.fill();
-                        ctx.restore();
-                    }
-                }
-                
-                ctx.stroke();
-            }
-            
-            // 绘制解旋酶
-            if (animationState.currentStep >= 1 && animationState.currentStep <= 3) {
-                const enzymeY = centerY + replicationIndex * dnaData.baseSpacing - 
-                    (dnaData.basePairs * dnaData.baseSpacing) / 2;
-                const enzymeX = centerX;
-                
-                enzymes.helicase.x = enzymeX;
-                enzymes.helicase.y = enzymeY;
-                enzymes.helicase.active = true;
-            }
-            
-            // 绘制聚合酶
-            if (animationState.currentStep >= 3 && animationState.currentStep <= 4) {
-                const leadingY = centerY + (replicationIndex - 2) * dnaData.baseSpacing - 
-                    (dnaData.basePairs * dnaData.baseSpacing) / 2;
-                const laggingY = centerY + (replicationIndex - 8) * dnaData.baseSpacing - 
-                    (dnaData.basePairs * dnaData.baseSpacing) / 2;
-                
-                enzymes.polymeraseLeading.x = centerX - 120;
-                enzymes.polymeraseLeading.y = leadingY;
-                enzymes.polymeraseLeading.active = true;
-                
-                enzymes.polymeraseLagging.x = centerX + 120;
-                enzymes.polymeraseLagging.y = laggingY;
-                enzymes.polymeraseLagging.active = true;
-            }
-        }
-        
-        // 绘制复制叉
-        function drawReplicationFork() {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // 计算复制叉位置
-            const forkIndex = dnaData.replicationStart + 
-                Math.floor(dnaData.replicationProgress * (dnaData.basePairs - dnaData.replicationStart));
-            const forkY = centerY;
-            
-            // 绘制母链
-            ctx.strokeStyle = colors.backbone;
-            ctx.lineWidth = 3;
-            
-            // 左侧母链（3'→5'方向）
+    }
+
+    /**
+     * 绘制单条 DNA 链的骨架（折线连接相邻碱基）
+     */
+    function drawBackbone(points, color, baseAlpha) {
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        for (let i = 0; i < points.length - 1; i++) {
+            const p1 = points[i], p2 = points[i + 1];
+            const proj1 = project(p1), proj2 = project(p2);
+            const avgDepth = (proj1.depth + proj2.depth) / 2;
+            const width = 3.5 + avgDepth * 2.5;
+            const alpha = baseAlpha * (0.55 + avgDepth * 0.45);
+            ctx.strokeStyle = applyAlpha(color, alpha);
+            ctx.lineWidth = width;
             ctx.beginPath();
-            ctx.moveTo(centerX - 200, forkY - 100);
-            ctx.lineTo(centerX - 50, forkY);
+            ctx.moveTo(proj1.x, proj1.y);
+            ctx.lineTo(proj2.x, proj2.y);
             ctx.stroke();
-            
-            // 右侧母链（5'→3'方向）
-            ctx.beginPath();
-            ctx.moveTo(centerX + 200, forkY - 100);
-            ctx.lineTo(centerX + 50, forkY);
-            ctx.stroke();
-            
-            // 绘制打开的碱基对
-            const visiblePairs = 8;
-            for (let i = 0; i < visiblePairs; i++) {
-                const y = forkY - i * 15;
-                const opened = i < forkIndex - dnaData.replicationStart;
-                
-                // 左侧碱基
-                const leftX = centerX - 50 - i * 5;
-                ctx.beginPath();
-                ctx.arc(leftX, y, 4, 0, Math.PI * 2);
-                
-                // 根据位置确定碱基类型
-                const baseIndex = forkIndex - i;
-                let baseColor = colors.adenine;
-                if (baseIndex < dnaData.bases.length && baseIndex >= 0) {
-                    const base = dnaData.bases[baseIndex];
-                    baseColor = base.type === 0 ? colors.adenine : colors.guanine;
-                }
-                
-                ctx.fillStyle = baseColor;
-                ctx.fill();
-                
-                // 右侧碱基
-                const rightX = centerX + 50 + i * 5;
-                ctx.beginPath();
-                ctx.arc(rightX, y, 4, 0, Math.PI * 2);
-                
-                let pairColor = colors.thymine;
-                if (baseIndex < dnaData.bases.length && baseIndex >= 0) {
-                    const base = dnaData.bases[baseIndex];
-                    pairColor = base.type === 0 ? colors.thymine : colors.cytosine;
-                }
-                
-                ctx.fillStyle = pairColor;
-                ctx.fill();
-                
-                // 如果未打开，绘制连接线
-                if (!opened) {
-                    ctx.beginPath();
-                    ctx.moveTo(leftX, y);
-                    ctx.lineTo(rightX, y);
-                    ctx.strokeStyle = baseColor;
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-            }
-            
-            // 绘制新链
-            if (animationState.currentStep >= 3) {
-                const newStrandLength = Math.floor(dnaData.newStrandProgress * visiblePairs);
-                
-                // 领头链（连续合成）
-                ctx.strokeStyle = colors.backbone;
-                ctx.lineWidth = 3;
-                ctx.setLineDash([]);
-                ctx.beginPath();
-                ctx.moveTo(centerX - 50, forkY);
-                
-                for (let i = 0; i < newStrandLength; i++) {
-                    const y = forkY - i * 15;
-                    const x = centerX - 70 - i * 5;
-                    ctx.lineTo(x, y);
-                    
-                    // 绘制新碱基
-                    ctx.beginPath();
-                    ctx.arc(x, y, 4, 0, Math.PI * 2);
-                    
-                    // 根据母链碱基确定新碱基
-                    const baseIndex = forkIndex - i;
-                    let newBaseColor = colors.newThymine;
-                    if (baseIndex < dnaData.bases.length && baseIndex >= 0) {
-                        const base = dnaData.bases[baseIndex];
-                        newBaseColor = base.type === 0 ? colors.newThymine : colors.newCytosine;
-                    }
-                    
-                    // 如果高亮母链，新链变淡
-                    if (animationState.highlightParent) {
-                        ctx.globalAlpha = 0.4;
-                    }
-                    
-                    ctx.fillStyle = newBaseColor;
-                    ctx.fill();
-                    ctx.globalAlpha = 1.0;
-                }
-                ctx.stroke();
-                
-                // 滞后链（冈崎片段）
-                if (newStrandLength >= 3) {
-                    const fragmentLength = Math.min(3, newStrandLength - 2);
-                    
-                    ctx.setLineDash([5, 3]);
-                    ctx.beginPath();
-                    const startY = forkY - 2 * 15;
-                    ctx.moveTo(centerX + 70, startY);
-                    
-                    for (let i = 0; i < fragmentLength; i++) {
-                        const y = startY - i * 15;
-                        const x = centerX + 90 + i * 5;
-                        ctx.lineTo(x, y);
-                        
-                        // 绘制新碱基
-                        ctx.beginPath();
-                        ctx.arc(x, y, 4, 0, Math.PI * 2);
-                        
-                        // 根据母链碱基确定新碱基
-                        const baseIndex = forkIndex - 2 - i;
-                        let newBaseColor = colors.newAdenine;
-                        if (baseIndex < dnaData.bases.length && baseIndex >= 0) {
-                            const base = dnaData.bases[baseIndex];
-                            newBaseColor = base.type === 0 ? colors.newAdenine : colors.newGuanine;
-                        }
-                        
-                        // 如果高亮母链，新链变淡
-                        if (animationState.highlightParent) {
-                            ctx.globalAlpha = 0.4;
-                        }
-                        
-                        ctx.fillStyle = newBaseColor;
-                        ctx.fill();
-                        ctx.globalAlpha = 1.0;
-                    }
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-                }
-            }
-            
-            // 设置酶位置
-            enzymes.helicase.x = centerX;
-            enzymes.helicase.y = forkY;
-            enzymes.helicase.active = animationState.currentStep >= 1 && animationState.currentStep <= 3;
-            
-            enzymes.polymeraseLeading.x = centerX - 100;
-            enzymes.polymeraseLeading.y = forkY - 30;
-            enzymes.polymeraseLeading.active = animationState.currentStep >= 3 && animationState.currentStep <= 4;
-            
-            enzymes.polymeraseLagging.x = centerX + 100;
-            enzymes.polymeraseLagging.y = forkY - 60;
-            enzymes.polymeraseLagging.active = animationState.currentStep >= 3 && animationState.currentStep <= 4;
         }
-        
-        // 绘制酶和分子
-        function drawEnzymesAndMolecules() {
-            // 绘制解旋酶
-            if (enzymes.helicase.active) {
-                ctx.save();
-                ctx.translate(enzymes.helicase.x, enzymes.helicase.y);
-                
-                // 绘制酶主体
-                ctx.fillStyle = colors.helicase;
-                ctx.beginPath();
-                ctx.arc(0, 0, 15, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // 绘制酶图标
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 16px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('H', 0, 0);
-                
-                ctx.restore();
-                
-                // 绘制标签
-                if (animationState.showLabels) {
-                    ctx.fillStyle = 'white';
-                    ctx.font = '12px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('解旋酶', enzymes.helicase.x, enzymes.helicase.y + 25);
-                }
-            }
-            
-            // 绘制DNA聚合酶（领头链）
-            if (enzymes.polymeraseLeading.active) {
-                ctx.save();
-                ctx.translate(enzymes.polymeraseLeading.x, enzymes.polymeraseLeading.y);
-                
-                // 绘制酶主体
-                ctx.fillStyle = colors.polymerase;
-                ctx.beginPath();
-                ctx.arc(0, 0, 15, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // 绘制酶图标
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 16px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('P', 0, 0);
-                
-                ctx.restore();
-                
-                // 绘制标签
-                if (animationState.showLabels) {
-                    ctx.fillStyle = 'white';
-                    ctx.font = '12px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('聚合酶', enzymes.polymeraseLeading.x, enzymes.polymeraseLeading.y + 25);
-                }
-            }
-            
-            // 绘制DNA聚合酶（滞后链）
-            if (enzymes.polymeraseLagging.active) {
-                ctx.save();
-                ctx.translate(enzymes.polymeraseLagging.x, enzymes.polymeraseLagging.y);
-                
-                // 绘制酶主体
-                ctx.fillStyle = colors.polymerase;
-                ctx.beginPath();
-                ctx.arc(0, 0, 15, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // 绘制酶图标
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 16px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('P', 0, 0);
-                
-                ctx.restore();
-                
-                // 绘制标签
-                if (animationState.showLabels) {
-                    ctx.fillStyle = 'white';
-                    ctx.font = '12px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('聚合酶', enzymes.polymeraseLagging.x, enzymes.polymeraseLagging.y + 25);
-                }
-            }
-            
-            // 绘制游离核苷酸
-            if (animationState.currentStep >= 3 && animationState.currentStep <= 4) {
-                enzymes.nucleotides.forEach((nucleotide, index) => {
-                    if (!nucleotide.used) {
-                        // 让一些核苷酸移动向聚合酶
-                        if (index < 5 && Math.random() < 0.05) {
-                            nucleotide.moving = true;
-                            nucleotide.targetX = enzymes.polymeraseLeading.x;
-                            nucleotide.targetY = enzymes.polymeraseLeading.y;
-                        } else if (index >= 5 && index < 10 && Math.random() < 0.05) {
-                            nucleotide.moving = true;
-                            nucleotide.targetX = enzymes.polymeraseLagging.x;
-                            nucleotide.targetY = enzymes.polymeraseLagging.y;
-                        }
-                        
-                        // 更新位置
-                        if (nucleotide.moving) {
-                            const dx = nucleotide.targetX - nucleotide.x;
-                            const dy = nucleotide.targetY - nucleotide.y;
-                            const distance = Math.sqrt(dx * dx + dy * dy);
-                            
-                            if (distance < 5) {
-                                nucleotide.used = true;
-                            } else {
-                                nucleotide.x += dx * 0.05;
-                                nucleotide.y += dy * 0.05;
-                            }
-                        }
-                        
-                        // 绘制核苷酸
-                        ctx.save();
-                        ctx.fillStyle = nucleotide.color;
-                        ctx.beginPath();
-                        ctx.arc(nucleotide.x, nucleotide.y, 6, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        // 绘制核苷酸类型
-                        ctx.fillStyle = 'white';
-                        ctx.font = '10px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        
-                        let baseLetter = 'A';
-                        switch(nucleotide.type) {
-                            case 0: baseLetter = 'A'; break;
-                            case 1: baseLetter = 'T'; break;
-                            case 2: baseLetter = 'G'; break;
-                            case 3: baseLetter = 'C'; break;
-                        }
-                        
-                        ctx.fillText(baseLetter, nucleotide.x, nucleotide.y);
-                        ctx.restore();
-                    }
+    }
+
+    function applyAlpha(hex, alpha) {
+        // 将 #rrggbb 加 alpha 通道
+        if (hex.startsWith('rgba')) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    /**
+     * 绘制碱基（圆点+字母）
+     */
+    function drawBase(p, base, options) {
+        const { isNew = false, showLetter = true } = options;
+        const proj = project(p);
+        const r = 7 + proj.depth * 2;
+        const color = isNew ? COLOR.newBase[base] : COLOR.base[base];
+
+        // 光晕
+        ctx.fillStyle = applyAlpha(color, 0.25);
+        ctx.beginPath(); ctx.arc(proj.x, proj.y, r + 3, 0, Math.PI * 2); ctx.fill();
+
+        // 主体
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.arc(proj.x, proj.y, r, 0, Math.PI * 2); ctx.fill();
+
+        // 高光
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.beginPath(); ctx.arc(proj.x - r * 0.3, proj.y - r * 0.3, r * 0.4, 0, Math.PI * 2); ctx.fill();
+
+        // 字母
+        if (showLetter) {
+            ctx.fillStyle = '#fff';
+            ctx.font = `bold ${Math.round(r * 1.2)}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(base, proj.x, proj.y);
+        }
+    }
+
+    /**
+     * 绘制氢键（碱基对之间的虚线）
+     */
+    function drawHBond(p1, p2, base0, base1, isNew) {
+        const proj1 = project(p1), proj2 = project(p2);
+        // A-T 是2个氢键，G-C 是3个氢键
+        const isGC = (base0 === 'G' || base0 === 'C');
+        const bondCount = isGC ? 3 : 2;
+        ctx.strokeStyle = isNew ? COLOR.HbondNew : COLOR.HbondMother;
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([3, 2]);
+        for (let i = 0; i < bondCount; i++) {
+            const offset = (i - (bondCount - 1) / 2) * 3;
+            ctx.beginPath();
+            ctx.moveTo(proj1.x, proj1.y + offset);
+            ctx.lineTo(proj2.x, proj2.y + offset);
+            ctx.stroke();
+        }
+        ctx.setLineDash([]);
+    }
+
+    /**
+     * 绘制单条链的全部碱基点
+     */
+    function drawStrandBases(points, strandId, sequence, isNew, params, showLetter) {
+        for (let i = 0; i < points.length; i++) {
+            const base = sequence[i];
+            drawBase(points[i], base, { isNew, showLetter });
+        }
+    }
+
+    /**
+     * 绘制单个骨架段（已投影，按深度调整粗细/透明度）
+     */
+    function drawSegment(p1, p2, color, baseAlpha) {
+        const proj1 = project(p1), proj2 = project(p2);
+        const avgDepth = (proj1.depth + proj2.depth) / 2;
+        const width = 3.5 + avgDepth * 2.5;
+        const alpha = baseAlpha * (0.55 + avgDepth * 0.45);
+        ctx.strokeStyle = applyAlpha(color, alpha);
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(proj1.x, proj1.y);
+        ctx.lineTo(proj2.x, proj2.y);
+        ctx.stroke();
+    }
+
+    /**
+     * 主绘制函数：根据当前状态绘制完整画面
+     * 统一收集所有元素，按 z 深度排序后绘制，确保正确的遮挡关系
+     */
+    function drawScene() {
+        drawBackground();
+        const info = getReplicationInfo();
+
+        if (info.finalState) {
+            drawFinalState();
+            return;
+        }
+
+        const centerX = CANVAS_W / 2;
+        const centerY = CANVAS_H / 2;
+        const params = {
+            centerX, centerY,
+            forkI: info.forkI,
+            openAmount: info.openAmount,
+            rotation: state.rotation,
+        };
+
+        // 1. 计算两条母链所有点
+        const m0 = [], m1 = [];
+        for (let i = 0; i < DNA.basePairs; i++) {
+            m0.push(getStrandPoint(i, 0, params));
+            m1.push(getStrandPoint(i, 1, params));
+        }
+
+        // 2. 计算新链位置：在已合成区域，新链紧贴母链内侧
+        //    新链1（与母链0配对）位于母链0内侧；新链0（与母链1配对）位于母链1内侧
+        const synthForkI = info.newSynth > 0
+            ? Math.max(0, info.forkI - info.newSynth * info.forkI * 1.05)
+            : -1;
+        const newOn0 = [], newOn1 = []; // 新链点
+        for (let i = 0; i < DNA.basePairs; i++) {
+            const inSynthRegion = info.forkI >= 0 && i < synthForkI;
+            if (inSynthRegion) {
+                // 新链1靠近母链0（向右内侧偏移）
+                newOn1.push({
+                    x: m0[i].x + 12, y: m0[i].y, z: m0[i].z + 6,
+                });
+                // 新链0靠近母链1（向左内侧偏移）
+                newOn0.push({
+                    x: m1[i].x - 12, y: m1[i].y, z: m1[i].z + 6,
                 });
             }
         }
-        
-        // 绘制标签
-        function drawLabels() {
-            if (animationState.viewMode === 'structure') {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                
-                // 绘制方向标签
-                ctx.fillStyle = '#90caf9';
-                ctx.font = 'bold 14px Arial';
-                ctx.textAlign = 'center';
-                
-                // 5' 和 3' 标签
-                const topY = centerY - (dnaData.basePairs * dnaData.baseSpacing) / 2;
-                const bottomY = centerY + (dnaData.basePairs * dnaData.baseSpacing) / 2;
-                
-                ctx.fillText("5'", centerX - dnaData.helixRadius - 20, topY);
-                ctx.fillText("3'", centerX - dnaData.helixRadius - 20, bottomY);
-                ctx.fillText("3'", centerX + dnaData.helixRadius + 20, topY);
-                ctx.fillText("5'", centerX + dnaData.helixRadius + 20, bottomY);
-                
-                // 绘制大沟小沟标签
-                ctx.fillStyle = '#80deea';
-                ctx.font = '12px Arial';
-                ctx.fillText('大沟', centerX, centerY - 60);
-                ctx.fillText('小沟', centerX, centerY + 40);
+
+        // 3. 收集所有可绘制元素
+        const elements = [];
+
+        // 母链骨架段
+        for (let i = 0; i < DNA.basePairs - 1; i++) {
+            elements.push({
+                kind: 'seg', color: COLOR.motherBackbone,
+                p1: m0[i], p2: m0[i + 1],
+                z: (m0[i].z + m0[i + 1].z) / 2 - 0.5,
+            });
+            elements.push({
+                kind: 'seg', color: COLOR.motherBackbone,
+                p1: m1[i], p2: m1[i + 1],
+                z: (m1[i].z + m1[i + 1].z) / 2 - 0.5,
+            });
+        }
+
+        // 新链骨架段（合成区域）
+        for (let i = 0; i < newOn1.length - 1; i++) {
+            elements.push({
+                kind: 'seg', color: COLOR.newBackbone,
+                p1: newOn1[i], p2: newOn1[i + 1],
+                z: (newOn1[i].z + newOn1[i + 1].z) / 2 - 0.5,
+            });
+        }
+        for (let i = 0; i < newOn0.length - 1; i++) {
+            elements.push({
+                kind: 'seg', color: COLOR.newBackbone,
+                p1: newOn0[i], p2: newOn0[i + 1],
+                z: (newOn0[i].z + newOn0[i + 1].z) / 2 - 0.5,
+            });
+        }
+
+        // 碱基对（按位置分类）
+        for (let i = 0; i < DNA.basePairs; i++) {
+            const isOpened = info.forkI >= 0 && i < info.forkI - 0.5;
+            const base0 = DNA.sequence[i];
+            const base1 = complement(base0);
+
+            if (!isOpened) {
+                // 母链-母链 碱基对
+                elements.push({
+                    kind: 'pair',
+                    p0: m0[i], p1: m1[i],
+                    base0, base1, isNew: false,
+                    z: Math.max(m0[i].z, m1[i].z),
+                });
+            } else if (i < synthForkI) {
+                // 已合成区域：母链0-新链1 配对，母链1-新链0 配对
+                const idxInSynth = i; // 直接使用i索引newOn数组的前i个
+                const np1 = { x: m0[i].x + 12, y: m0[i].y, z: m0[i].z + 6 };
+                const np0 = { x: m1[i].x - 12, y: m1[i].y, z: m1[i].z + 6 };
+                elements.push({
+                    kind: 'pair',
+                    p0: m0[i], p1: np1,
+                    base0, base1, isNew: true,
+                    z: Math.max(m0[i].z, np1.z),
+                });
+                elements.push({
+                    kind: 'pair',
+                    p0: m1[i], p1: np0,
+                    base0: base1, base1: base0, isNew: true,
+                    z: Math.max(m1[i].z, np0.z),
+                });
             } else {
-                // 复制叉视角的标签
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                
-                ctx.fillStyle = '#90caf9';
-                ctx.font = 'bold 14px Arial';
-                ctx.textAlign = 'center';
-                
-                // 母链方向
-                ctx.fillText("3'", centerX - 220, centerY - 100);
-                ctx.fillText("5'", centerX - 30, centerY + 10);
-                ctx.fillText("5'", centerX + 220, centerY - 100);
-                ctx.fillText("3'", centerX + 30, centerY + 10);
-                
-                // 新链方向
-                if (animationState.currentStep >= 3) {
-                    ctx.fillText("5'", centerX - 30, centerY + 10);
-                    ctx.fillText("3'", centerX - 90, centerY - 100);
-                    ctx.fillText("5'", centerX + 110, centerY - 40);
-                    ctx.fillText("3'", centerX + 130, centerY - 90);
-                }
-                
-                // 复制叉标签
+                // 已打开但未合成：只显示母链碱基（暴露等待配对）
+                elements.push({
+                    kind: 'soloBase', p: m0[i], base: base0, isNew: false, z: m0[i].z,
+                });
+                elements.push({
+                    kind: 'soloBase', p: m1[i], base: base1, isNew: false, z: m1[i].z,
+                });
+            }
+        }
+
+        // 4. 按深度排序（远→近）
+        elements.sort((a, b) => a.z - b.z);
+
+        // 5. 绘制
+        for (const el of elements) {
+            switch (el.kind) {
+                case 'seg':
+                    drawSegment(el.p1, el.p2, el.color, 1);
+                    break;
+                case 'pair':
+                    drawHBond(el.p0, el.p1, el.base0, el.base1, el.isNew);
+                    drawBase(el.p0, el.base0, { isNew: el.isNew, showLetter: state.showBases });
+                    drawBase(el.p1, el.base1, { isNew: el.isNew, showLetter: state.showBases });
+                    break;
+                case 'soloBase':
+                    drawBase(el.p, el.base, { isNew: false, showLetter: state.showBases });
+                    break;
+            }
+        }
+
+        // 6. 酶和标签
+        if (state.showEnzymes) drawEnzymes(info, params);
+        if (state.showLabels) drawLabels(info, params);
+    }
+
+    /**
+     * 绘制酶分子（具有辨识度的形状）
+     */
+    function drawEnzymes(info, params) {
+        if (info.forkI < 0) return;
+        const forkPoint = getStrandPoint(Math.floor(info.forkI), 0, params);
+        const forkPoint1 = getStrandPoint(Math.floor(info.forkI), 1, params);
+        const fx = (forkPoint.x + forkPoint1.x) / 2;
+        const fy = forkPoint.y;
+
+        // 解旋酶 - 六边形（像拉链头）
+        if (info.showHelicase) {
+            drawHexagon(fx, fy, 22, COLOR.helicase, '解旋酶', 'H');
+        }
+
+        // 引物酶 - 小圆，位于已打开区域的引物位置
+        if (info.showPrimase) {
+            const primerI = Math.max(0, Math.floor(info.forkI) - 3);
+            const pp = getStrandPoint(primerI, 0, params);
+            drawEnzymeCircle(pp.x - 18, pp.y, 12, COLOR.primase, '引物酶');
+            // 引物本身（短线段）
+            drawPrimer(pp.x - 6, pp.y, -1);
+            const pp1 = getStrandPoint(primerI, 1, params);
+            drawEnzymeCircle(pp1.x + 18, pp1.y, 12, COLOR.primase, '引物酶');
+            drawPrimer(pp1.x + 6, pp1.y, 1);
+        }
+
+        // DNA聚合酶 - 大圆，位于合成位点
+        if (info.showPol) {
+            const polI = Math.max(2, Math.floor(info.forkI) - 2);
+            const pp0 = getStrandPoint(polI, 0, params);
+            const pp1 = getStrandPoint(polI, 1, params);
+            // 领头链方向（连续合成）
+            drawEnzymeCircle(pp0.x - 14, pp0.y, 16, COLOR.polymerase, 'DNA聚合酶', 'P');
+            // 滞后链方向（合成冈崎片段）
+            if (info.showFragments) {
+                drawEnzymeCircle(pp1.x + 14, pp1.y, 16, COLOR.polymerase, 'DNA聚合酶', 'P');
+            }
+        }
+
+        // DNA连接酶 - 小六边形，连接冈崎片段
+        if (info.showLigase) {
+            const ligI = Math.max(4, Math.floor(info.forkI) - 6);
+            const lp = getStrandPoint(ligI, 1, params);
+            drawHexagon(lp.x + 18, lp.y, 12, COLOR.ligase, 'DNA连接酶', 'L');
+        }
+    }
+
+    function drawHexagon(cx, cy, r, color, label, letter) {
+        // 光晕
+        const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 2);
+        grd.addColorStop(0, applyAlpha(color, 0.4));
+        grd.addColorStop(1, applyAlpha(color, 0));
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(cx, cy, r * 2, 0, Math.PI * 2); ctx.fill();
+
+        // 六边形主体
+        ctx.fillStyle = color;
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const a = (Math.PI / 3) * i - Math.PI / 6;
+            const x = cx + r * Math.cos(a);
+            const y = cy + r * Math.sin(a);
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // 字母
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(letter, cx, cy);
+
+        // 标签
+        ctx.fillStyle = color;
+        ctx.font = 'bold 11px Arial';
+        ctx.fillText(label, cx, cy + r + 12);
+    }
+
+    function drawEnzymeCircle(cx, cy, r, color, label, letter) {
+        const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 2);
+        grd.addColorStop(0, applyAlpha(color, 0.4));
+        grd.addColorStop(1, applyAlpha(color, 0));
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(cx, cy, r * 2, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = color;
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        if (letter) {
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(letter, cx, cy);
+        }
+        ctx.fillStyle = color;
+        ctx.font = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, cx, cy + r + 10);
+    }
+
+    function drawPrimer(x, y, dir) {
+        // RNA引物：棕色短线段
+        ctx.strokeStyle = COLOR.primer;
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + dir * 20, y);
+        ctx.stroke();
+    }
+
+    /**
+     * 绘制 5'/3' 方向标签、大小沟标签等
+     */
+    function drawLabels(info, params) {
+        ctx.font = "bold 13px 'Microsoft YaHei', Arial";
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffd54f';
+
+        if (info.finalState) return;
+
+        const topY = params.centerY - (DNA.basePairs / 2) * DNA.baseSpacing - 20;
+        const botY = params.centerY + (DNA.basePairs / 2) * DNA.baseSpacing + 20;
+
+        // 母链0：5'(顶)→3'(底)
+        // 母链1：3'(顶)→5'(底) 反向平行
+        const leftX = params.centerX - DNA.helixRadius - 25;
+        const rightX = params.centerX + DNA.helixRadius + 25;
+
+        ctx.fillStyle = '#42a5f5';
+        ctx.fillText("5'", leftX, topY);
+        ctx.fillText("3'", leftX, botY);
+        ctx.fillText("3'", rightX, topY);
+        ctx.fillText("5'", rightX, botY);
+
+        // 标注母链 / 模板
+        ctx.fillStyle = '#80deea';
+        ctx.font = "12px 'Microsoft YaHei', Arial";
+        ctx.textAlign = 'left';
+        ctx.fillText('母链（模板）', leftX - 35, topY - 18);
+
+        // 步骤 0：大沟小沟标签
+        if (state.step === 0) {
+            ctx.fillStyle = '#b39ddb';
+            ctx.textAlign = 'right';
+            ctx.fillText('大沟', params.centerX - 70, params.centerY - 50);
+            ctx.fillText('小沟', params.centerX - 70, params.centerY - 10);
+        }
+
+        // 复制叉标签
+        if (info.forkI >= 0 && !info.finalState) {
+            const forkI_int = Math.floor(info.forkI);
+            if (forkI_int >= 0 && forkI_int < DNA.basePairs) {
+                const fp = getStrandPoint(forkI_int, 0, params);
+                const fp1 = getStrandPoint(forkI_int, 1, params);
                 ctx.fillStyle = '#ffcc80';
-                ctx.fillText('复制叉', centerX, centerY + 5);
+                ctx.textAlign = 'center';
+                ctx.font = "bold 12px 'Microsoft YaHei', Arial";
+                ctx.fillText('复制叉', (fp.x + fp1.x) / 2, fp.y - 35);
+
+                // 已打开 / 未打开 区域
+                ctx.fillStyle = 'rgba(255, 202, 128, 0.7)';
+                ctx.font = "11px 'Microsoft YaHei', Arial";
+                ctx.fillText('已解开', (fp.x + fp1.x) / 2 - 60, fp.y - 60);
+                ctx.fillText('未解开', (fp.x + fp1.x) / 2 + 60, fp.y + 60);
             }
         }
-        
-        // 动画循环
-        function animate() {
-            if (animationState.isPlaying) {
-                // 更新进度
-                animationState.progress += 0.5;
-                
-                if (animationState.progress >= 100) {
-                    animationState.progress = 0;
-                    
-                    // 进入下一步
-                    if (animationState.currentStep < 5) {
-                        animationState.currentStep++;
-                        updateStepIndicator();
-                        updateInfoText();
-                        
-                        // 更新DNA数据
-                        updateDNAData();
+
+        // 领头链 / 滞后链标签
+        if (state.step >= 3 && state.step <= 4) {
+            const labelI = Math.max(2, Math.floor(info.forkI) - 4);
+            const p0 = getStrandPoint(labelI, 0, params);
+            const p1 = getStrandPoint(labelI, 1, params);
+            ctx.fillStyle = '#ff8a65';
+            ctx.font = "bold 11px 'Microsoft YaHei', Arial";
+            ctx.textAlign = 'right';
+            ctx.fillText('滞后链', p0.x - 35, p0.y);
+            ctx.textAlign = 'left';
+            ctx.fillText('领头链', p1.x + 35, p1.y);
+        }
+    }
+
+    /**
+     * 绘制最终状态：两个完整的子代DNA分子并排显示
+     */
+    function drawFinalState() {
+        const centerY = CANVAS_H / 2;
+        const positions = [
+            { x: CANVAS_W * 0.27, label: '子代 DNA ①' },
+            { x: CANVAS_W * 0.73, label: '子代 DNA ②' },
+        ];
+
+        // 标题
+        ctx.fillStyle = '#fff';
+        ctx.font = "bold 20px 'Microsoft YaHei', Arial";
+        ctx.textAlign = 'center';
+        ctx.fillText('半保留复制完成', CANVAS_W / 2, 40);
+        ctx.fillStyle = '#90caf9';
+        ctx.font = "13px 'Microsoft YaHei', Arial";
+        ctx.fillText('一个DNA → 两个完全相同的子代DNA分子', CANVAS_W / 2, 62);
+
+        positions.forEach((pos, idx) => {
+            const params = {
+                centerX: pos.x, centerY,
+                forkI: -1, openAmount: 0,
+                rotation: state.rotation + idx * 0.5,
+            };
+
+            // 子代DNA：母链(蓝) + 新链(橙) 各一条，绕成双螺旋
+            // 为了体现"母链+新链"，我们用一种巧妙的方法：
+            // 母链画在正常位置，新链用反相（偏移 π）画在另一条链的位置，但用橙色
+            const mother = [], newStrand = [];
+            const shortBP = 14; // 缩短以便显示
+            for (let i = 0; i < shortBP; i++) {
+                // 母链（蓝）
+                const t = i * DNA.twistPerBase + params.rotation;
+                mother.push({
+                    x: params.centerX + DNA.helixRadius * 0.85 * Math.cos(t),
+                    y: params.centerY + (i - shortBP / 2) * DNA.baseSpacing,
+                    z: DNA.helixRadius * 0.85 * Math.sin(t),
+                });
+                // 新链（橙），偏移 π 形成双螺旋
+                newStrand.push({
+                    x: params.centerX + DNA.helixRadius * 0.85 * Math.cos(t + Math.PI),
+                    y: params.centerY + (i - shortBP / 2) * DNA.baseSpacing,
+                    z: DNA.helixRadius * 0.85 * Math.sin(t + Math.PI),
+                });
+            }
+
+            // 收集所有元素，按深度排序
+            const elements = [];
+            // 母链骨架段
+            for (let i = 0; i < shortBP - 1; i++) {
+                elements.push({
+                    type: 'seg', color: COLOR.motherBackbone,
+                    p1: mother[i], p2: mother[i + 1],
+                    z: (mother[i].z + mother[i + 1].z) / 2 - 1,
+                });
+                elements.push({
+                    type: 'seg', color: COLOR.newBackbone,
+                    p1: newStrand[i], p2: newStrand[i + 1],
+                    z: (newStrand[i].z + newStrand[i + 1].z) / 2 - 1,
+                });
+            }
+            // 碱基对（每条都显示互补配对）
+            for (let i = 0; i < shortBP; i++) {
+                elements.push({
+                    type: 'pair',
+                    p0: mother[i], p1: newStrand[i],
+                    base0: DNA.sequence[i] || 'A',
+                    base1: complement(DNA.sequence[i] || 'A'),
+                    z: Math.max(mother[i].z, newStrand[i].z),
+                });
+            }
+            elements.sort((a, b) => a.z - b.z);
+
+            // 绘制骨架段和氢键
+            for (const el of elements) {
+                if (el.type === 'seg') {
+                    const proj1 = project(el.p1), proj2 = project(el.p2);
+                    const avgDepth = (proj1.depth + proj2.depth) / 2;
+                    ctx.strokeStyle = applyAlpha(el.color, 0.55 + avgDepth * 0.45);
+                    ctx.lineWidth = 3.5 + avgDepth * 2;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(proj1.x, proj1.y);
+                    ctx.lineTo(proj2.x, proj2.y);
+                    ctx.stroke();
+                } else if (el.type === 'pair') {
+                    drawHBond(el.p0, el.p1, el.base0, el.base1, false);
+                }
+            }
+
+            // 绘制碱基（按深度）
+            const bases = [];
+            for (let i = 0; i < shortBP; i++) {
+                bases.push({ p: mother[i], base: DNA.sequence[i] || 'A', isNew: false, z: mother[i].z });
+                bases.push({ p: newStrand[i], base: complement(DNA.sequence[i] || 'A'), isNew: true, z: newStrand[i].z });
+            }
+            bases.sort((a, b) => a.z - b.z);
+            for (const b of bases) {
+                drawBase(b.p, b.base, { isNew: b.isNew, showLetter: state.showBases });
+            }
+
+            // 标签
+            ctx.fillStyle = '#fff';
+            ctx.font = "bold 14px 'Microsoft YaHei', Arial";
+            ctx.textAlign = 'center';
+            ctx.fillText(pos.label, pos.x, centerY + 200);
+
+            ctx.font = "11px 'Microsoft YaHei', Arial";
+            ctx.fillStyle = COLOR.motherBackbone;
+            ctx.textAlign = 'center';
+            ctx.fillText('━ 母链（保留）', pos.x - 50, centerY + 220);
+            ctx.fillStyle = COLOR.newBackbone;
+            ctx.fillText('━ 新链（合成）', pos.x + 50, centerY + 220);
+
+            // 方向标签
+            const topY = centerY - (shortBP / 2) * DNA.baseSpacing - 12;
+            const botY = centerY + (shortBP / 2) * DNA.baseSpacing + 12;
+            ctx.fillStyle = '#ffd54f';
+            ctx.font = "bold 11px Arial";
+            ctx.fillText("5'", pos.x - DNA.helixRadius - 18, topY);
+            ctx.fillText("3'", pos.x - DNA.helixRadius - 18, botY);
+            ctx.fillText("3'", pos.x + DNA.helixRadius + 18, topY);
+            ctx.fillText("5'", pos.x + DNA.helixRadius + 18, botY);
+        });
+
+        // 中间箭头：分裂
+        ctx.strokeStyle = 'rgba(255, 202, 128, 0.6)';
+        ctx.fillStyle = 'rgba(255, 202, 128, 0.6)';
+        ctx.lineWidth = 2;
+        const arrowY = centerY;
+        ctx.beginPath();
+        ctx.moveTo(CANVAS_W * 0.42, arrowY);
+        ctx.lineTo(CANVAS_W * 0.48, arrowY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(CANVAS_W * 0.48, arrowY - 4);
+        ctx.lineTo(CANVAS_W * 0.52, arrowY);
+        ctx.lineTo(CANVAS_W * 0.48, arrowY + 4);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(CANVAS_W * 0.58, arrowY);
+        ctx.lineTo(CANVAS_W * 0.52, arrowY);
+        ctx.stroke();
+    }
+
+    // ==================== 动画循环 ====================
+    function tick(timestamp) {
+        if (!state.lastTime) state.lastTime = timestamp;
+        const dt = Math.min(0.05, (timestamp - state.lastTime) / 1000);
+        state.lastTime = timestamp;
+
+        if (state.autoRotate) {
+            state.rotation += dt * 0.5;
+        }
+
+        if (state.isPlaying) {
+            const stepDef = STEPS[state.step];
+            if (stepDef.duration > 0) {
+                state.stepProgress += (dt * state.speed) / stepDef.duration;
+                if (state.stepProgress >= 1) {
+                    state.stepProgress = 0;
+                    if (state.step < STEPS.length - 1) {
+                        state.step++;
                     } else {
-                        // 如果已经是最后一步，停止播放
-                        animationState.isPlaying = false;
-                        document.getElementById('playBtn').textContent = '▶️ 播放';
+                        state.isPlaying = false;
+                        state.step = STEPS.length - 1;
+                        state.stepProgress = 1;
+                        document.getElementById('playBtn').textContent = '▶ 播放';
                     }
+                    updateUI();
                 }
-                
-                // 更新DNA数据
-                updateDNAData();
-                
-                // 更新进度显示
-                updateProgressDisplay();
-            }
-            
-            // 重绘画布
-            draw();
-            
-            // 继续动画循环
-            requestAnimationFrame(animate);
-        }
-        
-        // 更新DNA数据
-        function updateDNAData() {
-            // 根据当前步骤和进度更新DNA状态
-            switch(animationState.currentStep) {
-                case 0: // 结构展示
-                    dnaData.replicationProgress = 0;
-                    dnaData.newStrandProgress = 0;
-                    // 重置所有碱基为未打开
-                    dnaData.bases.forEach(base => {
-                        base.opened = false;
-                        base.newBase1 = null;
-                        base.newBase2 = null;
-                    });
-                    break;
-                    
-                case 1: // 解旋
-                    dnaData.replicationProgress = animationState.progress / 100;
-                    // 打开碱基对
-                    const openIndex = dnaData.replicationStart + 
-                        Math.floor(dnaData.replicationProgress * (dnaData.basePairs - dnaData.replicationStart));
-                    
-                    for (let i = 0; i < dnaData.bases.length; i++) {
-                        dnaData.bases[i].opened = i < openIndex;
-                    }
-                    break;
-                    
-                case 2: // 引物
-                    dnaData.replicationProgress = 0.3;
-                    // 保持碱基对打开状态
-                    const primerIndex = dnaData.replicationStart + 3;
-                    for (let i = 0; i < dnaData.bases.length; i++) {
-                        dnaData.bases[i].opened = i < primerIndex;
-                    }
-                    break;
-                    
-                case 3: // 合成
-                    dnaData.replicationProgress = 0.3 + (animationState.progress / 100) * 0.4;
-                    dnaData.newStrandProgress = animationState.progress / 100;
-                    
-                    // 打开更多碱基对
-                    const synthesisIndex = dnaData.replicationStart + 
-                        Math.floor(dnaData.replicationProgress * (dnaData.basePairs - dnaData.replicationStart));
-                    
-                    for (let i = 0; i < dnaData.bases.length; i++) {
-                        dnaData.bases[i].opened = i < synthesisIndex;
-                        
-                        // 添加新合成的碱基
-                        if (i < synthesisIndex - 2) {
-                            // 第一条新链（对应右侧母链）
-                            if (dnaData.bases[i].newBase1 === null) {
-                                dnaData.bases[i].newBase1 = dnaData.bases[i].type === 0 ? 1 : 3; // A→T, G→C
-                            }
-                            
-                            // 第二条新链（对应左侧母链）
-                            if (i < synthesisIndex - 5 && dnaData.bases[i].newBase2 === null) {
-                                dnaData.bases[i].newBase2 = dnaData.bases[i].type === 0 ? 0 : 2; // T→A, C→G
-                            }
-                        }
-                    }
-                    break;
-                    
-                case 4: // 连接
-                    dnaData.replicationProgress = 0.7 + (animationState.progress / 100) * 0.2;
-                    dnaData.newStrandProgress = 1.0;
-                    
-                    // 所有碱基对都打开
-                    const connectIndex = dnaData.replicationStart + 
-                        Math.floor(dnaData.replicationProgress * (dnaData.basePairs - dnaData.replicationStart));
-                    
-                    for (let i = 0; i < dnaData.bases.length; i++) {
-                        dnaData.bases[i].opened = i < connectIndex;
-                        
-                        // 确保所有碱基都有新链
-                        if (i < connectIndex - 2) {
-                            dnaData.bases[i].newBase1 = dnaData.bases[i].type === 0 ? 1 : 3;
-                            dnaData.bases[i].newBase2 = dnaData.bases[i].type === 0 ? 0 : 2;
-                        }
-                    }
-                    break;
-                    
-                case 5: // 完成
-                    dnaData.replicationProgress = 1.0;
-                    dnaData.newStrandProgress = 1.0;
-                    
-                    // 所有碱基对都打开且都有新链
-                    for (let i = 0; i < dnaData.bases.length; i++) {
-                        dnaData.bases[i].opened = i >= dnaData.replicationStart;
-                        
-                        if (i >= dnaData.replicationStart) {
-                            dnaData.bases[i].newBase1 = dnaData.bases[i].type === 0 ? 1 : 3;
-                            dnaData.bases[i].newBase2 = dnaData.bases[i].type === 0 ? 0 : 2;
-                        }
-                    }
-                    break;
+                updateProgressSlider();
             }
         }
-        
-        // 更新步骤指示器
-        function updateStepIndicator() {
-            document.querySelectorAll('.step').forEach((step, index) => {
-                if (index === animationState.currentStep) {
-                    step.classList.add('active');
-                } else {
-                    step.classList.remove('active');
-                }
-            });
+
+        drawScene();
+        requestAnimationFrame(tick);
+    }
+
+    // ==================== UI 更新 ====================
+    function buildStepBar() {
+        const bar = document.getElementById('stepBar');
+        bar.innerHTML = '';
+        STEPS.forEach((s, i) => {
+            const item = document.createElement('div');
+            item.className = 'step-item' + (i === state.step ? ' active' : '');
+            item.dataset.step = i;
+            item.innerHTML = `<div class="step-num">${i + 1}</div><div class="step-label">${s.name}</div>`;
+            item.addEventListener('click', () => jumpToStep(i));
+            bar.appendChild(item);
+        });
+    }
+
+    function updateUI() {
+        // 步骤条
+        document.querySelectorAll('.step-item').forEach((el, i) => {
+            el.classList.remove('active', 'done');
+            if (i === state.step) el.classList.add('active');
+            else if (i < state.step) el.classList.add('done');
+        });
+
+        // 详细说明
+        const s = STEPS[state.step];
+        document.getElementById('stepTag').textContent = s.tag;
+        document.getElementById('stepTitle').textContent = s.title;
+        document.getElementById('stepBody').innerHTML = s.body;
+        const pointsEl = document.getElementById('stepPoints');
+        pointsEl.innerHTML = '';
+        s.points.forEach(p => {
+            const el = document.createElement('div');
+            el.className = 'key-point';
+            el.textContent = p;
+            pointsEl.appendChild(el);
+        });
+
+        updateProgressSlider();
+    }
+
+    function updateProgressSlider() {
+        const totalSteps = STEPS.length;
+        const total = (state.step + state.stepProgress) / totalSteps;
+        document.getElementById('progressSlider').value = Math.round(total * 1000);
+        const pct = Math.round(total * 100);
+        document.getElementById('progressValue').textContent = `第${state.step + 1}步 / ${totalSteps} · ${pct}%`;
+    }
+
+    // ==================== 事件处理 ====================
+    function jumpToStep(stepIdx) {
+        state.step = clamp(stepIdx, 0, STEPS.length - 1);
+        state.stepProgress = 0;
+        state.isPlaying = false;
+        document.getElementById('playBtn').textContent = '▶ 播放';
+        updateUI();
+    }
+
+    function nextStep() {
+        if (state.step < STEPS.length - 1) {
+            jumpToStep(state.step + 1);
         }
-        
-        // 更新信息文本
-        function updateInfoText() {
-            document.getElementById('infoText').textContent = stepInfo[animationState.currentStep];
+    }
+    function prevStep() {
+        if (state.step > 0) {
+            jumpToStep(state.step - 1);
         }
-        
-        // 更新进度显示
-        function updateProgressDisplay() {
-            const totalProgress = animationState.currentStep * 100 + animationState.progress;
-            const maxProgress = 5 * 100;
-            const percent = Math.floor((totalProgress / maxProgress) * 100);
-            
-            document.getElementById('progressText').textContent = `${percent}%`;
-            document.getElementById('progressSlider').value = percent;
+    }
+
+    document.getElementById('playBtn').addEventListener('click', function () {
+        state.isPlaying = !state.isPlaying;
+        state.lastTime = 0;
+        if (state.isPlaying && state.step === STEPS.length - 1 && state.stepProgress >= 1) {
+            state.step = 0; state.stepProgress = 0;
         }
-        
-        // 事件监听器
-        document.getElementById('playBtn').addEventListener('click', function() {
-            animationState.isPlaying = !animationState.isPlaying;
-            this.textContent = animationState.isPlaying ? '⏸️ 暂停' : '▶️ 播放';
-        });
-        
-        document.getElementById('pauseBtn').addEventListener('click', function() {
-            animationState.isPlaying = false;
-            document.getElementById('playBtn').textContent = '▶️ 播放';
-        });
-        
-        document.getElementById('resetBtn').addEventListener('click', function() {
-            animationState.isPlaying = false;
-            animationState.currentStep = 0;
-            animationState.progress = 0;
-            animationState.viewMode = 'structure';
-            
-            document.getElementById('playBtn').textContent = '▶️ 播放';
-            updateStepIndicator();
-            updateInfoText();
-            updateDNAData();
-            updateProgressDisplay();
-            generateNucleotides();
-        });
-        
-        document.getElementById('prevStepBtn').addEventListener('click', function() {
-            if (animationState.currentStep > 0) {
-                animationState.currentStep--;
-                animationState.progress = 0;
-                updateStepIndicator();
-                updateInfoText();
-                updateDNAData();
-                updateProgressDisplay();
-            }
-        });
-        
-        document.getElementById('nextStepBtn').addEventListener('click', function() {
-            if (animationState.currentStep < 5) {
-                animationState.currentStep++;
-                animationState.progress = 0;
-                updateStepIndicator();
-                updateInfoText();
-                updateDNAData();
-                updateProgressDisplay();
-            }
-        });
-        
-        document.getElementById('viewStructure').addEventListener('click', function() {
-            animationState.viewMode = 'structure';
-            this.classList.add('secondary');
-            document.getElementById('viewReplication').classList.remove('secondary');
-        });
-        
-        document.getElementById('viewReplication').addEventListener('click', function() {
-            animationState.viewMode = 'replication';
-            this.classList.add('secondary');
-            document.getElementById('viewStructure').classList.remove('secondary');
-        });
-        
-        document.getElementById('highlightParent').addEventListener('change', function() {
-            animationState.highlightParent = this.checked;
-        });
-        
-        document.getElementById('showEnzymes').addEventListener('change', function() {
-            animationState.showEnzymes = this.checked;
-        });
-        
-        document.getElementById('showLabels').addEventListener('change', function() {
-            animationState.showLabels = this.checked;
-        });
-        
-        document.getElementById('progressSlider').addEventListener('input', function() {
-            const percent = parseInt(this.value);
-            const step = Math.floor(percent / 16.67); // 将0-100映射到0-5步
-            const stepProgress = (percent % 16.67) / 16.67 * 100;
-            
-            animationState.currentStep = Math.min(step, 5);
-            animationState.progress = stepProgress;
-            animationState.isPlaying = false;
-            
-            document.getElementById('playBtn').textContent = '▶️ 播放';
-            updateStepIndicator();
-            updateInfoText();
-            updateDNAData();
-            updateProgressDisplay();
-        });
-        
-        // 步骤指示器点击事件
-        document.querySelectorAll('.step').forEach(step => {
-            step.addEventListener('click', function() {
-                const stepIndex = parseInt(this.getAttribute('data-step'));
-                animationState.currentStep = stepIndex;
-                animationState.progress = 0;
-                animationState.isPlaying = false;
-                
-                document.getElementById('playBtn').textContent = '▶️ 播放';
-                updateStepIndicator();
-                updateInfoText();
-                updateDNAData();
-                updateProgressDisplay();
-            });
-        });
-        
-        // 初始化
-        window.addEventListener('load', init);
-    </script>
+        this.textContent = state.isPlaying ? '⏸ 暂停' : '▶ 播放';
+        updateUI();
+    });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        state.step = 0; state.stepProgress = 0; state.isPlaying = false;
+        state.rotation = 0;
+        document.getElementById('playBtn').textContent = '▶ 播放';
+        updateUI();
+    });
+    document.getElementById('prevBtn').addEventListener('click', prevStep);
+    document.getElementById('nextBtn').addEventListener('click', nextStep);
+
+    document.getElementById('speedSlider').addEventListener('input', function () {
+        state.speed = parseFloat(this.value);
+        document.getElementById('speedValue').textContent = state.speed.toFixed(1) + '×';
+    });
+
+    document.getElementById('progressSlider').addEventListener('input', function () {
+        const v = parseFloat(this.value) / 1000;
+        const totalSteps = STEPS.length;
+        let step = Math.floor(v * totalSteps);
+        step = clamp(step, 0, totalSteps - 1);
+        const stepProgress = (v * totalSteps) - step;
+        state.step = step;
+        state.stepProgress = stepProgress;
+        state.isPlaying = false;
+        document.getElementById('playBtn').textContent = '▶ 播放';
+        updateUI();
+    });
+
+    document.getElementById('showEnzymes').addEventListener('change', e => state.showEnzymes = e.target.checked);
+    document.getElementById('showLabels').addEventListener('change', e => state.showLabels = e.target.checked);
+    document.getElementById('showBases').addEventListener('change', e => state.showBases = e.target.checked);
+    document.getElementById('autoRotate').addEventListener('change', e => state.autoRotate = e.target.checked);
+
+    // 键盘快捷键
+    document.addEventListener('keydown', e => {
+        if (e.target.tagName === 'INPUT') return;
+        if (e.code === 'Space') { e.preventDefault(); document.getElementById('playBtn').click(); }
+        else if (e.code === 'ArrowLeft') prevStep();
+        else if (e.code === 'ArrowRight') nextStep();
+        else if (e.code === 'KeyR') document.getElementById('resetBtn').click();
+    });
+
+    // ==================== 初始化 ====================
+    buildStepBar();
+    updateUI();
+    requestAnimationFrame(tick);
+})();
+</script>
 </body>
 </html>
