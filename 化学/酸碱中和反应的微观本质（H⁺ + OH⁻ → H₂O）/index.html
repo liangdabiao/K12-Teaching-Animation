@@ -527,7 +527,6 @@ window.showTip=function(msg){
         }
 
         window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
         // 状态变量
         let animationId = null;
@@ -707,6 +706,9 @@ window.showTip=function(msg){
                 return distance <= this.radius;
             }
         }
+
+        // 初始化画布尺寸并生成粒子（须在 class Particle 声明之后调用，避免 TDZ）
+        resizeCanvas();
 
         // 初始化粒子
         function initParticles() {

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>动量定理 · Ft=Δp · 动量变化 · 缓冲现象</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">动量定理</span><span class="subtitle">Ft = Δp · 冲量动量 · 缓冲现象</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>动量与冲量</h4><div class="v">p = mv（矢量）<br>I = Ft（力的时间积累）</div></div>
+  <div class="card s2"><div class="num">2</div><h4>动量定理公式</h4><div class="v">Ft = Δp<br>= m(v₂ - v₁)</div></div>
+  <div class="card s3"><div class="num">3</div><h4>缓冲原理</h4><div class="v">Δp 一定时<br>Δt↑ → F↓（减小冲击）</div></div>
+  <div class="card s4"><div class="num">4</div><h4>生活应用</h4><div class="v">屈膝落地 · 安全气囊<br>易碎品包装</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">动量定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'动量定义',body:'<strong>动量</strong>是描述物体<strong>运动状态</strong>的物理量，定义为<strong>质量与速度的乘积</strong>：<code>p = mv</code>。动量是<strong>矢量</strong>，方向与速度方向相同，单位 kg·m/s。',points:{title:'动量 p = mv',items:['<strong>矢量</strong>：方向 = 速度方向','<strong>单位</strong>：kg·m/s','<strong>质量越大</strong>：动量越大','<strong>速度越大</strong>：动量越大']}},
+  {tag:'基础',name:'恒力冲量',body:'<strong>冲量</strong>是<strong>力对时间的积累</strong>：<code>I = Ft</code>。恒力作用时间越长，冲量越大。冲量也是<strong>矢量</strong>，方向与力方向相同，单位 N·s。',points:{title:'冲量 I = Ft',items:['<strong>本质</strong>：力在时间上的积累','<strong>矢量</strong>：方向 = 力的方向','<strong>单位</strong>：N·s = kg·m/s','<strong>时间越长</strong>：冲量越大']}},
+  {tag:'推导',name:'动量定理推导',body:'由牛顿第二定律 <code>F = ma = m(v₂-v₁)/t</code>，两边乘 t 得 <code>Ft = m(v₂-v₁) = Δp</code>。即<strong>合外力的冲量等于动量的变化量</strong>，这就是<strong>动量定理</strong>。',points:{title:'Ft = Δp',items:['<strong>推导</strong>：F=ma → Ft=m(v₂-v₁)','<strong>公式</strong>：Ft = Δp = mv₂ - mv₁','<strong>适用</strong>：恒力或平均力','<strong>核心</strong>：冲量引起动量变化']}},
+  {tag:'缓冲',name:'缓冲延长Δt',body:'当 <strong>Δp 一定</strong>时，由 Ft = Δp 知：作用时间 <strong>Δt 越长，力 F 越小</strong>。这就是<strong>缓冲原理</strong>：通过延长作用时间来<strong>减小冲击力</strong>。跳远落地屈膝就是典型例子。',points:{title:'Δt↑ → F↓',items:['<strong>前提</strong>：Δp 保持不变','<strong>延长 Δt</strong>：F 成反比减小','<strong>硬地落地</strong>：Δt 短 → F 大','<strong>软垫落地</strong>：Δt 长 → F 小']}},
+  {tag:'应用',name:'安全气囊实例',body:'<strong>汽车安全气囊</strong>：碰撞时人向前冲，气囊<strong>延长减速时间</strong>，使 Δt 从 0.01s 增到 0.1s，冲击力减小约 10 倍。<strong>易碎品包装</strong>、<strong>跳远沙坑</strong>都是同样原理。',points:{title:'生活实例',items:['<strong>安全气囊</strong>：延长碰撞时间','<strong>易碎品泡沫</strong>：减小冲击','<strong>跳远沙坑</strong>：屈膝缓冲','<strong>接球屈臂</strong>：减小手部受力']}},
+  {tag:'变力',name:'变力冲量面积',body:'对于<strong>变力</strong>，冲量等于 <strong>F-t 图像中曲线下的面积</strong>。两球碰撞时作用力剧烈变化，但<strong>总冲量（面积）= 动量变化</strong>始终成立。这是动量定理的强大之处。',points:{title:'F-t 图面积 = 冲量',items:['<strong>横轴</strong>：时间 t','<strong>纵轴</strong>：力 F','<strong>面积</strong>：= Ft = Δp','<strong>变力也成立</strong>：积分思想']}},
+  {tag:'碰撞',name:'两球碰撞分析',body:'两球碰撞过程中，<strong>动量守恒</strong>（系统不受外力时）：m₁v₁ + m₂v₂ = m₁v₁′ + m₂v₂′。每个球受到的冲量大小相等方向相反（牛顿第三定律）。',points:{title:'碰撞要点',items:['<strong>系统动量守恒</strong>：前后总动量不变','<strong>作用力 = 反作用力</strong>','<strong>冲量大小相等方向相反</strong>','<strong>弹性/非弹性碰撞</strong>：动能是否守恒']}},
+  {tag:'总结',name:'核心速记',body:'动量定理 <strong>Ft = Δp</strong> 揭示了<strong>力的时间积累效应</strong>。缓冲现象（延长 Δt 减小 F）是日常应用的核心。掌握 p=mv、I=Ft、Ft=Δp 三个公式，理解矢量性即可解题。',points:{title:'三句话总结',items:['<strong>动量</strong>：p = mv（矢量）','<strong>冲量</strong>：I = Ft（矢量）','<strong>定理</strong>：Ft = Δp = mΔv','<strong>缓冲</strong>：Δt↑ → F↓']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：动量定义 p=mv =====
+function drawMomentumScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('动量 p = mv · 运动状态的量度',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 两个不同质量的球
+  const ballX=cx-180+((time*60)%(W-100));
+  // 大球（质量大）
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fde68a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx-120,cy,28,0,7);ctx.fill();ctx.stroke();
+  drawText('m₁=2kg',cx-120,cy,'#1a1a1a',12);
+  drawText('v=3m/s →',cx-120,cy+50,'#06b6d4',12);
+  drawText('p₁ = mv = 6 kg·m/s',cx-120,cy+75,'#34d399',12);
+  // 小球（质量小，同速度）
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx+120,cy,16,0,7);ctx.fill();ctx.stroke();
+  drawText('m₂',cx+120,cy,'#1a1a1a',11);
+  drawText('v=3m/s →',cx+120,cy+50,'#06b6d4',12);
+  drawText('p₂ = 1×3 = 3 kg·m/s',cx+120,cy+75,'#34d399',12);
+  // 运动箭头（同步移动示意）
+  const dx=Math.sin(time*2)*15;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-120+28,cy);ctx.lineTo(cx-120+50+dx,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+120+16,cy);ctx.lineTo(cx+120+34+dx,cy);ctx.stroke();
+  // 公式
+  ctx.font='bold 20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('p = m · v',W/2,H-90);
+  drawText('质量越大 / 速度越大 → 动量越大（矢量，方向同 v）',W/2,H-55,'#9ab0d0',12);
+  drawText('单位：kg·m/s',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：恒力冲量 I=Ft =====
+function drawImpulseScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('冲量 I = Ft · 力对时间的积累',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 一个球受恒力作用
+  const F=10;
+  const dt=time%3;
+  const ballX=cx-100+dt*40;
+  // 球
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(ballX,cy,20,0,7);ctx.fill();ctx.stroke();
+  drawText('m',ballX,cy,'#1a1a1a',12);
+  // 力箭头
+  ctx.strokeStyle='#f87171';ctx.lineWidth=4;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(ballX+25,cy);ctx.lineTo(ballX+85,cy);ctx.stroke();
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.moveTo(ballX+95,cy);ctx.lineTo(ballX+85,cy-8);ctx.lineTo(ballX+85,cy+8);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('F = '+F+' N',ballX+60,cy-20,'#f87171',14);
+  // 时间进度条
+  const barY=cy+60;
+  ctx.fillStyle='#243a5e';
+  roundRect(cx-100,barY,200,14,7);ctx.fill();
+  ctx.fillStyle='#34d399';
+  roundRect(cx-100,barY,200*(dt/3),14,7);ctx.fill();
+  drawText('t = '+dt.toFixed(2)+' s',cx,barY+30,'#9ab0d0',12);
+  // 公式与结果
+  const I=F*dt;
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('I = F · t = '+F+' × '+dt.toFixed(2)+' = '+I.toFixed(2)+' N·s',W/2,H-80);
+  drawText('力越大 / 作用时间越长 → 冲量越大',W/2,H-50,'#9ab0d0',12);
+  drawText('冲量方向 = 力的方向（矢量）',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景：动量定理推导 =====
+function drawDeriveScene(){
+  const W=cv.width,H=cv.height;
+  drawText('动量定理推导 · Ft = Δp',W/2,30,'#fbbf24',16);
+  // 推导步骤
+  const steps=[
+    {t:'① 牛顿第二定律',d:'F = ma',c:'#06b6d4'},
+    {t:'② 加速度定义',d:'a = (v₂ - v₁) / t',c:'#a78bfa'},
+    {t:'③ 代入',d:'F = m(v₂ - v₁) / t',c:'#67e8f9'},
+    {t:'④ 两边乘 t',d:'Ft = m(v₂ - v₁)',c:'#fbbf24'},
+    {t:'⑤ 动量变化',d:'Ft = mv₂ - mv₁ = Δp',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=80+i*65;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    roundRect(100,y,W-200,52,8);ctx.fill();ctx.stroke();
+    drawText(s.t,150,y+26,s.c,14,'left');
+    ctx.font='bold 16px monospace';ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText(s.d,W/2+50,y+26);
+    ctx.textAlign='left';
+  });
+  drawText('结论：合外力的冲量 = 动量变化量',W/2,H-35,'#34d399',14);
+}
+
+// ===== 场景：缓冲对比（硬地 vs 软垫）=====
+function drawCushionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('缓冲原理 · 延长 Δt 减小冲击力',W/2,30,'#fbbf24',16);
+  // 左侧：硬地（Δt 短，F 大）
+  const lx=W*0.27,rx=W*0.73,cy=H/2-20;
+  // 硬地
+  ctx.fillStyle='#1a1a1a';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.fillRect(lx-100,cy+60,200,30);
+  ctx.strokeRect(lx-100,cy+60,200,30);
+  drawText('硬地',lx,cy+110,'#f87171',13);
+  // 球下落（硬地，快速停止）
+  const phase1=(time*1.2)%2;
+  const ballY1=phase1<1?cy-80+phase1*100:cy+20;
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.arc(lx,ballY1,18,0,7);ctx.fill();
+  drawText('m',lx,ballY1,'#fff',11);
+  // 力箭头（硬地 - 大）
+  if(phase1>=1){
+    ctx.strokeStyle='#f87171';ctx.lineWidth=5;
+    ctx.shadowColor='#f87171';ctx.shadowBlur=15;
+    ctx.beginPath();ctx.moveTo(lx,cy+20);ctx.lineTo(lx,cy-50);ctx.stroke();
+    ctx.fillStyle='#f87171';
+    ctx.beginPath();ctx.moveTo(lx,cy-60);ctx.lineTo(lx-10,cy-45);ctx.lineTo(lx+10,cy-45);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('F 大!',lx,cy-75,'#f87171',14);
+    drawText('Δt=0.01s',lx,cy+150,'#f87171',11);
+  }
+  // 右侧：软垫（Δt 长，F 小）
+  ctx.fillStyle='#34d39933';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(rx-100,cy+90);ctx.quadraticCurveTo(rx,cy+110,rx+100,cy+90);
+  ctx.lineTo(rx+100,cy+60);ctx.lineTo(rx-100,cy+60);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  drawText('软垫',rx,cy+110,'#34d399',13);
+  // 球下落（软垫，缓慢停止）
+  const phase2=(time*1.2)%2;
+  const ballY2=phase2<1?cy-80+phase2*100:cy+15+Math.sin(phase2*Math.PI)*5;
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(rx,ballY2,18,0,7);ctx.fill();
+  drawText('m',rx,ballY2,'#fff',11);
+  // 力箭头（软垫 - 小）
+  if(phase2>=1){
+    ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+    ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.moveTo(rx,cy+20);ctx.lineTo(rx,cy-15);ctx.stroke();
+    ctx.fillStyle='#34d399';
+    ctx.beginPath();ctx.moveTo(rx,cy-25);ctx.lineTo(rx-7,cy-12);ctx.lineTo(rx+7,cy-12);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('F 小',rx,cy-40,'#34d399',14);
+    drawText('Δt=0.3s',rx,cy+150,'#34d399',11);
+  }
+  // 对比说明
+  drawText('Δp 相同（落地前后动量变化一样）',W/2,H-65,'#fff',13);
+  drawText('F = Δp / Δt  →  Δt 越大，F 越小',W/2,H-40,'#fbbf24',14);
+  drawText('缓冲 = 延长作用时间',W/2,H-15,'#34d399',12);
+}
+
+// ===== 场景：安全气囊 =====
+function drawAirbagScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('安全气囊 · 延长碰撞时间',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 汽车轮廓
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx-180,cy-30,360,80,15);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#06b6d433';
+  roundRect(cx-130,cy-60,200,40,10);ctx.fill();ctx.stroke();
+  drawText('汽车',cx-100,cy+10,'#06b6d4',12);
+  // 车轮
+  ctx.fillStyle='#1a1a1a';ctx.strokeStyle='#5a6a8a';
+  ctx.beginPath();ctx.arc(cx-130,cy+55,18,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(cx+130,cy+55,18,0,7);ctx.fill();ctx.stroke();
+  // 人（简化为圆）
+  const personX=cx-50;
+  const phase=(time*1.5)%3;
+  // 气囊弹出状态
+  const bagOpen=phase>1;
+  if(bagOpen){
+    // 气囊
+    ctx.fillStyle='rgba(251,191,36,0.3)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.ellipse(personX+40,cy-10,55,40,0,0,7);
+    ctx.fill();ctx.stroke();
+    drawText('气囊',personX+40,cy-10,'#fbbf24',12);
+  }
+  // 人
+  const personOffset=phase<1?phase*20:(phase<2?20-(phase-1)*15:5);
+  ctx.fillStyle='#f87171';ctx.strokeStyle='#feca5a';
+  ctx.beginPath();ctx.arc(personX+personOffset,cy-10,15,0,7);ctx.fill();ctx.stroke();
+  drawText('人',personX+personOffset,cy-10,'#fff',10);
+  // 身体
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(personX+personOffset,cy+5);ctx.lineTo(personX+personOffset,cy+40);ctx.stroke();
+  // 对比数据
+  drawText('无气囊：Δt ≈ 0.01s，F ≈ 20000 N（致命）',W/2,H-90,'#f87171',12);
+  drawText('有气囊：Δt ≈ 0.1s，F ≈ 2000 N（可承受）',W/2,H-65,'#34d399',12);
+  drawText('Δt 增加 10 倍 → F 减小 10 倍',W/2,H-35,'#fbbf24',14);
+}
+
+// ===== 场景：F-t 图像（冲量面积）=====
+
+function drawFtGraphScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('F-t 图像 · 曲线下面积 = 冲量',W/2,30,'#fbbf24',16);
+  const ox=90,oy=H-100,pw=W-180,ph=H-200;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-ph);ctx.lineTo(ox,oy);ctx.lineTo(ox+pw,oy);ctx.stroke();
+  drawText('F (N)',ox-40,oy-ph+15,'#9ab0d0',12);
+  drawText('t (s)',ox+pw,oy+25,'#9ab0d0',12);
+  // 横轴刻度
+  for(let i=0;i<=5;i++){
+    const x=ox+i*pw/5;
+    drawText(i,x,oy+18,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,oy-3);ctx.lineTo(x,oy+3);ctx.stroke();
+  }
+  // 纵轴刻度
+  for(let i=0;i<=4;i++){
+    const y=oy-i*ph/4;
+    drawText(i*5,ox-25,y,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';
+    ctx.beginPath();ctx.moveTo(ox-3,y);ctx.lineTo(ox+3,y);ctx.stroke();
+  }
+  // 变力曲线（钟形：碰撞力先增大后减小）
+  const maxF=18;
+  const pulse=(time*0.5)%1.2;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  const points=[];
+  for(let i=0;i<=100;i++){
+    const tt=i/100*5;
+    const f=maxF*Math.exp(-Math.pow((tt-2.5)/0.8,2));
+    const x=ox+tt*pw/5;
+    const y=oy-f*ph/20;
+    points.push([x,y,f]);
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // 填充面积（动画展开）
+  const fillEnd=Math.min(pulse,1)*points.length;
+  ctx.fillStyle='rgba(6,182,212,0.25)';
+  ctx.beginPath();
+  ctx.moveTo(points[0][0],oy);
+  for(let i=0;i<fillEnd;i++)ctx.lineTo(points[i][0],points[i][1]);
+  ctx.lineTo(points[Math.floor(fillEnd)-1]?.[0]||points[0][0],oy);
+  ctx.closePath();ctx.fill();
+  // 面积标签
+  const midIdx=Math.floor(points.length/2);
+  drawText('面积 = 冲量 I',points[midIdx][0],points[midIdx][1]-20,'#fbbf24',14);
+  // 公式
+  drawText('I = ∫F dt = 曲线下面积 = Δp',W/2,80,'#34d399',14);
+  drawText('变力作用下，动量定理依然成立',W/2,105,'#9ab0d0',12);
+}
+
+// ===== 场景：两球碰撞 =====
+function drawCollisionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('两球碰撞 · 动量传递',W/2,30,'#fbbf24',16);
+  const cy=H/2+20;
+  const phase=(time*1.2)%4;
+  // 球1位置（左→右运动）
+  let x1,x2,v1,v2;
+  if(phase<1){
+    // 接近
+    x1=W*0.2+phase*W*0.2;
+    x2=W*0.7;
+    v1=3;v2=0;
+  }else if(phase<1.3){
+    // 碰撞瞬间
+    x1=W*0.4;x2=W*0.5;
+    v1=3;v2=0;
+  }else{
+    // 分离（弹性碰撞，等质量交换速度）
+    const dt=phase-1.3;
+    x1=W*0.4-dt*W*0.1;
+    x2=W*0.5+dt*W*0.25;
+    v1=0;v2=3;
+  }
+  // 球1（红）
+  ctx.fillStyle='#f87171';ctx.strokeStyle='#feca5a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(x1,cy,22,0,7);ctx.fill();ctx.stroke();
+  drawText('m₁',x1,cy,'#fff',12);
+  // 球2（蓝）
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(x2,cy,22,0,7);ctx.fill();ctx.stroke();
+  drawText('m₂',x2,cy,'#fff',12);
+  // 速度箭头
+  if(v1>0){
+    ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(x1+25,cy);ctx.lineTo(x1+55,cy);ctx.stroke();
+  }
+  if(v2>0){
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(x2+25,cy);ctx.lineTo(x2+55,cy);ctx.stroke();
+  }
+  // 碰撞瞬间闪光
+  if(phase>=1&&phase<1.3){
+    ctx.fillStyle='rgba(251,191,36,0.5)';
+    ctx.beginPath();ctx.arc((x1+x2)/2,cy,30,0,7);ctx.fill();
+    drawText('碰撞!',(x1+x2)/2,cy-40,'#fbbf24',14);
+  }
+  // 动量守恒
+  const p1=v1*2,p2=v2*1;
+  drawText('碰撞前：p = m₁v₁ = 2×3 = 6 kg·m/s',W/2,H-75,'#9ab0d0',12);
+  drawText('碰撞后：p = m₂v₂ = 1×3 = 3 + m₁v₁′ ...',W/2,H-50,'#9ab0d0',12);
+  drawText('总动量守恒：Δp₁ = -Δp₂（冲量大小相等方向相反）',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('动量定理核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'动量',d:'p = mv（矢量）',c:'#fbbf24'},
+    {t:'冲量',d:'I = Ft（矢量）',c:'#06b6d4'},
+    {t:'动量定理',d:'Ft = Δp = mΔv',c:'#a78bfa'},
+    {t:'缓冲原理',d:'Δt↑ → F↓',c:'#34d399'},
+    {t:'安全应用',d:'气囊/包装/沙坑',c:'#fb923c'},
+    {t:'变力冲量',d:'F-t 图面积',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawMomentumScene(t);
+  else if(stepIdx===1)drawImpulseScene(t);
+  else if(stepIdx===2)drawDeriveScene();
+  else if(stepIdx===3)drawCushionScene(t);
+  else if(stepIdx===4)drawAirbagScene(t);
+  else if(stepIdx===5)drawFtGraphScene(t);
+  else if(stepIdx===6)drawCollisionScene(t);
+  else if(stepIdx===7)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

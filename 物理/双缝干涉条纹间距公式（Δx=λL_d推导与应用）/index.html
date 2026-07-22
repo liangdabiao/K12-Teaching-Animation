@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>双缝干涉 · Δx=λL/d · 杨氏实验</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">双缝干涉条纹间距</span><span class="subtitle">Δx = λL/d · 杨氏实验定量计算</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>实验装置</h4><div class="v">激光→单缝→双缝→屏幕<br>获得相干光源</div></div>
+  <div class="card s2"><div class="num">2</div><h4>光程差公式</h4><div class="v">δ = r₂ − r₁<br>≈ d·sinθ ≈ d·x/L</div></div>
+  <div class="card s3"><div class="num">3</div><h4>明暗纹条件</h4><div class="v">明纹 δ = kλ<br>暗纹 δ = (2k+1)λ/2</div></div>
+  <div class="card s4"><div class="num">4</div><h4>Δx = λL/d 应用</h4><div class="v">条纹间距与 λ、L 成正比<br>与 d 成反比</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">实验装置</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <label>λ <input id="wl" type="range" min="400" max="700" step="10" value="550"></label>
+  <label>d <input id="gd" type="range" min="0.1" max="0.8" step="0.02" value="0.4"></label>
+  <label>L <input id="gL" type="range" min="0.5" max="3" step="0.1" value="1.5"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function wlToColor(wl){const m={'400':'#7c3aed','450':'#3b82f6','500':'#06b6d4','550':'#34d399','600':'#fbbf24','650':'#f87171','700':'#ec4899'};const ks=Object.keys(m).map(Number).sort((a,b)=>Math.abs(a-wl)-Math.abs(b-wl));return m[ks[0]]||'#34d399';}
+
+const STEPS=[
+  {tag:'装置',name:'实验装置',body:'<strong>杨氏双缝实验</strong>：激光经<strong>单缝</strong>（衍射形成线光源）后到达<strong>双缝</strong> S₁、S₂，双缝处相当于两个<strong>相干光源</strong>，发出频率相同、相位差恒定的光波，在屏幕上叠加形成<strong>明暗相间</strong>的干涉条纹。',points:{title:'装置要点',items:['<strong>单缝</strong>：获得线光源','<strong>双缝</strong>：形成两个相干光源','<strong>距离 d</strong>：双缝间距（≈0.1 mm）','<strong>距离 L</strong>：缝到屏的距离']}},
+  {tag:'装置',name:'相干光源',body:'<strong>相干条件</strong>：两束光<strong>频率相同</strong>、<strong>振动方向相同</strong>、<strong>相位差恒定</strong>。激光天然相干；普通光源则需通过分波面法（双缝）或分振幅法获得相干光。',points:{title:'相干三条件',items:['<strong>频率相同</strong>：同种颜色光','<strong>振动方向相同</strong>：偏振一致','<strong>相位差恒定</strong>：稳定叠加','<strong>激光</strong>：天然相干光源']}},
+  {tag:'推导',name:'光程差分析',body:'设双缝 S₁、S₂ 间距为 <code>d</code>，屏到双缝距离为 <code>L</code>，屏上 P 点距中央 O 为 <code>x</code>。两路径 r₁=S₁P、r₂=S₂P。作 S₁N⊥S₂P，因 L≫d≫x，<strong>光程差 δ = r₂−r₁ ≈ S₂N = d·sinθ ≈ d·x/L</strong>。',points:{title:'关键近似',items:['<strong>δ = d·sinθ</strong>：几何推导','<strong>sinθ ≈ tanθ = x/L</strong>：小角近似','<strong>δ = d·x/L</strong>：光程差公式','<strong>条件</strong>：L≫d≫x']}},
+  {tag:'推导',name:'明纹条件',body:'当<strong>光程差为波长整数倍</strong>时，两束光<strong>同相叠加</strong>，出现<strong>加强</strong>（亮纹）。条件：<code>δ = kλ</code>，k=0,±1,±2,... 即 <code>d·x/L = kλ</code>，故 <code>x = kλL/d</code>。',points:{title:'明纹位置',items:['<strong>k=0</strong>：中央明纹','<strong>k=±1</strong>：第一级明纹','<strong>x = kλL/d</strong>：明纹坐标','<strong>同相</strong>：波峰遇波峰']}},
+  {tag:'推导',name:'暗纹条件',body:'当<strong>光程差为半波长奇数倍</strong>时，两束光<strong>反相叠加</strong>，出现<strong>相消</strong>（暗纹）。条件：<code>δ = (2k+1)λ/2</code>，k=0,±1,±2,... 即 <code>x = (2k+1)λL/(2d)</code>。',points:{title:'暗纹位置',items:['<strong>δ = (2k+1)λ/2</strong>：半波奇数倍','<strong>反相</strong>：波峰遇波谷','<strong>x = (2k+1)λL/2d</strong>：暗纹坐标','<strong>k=0</strong>：第一级暗纹']}},
+  {tag:'公式',name:'条纹间距推导',body:'<strong>相邻明纹间距</strong>：Δx = x<sub>k+1</sub> − x<sub>k</sub> = (k+1)λL/d − kλL/d = <code>λL/d</code>。同样可证相邻暗纹、相邻明暗纹间距均为 <strong>Δx = λL/d</strong>。这是<strong>双缝干涉核心公式</strong>。',points:{title:'公式要点',items:['<strong>Δx = λL/d</strong>：条纹间距','<strong>正比 λ</strong>：长光波条纹宽','<strong>正比 L</strong>：屏远条纹宽','<strong>反比 d</strong>：缝近条纹宽']}},
+  {tag:'应用',name:'三参数影响',body:'调节 λ、L、d 三参数观察条纹变化：<strong>λ 增大</strong>（红光 → 紫光反序）条纹变宽；<strong>L 增大</strong>条纹变宽；<strong>d 增大</strong>条纹变窄。拖动下方滑块即可实时观察屏幕条纹变化。',points:{title:'影响规律',items:['<strong>λ ↑</strong>：Δx ↑ 条纹变宽','<strong>L ↑</strong>：Δx ↑ 条纹变宽','<strong>d ↑</strong>：Δx ↓ 条纹变窄','<strong>比例关系</strong>：Δx=λL/d']}},
+  {tag:'应用',name:'测量波长',body:'例：用 <code>d=0.2 mm</code> 的双缝，<code>L=1 m</code>，测得<strong>条纹间距 Δx=2.75 mm</code>。求波长 λ。解：λ = Δx·d/L = 2.75×10⁻³×0.2×10⁻³/1 = 5.5×10⁻⁷ m = <strong>550 nm</strong>（绿光）。',points:{title:'测量步骤',items:['<strong>步骤1</strong>：测 L、d','<strong>步骤2</strong>：数条纹测 Δx','<strong>步骤3</strong>：代入 λ=Δx·d/L','<strong>步骤4</strong>：换算单位']}},
+  {tag:'总结',name:'核心速记',body:'杨氏双缝实验：双缝形成<strong>相干光源</strong>，光波叠加形成明暗条纹。<strong>Δx = λL/d</strong> 是条纹间距公式，可测定光的波长。是光的<strong>波动性</strong>的有力证据。',points:{title:'三句话总结',items:['<strong>明纹</strong>：δ=kλ','<strong>暗纹</strong>：δ=(2k+1)λ/2','<strong>条纹间距</strong>：Δx=λL/d','<strong>意义</strong>：证明光波动性']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed'),wlEl=document.getElementById('wl'),gdEl=document.getElementById('gd'),glEl=document.getElementById('gL');
+let wl=parseFloat(wlEl.value),gd=parseFloat(gdEl.value),gl=parseFloat(glEl.value);
+
+// ===== 场景1：实验装置 =====
+function drawApparatus(time){
+  const W=cv.width,H=cv.height;
+  drawText('杨氏双缝干涉 · 实验装置',W/2,30,'#fbbf24',16);
+  const laserColor=wlToColor(wl);
+  const cy=H/2;
+  // 激光器
+  ctx.fillStyle='#1e345a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(40,cy-20,60,40,6);ctx.fill();ctx.stroke();
+  drawText('激光',70,cy,'#06b6d4',12);
+  // 单缝
+  const slit1X=150;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(slit1X,cy-40);ctx.lineTo(slit1X,cy-8);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(slit1X,cy+8);ctx.lineTo(slit1X,cy+40);ctx.stroke();
+  drawText('单缝',slit1X,cy+55,'#9ab0d0',11);
+  // 双缝
+  const slit2X=300;
+  ctx.beginPath();ctx.moveTo(slit2X,cy-40);ctx.lineTo(slit2X,cy-12);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(slit2X,cy-4);ctx.lineTo(slit2X,cy+4);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(slit2X,cy+12);ctx.lineTo(slit2X,cy+40);ctx.stroke();
+  drawText('双缝',slit2X,cy+55,'#9ab0d0',11);
+  drawText('S₁',slit2X+18,cy-18,'#34d399',11);
+  drawText('S₂',slit2X+18,cy+18,'#34d399',11);
+  // 屏幕
+  const screenX=slit2X+380;
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(screenX,cy-90);ctx.lineTo(screenX,cy+90);ctx.stroke();
+  drawText('屏',screenX,cy+105,'#67e8f9',12);
+  // 激光→单缝光束
+  ctx.strokeStyle=laserColor;ctx.lineWidth=3;ctx.shadowColor=laserColor;ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(100,cy);ctx.lineTo(slit1X,cy);ctx.stroke();
+  ctx.shadowBlur=0;
+  // 单缝→双缝
+  ctx.strokeStyle=laserColor+'88';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(slit1X,cy);ctx.lineTo(slit2X,cy);ctx.stroke();
+  // 双缝→屏幕波纹（两条相干波）
+  const phase=time*3;
+  for(let s=-1;s<=1;s+=2){
+    const sy=cy+s*8;
+    ctx.strokeStyle=laserColor+'66';ctx.lineWidth=1.5;
+    for(let r=20;r<screenX-slit2X-10;r+=18){
+      ctx.beginPath();ctx.arc(slit2X,sy,r,0,Math.PI*2);ctx.stroke();
+    }
+  }
+  // 屏幕上条纹预览
+  const stripeCount=9;
+  for(let i=-stripeCount;i<=stripeCount;i++){
+    const dx=i*8;
+    const intensity=Math.max(0,Math.cos(i*0.5+phase));
+    ctx.fillStyle=laserColor;ctx.globalAlpha=intensity*0.9;
+    ctx.fillRect(screenX-1,cy+dx,4,5);
+  }
+  ctx.globalAlpha=1;
+  // 标注
+  drawText('L = '+gl.toFixed(1)+' m',slit2X+(screenX-slit2X)/2,cy-115,'#34d399',13);
+  drawText('d = '+(gd*1000).toFixed(1)+' mm',slit2X+40,cy-50,'#fbbf24',11);
+  drawText('λ = '+wl+' nm',slit2X+40,cy+90,laserColor,11);
+  // 装置流程箭头
+  drawText('激光 → 单缝 → 双缝 → 屏幕',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景2：光程差几何推导 =====
+function drawPathDiff(time){
+  const W=cv.width,H=cv.height;
+  drawText('光程差 δ = r₂ − r₁ ≈ d·sinθ ≈ d·x/L',W/2,30,'#fbbf24',16);
+  const cx=120,cy=H/2+30;
+  const d=40;
+  const s1x=cx,s1y=cy-d/2,s2x=cx,s2y=cy+d/2;
+  const screenX=W-100;
+  const px=screenX;
+  const oscX=Math.sin(time*0.8)*60;
+  const py=cy-oscX;
+  // 双缝
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(s1x,s1y,5,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(s2x,s2y,5,0,7);ctx.fill();
+  drawText('S₁',s1x-20,s1y,'#fbbf24',13);
+  drawText('S₂',s1x-20,s2y,'#fbbf24',13);
+  // 屏幕
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(screenX,cy-100);ctx.lineTo(screenX,cy+100);ctx.stroke();
+  drawText('屏',screenX,cy+115,'#67e8f9',12);
+  drawText('O',screenX+15,cy,'#9ab0d0',12);
+  // P 点
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('P',px+15,py,'#f87171',13);
+  // 光程 r1, r2
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(s1x,s1y);ctx.lineTo(px,py);ctx.stroke();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(s2x,s2y);ctx.lineTo(px,py);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('r₁',(s1x+px)/2-10,(s1y+py)/2-12,'#34d399',12);
+  drawText('r₂',(s2x+px)/2+10,(s2y+py)/2+12,'#06b6d4',12);
+  // S1 作垂线交 r2
+  const angle=Math.atan2(py-s2y,px-s2x);
+  const nx=s1x+(s2x-s1x)+Math.cos(angle)*((s1x-s2x)*Math.cos(angle)+(s1y-s2y)*Math.sin(angle));
+  // 简化：直接构造垂直线
+  const dxR2=s2x-s1x,dyR2=s2y-s1y;
+  // S1N 垂直于 r2 方向
+  const vx=px-s2x,vy=py-s2y;
+  const vlen=Math.hypot(vx,vy);
+  const ux=vx/vlen,uy=vy/vlen;
+  // 投影 S1S2 到 u
+  const proj=dxR2*ux+dyR2*uy;
+  const nx2=s2x+ux*proj,ny2=s2y+uy*proj;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.setLineDash([2,3]);
+  ctx.beginPath();ctx.moveTo(s1x,s1y);ctx.lineTo(nx2,ny2);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('N',nx2+10,ny2-8,'#fbbf24',12);
+  // 标注 d
+  drawText('d',(s1x+s2x)/2-25,cy,'#fbbf24',13);
+  // 标注 x
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(screenX-5,cy);ctx.lineTo(screenX-5,py);ctx.stroke();
+  drawText('x',screenX-20,(cy+py)/2,'#f87171',12);
+  // θ
+  drawText('θ',s2x+25,s2y+20,'#a78bfa',12);
+  // 公式提示
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  roundRect(40,H-90,360,55,8);ctx.fill();ctx.stroke();
+  drawText('几何关系：',60,H-72,'#9ab0d0',12,'left');
+  drawText('S₂N = d·sinθ，r₂−r₁ = S₂N',60,H-52,'#fff',12,'left');
+  drawText('小角近似：sinθ ≈ tanθ = x/L',60,H-38,'#34d399',11,'left');
+}
+
+// ===== 场景3：明纹条件 =====
+function drawBrightFringe(time){
+  const W=cv.width,H=cv.height;
+  drawText('明纹条件：δ = kλ（k=0,±1,±2...）',W/2,30,'#34d399',16);
+  const cy=H/2;
+  // 两条波叠加示意
+  const waveY1=cy-80,waveY2=cy-30,sumY=cy+60;
+  // 单波1
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let x=0;x<W-100;x+=2){
+    const y=waveY1+Math.sin(x*0.06-time*3)*20;
+    if(x===0)ctx.moveTo(x+50,y);else ctx.lineTo(x+50,y);
+  }
+  ctx.stroke();
+  drawText('波 1',60,waveY1,'#34d399',12);
+  // 波2 同相
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let x=0;x<W-100;x+=2){
+    const y=waveY2+Math.sin(x*0.06-time*3)*20;
+    if(x===0)ctx.moveTo(x+50,y);else ctx.lineTo(x+50,y);
+  }
+  ctx.stroke();
+  drawText('波 2',60,waveY2,'#06b6d4',12);
+  // 合波（同相加强，振幅2倍）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let x=0;x<W-100;x+=2){
+    const y=sumY+Math.sin(x*0.06-time*3)*40;
+    if(x===0)ctx.moveTo(x+50,y);else ctx.lineTo(x+50,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('合成（加强）',60,sumY,'#fbbf24',13);
+  // 屏幕明纹列表
+  drawText('明纹位置 x = kλL/d',W/2,H-60,'#34d399',14);
+  const items=[{k:-2,l:'−2'},{k:-1,l:'−1'},{k:0,l:'0'},{k:1,l:'+1'},{k:2,l:'+2'}];
+  const sx=120,gap=(W-240)/4;
+  items.forEach((m,i)=>{
+    const x=sx+i*gap;
+    ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+    ctx.fillRect(x-4,H-40,8,18);
+    ctx.shadowBlur=0;
+    drawText('k='+m.l,x,H-22,'#9ab0d0',11);
+  });
+  drawText('中央明纹 (k=0)',W/2,H-85,'#fff',12);
+}
+
+// ===== 场景4：暗纹条件 =====
+function drawDarkFringe(time){
+  const W=cv.width,H=cv.height;
+  drawText('暗纹条件：δ = (2k+1)λ/2（反相相消）',W/2,30,'#f87171',16);
+  const cy=H/2;
+  const waveY1=cy-80,waveY2=cy-30,sumY=cy+60;
+  // 波1
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let x=0;x<W-100;x+=2){
+    const y=waveY1+Math.sin(x*0.06-time*3)*20;
+    if(x===0)ctx.moveTo(x+50,y);else ctx.lineTo(x+50,y);
+  }
+  ctx.stroke();
+  drawText('波 1',60,waveY1,'#34d399',12);
+  // 波2 反相（π相移）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let x=0;x<W-100;x+=2){
+    const y=waveY2+Math.sin(x*0.06-time*3+Math.PI)*20;
+    if(x===0)ctx.moveTo(x+50,y);else ctx.lineTo(x+50,y);
+  }
+  ctx.stroke();
+  drawText('波 2 (反相)',60,waveY2,'#06b6d4',12);
+  // 合波 = 0
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(50,sumY);ctx.lineTo(W-50,sumY);ctx.stroke();
+  drawText('合成（相消）= 0',60,sumY,'#f87171',13);
+  // 屏幕暗纹列表
+  drawText('暗纹位置 x = (2k+1)λL/(2d)',W/2,H-60,'#f87171',14);
+  const items=[{k:-2,l:'−5/2'},{k:-1,l:'−3/2'},{k:0,l:'−1/2'},{k:1,l:'+1/2'},{k:2,l:'+3/2'}];
+  const sx=120,gap=(W-240)/4;
+  items.forEach((m,i)=>{
+    const x=sx+i*gap;
+    ctx.fillStyle='#06101f';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+    ctx.fillRect(x-4,H-40,8,18);ctx.strokeRect(x-4,H-40,8,18);
+    drawText('δ='+m.l+'λ',x,H-22,'#9ab0d0',10);
+  });
+  drawText('波峰遇波谷 → 振动抵消',W/2,H-85,'#fff',12);
+}
+
+// ===== 场景5：条纹间距推导 =====
+function drawDerivation(time){
+  const W=cv.width,H=cv.height;
+  drawText('条纹间距推导：Δx = λL/d',W/2,30,'#fbbf24',16);
+  const steps=[
+    {t:'明纹坐标',d:'xₖ = kλL/d',c:'#34d399'},
+    {t:'相邻明纹',d:'xₖ₊₁ − xₖ = (k+1)λL/d − kλL/d',c:'#06b6d4'},
+    {t:'化简',d:'Δx = λL/d',c:'#a78bfa'},
+    {t:'同证',d:'相邻暗纹间距也为 λL/d',c:'#fbbf24'},
+    {t:'结论',d:'Δx 与 λ、L 成正比，与 d 成反比',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=80+i*70;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,55,8);ctx.fill();ctx.stroke();
+    drawText(s.t,110,y+20,s.c,13,'left');
+    drawText(s.d,110,y+40,'#fff',13,'left');
+  });
+  // 高亮最终公式
+  const pulse=0.5+0.5*Math.sin(time*3);
+  ctx.fillStyle='rgba(251,191,36,'+(0.15+pulse*0.1)+')';
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2-150,H-90,300,50,10);ctx.fill();ctx.stroke();
+  ctx.font='bold 22px serif';ctx.fillStyle='#fbbf24';ctx.textAlign='center';
+  ctx.fillText('Δx = λL / d',W/2,H-65);
+  ctx.font='12px sans-serif';
+}
+
+// ===== 场景6：三参数影响 =====
+function drawParamEffect(time){
+  const W=cv.width,H=cv.height;
+  const laserColor=wlToColor(wl);
+  drawText('三参数对条纹间距的影响',W/2,30,'#fbbf24',16);
+  // 左：双缝俯视图
+  const cx=140,cy=H/2-10;
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(cx,cy-15,4,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy+15,4,0,7);ctx.fill();
+  drawText('S₁S₂',cx-30,cy,'#fbbf24',11);
+  // 屏幕
+  const screenX=W-160;
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(screenX,cy-110);ctx.lineTo(screenX,cy+110);ctx.stroke();
+  drawText('屏',screenX,cy+125,'#67e8f9',11);
+  // 条纹（按当前参数）
+  const lambda_m=wl*1e-9,d_m=gd*1e-3,L_m=gl;
+  const dxFract=lambda_m*L_m/d_m;
+  // 屏幕条纹间距（视觉放大）
+  const pxPerMm=0.04/dxFract*1000;
+  const stripeGap=Math.max(4,Math.min(50,pxPerMm*0.4));
+  for(let i=-10;i<=10;i++){
+    const y=cy+i*stripeGap;
+    if(y<cy-110||y>cy+110)continue;
+    const intensity=Math.max(0.2,Math.cos(i*0.3+time*2));
+    ctx.fillStyle=laserColor;ctx.globalAlpha=intensity;
+    ctx.fillRect(screenX-2,y-3,6,Math.max(2,stripeGap*0.6));
+  }
+  ctx.globalAlpha=1;
+  // 光程线
+  ctx.strokeStyle=laserColor+'44';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx,cy-15);ctx.lineTo(screenX,cy-30);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy+15);ctx.lineTo(screenX,cy-30);ctx.stroke();
+  // 参数显示卡片
+  const params=[
+    {name:'λ (波长)',val:wl+' nm',color:laserColor},
+    {name:'L (缝到屏)',val:gl.toFixed(1)+' m',color:'#34d399'},
+    {name:'d (双缝距)',val:gd.toFixed(2)+' mm',color:'#06b6d4'},
+  ];
+  params.forEach((p,i)=>{
+    const y=80+i*40;
+    ctx.fillStyle=p.color+'22';ctx.strokeStyle=p.color;ctx.lineWidth=1;
+    roundRect(cx-100,y,200,30,6);ctx.fill();ctx.stroke();
+    drawText(p.name,cx-60,y+15,p.color,11);
+    drawText(p.val,cx+40,y+15,'#fff',12);
+  });
+  // 计算结果
+  const dxMm=dxFract*1000;
+  drawText('计算 Δx = λL/d',cx,cy+135,'#9ab0d0',12);
+  ctx.font='bold 18px sans-serif';ctx.fillStyle='#fbbf24';
+  ctx.textAlign='center';
+  ctx.fillText('Δx = '+dxMm.toFixed(2)+' mm',cx,cy+165);
+  ctx.font='12px sans-serif';
+  drawText('调节滑块观察条纹疏密变化',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景7：测波长应用 =====
+function drawMeasureLambda(time){
+  const W=cv.width,H=cv.height;
+  drawText('应用：用双缝干涉测量光的波长',W/2,30,'#fbbf24',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,70,W-120,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',100,90,'#a78bfa',13,'left');
+  drawText('用 d = 0.2 mm 双缝，L = 1.0 m，',100,115,'#fff',13,'left');
+  drawText('测得条纹间距 Δx = 2.75 mm。',100,140,'#fff',13,'left');
+  drawText('求光的波长 λ。',100,165,'#fff',13,'left');
+  const steps=[
+    {t:'① 已知',d:'d=0.2 mm, L=1.0 m, Δx=2.75 mm',c:'#06b6d4'},
+    {t:'② 公式',d:'λ = Δx · d / L',c:'#a78bfa'},
+    {t:'③ 代入',d:'λ = 2.75×10⁻³ × 0.2×10⁻³ / 1.0',c:'#67e8f9'},
+    {t:'④ 结果',d:'λ = 5.5×10⁻⁷ m = 550 nm',c:'#34d399'},
+    {t:'⑤ 判断',d:'550 nm 为绿光波段',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=210+i*48;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,40,6);ctx.fill();ctx.stroke();
+    drawText(s.t,120,y+20,s.c,13,'left');
+    drawText(s.d,260,y+20,'#fff',13,'left');
+  });
+  drawText('Δx = λL/d → λ = Δx·d/L',W/2,H-30,'#34d399',13);
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('双缝干涉核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'相干光源',d:'双缝形成两束相干光',c:'#fbbf24'},
+    {t:'光程差',d:'δ = d·x/L',c:'#06b6d4'},
+    {t:'明纹条件',d:'δ = kλ',c:'#34d399'},
+    {t:'暗纹条件',d:'δ = (2k+1)λ/2',c:'#f87171'},
+    {t:'条纹间距',d:'Δx = λL/d',c:'#a78bfa'},
+    {t:'物理意义',d:'证明光的波动性',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-120)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0||stepIdx===1)drawApparatus(t);
+  else if(stepIdx===2)drawPathDiff(t);
+  else if(stepIdx===3)drawBrightFringe(t);
+  else if(stepIdx===4)drawDarkFringe(t);
+  else if(stepIdx===5)drawDerivation(t);
+  else if(stepIdx===6)drawParamEffect(t);
+  else if(stepIdx===7)drawMeasureLambda(t);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+wlEl.oninput=()=>{wl=parseFloat(wlEl.value);};
+gdEl.oninput=()=>{gd=parseFloat(gdEl.value);};
+glEl.oninput=()=>{gl=parseFloat(glEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

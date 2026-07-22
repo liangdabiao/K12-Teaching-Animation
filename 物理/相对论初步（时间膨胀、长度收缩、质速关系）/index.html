@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>狭义相对论初步 · 时间膨胀 · 长度收缩 · 质能方程</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">狭义相对论初步</span><span class="subtitle">时间膨胀 · 长度收缩 · 质速关系 · E=mc²</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>两个基本假设</h4><div class="v">相对性原理<br>光速不变原理</div></div>
+  <div class="card s2"><div class="num">2</div><h4>钟慢效应</h4><div class="v">Δt=Δt₀/√(1-v²/c²)<br>运动时钟变慢</div></div>
+  <div class="card s3"><div class="num">3</div><h4>尺缩效应</h4><div class="v">L=L₀√(1-v²/c²)<br>运动方向长度变短</div></div>
+  <div class="card s4"><div class="num">4</div><h4>质能方程</h4><div class="v">E=mc²<br>质量与能量等价</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">伽利略相对性</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <label>火箭速度 v/c <input id="vc" type="range" min="0" max="0.99" step="0.01" value="0.6"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+// 全局速度（用户控制）
+let vc=0.6;
+function gamma(v){return 1/Math.sqrt(1-Math.min(0.9999,v*v));}
+
+const STEPS=[
+  {tag:'基础',name:'伽利略相对性',body:'<strong>伽利略相对性原理</strong>：所有<strong>惯性系</strong>中，力学规律都相同。船匀速行驶时船内的力学实验<strong>无法判断</strong>船是否在动。但麦克斯韦方程给出的光速 c 与参考系无关，与伽利略速度合成<strong>矛盾</strong>。',points:{title:'经典力学困境',items:['<strong>惯性系</strong>：匀速直线运动的参考系','<strong>伽利略变换</strong>：v加 = v物 ± v系','<strong>矛盾</strong>：光速 c 不满足速度合成','<strong>需求</strong>：新理论解释光速']}},
+  {tag:'基础',name:'光速不变假设',body:'<strong>爱因斯坦</strong>1905 年提出狭义相对论，<strong>两条基本假设</strong>：(1) 相对性原理 — 物理规律在所有惯性系中相同；(2) <strong>光速不变原理</strong> — 真空光速 c 对任何惯性系都是 <code>3×10⁸ m/s</code>，与光源运动无关。',points:{title:'两大假设',items:['<strong>相对性原理</strong>：物理规律等效','<strong>光速不变</strong>：c 与参考系无关','<strong>c = 299792458 m/s</strong>','<strong>推论</strong>：同时是相对的']}},
+  {tag:'时空',name:'同时的相对性',body:'<strong>同时的相对性</strong>：在一个惯性系中<strong>同时</strong>发生的两件事，在另一相对运动的惯性系中<strong>不同时</strong>。爱因斯坦火车思想实验：地面同时击中两点，火车上看不同时。',points:{title:'爱因斯坦火车',items:['<strong>地面参考系</strong>：两闪电同时','<strong>火车参考系</strong>：前闪电先到','<strong>同时</strong>：依赖于参考系','<strong>绝对时间</strong>：被打破']}},
+  {tag:'时空',name:'时间膨胀',body:'<strong>钟慢效应（时间膨胀）</strong>：运动的时钟走得<strong>慢</strong>。公式 <code>Δt = Δt₀ / √(1-v²/c²)</code>，Δt₀ 为固有时间（本征时间）。速度越接近 c，时间膨胀越剧烈。',points:{title:'钟慢公式',items:['<strong>Δt₀</strong>：物体自身参考系时间','<strong>Δt</strong>：观察者看到的时间','<strong>γ 因子</strong>：γ = 1/√(1-v²/c²)','<strong>v→c</strong>：Δt → ∞（时间停止）']}},
+  {tag:'时空',name:'长度收缩',body:'<strong>尺缩效应（长度收缩）</strong>：运动方向上的长度<strong>变短</strong>。公式 <code>L = L₀ √(1-v²/c²)</code>，L₀ 为本征长度（静止长度）。垂直运动方向的长度<strong>不变</strong>。',points:{title:'尺缩公式',items:['<strong>L₀</strong>：物体静止时长度','<strong>L</strong>：观察者看到的长度','<strong>仅运动方向</strong>：收缩','<strong>垂直方向</strong>：不变']}},
+  {tag:'时空',name:'双子佯谬',body:'<strong>双子佯谬</strong>：哥哥乘接近光速的火箭去旅行，弟弟留在地球。哥哥的时钟变慢，归来时<strong>哥哥比弟弟年轻</strong>。这不是佯谬——火箭加速返航过程<strong>破坏了对称性</strong>。',points:{title:'真实效应',items:['<strong>地球弟弟</strong>：时间正常流逝','<strong>火箭哥哥</strong>：时间膨胀变慢','<strong>不对称</strong>：火箭经历加速','<strong>结论</strong>：归来更年轻']}},
+  {tag:'质量',name:'质速关系',body:'<strong>质速关系</strong>：物体<strong>运动质量</strong>随速度增大。公式 <code>m = m₀ / √(1-v²/c²)</code>，m₀ 为静止质量。速度越接近 c，质量越大，加速度越小，因此<strong>有质量的物体无法达到光速</strong>。',points:{title:'质速公式',items:['<strong>m₀</strong>：静止质量','<strong>m</strong>：运动质量','<strong>v→c</strong>：m → ∞','<strong>结论</strong>：粒子加速器验证']}},
+  {tag:'质量',name:'质能方程',body:'<strong>质能方程</strong>：<code>E = mc²</code>。质量与能量<strong>等价</strong>，可相互换算。少量质量对应<strong>巨大能量</strong>，是核反应（裂变、聚变）的能量来源。c² 是巨大的换算因子。',points:{title:'E=mc²',items:['<strong>E</strong>：能量 (J)','<strong>m</strong>：质量 (kg)','<strong>c²</strong>：≈ 9×10¹⁶','<strong>应用</strong>：核电站、原子弹、太阳']}},
+  {tag:'总结',name:'相对论总结',body:'<strong>狭义相对论</strong>统一了空间与时间、质量与能量。当 v≪c 时退化为牛顿力学；v 接近 c 时效应显著。GPS、粒子加速器、核能都依赖相对论修正。',points:{title:'核心结论',items:['<strong>时空统一</strong>：四维时空','<strong>钟慢尺缩</strong>：γ 因子','<strong>质能等价</strong>：E=mc²','<strong>极限</strong>：光速不可超越']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景1：伽利略相对性 =====
+function drawGalileoScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('伽利略相对性 · 船舱实验',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 船（移动）
+  const boatX=cx+Math.sin(time*0.6)*40;
+  // 海岸线
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H-40);ctx.lineTo(W,H-40);ctx.stroke();
+  drawText('海岸（静止参考系）',W/2,H-20,'#5a6a8a',11);
+  // 船体
+  ctx.fillStyle='#1e345a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(boatX-100,cy+30);ctx.lineTo(boatX+100,cy+30);
+  ctx.lineTo(boatX+80,cy+50);ctx.lineTo(boatX-80,cy+50);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // 桅杆
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(boatX,cy+30);ctx.lineTo(boatX,cy-60);ctx.stroke();
+  // 落下的小球（在船舱内）
+  const ballY=(time*60)%80;
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(boatX,cy-60+ballY,8,0,7);ctx.fill();
+  drawText('船舱内小球自由下落',boatX,cy-90,'#06b6d4',12);
+  // 速度箭头
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(boatX-110,cy+40);ctx.lineTo(boatX-60,cy+40);ctx.stroke();
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.moveTo(boatX-60,cy+40);ctx.lineTo(boatX-70,cy+35);ctx.lineTo(boatX-70,cy+45);ctx.fill();
+  drawText('v',boatX-90,cy+25,'#f87171',13);
+  drawText('船内观察：小球直线下落（力学规律相同）',W/2,H-70,'#34d399',12);
+  drawText('岸上观察：小球做平抛运动（轨迹不同，规律相同）',W/2,H-50,'#9ab0d0',12);
+}
+
+// ===== 场景2：光速不变 =====
+function drawLightSpeedScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('光速不变原理 · c 与参考系无关',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 两个光源：静止和运动
+  // 静止光源
+  const x1=200,y1=cy;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(x1,y1,10,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('静止光源',x1,y1+30,'#fbbf24',12);
+  // 静止光源光波
+  for(let i=0;i<3;i++){
+    const r=((time*40+i*40)%120);
+    ctx.strokeStyle='rgba(251,191,36,'+(0.7-r/200)+')';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(x1,y1,r,0,7);ctx.stroke();
+  }
+  // 运动光源
+  const x2=W-200+Math.sin(time)*30,y2=cy;
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(x2,y2,10,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('运动光源',x2,y2+30,'#06b6d4',12);
+  // 运动光源光波（仍为同心圆）
+  for(let i=0;i<3;i++){
+    const r=((time*40+i*40)%120);
+    ctx.strokeStyle='rgba(6,182,212,'+(0.7-r/200)+')';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(x2,y2,r,0,7);ctx.stroke();
+  }
+  // 速度箭头
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x2,y2-30);ctx.lineTo(x2+30,y2-30);ctx.stroke();
+  drawText('v',x2+15,y2-45,'#f87171',12);
+  // 公式
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';
+  drawText('c = 299,792,458 m/s',W/2,80,'#34d399',16);
+  drawText('无论光源运动与否，所有观察者测得光速都为 c',W/2,H-50,'#9ab0d0',12);
+  drawText('这是狭义相对论的基石',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景3：同时的相对性 =====
+function drawSimultaneityScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('同时的相对性 · 爱因斯坦火车',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 地面参考系
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H-30);ctx.lineTo(W,H-30);ctx.stroke();
+  drawText('地面参考系（同时）',W/2,H-15,'#5a6a8a',11);
+  // 火车
+  const trainX=cx+vc*50;
+  ctx.fillStyle='#1e345a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(trainX-120,cy-10,240,60,8);ctx.fill();ctx.stroke();
+  drawText('🚆 运动火车（v）',trainX,cy+20,'#06b6d4',12);
+  // 车轮
+  ctx.fillStyle='#67e8f9';
+  ctx.beginPath();ctx.arc(trainX-70,cy+55,8,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(trainX+70,cy+55,8,0,7);ctx.fill();
+  // 两个闪电（地面同时击中）
+  const flash=(Math.sin(time*1.5)>0);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  // 左闪电
+  if(flash){
+    ctx.beginPath();ctx.moveTo(trainX-100,cy-80);ctx.lineTo(trainX-100,cy-10);ctx.stroke();
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.moveTo(trainX-100,cy-80);ctx.lineTo(trainX-110,cy-60);ctx.lineTo(trainX-90,cy-60);ctx.fill();
+  }
+  // 右闪电
+  if(flash){
+    ctx.beginPath();ctx.moveTo(trainX+100,cy-80);ctx.lineTo(trainX+100,cy-10);ctx.stroke();
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.moveTo(trainX+100,cy-80);ctx.lineTo(trainX+110,cy-60);ctx.lineTo(trainX+90,cy-60);ctx.fill();
+  }
+  ctx.shadowBlur=0;
+  drawText('地面观察：两道闪电同时击中',W/2,cy-100,'#fbbf24',12);
+  // 火车上观察者（中点）
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(trainX,cy+20,5,0,7);ctx.fill();
+  drawText('车上观察者',trainX,cy+45,'#34d399',10);
+  drawText('地面：两闪电同时',cx,cy-130,'#fbbf24',12);
+  drawText('车上：右闪电先到（车向前运动）',cx,cy-115,'#06b6d4',12);
+  drawText('同时是相对的——取决于参考系',W/2,H-50,'#34d399',12);
+}
+
+// ===== 场景4：时间膨胀 =====
+function drawTimeDilationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('时间膨胀 · 运动时钟变慢',W/2,30,'#fbbf24',16);
+  const g=gamma(vc);
+  // 公式
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';
+  drawText('Δt = Δt₀ × γ ,  γ = '+g.toFixed(3),W/2,65,'#fff',15);
+  // 两个时钟：地球（左）和火箭（右）
+  const x1=W*0.28,x2=W*0.72,cy=H/2;
+  // 地球时钟（正常）
+  drawClock(x1,cy,55,1,time,'#34d399','地球时钟');
+  drawText('Δt₀ = '+g.toFixed(2)+' s',x1,cy+90,'#34d399',13);
+  // 火箭时钟（变慢）
+  drawClock(x2,cy,55,1/g,time,'#06b6d4','火箭时钟');
+  drawText('Δt = '+(1).toFixed(2)+' s',x2,cy+90,'#06b6d4',13);
+  // 速度
+  drawText('v = '+vc.toFixed(2)+' c',W/2,cy-90,'#f87171',13);
+  drawText('γ = '+g.toFixed(3)+'（时间膨胀因子）',W/2,cy-70,'#fbbf24',12);
+  drawText('火箭上的时钟走得比地球慢 '+g.toFixed(2)+' 倍',W/2,H-50,'#9ab0d0',12);
+  drawText('v→c 时 γ→∞，时间趋于停止',W/2,H-30,'#f87171',12);
+}
+
+function drawClock(cx,cy,r,rate,time,color,label){
+  ctx.strokeStyle=color;ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke();
+  // 刻度
+  for(let i=0;i<12;i++){
+    const a=i*Math.PI/6;
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(a)*(r-6),cy+Math.sin(a)*(r-6));
+    ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.stroke();
+  }
+  // 指针（按 rate 转动）
+  const ang=time*rate;
+  ctx.strokeStyle=color;ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(ang)*(r-15),cy+Math.sin(ang)*(r-15));ctx.stroke();
+  // 中心
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.arc(cx,cy,4,0,7);ctx.fill();
+  drawText(label,cx,cy+r+18,color,12);
+}
+
+// ===== 场景5：长度收缩 =====
+function drawLengthScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('长度收缩 · 运动方向变短',W/2,30,'#fbbf24',16);
+  const g=gamma(vc),factor=1/g;
+  ctx.font='bold 18px serif';
+  drawText('L = L₀ × √(1-v²/c²) = L₀ / γ = L₀ × '+factor.toFixed(3),W/2,65,'#fff',14);
+  const cy=H/2;
+  // 静止尺
+  const L0=260;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=10;
+  ctx.beginPath();ctx.moveTo(W/2-L0/2,cy-50);ctx.lineTo(W/2+L0/2,cy-50);ctx.stroke();
+  drawText('静止尺子 L₀ = 1.00（本征长度）',W/2,cy-80,'#34d399',13);
+  // 运动尺（缩短）
+  const L=L0*factor;
+  const moveX=Math.sin(time)*30;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=10;
+  ctx.beginPath();ctx.moveTo(W/2-L/2+moveX,cy+50);ctx.lineTo(W/2+L/2+moveX,cy+50);ctx.stroke();
+  drawText('运动尺子 L = '+factor.toFixed(3)+'（收缩到 '+factor.toFixed(2)+'）',W/2,cy+85,'#06b6d4',13);
+  // 速度
+  drawText('v = '+vc.toFixed(2)+' c,  γ = '+g.toFixed(3),W/2,cy+115,'#f87171',13);
+  drawText('注意：仅运动方向收缩，垂直方向不变',W/2,H-50,'#fbbf24',12);
+  drawText('v→c 时 L→0',W/2,H-30,'#f87171',12);
+}
+
+// ===== 场景6：双子佯谬 =====
+function drawTwinScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('双子佯谬 · 火箭旅行归来更年轻',W/2,30,'#fbbf24',16);
+  const g=gamma(vc);
+  const cx=W/2,cy=H/2;
+  // 地球（左）
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(120,cy,28,0,7);ctx.fill();
+  drawText('地球',120,cy,'#0a1628',12);
+  drawText('弟弟',120,cy+50,'#34d399',13);
+  drawText('年龄：'+(30+time|0)+' 岁',120,cy+70,'#34d399',11);
+  // 远方星球（右）
+  ctx.fillStyle='#a78bfa';
+  ctx.beginPath();ctx.arc(W-120,cy,28,0,7);ctx.fill();
+  drawText('恒星',W-120,cy,'#0a1628',12);
+  // 火箭（往返）
+  const period=6;
+  const ph=(time/period)%1;
+  const rocketX=ph<0.5?120+(W-240)*ph*2:W-120-(W-240)*(ph-0.5)*2;
+  const rocketY=cy-30-Math.sin(ph*Math.PI)*40;
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();
+  ctx.moveTo(rocketX+15,rocketY);ctx.lineTo(rocketX-15,rocketY-8);ctx.lineTo(rocketX-15,rocketY+8);ctx.closePath();
+  ctx.fill();
+  drawText('火箭',rocketX,rocketY-20,'#fbbf24',11);
+  // 哥哥年龄（变慢）
+  drawText('哥哥',rocketX,rocketY+25,'#06b6d4',12);
+  drawText('年龄：'+(30+(time/g)|0)+' 岁',rocketX,rocketY+42,'#06b6d4',10);
+  // 轨迹
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(120,cy-30);ctx.lineTo(W-120,cy-30);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('v = '+vc.toFixed(2)+' c,  γ = '+g.toFixed(3),W/2,80,'#f87171',13);
+  drawText('火箭经历加速返航，时间不对称',W/2,H-60,'#9ab0d0',12);
+  drawText('归来时哥哥比弟弟年轻 '+(g-1).toFixed(2)+' 倍',W/2,H-40,'#34d399',12);
+  drawText('这不是佯谬——加速破坏了对称性',W/2,H-20,'#fbbf24',11);
+}
+
+// ===== 场景7：质速关系 =====
+function drawMassScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('质速关系 · 运动质量增大',W/2,30,'#fbbf24',16);
+  const g=gamma(vc);
+  ctx.font='bold 18px serif';
+  drawText('m = m₀ × γ = m₀ × '+g.toFixed(3),W/2,65,'#fff',15);
+  // m-v 曲线
+  const ox=80,oy=H/2+40,pw=W-160,ph=H-180;
+  // 坐标
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+pw,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-ph);ctx.stroke();
+  drawText('v/c',ox+pw,oy+18,'#9ab0d0',11);
+  drawText('m/m₀',ox-25,oy-ph,'#9ab0d0',11);
+  // x 刻度
+  [0,0.2,0.4,0.6,0.8,1].forEach(v=>{
+    const x=ox+v*pw;
+    drawText(v,x,oy+15,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,oy-3);ctx.lineTo(x,oy+3);ctx.stroke();
+  });
+  // y 刻度
+  const maxY=Math.max(5,g*1.1);
+  for(let v=1;v<=Math.floor(maxY);v++){
+    const y=oy-(v/maxY)*ph;
+    drawText(v,ox-18,y,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ox-3,y);ctx.lineTo(ox+3,y);ctx.stroke();
+  }
+  // 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const v=i/200*0.999;
+    const m=gamma(v);
+    const x=ox+v*pw;
+    const y=oy-Math.min(m,maxY)/maxY*ph;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 当前点
+  const cx=ox+vc*pw,cy=oy-g/maxY*ph;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('v='+vc.toFixed(2)+'c, m='+(g).toFixed(2)+'m₀',cx,cy-20,'#fbbf24',12);
+  // 结论
+  drawText('v→c 时 m→∞，无法加速到光速',W/2,H-50,'#f87171',12);
+  drawText('粒子加速器中已被实验证实',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景8：质能方程 =====
+function drawEnergyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('质能方程 · E = mc²',W/2,40,'#fbbf24',20);
+  // 大公式
+  ctx.font='bold 36px serif';ctx.fillStyle='#fbbf24';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=20;
+  ctx.textAlign='center';
+  ctx.fillText('E = m c²',W/2,H/2-30);
+  ctx.shadowBlur=0;
+  // 说明
+  ctx.font='13px sans-serif';
+  drawText('1 kg 物质 ↔ 9×10¹⁶ J 能量',W/2,H/2+30,'#34d399',14);
+  drawText('相当于 21 百万吨 TNT 当量',W/2,H/2+55,'#9ab0d0',12);
+  // 应用图标
+  const apps=[
+    {x:W*0.2,t:'☀ 太阳',d:'核聚变',c:'#fbbf24'},
+    {x:W*0.4,t:'⚡ 核电站',d:'裂变',c:'#34d399'},
+    {x:W*0.6,t:'💥 原子弹',d:'裂变',c:'#f87171'},
+    {x:W*0.8,t:'🔬 加速器',d:'粒子',c:'#06b6d4'},
+  ];
+  apps.forEach(a=>{
+    const y=H/2+120+Math.sin(time+a.x)*5;
+    ctx.fillStyle=a.c+'22';ctx.strokeStyle=a.c;ctx.lineWidth=2;
+    roundRect(a.x-60,y,120,60,8);ctx.fill();ctx.stroke();
+    drawText(a.t,a.x,y+20,a.c,13);
+    drawText(a.d,a.x,y+42,'#9ab0d0',11);
+  });
+  drawText('质量与能量是同一物理量的不同形式',W/2,H-50,'#9ab0d0',12);
+  drawText('质量守恒 + 能量守恒 → 质能守恒',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景9：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('狭义相对论核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'两个假设',d:'相对性原理 + 光速不变',c:'#fbbf24'},
+    {t:'钟慢效应',d:'Δt = Δt₀ × γ',c:'#06b6d4'},
+    {t:'尺缩效应',d:'L = L₀ / γ',c:'#34d399'},
+    {t:'质速关系',d:'m = m₀ × γ',c:'#a78bfa'},
+    {t:'质能方程',d:'E = mc²',c:'#f87171'},
+    {t:'极限',d:'光速不可超越',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawGalileoScene(t);
+  else if(stepIdx===1)drawLightSpeedScene(t);
+  else if(stepIdx===2)drawSimultaneityScene(t);
+  else if(stepIdx===3)drawTimeDilationScene(t);
+  else if(stepIdx===4)drawLengthScene(t);
+  else if(stepIdx===5)drawTwinScene(t);
+  else if(stepIdx===6)drawMassScene(t);
+  else if(stepIdx===7)drawEnergyScene(t);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed'),vcEl=document.getElementById('vc');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+vcEl.oninput=()=>{vc=parseFloat(vcEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

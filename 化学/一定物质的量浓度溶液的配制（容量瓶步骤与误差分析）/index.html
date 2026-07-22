@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一定物质的量浓度溶液的配制 · 容量瓶 · 八大步骤 · 误差分析</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">一定物质的量浓度溶液的配制</span><span class="subtitle">容量瓶 · 八大步骤 · 误差分析</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>容量瓶结构</h4><div class="v">瓶颈标线、温度、容积<br>100mL/250mL/500mL/1000mL</div></div>
+  <div class="card s2"><div class="num">2</div><h4>八大步骤</h4><div class="v">计算→称量→溶解→冷却<br>→转移→洗涤→定容→摇匀</div></div>
+  <div class="card s3"><div class="num">3</div><h4>定容要点</h4><div class="v">距标线 1-2cm 改用胶头滴管<br>视线与凹液面相平</div></div>
+  <div class="card s4"><div class="num">4</div><h4>误差分析</h4><div class="v">仰视读数→浓度偏小<br>俯视读数→浓度偏大</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">容量瓶认识</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'认识',name:'容量瓶认识',body:'<strong>容量瓶</strong>是配制<strong>一定物质的量浓度溶液</strong>的专用仪器。瓶颈上有<strong>标线</strong>（环形刻度线），瓶身标注<strong>温度</strong>和<strong>容积</strong>。常用规格：100mL、250mL、500mL、1000mL。',points:{title:'容量瓶三要素',items:['<strong>标线</strong>：瓶颈处环形刻度','<strong>温度</strong>：通常 20℃','<strong>容积</strong>：100/250/500/1000mL','<strong>特点</strong>：细颈、平底、带塞']}},
+  {tag:'步骤1',name:'计算',body:'<strong>第一步：计算</strong>。根据目标浓度 <code>c = n/V</code> 和配制体积，计算所需溶质的<strong>物质的量</strong>，再换算成<strong>质量</strong>（固体）或<strong>体积</strong>（液体）。',points:{title:'计算示例',items:['<strong>公式</strong>：c = n/V','<strong>n = m/M</strong>（固体溶质）','<strong>例</strong>：配 100mL 0.1mol/L NaOH','<strong>m</strong> = 0.1×0.1×40 = 0.4g']}},
+  {tag:'步骤2',name:'称量',body:'<strong>第二步：称量</strong>。固体用<strong>托盘天平</strong>称量（或电子天平），液体用<strong>量筒</strong>量取。称量 NaOH 等易潮解药品需用<strong>烧杯</strong>或称量瓶，不能直接放在纸上。',points:{title:'称量要点',items:['<strong>固体</strong>：托盘天平/电子天平','<strong>液体</strong>：量筒量取体积','<strong>NaOH</strong>：易潮解，放烧杯','<strong>精度</strong>：0.1g（托盘天平）']}},
+  {tag:'步骤3',name:'溶解冷却',body:'<strong>第三步：溶解</strong>。在<strong>烧杯</strong>中加入适量蒸馏水，用<strong>玻璃棒搅拌</strong>加速溶解。<strong>第四步：冷却</strong>至室温（溶解常放热，温度变化会影响容量瓶容积精度）。',points:{title:'溶解关键',items:['<strong>烧杯</strong>：盛放溶质溶解','<strong>玻璃棒搅拌</strong>：加速溶解','<strong>冷却至室温</strong>：必须步骤','<strong>NaOH 溶解放热</strong>：尤其要冷却']}},
+  {tag:'步骤4',name:'转移洗涤',body:'<strong>第五步：转移</strong>。用<strong>玻璃棒引流</strong>，将烧杯中溶液沿玻璃棒<strong>缓慢</strong>转入容量瓶，玻璃棒下端靠在瓶颈内壁。<strong>第六步：洗涤</strong>：用蒸馏水洗涤烧杯内壁和玻璃棒 2-3 次，洗涤液一并转入容量瓶。',points:{title:'转移要点',items:['<strong>玻璃棒引流</strong>：防止飞溅','<strong>下端靠瓶颈内壁</strong>：不碰标线下方','<strong>洗涤 2-3 次</strong>：保证溶质全部转入','<strong>振荡</strong>：使溶液初步混匀']}},
+  {tag:'步骤5',name:'定容',body:'<strong>第七步：定容</strong>。继续加蒸馏水至距离标线 <strong>1-2cm 处</strong>，改用<strong>胶头滴管</strong>逐滴滴加，<strong>视线与凹液面最低处相平</strong>，直到<strong>凹液面最低处与标线相切</strong>。',points:{title:'定容关键',items:['<strong>距标线 1-2cm</strong>：改用胶头滴管','<strong>视线水平</strong>：与凹液面相平','<strong>凹液面最低处</strong>：与标线相切','<strong>禁止</strong>：超过或低于标线']}},
+  {tag:'步骤6',name:'摇匀',body:'<strong>第八步：摇匀</strong>。盖好瓶塞，用食指<strong>顶住瓶塞</strong>，另一只手托住瓶底，<strong>倒置</strong>容量瓶反复振荡，使溶液各部分浓度<strong>完全均匀</strong>。',points:{title:'摇匀操作',items:['<strong>盖紧瓶塞</strong>：防止漏液','<strong>食指顶塞</strong>：托住瓶底','<strong>倒置振荡</strong>：上下颠倒多次','<strong>目的</strong>：使浓度均匀一致']}},
+  {tag:'误差',name:'仰视读数误差',body:'<strong>仰视定容</strong>（视线偏低）：看到的凹液面低于实际，会继续加水直到看到的凹液面到标线，导致<strong>加水过多</strong>，V 偏大，<strong>c 偏小</strong>。',points:{title:'仰视 → 偏稀',items:['<strong>视线偏低</strong>：从下往上看','<strong>实际液面</strong>：已超过标线','<strong>V 实际偏大</strong>：加水过多','<strong>结果</strong>：c 偏小（偏稀）']}},
+  {tag:'误差',name:'俯视读数误差',body:'<strong>俯视定容</strong>（视线偏高）：看到的凹液面高于实际，会提前停止加水，导致<strong>加水不足</strong>，V 偏小，<strong>c 偏大</strong>。',points:{title:'俯视 → 偏浓',items:['<strong>视线偏高</strong>：从上往下看','<strong>实际液面</strong>：未到标线','<strong>V 实际偏小</strong>：加水不足','<strong>结果</strong>：c 偏大（偏浓）']}},
+  {tag:'总结',name:'核心总结',body:'<strong>八大步骤</strong>：计算→称量→溶解→冷却→转移→洗涤→定容→摇匀。容量瓶<strong>不能</strong>用于长期存放溶液，配制后应转移至试剂瓶。误差分析口诀：<strong>仰视偏稀、俯视偏浓</strong>。',points:{title:'速记口诀',items:['<strong>八步</strong>：算称溶冷，转洗定摇','<strong>定容</strong>：胶头滴管，视线相平','<strong>误差</strong>：仰视偏稀，俯视偏浓','<strong>公式</strong>：c = n / V']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：容量瓶结构 =====
+function drawFlaskScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('容量瓶结构 · 标线 / 温度 / 容积',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 瓶塞
+  ctx.fillStyle='#8b5cf6';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-15,cy-160,30,28,5);ctx.fill();ctx.stroke();
+  drawText('瓶塞',cx,cy-146,'#fff',11);
+  // 瓶颈（细长）
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-12,cy-132);ctx.lineTo(cx-12,cy-50);ctx.lineTo(cx-40,cy-30);
+  ctx.lineTo(cx-40,cy+60);ctx.lineTo(cx+40,cy+60);ctx.lineTo(cx+40,cy-30);
+  ctx.lineTo(cx+12,cy-50);ctx.lineTo(cx+12,cy-132);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // 标线（瓶颈处环形刻度）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx-12,cy-90);ctx.lineTo(cx+12,cy-90);ctx.stroke();
+  drawText('标线',cx+50,cy-90,'#fbbf24',13,'left');
+  ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(cx+13,cy-90);ctx.lineTo(cx+45,cy-90);ctx.stroke();
+  ctx.setLineDash([]);
+  // 温度标注
+  drawText('20℃',cx-50,cy-60,'#34d399',12,'right');
+  drawText('温度',cx-55,cy-45,'#9ab0d0',10,'right');
+  // 容积标注
+  drawText('100mL',cx-50,cy+20,'#67e8f9',13,'right');
+  drawText('容积',cx-55,cy+5,'#9ab0d0',10,'right');
+  // 液体（半满）
+  ctx.fillStyle='rgba(52,211,153,0.35)';
+  ctx.beginPath();
+  ctx.moveTo(cx-40,cy+15);ctx.lineTo(cx-40,cy+60);ctx.lineTo(cx+40,cy+60);
+  ctx.lineTo(cx+40,cy+15);
+  ctx.closePath();ctx.fill();
+  // 液体波纹
+  ctx.strokeStyle='rgba(52,211,153,0.6)';ctx.lineWidth=1;
+  const wave=Math.sin(time*2)*2;
+  ctx.beginPath();
+  ctx.moveTo(cx-40,cy+15+wave);ctx.quadraticCurveTo(cx,cy+12,cx+40,cy+15+wave);ctx.stroke();
+  // 标注引线
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-40,cy+20);ctx.lineTo(cx-50,cy+20);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-12,cy-60);ctx.lineTo(cx-50,cy-60);ctx.stroke();
+  // 说明
+  drawText('容量瓶：细颈平底带塞，瓶颈有标线',W/2,H-55,'#9ab0d0',12);
+  drawText('使用前需检查是否漏水',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：称量（托盘天平） =====
+function drawWeighScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('第二步 · 称量 NaOH（托盘天平）',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40;
+  // 底座
+  ctx.fillStyle='#3a4a6a';ctx.strokeStyle='#5a6a8a';ctx.lineWidth=2;
+  roundRect(cx-120,cy+40,240,20,4);ctx.fill();ctx.stroke();
+  // 立柱
+  ctx.fillRect(cx-4,cy-10,8,50);
+  // 横梁（轻微摆动）
+  const tilt=Math.sin(time*1.5)*0.04;
+  ctx.save();ctx.translate(cx,cy-5);ctx.rotate(tilt);
+  ctx.fillStyle='#5a6a8a';ctx.strokeStyle='#7a8aaa';ctx.lineWidth=2;
+  roundRect(-110,-6,220,12,3);ctx.fill();ctx.stroke();
+  // 左右托盘吊绳
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(-100,-6);ctx.lineTo(-100,15);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(100,-6);ctx.lineTo(100,15);ctx.stroke();
+  // 左托盘（NaOH 烧杯）
+  ctx.save();ctx.translate(-100,15);
+  ctx.fillStyle='#3a4a6a';ctx.strokeStyle='#7a8aaa';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.ellipse(0,0,40,8,0,0,7);ctx.fill();ctx.stroke();
+  // 烧杯
+  ctx.fillStyle='rgba(6,182,212,0.2)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(-25,-30,50,28,3);ctx.fill();ctx.stroke();
+  // NaOH 颗粒
+  ctx.fillStyle='#fff';
+  for(let i=0;i<6;i++)ctx.beginPath();ctx.fill();
+  ctx.fillStyle='#e0e0e0';
+  ctx.beginPath();ctx.arc(-10,-20,3,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(5,-18,3,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(-2,-12,2.5,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(12,-22,2,0,7);ctx.fill();
+  drawText('NaOH',0,-40,'#fff',11);
+  ctx.restore();
+  // 右托盘（砝码）
+  ctx.save();ctx.translate(100,15);
+  ctx.fillStyle='#3a4a6a';ctx.strokeStyle='#7a8aaa';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.ellipse(0,0,40,8,0,0,7);ctx.fill();ctx.stroke();
+  // 砝码
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.ellipse(0,-2,22,6,0,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.ellipse(0,-8,16,4,0,0,7);ctx.fill();ctx.stroke();
+  drawText('砝码 0.4g',0,-25,'#fbbf24',11);
+  ctx.restore();
+  ctx.restore();
+  // 指针
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.moveTo(cx,cy+30);ctx.lineTo(cx-2,cy+45);ctx.lineTo(cx+2,cy+45);ctx.fill();
+  // 刻度
+  drawText('0',cx-20,cy+62,'#9ab0d0',10);
+  drawText('g',cx+20,cy+62,'#9ab0d0',10);
+  // 计算结果
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(cx-140,cy-130,280,55,8);ctx.fill();ctx.stroke();
+  drawText('配制 100mL 0.1mol/L NaOH 溶液',cx,cy-110,'#fff',13);
+  drawText('m = c·V·M = 0.1×0.1×40 = 0.40 g',cx,cy-88,'#34d399',13);
+  drawText('NaOH 易潮解，必须放在烧杯中称量',W/2,H-35,'#f87171',12);
+}
+
+// ===== 场景：溶解（烧杯+玻璃棒） =====
+function drawDissolveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('第三/四步 · 溶解与冷却',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 烧杯
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(cx-90,cy-70);ctx.lineTo(cx-90,cy+50);
+  ctx.quadraticCurveTo(cx-90,cy+65,cx-75,cy+65);
+  ctx.lineTo(cx+75,cy+65);
+  ctx.quadraticCurveTo(cx+90,cy+65,cx+90,cy+50);
+  ctx.lineTo(cx+90,cy-70);
+  ctx.stroke();ctx.fill();
+  // 烧杯口
+  ctx.beginPath();ctx.moveTo(cx-95,cy-70);ctx.lineTo(cx-85,cy-75);ctx.stroke();
+  // 液体
+  const wave=Math.sin(time*3)*3;
+  ctx.fillStyle='rgba(52,211,153,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(cx-88,cy-10+wave);ctx.quadraticCurveTo(cx,cy-15,cx+88,cy-10+wave);
+  ctx.lineTo(cx+88,cy+50);ctx.quadraticCurveTo(cx+88,cy+63,cx+75,cy+63);
+  ctx.lineTo(cx-75,cy+63);ctx.quadraticCurveTo(cx-88,cy+63,cx-88,cy+50);
+  ctx.closePath();ctx.fill();
+  // NaOH 颗粒（逐渐变小）
+  ctx.fillStyle='rgba(255,255,255,0.8)';
+  const shrink=0.5+0.5*Math.cos(time*1.2);
+  for(let i=0;i<5;i++){
+    const px=cx-40+i*20;
+    const py=cy+10+Math.sin(time*2+i)*8;
+    const r=Math.max(0.5,3*shrink);
+    ctx.beginPath();ctx.arc(px,py,r,0,7);ctx.fill();
+  }
+  // 玻璃棒（搅拌，旋转）
+  const stirA=time*4;
+  ctx.save();ctx.translate(cx,cy-90);
+  ctx.rotate(Math.sin(stirA)*0.3);
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=4;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(-5,0);ctx.lineTo(5,80);ctx.stroke();
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(-5,0);ctx.lineTo(5,80);ctx.stroke();
+  ctx.restore();
+  drawText('玻璃棒搅拌',cx+100,cy-60,'#fff',12);
+  // 热气（冷却提示）
+  for(let i=0;i<3;i++){
+    const hx=cx-30+i*30;
+    const hy=cy-90-Math.abs(Math.sin(time*2+i))*20;
+    ctx.fillStyle='rgba(251,191,36,'+(0.4-i*0.1)+')';
+    ctx.beginPath();ctx.arc(hx,hy,4+i,0,7);ctx.fill();
+  }
+  drawText('溶解放热，需冷却至室温',W/2,H-55,'#fbbf24',12);
+  drawText('玻璃棒搅拌可加速溶解',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：转移洗涤 =====
+function drawTransferScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('第五/六步 · 转移与洗涤',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 烧杯（左上）
+  ctx.save();ctx.translate(cx-100,cy-30);ctx.rotate(-0.3);
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(-40,-30);ctx.lineTo(-40,25);ctx.quadraticCurveTo(-40,35,-30,35);
+  ctx.lineTo(30,35);ctx.quadraticCurveTo(40,35,40,25);ctx.lineTo(40,-30);
+  ctx.stroke();ctx.fill();
+  // 烧杯里液体
+  ctx.fillStyle='rgba(52,211,153,0.4)';
+  ctx.beginPath();ctx.moveTo(-38,0);ctx.lineTo(38,0);
+  ctx.lineTo(38,25);ctx.quadraticCurveTo(38,33,30,33);ctx.lineTo(-30,33);
+  ctx.quadraticCurveTo(-38,33,-38,25);ctx.closePath();ctx.fill();
+  ctx.restore();
+  drawText('烧杯',cx-100,cy+30,'#06b6d4',12);
+  // 玻璃棒（引流，倾斜）
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=5;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(cx-70,cy-55);ctx.lineTo(cx+5,cy+90);ctx.stroke();
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-70,cy-55);ctx.lineTo(cx+5,cy+90);ctx.stroke();
+  drawText('玻璃棒引流',cx-50,cy-65,'#fff',12);
+  // 液流（沿玻璃棒流入容量瓶）
+  const flow=Math.sin(time*5)*0.3+0.7;
+  ctx.strokeStyle='rgba(52,211,153,'+flow+')';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(cx-65,cy-50);ctx.lineTo(cx,cy+85);ctx.stroke();
+  // 容量瓶（右下）
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-8,cy+80);ctx.lineTo(cx-8,cy+95);ctx.lineTo(cx-35,cy+105);
+  ctx.lineTo(cx-35,cy+160);ctx.lineTo(cx+35,cy+160);ctx.lineTo(cx+35,cy+105);
+  ctx.lineTo(cx+8,cy+95);ctx.lineTo(cx+8,cy+80);
+  ctx.fill();ctx.stroke();
+  // 容量瓶液体
+  ctx.fillStyle='rgba(52,211,153,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(cx-35,cy+125);ctx.lineTo(cx-35,cy+160);ctx.lineTo(cx+35,cy+160);
+  ctx.lineTo(cx+35,cy+125);ctx.closePath();ctx.fill();
+  // 标线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-8,cy+88);ctx.lineTo(cx+8,cy+88);ctx.stroke();
+  drawText('容量瓶',cx,cy+175,'#06b6d4',12);
+  // 洗涤提示
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(cx+80,cy-40,180,90,8);ctx.fill();ctx.stroke();
+  drawText('洗涤要点',cx+170,cy-25,'#fbbf24',13);
+  drawText('① 洗涤烧杯内壁 2-3 次',cx+170,cy-5,'#fff',11);
+  drawText('② 洗涤玻璃棒',cx+170,cy+15,'#fff',11);
+  drawText('③ 洗涤液一并转入容量瓶',cx+170,cy+35,'#fff',11);
+  drawText('玻璃棒下端应靠在标线以下',W/2,H-30,'#f87171',12);
+}
+
+// ===== 场景：定容（胶头滴管） =====
+function drawFixVolumeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('第七步 · 定容（胶头滴管）',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 容量瓶
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-12,cy-40);ctx.lineTo(cx-12,cy-15);ctx.lineTo(cx-50,cy+5);
+  ctx.lineTo(cx-50,cy+90);ctx.lineTo(cx+50,cy+90);ctx.lineTo(cx+50,cy+5);
+  ctx.lineTo(cx+12,cy-15);ctx.lineTo(cx+12,cy-40);
+  ctx.fill();ctx.stroke();
+  // 标线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx-12,cy-10);ctx.lineTo(cx+12,cy-10);ctx.stroke();
+  drawText('标线',cx+40,cy-10,'#fbbf24',12,'left');
+  // 液面（接近标线）
+  const lvOffset=Math.sin(time*1.5)*1.5;
+  const lvY=cy-5+lvOffset;
+  ctx.fillStyle='rgba(52,211,153,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(cx-12,lvY);ctx.lineTo(cx+12,lvY);
+  ctx.lineTo(cx+50,cy+5);ctx.lineTo(cx+50,cy+90);
+  ctx.lineTo(cx-50,cy+90);ctx.lineTo(cx-50,cy+5);
+  ctx.closePath();ctx.fill();
+  // 凹液面（弧线）
+  ctx.strokeStyle='rgba(52,211,153,0.8)';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-12,lvY);ctx.quadraticCurveTo(cx,lvY+4,cx+12,lvY);
+  ctx.stroke();
+  // 胶头滴管（从上方）
+  ctx.fillStyle='#f87171';ctx.strokeStyle='#fca5a5';ctx.lineWidth=1.5;
+  roundRect(cx-10,cy-130,20,18,4);ctx.fill();ctx.stroke();
+  drawText('胶头',cx,cy-121,'#fff',9);
+  // 滴管管身
+  ctx.fillStyle='rgba(232,238,248,0.3)';ctx.strokeStyle='#e8eef8';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-8,cy-112);ctx.lineTo(cx-8,cy-55);
+  ctx.lineTo(cx-2,cy-50);ctx.lineTo(cx+2,cy-50);ctx.lineTo(cx+8,cy-55);
+  ctx.lineTo(cx+8,cy-112);ctx.closePath();ctx.fill();ctx.stroke();
+  // 液滴（下落）
+  const dropY=cy-50+((time*60)%50);
+  if(dropY<cy-12){
+    ctx.fillStyle='rgba(52,211,153,0.8)';
+    ctx.beginPath();ctx.arc(cx,dropY,3,0,7);ctx.fill();
+  }
+  drawText('胶头滴管',cx+50,cy-80,'#fff',12,'left');
+  // 视线（水平）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(cx-100,lvY);ctx.lineTo(cx+100,lvY);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('视线水平',cx-110,lvY,'#34d399',11,'right');
+  drawText('距标线 1-2cm 时改用滴管',cx,cy-145,'#fbbf24',12);
+  // 距离标注
+  drawText('1-2cm',cx+60,cy-30,'#fbbf24',11,'left');
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx+15,cy-10);ctx.lineTo(cx+55,cy-30);ctx.stroke();
+  drawText('凹液面最低处与标线相切',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：摇匀 =====
+function drawShakeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('第八步 · 摇匀（倒置振荡）',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 摇晃角度
+  const tilt=Math.sin(time*3)*0.4;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(tilt);
+  // 容量瓶（倒置状态偏移）
+  // 瓶塞
+  ctx.fillStyle='#8b5cf6';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(-15,-120,30,28,5);ctx.fill();ctx.stroke();
+  // 瓶颈
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(-12,-92);ctx.lineTo(-12,-40);ctx.lineTo(-45,-20);
+  ctx.lineTo(-45,50);ctx.lineTo(45,50);ctx.lineTo(45,-20);
+  ctx.lineTo(12,-40);ctx.lineTo(12,-92);
+  ctx.fill();ctx.stroke();
+  // 液体（接近满）
+  ctx.fillStyle='rgba(52,211,153,0.5)';
+  ctx.beginPath();
+  ctx.moveTo(-45,-20+Math.sin(time*3)*3);ctx.lineTo(45,-20+Math.sin(time*3)*3);
+  ctx.lineTo(45,50);ctx.lineTo(-45,50);ctx.closePath();ctx.fill();
+  // 气泡（摇动产生）
+  ctx.fillStyle='rgba(255,255,255,0.6)';
+  for(let i=0;i<4;i++){
+    const bx=-30+i*15;const by=20+Math.sin(time*4+i)*15;
+    ctx.beginPath();ctx.arc(bx,by,2+Math.sin(time*3+i),0,7);ctx.fill();
+  }
+  ctx.restore();
+  // 标线
+  drawText('盖紧瓶塞，反复倒置振荡',W/2,H-70,'#34d399',13);
+  drawText('食指顶住瓶塞，托住瓶底',W/2,H-45,'#9ab0d0',12);
+  drawText('使溶液各部分浓度均匀一致',W/2,H-20,'#fbbf24',12);
+  // 手部示意
+  ctx.fillStyle='rgba(251,191,36,0.2)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.ellipse(cx-50,cy-100,15,10,0.3,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.ellipse(cx+50,cy+30,20,12,-0.3,0,7);ctx.fill();ctx.stroke();
+  drawText('食指',cx-65,cy-110,'#fbbf24',10);
+  drawText('托底',cx+70,cy+30,'#fbbf24',10);
+}
+
+// ===== 场景：仰视/俯视误差 =====
+function drawErrorScene(time,isUp){
+  const W=cv.width,H=cv.height;
+  const title=isUp?'仰视定容 · 浓度偏小（偏稀）':'俯视定容 · 浓度偏大（偏浓）';
+  drawText(title,W/2,30,isUp?'#06b6d4':'#f87171',16);
+  // 左侧：容量瓶
+  const lx=W*0.32,cy=H/2+20;
+  // 容量瓶
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(lx-12,cy-90);ctx.lineTo(lx-12,cy-65);ctx.lineTo(lx-45,cy-45);
+  ctx.lineTo(lx-45,cy+45);ctx.lineTo(lx+45,cy+45);ctx.lineTo(lx+45,cy-45);
+  ctx.lineTo(lx+12,cy-65);ctx.lineTo(lx+12,cy-90);
+  ctx.fill();ctx.stroke();
+  // 标线
+  const lineY=cy-60;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(lx-12,lineY);ctx.lineTo(lx+12,lineY);ctx.stroke();
+  drawText('标线',lx-45,lineY,'#fbbf24',11,'right');
+  // 实际液面（仰视：实际超过标线；俯视：实际未到标线）
+  let actualY;
+  if(isUp){actualY=lineY+12;}else{actualY=lineY-12;}
+  ctx.fillStyle='rgba(52,211,153,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(lx-45,actualY);ctx.lineTo(lx+45,actualY);
+  ctx.lineTo(lx+45,cy+45);ctx.lineTo(lx-45,cy+45);ctx.closePath();ctx.fill();
+  // 实际液面线
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(lx-45,actualY);ctx.lineTo(lx+45,actualY);ctx.stroke();
+  drawText('实际液面',lx+50,actualY,'#34d399',10,'left');
+  // 看到的液面（错误判断位置）
+  const seenY=lineY;
+  ctx.strokeStyle='#f87171';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(lx-45,seenY);ctx.lineTo(lx+45,seenY);ctx.stroke();
+  ctx.setLineDash([]);
+  // 眼睛位置（视线起点）
+  const eyeX=lx-130,eyeY=isUp?lineY+40:lineY-40;
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.ellipse(eyeX,eyeY,18,12,0,0,7);ctx.fill();
+  ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.arc(eyeX,eyeY,5,0,7);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(eyeX-2,eyeY-2,1.5,0,7);ctx.fill();
+  drawText('眼',eyeX,eyeY-22,'#fbbf24',11);
+  // 视线（从眼睛到看到的液面）
+  ctx.strokeStyle=isUp?'#06b6d4':'#f87171';ctx.lineWidth=2;ctx.setLineDash([6,3]);
+  ctx.beginPath();ctx.moveTo(eyeX+15,eyeY);ctx.lineTo(lx-12,seenY);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText(isUp?'仰视':'俯视',eyeX+10,eyeY+(isUp?-15:15),isUp?'#06b6d4':'#f87171',11);
+  // 右侧：分析
+  const rx=W*0.7;
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle=isUp?'#06b6d4':'#f87171';ctx.lineWidth=1.5;
+  roundRect(rx-130,cy-100,260,200,10);ctx.fill();ctx.stroke();
+  drawText(isUp?'仰视分析':'俯视分析',rx,cy-80,isUp?'#06b6d4':'#f87171',14);
+  if(isUp){
+    drawText('① 视线偏低，从下往上看',rx,cy-50,'#fff',12);
+    drawText('② 实际液面已超过标线',rx,cy-25,'#fff',12);
+    drawText('③ 加水过多，V 偏大',rx,cy,'#fff',12);
+    drawText('④ 由 c=n/V',rx,cy+25,'#9ab0d0',12);
+    drawText('⑤ n 不变，V↑',rx,cy+50,'#f87171',13);
+    drawText('→ c 偏小（偏稀）',rx,cy+78,'#06b6d4',14);
+  }else{
+    drawText('① 视线偏高，从上往下看',rx,cy-50,'#fff',12);
+    drawText('② 实际液面未到标线',rx,cy-25,'#fff',12);
+    drawText('③ 加水不足，V 偏小',rx,cy,'#fff',12);
+    drawText('④ 由 c=n/V',rx,cy+25,'#9ab0d0',12);
+    drawText('⑤ n 不变，V↓',rx,cy+50,'#f87171',13);
+    drawText('→ c 偏大（偏浓）',rx,cy+78,'#f87171',14);
+  }
+  drawText(isUp?'口诀：仰视偏稀':'口诀：俯视偏浓',W/2,H-30,isUp?'#06b6d4':'#f87171',13);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('配制溶液核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'八大步骤',d:'算称溶冷转洗定摇',c:'#fbbf24'},
+    {t:'浓度公式',d:'c = n / V',c:'#06b6d4'},
+    {t:'容量瓶',d:'细颈平底带塞',c:'#a78bfa'},
+    {t:'定容要点',d:'胶头滴管逐滴',c:'#34d399'},
+    {t:'仰视',d:'加水过多→偏稀',c:'#06b6d4'},
+    {t:'俯视',d:'加水不足→偏浓',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawFlaskScene(t);
+  else if(stepIdx===1)drawWeighScene(t);
+  else if(stepIdx===2)drawDissolveScene(t);
+  else if(stepIdx===3)drawTransferScene(t);
+  else if(stepIdx===4)drawFixVolumeScene(t);
+  else if(stepIdx===5)drawShakeScene(t);
+  else if(stepIdx===6)drawErrorScene(t,true);
+  else if(stepIdx===7)drawErrorScene(t,false);
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

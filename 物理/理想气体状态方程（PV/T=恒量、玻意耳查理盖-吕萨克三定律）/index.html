@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>理想气体状态方程 · PV/T=恒量 · 三大定律</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">理想气体状态方程</span><span class="subtitle">PV/T=恒量 · 玻意耳 · 查理 · 盖-吕萨克</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>三大实验定律</h4><div class="v">玻意耳定律(等温)<br>查理定律(等容) 盖-吕萨克(等压)</div></div>
+  <div class="card s2"><div class="num">2</div><h4>状态方程推导</h4><div class="v">PV/T=恒量<br>P₁V₁/T₁=P₂V₂/T₂</div></div>
+  <div class="card s3"><div class="num">3</div><h4>微观解释</h4><div class="v">分子碰撞器壁<br>温度=平均动能</div></div>
+  <div class="card s4"><div class="num">4</div><h4>图像与方程应用</h4><div class="v">PV 双曲线<br>PT/VT 直线</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">理想气体</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'理想气体模型',body:'<strong>理想气体</strong>是<strong>分子体积可忽略、分子间无相互作用力</strong>的理论模型。一定质量理想气体处于<strong>平衡态</strong>时，压强 P、体积 V、温度 T 满足 <code>PV/T=恒量</code>。',points:{title:'理想气体假设',items:['<strong>分子无体积</strong>：质点模型','<strong>无相互作用力</strong>：除碰撞瞬间','<strong>弹性碰撞</strong>：动能守恒','<strong>实际气体</strong>：常温常压近似适用']}},
+  {tag:'玻意耳',name:'等温压缩',body:'<strong>玻意耳定律</strong>：一定质量气体在<strong>温度不变</strong>时，<code>P₁V₁=P₂V₂</code>。压缩气体，体积减小则压强增大，PV 图像为<strong>双曲线</strong>。',points:{title:'玻意耳定律要点',items:['<strong>条件</strong>：等温 T 恒定','<strong>关系</strong>：P ∝ 1/V（反比）','<strong>图像</strong>：PV 图双曲线','<strong>微观</strong>：体积小，碰撞更频繁']}},
+  {tag:'玻意耳',name:'等温膨胀',body:'气体<strong>等温膨胀</strong>时，体积增大、压强减小。压强与体积<strong>乘积保持不变</strong>：PV=恒量。等温过程在 PV 图上沿双曲线移动。',points:{title:'等温膨胀规律',items:['<strong>体积 V 增大</strong>：压强 P 减小','<strong>温度不变</strong>：分子动能不变','<strong>压强减小原因</strong>：单位面积碰撞减少','<strong>双曲线轨迹</strong>：PV=c']}},
+  {tag:'查理',name:'等容升温',body:'<strong>查理定律</strong>：一定质量气体在<strong>体积不变</strong>时，<code>P/T=恒量</code>。温度升高，分子运动加剧，压强增大。PT 图像为<strong>过原点的直线</strong>（绝对温标）。',points:{title:'查理定律要点',items:['<strong>条件</strong>：等容 V 恒定','<strong>关系</strong>：P ∝ T（正比）','<strong>温度用 K</strong>：T=t+273.15','<strong>微观</strong>：分子动能随 T 升高']}},
+  {tag:'查理',name:'等容降温',body:'气体<strong>等容降温</strong>时，温度降低、压强减小。理论上温度降到<strong>绝对零度</strong>（0 K=-273.15°C）时压强为零。',points:{title:'绝对零度',items:['<strong>0 K</strong>：-273.15°C，绝对零度','<strong>不可达到</strong>：热力学第三定律','<strong>PT 图</strong>：直线外推过原点','<strong>实际气体</strong>：先液化，偏离定律']}},
+  {tag:'盖吕萨克',name:'等压膨胀',body:'<strong>盖-吕萨克定律</strong>：一定质量气体在<strong>压强不变</strong>时，<code>V/T=恒量</code>。温度升高体积增大。VT 图像为<strong>过原点直线</strong>。',points:{title:'盖-吕萨克定律',items:['<strong>条件</strong>：等压 P 恒定','<strong>关系</strong>：V ∝ T（正比）','<strong>活塞自由</strong>：内外压强平衡','<strong>温度升高</strong>：体积膨胀']}},
+  {tag:'综合',name:'状态方程 PV/T=C',body:'<strong>理想气体状态方程</strong>：<code>PV/T=恒量</code>，或 <code>PV=nRT</code>。R 为普适气体常量 <strong>R=8.31 J/(mol·K)</strong>。三个状态间任意变化都满足 <code>P₁V₁/T₁=P₂V₂/T₂</code>。',points:{title:'状态方程核心',items:['<strong>PV/T = C</strong>：一定质量恒量','<strong>PV = nRT</strong>：n 为物质的量','<strong>R = 8.31</strong>：J/(mol·K)','<strong>适用</strong>：温度不太低，压强不太大']}},
+  {tag:'综合',name:'三定律统一',body:'玻意耳(等温)、查理(等容)、盖-吕萨克(等压)三大定律都是<strong>状态方程的特例</strong>：固定一个变量，研究另两个的关系。状态方程统一了所有过程。',points:{title:'特例关系',items:['<strong>T 恒定</strong>：玻意耳 PV=C','<strong>V 恒定</strong>：查理 P/T=C','<strong>P 恒定</strong>：盖-吕萨克 V/T=C','<strong>统一</strong>：PV/T=C']}},
+  {tag:'图像',name:'PV 图像双曲线',body:'PV 图上<strong>等温线</strong>是双曲线 PV=C。温度越高，C 越大，双曲线<strong>远离原点</strong>。等温压缩沿双曲线向左上移动。',points:{title:'PV 图像规律',items:['<strong>等温线</strong>：双曲线 PV=C','<strong>温度高</strong>：双曲线离原点远','<strong>等容过程</strong>：竖直线','<strong>等压过程</strong>：水平线']}},
+  {tag:'总结',name:'核心速记',body:'理想气体状态方程 <strong>PV/T=恒量</strong> 统一了玻意耳、查理、盖-吕萨克三大实验定律。微观本质是<strong>分子无规则热运动</strong>，温度反映平均动能，压强来自分子碰撞器壁。',points:{title:'三句话总结',items:['<strong>方程</strong>：PV/T=恒量','<strong>三定律</strong>：玻意耳、查理、盖-吕萨克','<strong>微观</strong>：分子热运动','<strong>应用</strong>：热机、制冷、气球']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// 物理量动态：每个步骤有 P V T 的演化方式
+function getState(idx,time){
+  // 基准态：P=1.0 atm, V=1.0 L, T=300 K
+  const phase=(Math.sin(time*0.6)+1)/2; // 0~1
+  if(idx===0)return{P:1.0,V:1.0,T:300,phase:0.5,proc:'平衡态'};
+  if(idx===1){const V=1.2-0.7*phase;return{P:1.2/V,V,T:300,phase,proc:'等温压缩'};}
+  if(idx===2){const V=0.5+0.7*phase;return{P:1.2/V,V,T:300,phase,proc:'等温膨胀'};}
+  if(idx===3){const T=280+120*phase;return{P:T/300,V:1.0,T,phase,proc:'等容升温'};}
+  if(idx===4){const T=400-120*phase;return{P:T/300,V:1.0,T,phase,proc:'等容降温'};}
+  if(idx===5){const T=280+120*phase;return{P:1.0,V:T/300,T,phase,proc:'等压膨胀'};}
+  if(idx===6){const V=0.7+0.6*phase;const T=350;return{P:1.0*T/V,V,T,phase,proc:'综合变化'};}
+  if(idx===7)return{P:1.0,V:1.0,T:300,phase:0.5,proc:'三定律统一'};
+  if(idx===8){const V=0.5+0.8*((time*0.5)%1);return{P:1.0/V*300/300,V,T:300,phase,proc:'PV双曲线'};}
+  return{P:1.0,V:1.0,T:300,phase:0.5,proc:'平衡态'};
+}
+
+// ===== 场景：气缸与活塞 =====
+function drawCylinderScene(time){
+  const W=cv.width,H=cv.height;
+  const st=getState(stepIdx,time);
+  drawText((st.proc||'气缸')+ ' · P='+st.P.toFixed(2)+' V='+st.V.toFixed(2)+' T='+st.T.toFixed(0),W/2,30,'#fbbf24',14);
+  const cx=W/2,cy=H/2+30;
+  // 气缸尺寸：体积越大，活塞位置越靠右
+  const cylW=Math.max(60,Math.min(280,160+st.V*100));
+  const cylH=120;
+  const cylX=cx-cylW/2,cylY=cy-cylH/2;
+  // 气缸外壳（U 形）
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(cylX,cylY+cylH);ctx.lineTo(cylX,cylY);ctx.lineTo(cylX+cylW,cylY);ctx.lineTo(cylX+cylW,cylY+cylH);ctx.stroke();
+  drawText('气缸',cylX,cylY-15,'#67e8f9',11);
+  // 温度计（左侧）
+  const tx=cx-200,ty=cy;
+  ctx.fillStyle='#11203a';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(tx-12,ty-70,24,140,6);ctx.fill();ctx.stroke();
+  // 温度填充
+  const tempRatio=(st.T-200)/200; // 200-400K
+  const tempH=Math.max(10,Math.min(120,tempRatio*120));
+  const tempColor=st.T>320?'#f87171':(st.T>280?'#fbbf24':'#06b6d4');
+  ctx.fillStyle=tempColor;
+  roundRect(tx-8,ty+60-tempH,16,tempH,4);ctx.fill();
+  drawText('T',tx,ty-85,'#34d399',13);
+  drawText(st.T.toFixed(0)+'K',tx,ty+80,tempColor,11);
+  drawText((st.T-273).toFixed(0)+'°C',tx,ty+95,'#9ab0d0',10);
+  // 活塞（右端，随 V 变化）
+  const px=cylX+cylW;
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(px-2,cylY-8,18,cylH+16,4);ctx.fill();
+  drawText('活塞',px+10,cylY-20,'#fbbf24',11);
+  // 活塞压力箭头（外部大气压与内部压强）
+  if(st.P>1.2){
+    ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+    ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+    ctx.beginPath();ctx.moveTo(px+50,cylY+cylH/2);ctx.lineTo(px+15,cylY+cylH/2);ctx.stroke();
+    ctx.fillStyle='#f87171';
+    ctx.beginPath();ctx.moveTo(px+15,cylY+cylH/2);ctx.lineTo(px+25,cylY+cylH/2-7);ctx.lineTo(px+25,cylY+cylH/2+7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('压强高',px+50,cylY+cylH/2-15,'#f87171',11);
+  }
+  // 分子运动（气体粒子）
+  const nParticles=Math.floor(8+st.V*15);
+  const speed=0.5+st.T/400;
+  for(let i=0;i<nParticles;i++){
+    const seed=i*37.7;
+    const phase=time*speed+seed;
+    const bx=cylX+20+((Math.sin(seed*1.3)+1)/2)*(cylW-40);
+    const by=cylY+15+((Math.cos(seed*0.7)+1)/2)*(cylH-30);
+    const ox=Math.sin(phase)*8,oy=Math.cos(phase*1.3)*8;
+    const px2=bx+ox,py2=by+oy;
+    if(px2<cylX+5||px2>cylX+cylW-5||py2<cylY+5||py2>cylY+cylH-5)continue;
+    ctx.fillStyle=tempColor;
+    ctx.shadowColor=tempColor;ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(px2,py2,3,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+  }
+  // 压强 P 显示（气缸底部压力计）
+  drawText('P = '+st.P.toFixed(2)+' atm',cx,cylY+cylH+30,'#f87171',13);
+  drawText('V = '+st.V.toFixed(2)+' L',cx-100,cylY+cylH+30,'#67e8f9',13);
+  drawText('T = '+st.T.toFixed(0)+' K',cx+100,cylY+cylH+30,'#34d399',13);
+  // 等值过程标识
+  if(stepIdx===1||stepIdx===2)drawText('等温 T=300K 不变 · PV='+((st.P*st.V).toFixed(2)),W/2,H-40,'#fbbf24',12);
+  else if(stepIdx===3||stepIdx===4)drawText('等容 V=1.0L 不变 · P/T='+((st.P/st.T*300).toFixed(3)),W/2,H-40,'#fbbf24',12);
+  else if(stepIdx===5)drawText('等压 P=1.0atm 不变 · V/T='+((st.V/st.T*300).toFixed(3)),W/2,H-40,'#fbbf24',12);
+  else if(stepIdx===6)drawText('综合过程 · PV/T='+((st.P*st.V/st.T*300).toFixed(3)),W/2,H-40,'#fbbf24',12);
+}
+
+// ===== 场景：PV 图像（双曲线）=====
+function drawPVChart(time){
+  const W=cv.width,H=cv.height;
+  drawText('PV 图像 · 等温线为双曲线',W/2,30,'#fbbf24',16);
+  const ox=100,oy=H-100,pw=W-180,ph=H-200;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-ph);ctx.lineTo(ox,oy);ctx.lineTo(ox+pw,oy);ctx.stroke();
+  drawText('P (atm)',ox-40,oy-ph+15,'#9ab0d0',11);
+  drawText('V (L)',ox+pw,oy+25,'#9ab0d0',11);
+  // 三条等温线（T1<T2<T3）
+  const temps=[250,350,450];
+  const colors=['#06b6d4','#fbbf24','#f87171'];
+  temps.forEach((T,i)=>{
+    ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+    ctx.shadowColor=colors[i];ctx.shadowBlur=6;
+    ctx.beginPath();
+    const C=T/300;
+    for(let v=0.3;v<=3;v+=0.05){
+      const p=C/v;
+      if(p>4)continue;
+      const x=ox+v/3*pw;
+      const y=oy-p/4*ph;
+      if(v===0.3)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText('T='+T+'K',ox+pw-50,oy-ph+20+i*18,colors[i],11);
+  });
+  // 当前点
+  const st=getState(stepIdx,time);
+  const cx2=ox+st.V/3*pw;
+  const cy2=oy-Math.min(st.P,4)/4*ph;
+  ctx.fillStyle='#34d399';
+  ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx2,cy2,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('('+st.V.toFixed(2)+', '+st.P.toFixed(2)+')',cx2,cy2-22,'#34d399',12);
+  drawText('PV=C 双曲线 · 温度越高曲线越远离原点',W/2,H-50,'#9ab0d0',12);
+}
+
+// ===== 场景：PT 图像（直线）=====
+function drawPTChart(time){
+  const W=cv.width,H=cv.height;
+  drawText('PT 图像 · 等容线为过原点直线',W/2,30,'#fbbf24',16);
+  const ox=100,oy=H-100,pw=W-180,ph=H-200;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-ph);ctx.lineTo(ox,oy);ctx.lineTo(ox+pw,oy);ctx.stroke();
+  drawText('P (atm)',ox-40,oy-ph+15,'#9ab0d0',11);
+  drawText('T (K)',ox+pw,oy+25,'#9ab0d0',11);
+  // T 轴刻度
+  for(let T=0;T<=500;T+=100){
+    const x=ox+T/500*pw;
+    drawText(T,x,oy+18,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,oy);ctx.lineTo(x,oy+3);ctx.stroke();
+  }
+  // 不同体积下的等容线
+  const vols=[0.5,1.0,1.5];
+  const colors=['#f87171','#fbbf24','#06b6d4'];
+  vols.forEach((V,i)=>{
+    ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+    ctx.shadowColor=colors[i];ctx.shadowBlur=6;
+    ctx.beginPath();
+    for(let T=0;T<=500;T+=10){
+      const P=T/300/V;
+      if(P>4)continue;
+      const x=ox+T/500*pw;
+      const y=oy-P/4*ph;
+      if(T===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText('V='+V+'L',ox+pw-60,oy-ph+20+i*18,colors[i],11);
+  });
+  const st=getState(stepIdx,time);
+  const cx2=ox+st.T/500*pw;
+  const cy2=oy-Math.min(st.P,4)/4*ph;
+  ctx.fillStyle='#34d399';
+  ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx2,cy2,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('查理定律 · P 与 T 成正比',W/2,H-50,'#9ab0d0',12);
+}
+
+// ===== 场景：VT 图像（直线）=====
+function drawVTChart(time){
+  const W=cv.width,H=cv.height;
+  drawText('VT 图像 · 等压线为过原点直线',W/2,30,'#fbbf24',16);
+  const ox=100,oy=H-100,pw=W-180,ph=H-200;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-ph);ctx.lineTo(ox,oy);ctx.lineTo(ox+pw,oy);ctx.stroke();
+  drawText('V (L)',ox-40,oy-ph+15,'#9ab0d0',11);
+  drawText('T (K)',ox+pw,oy+25,'#9ab0d0',11);
+  for(let T=0;T<=500;T+=100){
+    const x=ox+T/500*pw;
+    drawText(T,x,oy+18,'#5a6a8a',10);
+  }
+  const press=[0.5,1.0,1.5];
+  const colors=['#06b6d4','#fbbf24','#f87171'];
+  press.forEach((P,i)=>{
+    ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+    ctx.shadowColor=colors[i];ctx.shadowBlur=6;
+    ctx.beginPath();
+    for(let T=0;T<=500;T+=10){
+      const V=T/300*P;
+      if(V>3)continue;
+      const x=ox+T/500*pw;
+      const y=oy-V/3*ph;
+      if(T===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText('P='+P+'atm',ox+pw-70,oy-ph+20+i*18,colors[i],11);
+  });
+  const st=getState(stepIdx,time);
+  const cx2=ox+st.T/500*pw;
+  const cy2=oy-Math.min(st.V,3)/3*ph;
+  ctx.fillStyle='#34d399';
+  ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx2,cy2,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('盖-吕萨克定律 · V 与 T 成正比',W/2,H-50,'#9ab0d0',12);
+}
+
+// ===== 场景：微观解释 =====
+function drawMicroScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('微观解释 · 分子碰撞产生压强',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  const st=getState(stepIdx,time);
+  // 容器（固定大小显示，分子数代表 V）
+  const boxW=300,boxH=180;
+  const bx=cx-boxW/2,by=cy-boxH/2;
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;
+  ctx.strokeRect(bx,by,boxW,boxH);
+  drawText('容器壁',cx,by-15,'#67e8f9',11);
+  // 分子运动速度按 T 调整
+  const spd=0.5+st.T/300;
+  const nMol=Math.floor(15+st.V*20);
+  for(let i=0;i<nMol;i++){
+    const seed=i*43.3;
+    const px=bx+15+((Math.sin(seed*1.1)+1)/2)*(boxW-30)+Math.cos(time*spd+seed)*15;
+    const py=by+15+((Math.cos(seed*0.9)+1)/2)*(boxH-30)+Math.sin(time*spd*1.4+seed)*15;
+    const r=Math.max(bx+5,Math.min(bx+boxW-5,px));
+    const s=Math.max(by+5,Math.min(by+boxH-5,py));
+    const col=st.T>330?'#f87171':(st.T>280?'#fbbf24':'#06b6d4');
+    ctx.fillStyle=col;
+    ctx.shadowColor=col;ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(r,s,4,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    // 速度线（运动轨迹尾巴）
+    if(st.T>320){
+      ctx.strokeStyle=col+'88';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(r,s);ctx.lineTo(r-8,s);ctx.stroke();
+    }
+  }
+  // 说明文字
+  drawText('温度高 → 分子运动快 → 撞击频繁有力 → 压强大',cx,by+boxH+30,'#9ab0d0',12);
+  drawText('体积小 → 单位面积碰撞多 → 压强大',cx,by+boxH+50,'#9ab0d0',12);
+  drawText('压强 = 单位面积单位时间的冲量',cx,by+boxH+70,'#34d399',12);
+}
+
+// ===== 场景：综合状态方程 =====
+function drawEquationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('理想气体状态方程 · PV/T=恒量',W/2,30,'#fbbf24',18);
+  const cx=W/2,cy=H/2;
+  // 主公式
+  ctx.fillStyle='rgba(251,191,36,0.08)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(cx-220,cy-100,440,80,12);ctx.fill();ctx.stroke();
+  ctx.font='bold 32px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('PV = nRT',cx,cy-70);
+  ctx.font='16px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('P₁V₁/T₁ = P₂V₂/T₂ = 恒量',cx,cy-30);
+  // 三个定律
+  const laws=[
+    {name:'玻意耳定律',formula:'P₁V₁=P₂V₂',cond:'T 恒定',color:'#06b6d4',y:cy+30},
+    {name:'查理定律',formula:'P₁/T₁=P₂/T₂',cond:'V 恒定',color:'#fbbf24',y:cy+85},
+    {name:'盖-吕萨克',formula:'V₁/T₁=V₂/T₂',cond:'P 恒定',color:'#f87171',y:cy+140},
+  ];
+  laws.forEach((l,i)=>{
+    const x=80+i*(W-160)/3;
+    ctx.fillStyle=l.color+'22';ctx.strokeStyle=l.color;ctx.lineWidth=2;
+    roundRect(x+10,l.y-30,(W-160)/3-20,60,8);ctx.fill();ctx.stroke();
+    drawText(l.name,x+(W-160)/6,l.y-10,l.color,13);
+    drawText(l.formula,x+(W-160)/6,l.y+12,'#fff',14);
+    drawText(l.cond,x+(W-160)/6,l.y+30,'#9ab0d0',11);
+  });
+  drawText('R = 8.31 J/(mol·K) · n = 物质的量',cx,cy+200,'#34d399',13);
+  drawText('统一了三大实验定律',cx,cy+225,'#9ab0d0',12);
+}
+
+// ===== 场景：典型计算题 =====
+function drawCalcScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 状态方程应用',W/2,30,'#fbbf24',16);
+  // 例题框
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,60,W-160,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,80,'#a78bfa',13,'left');
+  drawText('某气缸内气体初始状态 P₁=1.0 atm，V₁=2.0 L，T₁=300 K。',120,105,'#fff',13,'left');
+  drawText('压缩后 P₂=2.0 atm，V₂=1.0 L，求 T₂。',120,130,'#fff',13,'left');
+  drawText('（气体视为理想气体）',120,155,'#9ab0d0',11,'left');
+  // 解答步骤
+  const steps=[
+    {t:'① 列方程',d:'P₁V₁/T₁ = P₂V₂/T₂',c:'#06b6d4'},
+    {t:'② 代入数据',d:'1.0×2.0/300 = 2.0×1.0/T₂',c:'#a78bfa'},
+    {t:'③ 化简',d:'2.0/300 = 2.0/T₂',c:'#67e8f9'},
+    {t:'④ 求解',d:'T₂ = 300 K',c:'#34d399'},
+    {t:'⑤ 结论',d:'温度不变（等温压缩）',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,36,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,280,y+18,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：综合对比总结 =====
+function drawSummaryScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('理想气体核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'玻意耳定律',d:'P₁V₁=P₂V₂ (等温)',c:'#06b6d4'},
+    {t:'查理定律',d:'P/T=C (等容)',c:'#fbbf24'},
+    {t:'盖-吕萨克',d:'V/T=C (等压)',c:'#f87171'},
+    {t:'状态方程',d:'PV/T=C',c:'#34d399'},
+    {t:'普适方程',d:'PV=nRT',c:'#fb923c'},
+    {t:'微观本质',d:'分子热运动碰撞',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawCylinderScene(t);
+  else if(stepIdx===1||stepIdx===2)drawCylinderScene(t);
+  else if(stepIdx===3||stepIdx===4)drawCylinderScene(t);
+  else if(stepIdx===5)drawCylinderScene(t);
+  else if(stepIdx===6)drawCylinderScene(t);
+  else if(stepIdx===7)drawEquationScene(t);
+  else if(stepIdx===8)drawPVChart(t);
+  else if(stepIdx===9)drawSummaryScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

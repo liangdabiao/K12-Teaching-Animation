@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>玻尔模型局限 · 量子力学初步 · 轨道量子化 · 不确定性</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--bad)}.card.s4::before{background:var(--good)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">玻尔模型局限性与量子力学初步</span><span class="subtitle">轨道量子化 · 跃迁辐射 · 不确定性原理</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>玻尔三假设</h4><div class="v">定态 · 量子化轨道<br>跃迁辐射 hν=E_m−E_n</div></div>
+  <div class="card s2"><div class="num">2</div><h4>能级公式</h4><div class="v">r_n = n²·r₁<br>E_n = −13.6/n² eV</div></div>
+  <div class="card s3"><div class="num">3</div><h4>模型局限</h4><div class="v">多电子原子失效<br>无法解释化学键/精细结构</div></div>
+  <div class="card s4"><div class="num">4</div><h4>不确定性原理</h4><div class="v">Δx·Δp ≥ ℏ/2<br>电子云代替轨道</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">玻尔模型</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'玻尔三假设',body:'<strong>玻尔模型</strong>在卢瑟福核式结构基础上提出三条假设：<strong>①定态假设</strong>（电子在特定轨道上运行不辐射能量）；<strong>②轨道量子化</strong>（只有满足 <code>mvr=nh/2π</code> 的轨道才稳定）；<strong>③跃迁辐射</strong>（电子在高低能级间跃迁时吸收/发射光子）。',points:{title:'三大假设',items:['<strong>定态</strong>：电子绕核不辐射能量','<strong>量子化</strong>：mvr = nℏ（n=1,2,3…）','<strong>跃迁</strong>：hν = E_m − E_n','<strong>基态</strong>：n=1 为最稳定状态']}},
+  {tag:'轨道',name:'轨道量子化',body:'氢原子轨道半径与能量均<strong>量子化</strong>：半径公式 <code>r_n = n²·r₁</code>（r₁=0.529 Å 为玻尔半径）；能量公式 <code>E_n = −13.6/n² eV</code>。n 越大，轨道越远、能量越高（负值越接近 0）。',points:{title:'量子化公式',items:['<strong>r₁</strong> = 0.529 Å（玻尔半径）','<strong>r₂</strong> = 4r₁, r₃ = 9r₁','<strong>E₁</strong> = −13.6 eV（基态）','<strong>E∞</strong> = 0（电离态）']}},
+  {tag:'跃迁',name:'跃迁辐射',body:'电子从高能级 <code>E_m</code> 跃迁到低能级 <code>E_n</code> 时，<strong>发射光子</strong>： <code>hν = E_m − E_n</code>。反向跃迁则<strong>吸收</strong>相同频率光子。不同跃迁对应不同谱线系（赖曼、巴耳末、帕邢等）。',points:{title:'跃迁规律',items:['<strong>发射</strong>：高→低，释放光子','<strong>吸收</strong>：低→高，吸收光子','<strong>频率</strong>：ν = (E_m−E_n)/h','<strong>非连续</strong>：谱线为分立的']}},
+  {tag:'光谱',name:'氢光谱解释',body:'玻尔模型成功<strong>解释氢原子光谱</strong>：巴耳末系（可见光区）对应电子跃迁到 n=2；赖曼系（紫外）跃迁到 n=1；帕邢系（红外）跃迁到 n=3。理论计算的<strong>Rydberg 常数</strong>与实验值高度吻合。',points:{title:'谱线系',items:['<strong>赖曼系</strong>：终态 n=1（紫外区）','<strong>巴耳末系</strong>：终态 n=2（可见光）','<strong>帕邢系</strong>：终态 n=3（红外区）','<strong>Rydberg R</strong>：理论=实验值 ✓']}},
+  {tag:'局限',name:'玻尔模型局限',body:'玻尔模型的<strong>成功</strong>：解释氢光谱、计算 Rydberg 常数。但<strong>局限</strong>明显：<strong>①</strong>无法解释多电子原子（He、Li 光谱）；<strong>②</strong>无法处理化学键与分子结构；<strong>③</strong>无法解释精细结构、Zeeman 效应、谱线强度；<strong>④</strong>仍保留"轨道"经典概念，理论不自洽。',points:{title:'四大局限',items:['<strong>多电子原子</strong>：失效','<strong>化学键</strong>：无法处理','<strong>精细结构</strong>：无法解释','<strong>半经典</strong>：电子仍有确定轨道']}},
+  {tag:'量子',name:'电子云代替轨道',body:'量子力学用<strong>波函数</strong> ψ 描述电子，电子位置是<strong>概率分布</strong>而非确定轨道。<strong>电子云</strong>是 |ψ|² 的可视化：越密表示该处出现概率越大。轨道（s、p、d、f）实际是<strong>概率分布形状</strong>。',points:{title:'电子云要点',items:['<strong>波函数 ψ</strong>：描述量子态','<strong>|ψ|²</strong>：电子出现概率密度','<strong>s 轨道</strong>：球形对称','<strong>p 轨道</strong>：哑铃形（三方向）']}},
+  {tag:'量子',name:'不确定性原理',body:'<strong>海森堡不确定性原理</strong>：粒子的位置和动量不能同时精确确定。<code>Δx·Δp ≥ ℏ/2</code>（ℏ=h/2π）。这不是测量精度问题，而是<strong>自然的根本属性</strong>。能量-时间也有类似关系 <code>ΔE·Δt ≥ ℏ/2</code>。',points:{title:'不确定关系',items:['<strong>Δx·Δp ≥ ℏ/2</strong>：位置-动量','<strong>ΔE·Δt ≥ ℏ/2</strong>：能量-时间','<strong>ℏ = h/2π</strong>：约化普朗克常数','<strong>本质</strong>：波粒二象性体现']}},
+  {tag:'量子',name:'波粒二象性',body:'<strong>德布罗意</strong>提出所有实物粒子都具有波动性：<code>λ = h/p</code>（p=mv 为动量）。电子衍射实验（戴维森-革末）证实了物质波。波粒二象性是量子力学的基石，也是不确定性原理的根源。',points:{title:'物质波要点',items:['<strong>λ = h/p</strong>：德布罗意波长','<strong>宏观物体</strong>：λ 极小不可察觉','<strong>电子</strong>：λ 与原子尺度相当','<strong>衍射</strong>：证明电子波动性']}},
+  {tag:'计算',name:'典型计算',body:'例：氢原子从 n=3 跃迁到 n=2，求发射光子波长。解：E₃=−13.6/9=−1.51 eV，E₂=−13.6/4=−3.40 eV；ΔE=E₃−E₂=1.89 eV；λ=hc/ΔE=1240/1.89≈656 nm（红色，Hα 线）。',points:{title:'解题三步',items:['<strong>步骤1</strong>：计算 E_m、E_n','<strong>步骤2</strong>：ΔE = E_m − E_n','<strong>步骤3</strong>：λ = hc/ΔE（hc≈1240 eV·nm）','<strong>Hα 线</strong>：656 nm（红光）']}},
+  {tag:'总结',name:'核心速记',body:'玻尔模型首次将<strong>量子化</strong>引入原子结构，成功解释氢光谱；但保留经典轨道概念，对多电子原子失效。量子力学以<strong>波函数</strong>和<strong>不确定性原理</strong>为基础，用<strong>电子云</strong>代替确定轨道，更深刻地描述微观世界。',points:{title:'三句话总结',items:['<strong>玻尔</strong>：r_n=n²r₁, E_n=−13.6/n²','<strong>跃迁</strong>：hν = E_m − E_n','<strong>不确定</strong>：Δx·Δp ≥ ℏ/2','<strong>新模型</strong>：电子云 + 波粒二象性']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：玻尔圆形轨道 =====
+function drawBohrOrbitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('玻尔模型 · 量子化圆形轨道',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 原子核
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=18;
+  ctx.beginPath();ctx.arc(cx,cy,10,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('+',cx,cy,'#fff',14);
+  drawText('原子核（质子）',cx,cy+30,'#f87171',11);
+  // 三条量子化轨道 r_n = n²·r₁
+  const r1=42;
+  const orbits=[
+    {n:1,r:r1*1,c:'#34d399',lab:'n=1 · r₁ · E₁=−13.6eV'},
+    {n:2,r:r1*4,c:'#06b6d4',lab:'n=2 · 4r₁ · E₂=−3.4eV'},
+    {n:3,r:r1*9,c:'#a78bfa',lab:'n=3 · 9r₁ · E₃=−1.51eV'},
+  ];
+  orbits.forEach(o=>{
+    ctx.strokeStyle=o.c+'88';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.arc(cx,cy,o.r,0,7);ctx.stroke();ctx.setLineDash([]);
+    drawText('n='+o.n,cx+o.r+12,cy,o.c,11,'left');
+  });
+  // 电子在第 n=2 轨道上转动
+  const orbitN=2;const orbR=r1*orbitN*orbitN;
+  const ang=time*2.2;
+  const ex=cx+Math.cos(ang)*orbR,ey=cy+Math.sin(ang)*orbR;
+  // 电子拖尾
+  for(let i=1;i<=12;i++){
+    const a=ang-i*0.06;
+    const tx=cx+Math.cos(a)*orbR,ty=cy+Math.sin(a)*orbR;
+    ctx.fillStyle='rgba(251,191,36,'+(0.5-i*0.04)+')';
+    ctx.beginPath();ctx.arc(tx,ty,4-i*0.2,0,7);ctx.fill();
+  }
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(ex,ey,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('e⁻',ex,ey-15,'#fbbf24',12);
+  drawText('电子只在量子化轨道运行（不辐射能量）',W/2,H-50,'#34d399',12);
+  drawText('mvr = n·ℏ（n=1,2,3…）',W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景：能级图与跃迁 =====
+function drawEnergyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('氢原子能级图 · 跃迁辐射',W/2,30,'#fbbf24',16);
+  const x0=120,E0=H-90,Emax=70,scale=(E0-Emax)/13.6;
+  // 能级线
+  const levels=[
+    {n:1,E:-13.6,c:'#34d399'},
+    {n:2,E:-3.4,c:'#06b6d4'},
+    {n:3,E:-1.51,c:'#a78bfa'},
+    {n:4,E:-0.85,c:'#fbbf24'},
+    {n:5,E:-0.54,c:'#fb923c'},
+  ];
+  // E=0 线（电离）
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(x0-20,Emax);ctx.lineTo(W-60,Emax);ctx.stroke();ctx.setLineDash([]);
+  drawText('E = 0 （电离态）',x0-30,Emax,'#9ab0d0',11,'right');
+  levels.forEach(l=>{
+    const y=E0-(l.E+13.6)*scale;
+    ctx.strokeStyle=l.c;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(W-60,y);ctx.stroke();
+    drawText('n='+l.n,x0-12,y,l.c,12,'right');
+    drawText('E'+l.n+'='+l.E+' eV',W-50,y,'#fff',11,'left');
+  });
+  // 动态跃迁箭头
+  const seq=Math.floor(time*0.6)%3;
+  const trans=[{m:3,n:2,c:'#fbbf24',t:'Hα 656nm'},{m:4,n:2,c:'#06b6d4',t:'Hβ 486nm'},{m:3,n:1,c:'#a78bfa',t:'赖曼 UV'}];
+  const tr=trans[seq];
+  const ym=E0-(levels[tr.m-1].E+13.6)*scale;
+  const yn=E0-(levels[tr.n-1].E+13.6)*scale;
+  const ax=x0+200;
+  ctx.strokeStyle=tr.c;ctx.lineWidth=3;ctx.shadowColor=tr.c;ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(ax,ym);ctx.lineTo(ax,yn);ctx.stroke();
+  ctx.fillStyle=tr.c;
+  ctx.beginPath();ctx.moveTo(ax,yn);ctx.lineTo(ax-7,yn-12);ctx.lineTo(ax+7,yn-12);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText(tr.t,ax+30,(ym+yn)/2,tr.c,12,'left');
+  drawText('hν = E_m − E_n',W/2,H-50,'#34d399',13);
+  drawText('电子从高能级跃迁到低能级，发射光子',W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景：氢光谱 =====
+function drawSpectrumScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('氢原子光谱 · 巴耳末系（可见光）',W/2,30,'#fbbf24',16);
+  // 光谱带（彩虹色）
+  const bx=80,bw=W-160,by=H/2-40,bh=80;
+  const grad=ctx.createLinearGradient(bx,0,bx+bw,0);
+  grad.addColorStop(0,'#9333ea');grad.addColorStop(0.2,'#3b82f6');
+  grad.addColorStop(0.45,'#22c55e');grad.addColorStop(0.6,'#eab308');
+  grad.addColorStop(0.8,'#f97316');grad.addColorStop(1,'#dc2626');
+  ctx.fillStyle=grad;ctx.fillRect(bx,by,bw,bh);
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.strokeRect(bx,by,bw,bh);
+  // 波长刻度
+  [400,450,500,550,600,650,700].forEach(wl=>{
+    const x=bx+(wl-400)/300*bw;
+    ctx.strokeStyle='#fff5';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,by+bh);ctx.lineTo(x,by+bh+6);ctx.stroke();
+    drawText(wl+'nm',x,by+bh+20,'#9ab0d0',10);
+  });
+  // 四条巴耳末系谱线（动态闪烁）
+  const lines=[
+    {wl:656,name:'Hα',c:'#dc2626',col:'#ff6b6b'},
+    {wl:486,name:'Hβ',c:'#3b82f6',col:'#60a5fa'},
+    {wl:434,name:'Hγ',c:'#a855f7',col:'#c084fc'},
+    {wl:410,name:'Hδ',c:'#7c3aed',col:'#a78bfa'},
+  ];
+  lines.forEach((ln,i)=>{
+    const x=bx+(ln.wl-400)/300*bw;
+    const blink=0.6+0.4*Math.sin(time*3+i);
+    ctx.strokeStyle=ln.col;ctx.lineWidth=2.5;ctx.globalAlpha=blink;
+    ctx.beginPath();ctx.moveTo(x,by-2);ctx.lineTo(x,by+bh+2);ctx.stroke();
+    ctx.globalAlpha=1;
+    drawText(ln.name,x,by-15,ln.col,12);
+    drawText(ln.wl+'nm',x,by-30,'#fff',10);
+  });
+  drawText('波长 (nm)',W-50,by+bh+20,'#9ab0d0',11,'left');
+  drawText('谱线分立 → 能级量子化的实验证据',W/2,H-50,'#34d399',13);
+  drawText('玻尔理论计算值与实验测得波长精确吻合',W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景：玻尔模型局限 =====
+function drawLimitScene(){
+  const W=cv.width,H=cv.height;
+  drawText('玻尔模型的局限性',W/2,30,'#f87171',16);
+  const items=[
+    {t:'多电子原子',d:'He、Li 等光谱无法解释',c:'#f87171',ok:false},
+    {t:'化学键',d:'无法处理分子结构与成键',c:'#fb923c',ok:false},
+    {t:'精细结构',d:'谱线分裂、Zeeman 效应失效',c:'#fbbf24',ok:false},
+    {t:'谱线强度',d:'无法预测跃迁概率',c:'#a78bfa',ok:false},
+    {t:'氢光谱',d:'精确解释 ✓ Rydberg 常数 ✓',c:'#34d399',ok:true},
+    {t:'半经典框架',d:'仍保留"确定轨道"概念',c:'#06b6d4',ok:false},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=80+row*170;
+    const w=(W-120)/3-20;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x,y,w,140,10);ctx.fill();ctx.stroke();
+    drawText(m.ok?'✓ 成功':'✗ 局限',x+w/2,y+30,m.c,14);
+    drawText(m.t,x+w/2,y+65,'#fff',14);
+    drawText(m.d,x+w/2,y+100,m.c,11);
+  });
+  drawText('半经典模型 → 需要更彻底的量子力学',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景：电子云 =====
+function drawCloudScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电子云 · 概率分布代替确定轨道',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 原子核
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(cx,cy,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  // 左侧：玻尔确定轨道（虚化对比）
+  const lx=cx-160;
+  ctx.globalAlpha=0.4;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.arc(lx,cy,55,0,7);ctx.stroke();ctx.setLineDash([]);
+  const ea=time*2.5;
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(lx+Math.cos(ea)*55,cy+Math.sin(ea)*55,4,0,7);ctx.fill();
+  ctx.globalAlpha=1;
+  drawText('玻尔：确定轨道',lx,cy-90,'#06b6d4',12);
+  drawText('（电子位置确定）',lx,cy+90,'#9ab0d0',10);
+  // 右侧：电子云（1s 轨道概率分布）
+  const rx=cx+160;
+  // 用伪随机点云表示概率分布
+  for(let i=0;i<240;i++){
+    const seed=i*73.13+time*0.5;
+    const u=(Math.sin(seed)*43758.5453)%1,v=(Math.cos(seed*1.3)*12543.987)%1;
+    const r=Math.sqrt(-Math.log(Math.abs(v)+0.0001))*22;
+    const th=Math.abs(u)*6.283;
+    const px=rx+Math.cos(th)*r,py=cy+Math.sin(th)*r;
+    const prob=Math.exp(-r*r/300);
+    ctx.fillStyle='rgba(251,191,36,'+(0.15+prob*0.6)+')';
+    ctx.beginPath();ctx.arc(px,py,1.6,0,7);ctx.fill();
+  }
+  drawText('量子力学：电子云',rx,cy-90,'#fbbf24',12);
+  drawText('|ψ|² 概率密度分布',rx,cy+90,'#9ab0d0',10);
+  // 中间箭头
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(lx+75,cy);ctx.lineTo(rx-75,cy);ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(rx-75,cy);ctx.lineTo(rx-85,cy-6);ctx.lineTo(rx-85,cy+6);ctx.fill();
+  drawText('演进',cx,cy-12,'#34d399',12);
+  drawText('电子无确定轨道，只有出现概率',W/2,H-50,'#34d399',13);
+  drawText('波函数 ψ 完整描述量子态',W/2,H-28,'#9ab0d0',12);
+}
+
+// ===== 场景：不确定性原理 =====
+function drawUncertainScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('海森堡不确定性原理 · Δx·Δp ≥ ℏ/2',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 左图：位置确定 → 动量不确定（动量云）
+  drawText('位置确定',cx-180,cy-100,'#06b6d4',13);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-180,cy-80);ctx.lineTo(cx-180,cy+80);ctx.stroke();
+  drawText('Δx→0',cx-180,cy+100,'#9ab0d0',11);
+  drawText('Δp→∞',cx-130,cy+100,'#f87171',11);
+  // 动量方向各种可能
+  for(let i=0;i<8;i++){
+    const a=i/8*6.28+time;
+    ctx.strokeStyle='rgba(248,113,113,0.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(cx-180,cy);
+    ctx.lineTo(cx-180+Math.cos(a)*50,cy+Math.sin(a)*50);ctx.stroke();
+  }
+  // 右图：动量确定 → 位置不确定（波）
+  drawText('动量确定',cx+180,cy-100,'#34d399',13);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let x=-100;x<=100;x+=2){
+    const xx=cx+180+x;
+    const yy=cy+Math.sin((x*0.1+time*2))*20;
+    if(x===-100)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('Δp→0',cx+180,cy+100,'#9ab0d0',11);
+  drawText('Δx→∞',cx+230,cy+100,'#f87171',11);
+  // 中间公式
+  ctx.fillStyle='rgba(251,191,36,0.12)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(cx-90,cy-30,180,60,8);ctx.fill();ctx.stroke();
+  drawText('Δx · Δp ≥ ℏ/2',cx,cy,'#fbbf24',16);
+  // 说明
+  drawText('位置与动量不能同时精确确定',W/2,H-60,'#fbbf24',13);
+  drawText('这是自然属性，与测量精度无关',W/2,H-38,'#9ab0d0',12);
+  drawText('ℏ = h/2π ≈ 1.055×10⁻³⁴ J·s',W/2,H-18,'#34d399',11);
+}
+
+// ===== 场景：波粒二象性 =====
+function drawWaveParticleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('波粒二象性 · λ = h/p',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 电子双缝干涉（波动性）
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-160,cy-80);ctx.lineTo(cx-160,cy+80);ctx.stroke();
+  // 缝
+  ctx.fillStyle='#06101f';ctx.fillRect(cx-165,cy-25,10,16);ctx.fillRect(cx-165,cy+9,10,16);
+  drawText('双缝',cx-160,cy-100,'#9ab0d0',11);
+  // 物质波
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;ctx.globalAlpha=0.7;
+  for(let i=0;i<3;i++){
+    ctx.beginPath();
+    for(let x=-150;x<=-20;x+=3){
+      const yy=cy+(i-1)*30+Math.sin(x*0.15+time*2)*6;
+      if(x===-150)ctx.moveTo(cx+x,yy);else ctx.lineTo(cx+x,yy);
+    }
+    ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  // 干涉条纹（屏幕）
+  ctx.fillStyle='#fbbf24';
+  for(let i=-5;i<=5;i++){
+    const y=cy+i*16;
+    const inten=Math.abs(Math.cos(i*0.5+time*0.3));
+    ctx.globalAlpha=inten*0.9;
+    ctx.fillRect(cx+120,y-3,40,6);
+  }
+  ctx.globalAlpha=1;
+  drawText('屏幕',cx+140,cy-100,'#9ab0d0',11);
+  drawText('干涉条纹',cx+140,cy+100,'#fbbf24',11);
+  // 电子枪（粒子性）
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(cx-220,cy,5,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('电子源',cx-220,cy+22,'#9ab0d0',11);
+  // 飞行电子（动态）
+  const flyT=(time*0.6)%1;
+  const fx=cx-220+(cx+60-(cx-220))*flyT;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(fx,cy,3,0,7);ctx.fill();ctx.shadowBlur=0;
+  // 公式
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(cx-90,cy-110,180,28,6);ctx.fill();ctx.stroke();
+  drawText('λ = h / p = h / (mv)',cx,cy-96,'#fbbf24',13);
+  drawText('电子既有粒子性又有波动性',W/2,H-55,'#34d399',13);
+  drawText('单个电子也产生干涉 → 波动性',W/2,H-35,'#06b6d4',12);
+  drawText('戴维森-革末电子衍射实验证实物质波',W/2,H-15,'#9ab0d0',12);
+}
+
+// ===== 场景：典型计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 氢光谱 Hα 线',W/2,30,'#fbbf24',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,120,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('氢原子从 n=3 跃迁到 n=2，求发射光子的波长。',120,115,'#fff',13,'left');
+  drawText('（已知 hc ≈ 1240 eV·nm，E_n = −13.6/n² eV）',120,140,'#9ab0d0',12,'left');
+  const steps=[
+    {t:'① 能级',d:'E₃ = −13.6/9 ≈ −1.51 eV, E₂ = −13.6/4 = −3.40 eV',c:'#06b6d4'},
+    {t:'② 能差',d:'ΔE = E₃ − E₂ = −1.51 − (−3.40) = 1.89 eV',c:'#a78bfa'},
+    {t:'③ 波长',d:'λ = hc/ΔE = 1240 / 1.89 ≈ 656 nm',c:'#67e8f9'},
+    {t:'④ 结论',d:'λ ≈ 656 nm（红光），即巴耳末系 Hα 线 ✓',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=210+i*55;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+21,s.c,13,'left');
+    drawText(s.d,260,y+21,'#fff',13,'left');
+  });
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('玻尔模型与量子力学总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'玻尔半径',d:'r_n = n²·r₁, r₁=0.529Å',c:'#fbbf24'},
+    {t:'能级公式',d:'E_n = −13.6/n² eV',c:'#06b6d4'},
+    {t:'跃迁条件',d:'hν = E_m − E_n',c:'#a78bfa'},
+    {t:'不确定性',d:'Δx·Δp ≥ ℏ/2',c:'#34d399'},
+    {t:'物质波',d:'λ = h/p（德布罗意）',c:'#fb923c'},
+    {t:'新图景',d:'电子云 + 波粒二象性',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawBohrOrbitScene(t);
+  else if(stepIdx===1)drawBohrOrbitScene(t);
+  else if(stepIdx===2)drawEnergyScene(t);
+  else if(stepIdx===3)drawSpectrumScene(t);
+  else if(stepIdx===4)drawLimitScene();
+  else if(stepIdx===5)drawCloudScene(t);
+  else if(stepIdx===6)drawUncertainScene(t);
+  else if(stepIdx===7)drawWaveParticleScene(t);
+  else if(stepIdx===8)drawCalcScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

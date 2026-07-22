@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>氧化还原配平 · 化合价升降法 · 电子守恒</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">氧化还原方程式配平</span><span class="subtitle">化合价升降法 · 电子守恒 · 双线桥</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>配平三原则</h4><div class="v">质量守恒 · 原子守恒<br>电子守恒（得失相等）</div></div>
+  <div class="card s2"><div class="num">2</div><h4>化合价升降法</h4><div class="v">标价→列变→求公倍数<br>→配系数→查氧氢</div></div>
+  <div class="card s3"><div class="num">3</div><h4>电子守恒法</h4><div class="v">离子-电子法<br>半反应配平</div></div>
+  <div class="card s4"><div class="num">4</div><h4>双线桥表示</h4><div class="v">单线桥/双线桥<br>标电子转移方向</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">配平原则</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'原则',name:'配平三原则',body:'氧化还原方程式配平必须遵循<strong>三大守恒</strong>：<strong>质量守恒</strong>（反应前后总质量不变）、<strong>原子守恒</strong>（各元素原子个数相等）、<strong>电子守恒</strong>（失电子总数=得电子总数）。其中电子守恒是氧化还原配平的<strong>核心依据</strong>。',points:{title:'三大原则',items:['<strong>质量守恒</strong>：总质量反应前后不变','<strong>原子守恒</strong>：每种原子个数相等','<strong>电子守恒</strong>：得失电子总数相等','<strong>化合价升降总数相等</strong>：电子守恒的体现']}},
+  {tag:'化合价',name:'化合价标注',body:'配平第一步：<strong>标出反应前后变价元素的化合价</strong>。化合价升高=失电子=被氧化=还原剂；化合价降低=得电子=被还原=氧化剂。',points:{title:'标价口诀',items:['<strong>单质</strong>：化合价为 0','<strong>H 通常</strong>：+1（金属氢化物中-1）','<strong>O 通常</strong>：-2（过氧化物中-1）','<strong>离子</strong>：化合价=所带电荷数']}},
+  {tag:'化合价',name:'升降分析',body:'<strong>列出每种元素化合价的变化</strong>。Cu：0→+2，<strong>升高 2</strong>（失 2e⁻）；N：+5→+2，<strong>降低 3</strong>（得 3e⁻）。升高总数=降低总数，才能满足电子守恒。',points:{title:'升降判断',items:['<strong>升高</strong>：被氧化，作还原剂','<strong>降低</strong>：被还原，作氧化剂','<strong>1 个 Cu</strong>：升 2','<strong>1 个 N</strong>：降 3']}},
+  {tag:'守恒',name:'电子守恒',body:'<strong>电子守恒法</strong>（离子-电子法）：分别写出<strong>氧化半反应</strong>和<strong>还原半反应</strong>，配平电荷和原子，再按<strong>得失电子数相等</strong>合并。适合复杂离子方程式配平。',points:{title:'半反应法步骤',items:['<strong>1. 写半反应</strong>：氧化半反应+还原半反应','<strong>2. 配原子</strong>：用 H₂O/H⁺/OH⁻','<strong>3. 配电荷</strong>：加电子 e⁻','<strong>4. 消电子</strong>：乘系数使 e⁻ 相等']}},
+  {tag:'守恒',name:'求公倍数',body:'<strong>找化合价升降数的最小公倍数</strong>，确定氧化剂和还原剂的系数。Cu 升 2，N 降 3，最小公倍数为 6。所以 Cu 需要 3 个，N（被还原）需要 2 个。',points:{title:'公倍数法',items:['<strong>Cu 升</strong>：2 × 3 = 6','<strong>N 降</strong>：3 × 2 = 6','<strong>系数比</strong>：Cu : N = 3 : 2','<strong>核心</strong>：升=降，电子守恒']}},
+  {tag:'例题',name:'Cu+HNO₃例题',body:'<strong>典型例题</strong>：Cu + 稀 HNO₃ → Cu(NO₃)₂ + NO↑ + H₂O。<strong>配平结果</strong>：3Cu + 8HNO₃ = 3Cu(NO₃)₂ + 2NO↑ + 4H₂O。其中 8 个 HNO₃ 中只有 <strong>2 个被还原</strong>（生成 NO），其余 6 个起酸的作用。',points:{title:'配平关键',items:['<strong>3 Cu</strong>：失 3×2=6 e⁻','<strong>2 HNO₃</strong>：得 2×3=6 e⁻','<strong>8 HNO₃</strong>：含 2 个氧化剂+6 个酸','<strong>检查</strong>：N=8, H=8, O 平衡']}},
+  {tag:'例题',name:'KMnO₄+HCl例题',body:'<strong>典型例题</strong>：KMnO₄ + HCl(浓) → KCl + MnCl₂ + Cl₂↑ + H₂O。<strong>配平结果</strong>：2KMnO₄ + 16HCl = 2KCl + 2MnCl₂ + 5Cl₂↑ + 8H₂O。Mn：+7→+2 降 5；Cl：-1→0 升 1，5 个 Cl 被氧化成 Cl₂。',points:{title:'配平关键',items:['<strong>2 Mn</strong>：得 2×5=10 e⁻','<strong>10 Cl</strong>：失 10×1=10 e⁻ → 5 Cl₂','<strong>16 HCl</strong>：含 10 氧化剂+6 酸','<strong>浓盐酸</strong>：兼顾还原剂和酸']}},
+  {tag:'表示',name:'双线桥表示',body:'<strong>双线桥法</strong>：从反应物某元素<strong>箭头指向</strong>生成物中同种元素，标注<strong>得失电子数</strong>。<strong>单线桥</strong>：从失电子元素<strong>指向</strong>得电子元素，表示电子<strong>转移方向</strong>。',points:{title:'两种桥法',items:['<strong>双线桥</strong>：跨等号，标 a×b e⁻ 得/失','<strong>单线桥</strong>：不跨等号，标转移方向','<strong>箭头从</strong>：还原剂→氧化剂','<strong>都标注</strong>：电子转移总数']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// 共 8 个绘制场景，对应 STEPS 8 步，由 draw() 分发
+// ===== 场景：配平三原则（质量/原子/电子守恒） =====
+function drawPrincipleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('氧化还原配平 · 三大守恒原则',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  const items=[
+    {t:'质量守恒',d:'反应物总质量\n= 生成物总质量',c:'#fbbf24',x:cx-280},
+    {t:'原子守恒',d:'各元素原子数\n反应前后相等',c:'#06b6d4',x:cx},
+    {t:'电子守恒',d:'失电子总数\n= 得电子总数',c:'#34d399',x:cx+280},
+  ];
+  const pulse=Math.sin(time*2)*0.1+1;
+  items.forEach((m,i)=>{
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    const r=80*pulse;
+    roundRect(m.x-r,cy-60,r*2,120,12);ctx.fill();ctx.stroke();
+    drawText(m.t,m.x,cy-25,m.c,16);
+    const lines=m.d.split('\n');
+    lines.forEach((l,j)=>drawText(l,m.x,cy+5+j*18,'#fff',11));
+    // 顶部编号
+    ctx.fillStyle=m.c;
+    ctx.beginPath();ctx.arc(m.x-r+18,cy-60+18,12,0,7);ctx.fill();
+    drawText(String(i+1),m.x-r+18,cy-60+18,'#1a1a1a',12,'center','middle');
+  });
+  // 连接横线
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(cx-200,cy);ctx.lineTo(cx+200,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('电子守恒是氧化还原配平的核心依据',W/2,H-55,'#34d399',13);
+  drawText('化合价升高总数 = 化合价降低总数',W/2,H-30,'#9ab0d0',12);
+  drawText('（升高=失电子=氧化反应；降低=得电子=还原反应）',W/2,H-10,'#5a6a8a',11);
+}
+
+// ===== 场景：化合价标注 =====
+function drawValenceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('步骤1 · 标出化合价',W/2,30,'#fbbf24',16);
+  const cy=H/2-30;
+  const show=Math.min(time*1.5,1);
+  // 反应物
+  drawText('反应物',W/2-200,cy-60,'#9ab0d0',12);
+  // Cu
+  drawText('Cu',W/2-200,cy,'#fff',24);
+  if(show>0.3){
+    drawText('0',W/2-178,cy-18,'#fbbf24',12);
+  }
+  // HNO3
+  drawText('HNO₃',W/2-100,cy,'#fff',24);
+  if(show>0.5){
+    drawText('+1',W/2-115,cy-18,'#34d399',11);
+    drawText('+5',W/2-78,cy-18,'#fbbf24',12);
+    drawText('-2',W/2-60,cy-18,'#34d399',11);
+  }
+  // →
+  drawText('→',W/2,cy,'#9ab0d0',24);
+  // Cu(NO3)2
+  drawText('Cu(NO₃)₂',W/2+80,cy,'#fff',22);
+  if(show>0.7){
+    drawText('+2',W/2+62,cy-18,'#fbbf24',12);
+    drawText('+5',W/2+100,cy-18,'#fbbf24',11);
+    drawText('-2',W/2+120,cy-18,'#34d399',11);
+  }
+  // NO
+  drawText('NO↑',W/2+220,cy,'#fff',24);
+  if(show>0.8){
+    drawText('+2',W/2+212,cy-18,'#fbbf24',12);
+    drawText('-2',W/2+238,cy-18,'#34d399',11);
+  }
+  // 标注说明
+  const note=Math.sin(time*3)*0.5+0.5;
+  ctx.fillStyle='rgba(251,191,36,'+(0.4+note*0.6)+')';
+  drawText('Cu: 0 → +2  (升高)',W/2-150,cy+70,'#fbbf24',13);
+  drawText('N:  +5 → +2 (降低)',W/2+150,cy+70,'#06b6d4',13);
+  // 还原剂/氧化剂标签
+  drawText('↓ 还原剂（失电子）',W/2-150,cy+95,'#fbbf24',11);
+  drawText('↓ 氧化剂（得电子）',W/2+150,cy+95,'#06b6d4',11);
+  // 图例
+  drawText('黄色 = 变价元素 · 绿色 = 不变价',W/2,H-50,'#9ab0d0',12);
+  drawText('化合价升高=失电子=被氧化=还原剂',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景：升降分析 =====
+function drawChangeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('步骤2 · 化合价升降分析',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 左：Cu 升高
+  const upY=cy-50;
+  drawText('Cu',cx-220,upY,'#fff',22);
+  drawText('0',cx-200,upY-16,'#9ab0d0',12);
+  drawText('+2',cx-140,upY,'#fff',22);
+  drawText('+2',cx-200,upY-35,'#fbbf24',13);
+  // 上升箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(cx-185,upY-5);ctx.lineTo(cx-155,upY-5);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(cx-155,upY-5);ctx.lineTo(cx-165,upY-11);ctx.lineTo(cx-165,upY+1);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('升 2 (失 2e⁻)',cx-170,upY+25,'#fbbf24',13);
+  drawText('被氧化 · 还原剂',cx-170,upY+45,'#9ab0d0',11);
+  // 右：N 降低
+  const dnY=cy-50;
+  drawText('N',cx+40,dnY,'#fff',22);
+  drawText('+5',cx+58,dnY-16,'#9ab0d0',12);
+  drawText('+2',cx+120,dnY,'#fff',22);
+  drawText('−3',cx+58,dnY-35,'#06b6d4',13);
+  // 下降箭头
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(cx+75,dnY-5);ctx.lineTo(cx+105,dnY-5);ctx.stroke();
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.moveTo(cx+75,dnY-5);ctx.lineTo(cx+85,dnY+1);ctx.lineTo(cx+85,dnY-11);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('降 3 (得 3e⁻)',cx+90,dnY+25,'#06b6d4',13);
+  drawText('被还原 · 氧化剂',cx+90,dnY+45,'#9ab0d0',11);
+  // 中间公式
+  const pulse=Math.sin(time*2.5)*0.15+1;
+  ctx.fillStyle='rgba(52,211,153,'+(0.3+pulse*0.3)+')';
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(cx-130,cy+90,260,60,10);ctx.fill();ctx.stroke();
+  drawText('1 Cu 升 2 ≠ 1 N 降 3',cx,cy+108,'#fff',14);
+  drawText('需要找公倍数让 升 = 降',cx,cy+132,'#34d399',12);
+  drawText('得失电子总数必须相等（电子守恒）',W/2,H-40,'#9ab0d0',12);
+  drawText('氧化还原反应的本质：电子从还原剂转移到氧化剂',W/2,H-20,'#5a6a8a',11);
+}
+
+// ===== 场景：电子守恒 =====
+function drawElectronScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电子守恒法 · 离子-电子法',W/2,30,'#fbbf24',16);
+  const cx=W/2;
+  // 氧化半反应
+  const pulse1=Math.sin(time*2)*0.1+1;
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(60,80,W-120,90,10);ctx.fill();ctx.stroke();
+  drawText('氧化半反应（失电子）',W/2,100,'#fbbf24',13);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Cu → Cu²⁺ + 2e⁻',W/2,135);
+  drawText('Cu 失 2 个电子',W/2,158,'#9ab0d0',11);
+  // 还原半反应
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(60,190,W-120,90,10);ctx.fill();ctx.stroke();
+  drawText('还原半反应（得电子）',W/2,210,'#06b6d4',13);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('NO₃⁻ + 4H⁺ + 3e⁻ → NO + 2H₂O',W/2,245);
+  drawText('N 得 3 个电子',W/2,268,'#9ab0d0',11);
+  // 消电子
+  ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(60,300,W-120,70,10);ctx.fill();ctx.stroke();
+  drawText('×3 配 Cu，×2 配 NO₃⁻ → 电子数都为 6',W/2,322,'#34d399',14);
+  ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('3Cu + 2NO₃⁻ + 8H⁺ → 3Cu²⁺ + 2NO↑ + 4H₂O',W/2,350);
+  drawText('失 6e⁻ = 得 6e⁻ · 电子守恒成立',W/2,H-40,'#34d399',13);
+  drawText('离子方程式配平：先配原子，再用 H⁺/OH⁻/H₂O 调电荷',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景：求公倍数 =====
+function drawMultipleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('步骤3 · 求最小公倍数',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2-30;
+  const show=Math.min(time*1.2,1);
+  // Cu 升 2
+  drawText('1 个 Cu 升',cx-200,cy-50,'#fbbf24',14);
+  drawText('2',cx-200,cy-25,'#fbbf24',28);
+  drawText('×',cx-130,cy-25,'#9ab0d0',22);
+  // N 降 3
+  drawText('1 个 N 降',cx+200,cy-50,'#06b6d4',14);
+  drawText('3',cx+200,cy-25,'#06b6d4',28);
+  if(show>0.5){
+    drawText('× 3',cx-200,cy+15,'#34d399',16);
+    drawText('× 2',cx+200,cy+15,'#34d399',16);
+  }
+  if(show>0.8){
+    drawText('=',cx-80,cy-25,'#9ab0d0',22);
+    drawText('=',cx+130,cy-25,'#9ab0d0',22);
+    // LCM
+    const pulse=Math.sin(time*3)*0.1+1;
+    ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+    roundRect(cx-60,cy-55,120,80,12);ctx.fill();ctx.stroke();
+    drawText('最小公倍数',cx,cy-35,'#34d399',12);
+    ctx.font='bold 32px sans-serif';ctx.fillStyle='#34d399';ctx.textAlign='center';
+    ctx.fillText('6',cx,cy+5);
+  }
+  drawText('需要 3 个 Cu 和 2 个 N（被还原的）',cx,cy+90,'#fff',14);
+  drawText('3 × 2 = 6 = 2 × 3 · 电子守恒',cx,cy+115,'#34d399',12);
+  // 求公倍数公式行
+  if(show>1){
+    ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    roundRect(cx-180,cy+140,360,36,8);ctx.fill();ctx.stroke();
+    drawText('LCM(2,3) = 6  →  Cu×3, N×2',cx,cy+158,'#fbbf24',13);
+  }
+  drawText('系数比 Cu : N(还原) = 3 : 2',W/2,H-45,'#fbbf24',13);
+  drawText('注：HNO₃ 既要参与还原，又要起酸的作用',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：Cu+HNO3 例题 =====
+function drawCuHNO3Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · Cu + 稀 HNO₃',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2-40;
+  const step=Math.floor(Math.min(time*0.6,5));
+  // 未配平
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+  roundRect(60,cy-30,W-120,60,8);ctx.fill();ctx.stroke();
+  drawText('未配平：',120,cy,'#9ab0d0',13,'left');
+  ctx.font='20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Cu + HNO₃ → Cu(NO₃)₂ + NO↑ + H₂O',cx+40,cy);
+  // 配平步骤
+  const steps=[
+    {t:'① Cu: 0→+2 升 2',d:'被氧化',c:'#fbbf24'},
+    {t:'② N: +5→+2 降 3',d:'被还原',c:'#06b6d4'},
+    {t:'③ 公倍数 6',d:'Cu×3, NO×2',c:'#34d399'},
+    {t:'④ 配其他',d:'Cu(NO₃)₂×3, HNO₃×8',c:'#67e8f9'},
+    {t:'⑤ 配 H₂O',d:'H₂O×4',c:'#a78bfa'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=cy+70+i*32;
+    const active=i<=step;
+    if(active){
+      ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+      roundRect(80,y-12,W-160,24,6);ctx.fill();ctx.stroke();
+      drawText(s.t,140,y,s.c,13,'left');
+      drawText(s.d,W-140,y,'#fff',12,'right');
+    }
+  });
+  // 最终配平
+  if(step>=4){
+    const pulse=Math.sin(time*3)*0.15+1;
+    ctx.fillStyle='rgba(52,211,153,'+(0.2+pulse*0.2)+')';
+    ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+    roundRect(60,cy+250,W-120,50,10);ctx.fill();ctx.stroke();
+    ctx.font='bold 18px serif';ctx.fillStyle='#34d399';ctx.textAlign='center';
+    ctx.fillText('3Cu + 8HNO₃ = 3Cu(NO₃)₂ + 2NO↑ + 4H₂O',cx,cy+275);
+  }
+  drawText('8 个 HNO₃ 中：2 个被还原成 NO，6 个起酸的作用',W/2,H-40,'#fbbf24',12);
+}
+
+// ===== 场景：KMnO4+HCl 例题 =====
+function drawKMnO4Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · KMnO₄ + 浓 HCl',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2-40;
+  const step=Math.floor(Math.min(time*0.6,5));
+  // 未配平
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+  roundRect(60,cy-30,W-120,60,8);ctx.fill();ctx.stroke();
+  drawText('未配平：',120,cy,'#9ab0d0',13,'left');
+  ctx.font='20px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('KMnO₄ + HCl → KCl + MnCl₂ + Cl₂↑ + H₂O',cx+30,cy);
+  // 配平步骤
+  const steps=[
+    {t:'① Mn: +7→+2 降 5',d:'被还原',c:'#06b6d4'},
+    {t:'② Cl: -1→0 升 1',d:'被氧化',c:'#fbbf24'},
+    {t:'③ 公倍数 10',d:'Mn×2, Cl×10',c:'#34d399'},
+    {t:'④ 5 个 Cl₂',d:'2Cl → Cl₂',c:'#67e8f9'},
+    {t:'⑤ 配 HCl & H₂O',d:'HCl×16, H₂O×8',c:'#a78bfa'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=cy+70+i*32;
+    const active=i<=step;
+    if(active){
+      ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+      roundRect(80,y-12,W-160,24,6);ctx.fill();ctx.stroke();
+      drawText(s.t,140,y,s.c,13,'left');
+      drawText(s.d,W-140,y,'#fff',12,'right');
+    }
+  });
+  // 最终配平
+  if(step>=4){
+    const pulse=Math.sin(time*3)*0.15+1;
+    ctx.fillStyle='rgba(52,211,153,'+(0.2+pulse*0.2)+')';
+    ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+    roundRect(60,cy+250,W-120,50,10);ctx.fill();ctx.stroke();
+    ctx.font='bold 17px serif';ctx.fillStyle='#34d399';ctx.textAlign='center';
+    ctx.fillText('2KMnO₄ + 16HCl = 2KCl + 2MnCl₂ + 5Cl₂↑ + 8H₂O',cx,cy+275);
+  }
+  drawText('16 个 HCl：10 个被氧化成 Cl₂，6 个起酸的作用',W/2,H-40,'#fbbf24',12);
+}
+
+// ===== 场景：双线桥 =====
+function drawBridgeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电子转移表示 · 双线桥 / 单线桥',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2-50;
+  // 双线桥
+  drawText('双线桥法（跨等号，标得失）',cx,90,'#06b6d4',14);
+  ctx.font='bold 17px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('3Cu + 8HNO₃ = 3Cu(NO₃)₂ + 2NO↑ + 4H₂O',cx,cy);
+  // 双线箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.setLineDash([5,3]);
+  // Cu 箭头
+  ctx.beginPath();ctx.moveTo(cx-200,cy-12);ctx.bezierCurveTo(cx-260,cy-80,cx+100,cy-80,cx+150,cy-12);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('失 3×2=6 e⁻',cx-80,cy-70,'#fbbf24',12);
+  // N 箭头
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(cx-50,cy-12);ctx.bezierCurveTo(cx-30,cy-100,cx+180,cy-100,cx+200,cy-12);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('得 2×3=6 e⁻',cx+60,cy-90,'#06b6d4',12);
+  // 单线桥
+  drawText('单线桥法（不跨等号，标方向）',cx,cy+60,'#34d399',14);
+  ctx.font='bold 17px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('3Cu + 8HNO₃ = 3Cu(NO₃)₂ + 2NO↑ + 4H₂O',cx,cy+90);
+  // 单线箭头：从 Cu 指向 HNO₃
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2.5;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+  const animX=Math.sin(time*2)*20;
+  ctx.beginPath();ctx.moveTo(cx-200+animX,cy+78);ctx.lineTo(cx-80+animX,cy+78);ctx.stroke();
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.moveTo(cx-80+animX,cy+78);ctx.lineTo(cx-92+animX,cy+72);ctx.lineTo(cx-92+animX,cy+84);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('转移 6 e⁻',cx-140+animX,cy+65,'#f87171',12);
+  // 对比
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+  roundRect(60,cy+120,W-120,70,8);ctx.fill();ctx.stroke();
+  drawText('双线桥：分别标得失电子数（氧化反应和还原反应分开标）',cx,cy+140,'#9ab0d0',12);
+  drawText('单线桥：从还原剂指向氧化剂，标电子转移总数和方向',cx,cy+165,'#9ab0d0',12);
+  // 配平口诀
+  drawText('配平口诀：标价 → 列变 → 求公倍数 → 配系数 → 查氧氢',W/2,H-35,'#34d399',13);
+  drawText('口诀记忆：一标二列三倍四配五检查',W/2,H-15,'#fbbf24',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  // 顶部进度条
+  const prog=(stepIdx)/(STEPS.length-1);
+  ctx.fillStyle='#1e345a';ctx.fillRect(0,0,cv.width,4);
+  ctx.fillStyle='#fbbf24';ctx.fillRect(0,0,cv.width*prog,4);
+  if(stepIdx===0)drawPrincipleScene(t);
+  else if(stepIdx===1)drawValenceScene(t);
+  else if(stepIdx===2)drawChangeScene(t);
+  else if(stepIdx===3)drawElectronScene(t);
+  else if(stepIdx===4)drawMultipleScene(t);
+  else if(stepIdx===5)drawCuHNO3Scene(t);
+  else if(stepIdx===6)drawKMnO4Scene(t);
+  else if(stepIdx===7)drawBridgeScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

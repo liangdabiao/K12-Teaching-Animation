@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>离子共存判断 · 复分解 · 氧化还原 · 络合 · 沉淀</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">离子共存判断</span><span class="subtitle">复分解 · 氧化还原 · 络合 · 双水解 · 沉淀规则</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>共存基本原则</h4><div class="v">离子间不发生反应<br>即不生成沉淀/气体/水/弱电解质</div></div>
+  <div class="card s2"><div class="num">2</div><h4>四大不共存类型</h4><div class="v">复分解 · 氧化还原<br>络合 · 双水解</div></div>
+  <div class="card s3"><div class="num">3</div><h4>颜色判定</h4><div class="v">无色排除 Cu²⁺/Fe²⁺/Fe³⁺/MnO₄⁻<br>蓝/浅绿/黄/紫</div></div>
+  <div class="card s4"><div class="num">4</div><h4>典型例题</h4><div class="v">分层判断反应类型<br>逐一排除不共存离子</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">离子共存</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'共存条件',body:'<strong>离子共存</strong>：溶液中各离子之间<strong>不发生反应</strong>，能稳定存在同一溶液中。<strong>判断依据</strong>：离子间是否生成沉淀、气体、水或其他弱电解质。',points:{title:'共存基本条件',items:['<strong>不生成沉淀</strong>：无难溶物产生','<strong>不生成气体</strong>：无挥发物逸出','<strong>不生成弱电解质</strong>：水/弱酸/弱碱','<strong>不发生氧化还原</strong>：电子不转移']}},
+  {tag:'沉淀',name:'沉淀规则',body:'<strong>复分解反应</strong>生成沉淀是离子不共存的常见原因。常见难溶物：<code>BaSO₄</code>（钡与硫酸根）、<code>AgCl</code>（银与氯离子）、<code>CaCO₃</code>（钙与碳酸根）。',points:{title:'常见沉淀速记',items:['<strong>Ba²⁺ + SO₄²⁻</strong> → BaSO₄↓（白）','<strong>Ag⁺ + Cl⁻</strong> → AgCl↓（白）','<strong>Ca²⁺ + CO₃²⁻</strong> → CaCO₃↓（白）','<strong> Mg²⁺ + OH⁻ </strong> → Mg(OH)₂↓（白）']}},
+  {tag:'气体',name:'气体规则',body:'<strong>H⁺</strong> 与挥发性酸根反应生成气体：<code>H⁺ + CO₃²⁻</code> → CO₂↑；<code>2H⁺ + SO₃²⁻</code> → SO₂↑；<code>2H⁺ + S²⁻</code> → H₂S↑。这些离子<strong>不能大量共存</strong>。',points:{title:'产气组合',items:['<strong>H⁺ 与 CO₃²⁻</strong> → CO₂↑ + H₂O','<strong>H⁺ 与 SO₃²⁻</strong> → SO₂↑ + H₂O','<strong>H⁺ 与 S²⁻</strong> → H₂S↑','<strong>NH₄⁺ 与 OH⁻</strong> → NH₃↑ + H₂O']}},
+  {tag:'弱酸',name:'弱酸弱碱规则',body:'<strong>弱酸根离子</strong>（如 CH₃COO⁻、HCO₃⁻、S²⁻）与 <strong>H⁺</strong> 不共存；<strong>弱碱阳离子</strong>（如 NH₄⁺、Fe³⁺、Al³⁺）与 <strong>OH⁻</strong> 不共存。本质是生成<strong>难电离的弱电解质</strong>。',points:{title:'弱电解质规则',items:['<strong>CH₃COO⁻ + H⁺</strong> → CH₃COOH','<strong>NH₄⁺ + OH⁻</strong> → NH₃·H₂O','<strong>Fe³⁺ + 3OH⁻</strong> → Fe(OH)₃↓','<strong>本质</strong>：降低自由离子浓度']}},
+  {tag:'氧还',name:'氧化还原不共存',body:'<strong>氧化性离子</strong>（MnO₄⁻、Fe³⁺、NO₃⁻/H⁺）与<strong>还原性离子</strong>（S²⁻、I⁻、Fe²⁺）发生氧化还原反应，<strong>不能共存</strong>。',points:{title:'常见氧还对',items:['<strong>2Fe³⁺ + 2I⁻</strong> → 2Fe²⁺ + I₂','<strong>2Fe³⁺ + S²⁻</strong> → 2Fe²⁺ + S↓','<strong>MnO₄⁻ + 5Fe²⁺</strong> → Mn²⁺ + 5Fe³⁺','<strong>MnO₄⁻ + I⁻</strong>（酸性）→ I₂']}},
+  {tag:'络合',name:'络合与双水解',body:'<strong>络合反应</strong>：<code>Fe³⁺ + 3SCN⁻</code> → Fe(SCN)₃（血红色），所以 Fe³⁺ 与 SCN⁻ 不共存。<strong>双水解</strong>：水解相互促进彻底，如 <code>Al³⁺ + 3AlO₂⁻</code>、<code>Fe³⁺ 与 CO₃²⁻</code>。',points:{title:'络合与双水解',items:['<strong>Fe³⁺ + SCN⁻</strong> → 血红色配合物','<strong>Ag⁺ + 2NH₃</strong> → [Ag(NH₃)₂]⁺','<strong>Al³⁺ + 3AlO₂⁻</strong> → Al(OH)₃↓','<strong>双水解</strong>：彻底进行不可逆']}},
+  {tag:'颜色',name:'颜色判定规则',body:'题目中"<strong>无色溶液</strong>"条件可<strong>直接排除</strong>有色离子：Cu²⁺（蓝）、Fe²⁺（浅绿）、Fe³⁺（黄/棕）、MnO₄⁻（紫红）。这是<strong>快速排除</strong>的捷径。',points:{title:'常见有色离子',items:['<strong>Cu²⁺</strong>：蓝色（水合）','<strong>Fe²⁺</strong>：浅绿色','<strong>Fe³⁺</strong>：黄色或棕黄色','<strong>MnO₄⁻</strong>：紫红色']}},
+  {tag:'例题',name:'例题分析',body:'【例】某无色溶液中可能大量共存的离子组是：A. Na⁺、Cu²⁺、Cl⁻、SO₄²⁻  B. K⁺、Na⁺、Cl⁻、NO₃⁻  C. NH₄⁺、Ba²⁺、OH⁻、NO₃⁻  D. H⁺、K⁺、CO₃²⁻、SO₄²⁻',points:{title:'解题步骤',items:['<strong>步骤1</strong>：无色 → 排除 Cu²⁺（A 错）','<strong>步骤2</strong>：B 组离子间不反应','<strong>步骤3</strong>：NH₄⁺与OH⁻产气（C 错）','<strong>步骤4</strong>：H⁺与CO₃²⁻产气（D 错）→ 答案 B']}},
+  {tag:'总结',name:'核心速记',body:'离子共存判断<strong>七字口诀：沉气水弱氧络双</strong>。即<strong>复分解</strong>（沉淀/气体/水/弱电解质）、<strong>氧化还原</strong>、<strong>络合</strong>、<strong>双水解</strong>四大类反应使离子不能共存。再加上<strong>颜色条件</strong>排除有色离子。',points:{title:'速记总结',items:['<strong>沉</strong>：生成沉淀（BaSO₄ 等）','<strong>气水弱</strong>：气体/水/弱电解质','<strong>氧</strong>：氧化还原反应','<strong>络双</strong>：络合与双水解']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// 通用工具：绘制单个离子小球（带辉光、标签）
+function drawIonBall(x,y,r,label,color,glow){
+  ctx.fillStyle=color;
+  if(glow!==false){ctx.shadowColor=color;ctx.shadowBlur=10;}
+  ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 内圈高光
+  ctx.fillStyle='rgba(255,255,255,0.25)';
+  ctx.beginPath();ctx.arc(x-r*0.3,y-r*0.3,r*0.35,0,7);ctx.fill();
+  drawText(label,x,y,'#fff',Math.max(10,r*0.7));
+}
+// 绘制向上飘的气泡（用于气体规则场景）
+function drawBubble(x,baseY,phase,color){
+  const y=baseY-(phase%1)*120;
+  const alpha=1-(phase%1);
+  ctx.fillStyle='rgba(255,255,255,'+(alpha*0.4)+')';
+  ctx.strokeStyle=color||'rgba(251,191,36,0.7)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x+Math.sin(phase*8)*4,y,5+phase*2,0,7);ctx.fill();ctx.stroke();
+}
+// 绘制电子转移小箭头（用于氧化还原场景）
+function drawElectronArrow(x1,y1,x2,y2,phase){
+  const px=x1+(x2-x1)*phase;
+  const py=y1+(y2-y1)*phase-Math.sin(phase*Math.PI)*15;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('e⁻',px,py-10,'#fde68a',11);
+}
+// 离子定义：标签、颜色、初始位置、速度
+function makeIon(label,color,x,y,vx,vy){
+  return {label,color,x,y,vx,vy,r:18};
+}
+// 浮动小球（离子）+ 红框配对 + 方程式（沉淀/气体/弱酸弱碱/氧还/络合通用）
+function drawIonPairScene(time,pairs,equation,title,desc,opts){
+  opts=opts||{};
+  const W=cv.width,H=cv.height;
+  drawText(title,W/2,32,'#fbbf24',16);
+  // 溶液背景（烧杯轮廓）
+  ctx.fillStyle='rgba(6,182,212,0.04)';ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  roundRect(60,70,W-120,H-180,12);ctx.fill();ctx.stroke();
+  drawText('( 溶液中 )',90,90,'#9ab0d0',12,'left');
+  // 绘制每对离子（两个离子靠近，中间红框）
+  pairs.forEach((p,idx)=>{
+    const cols=pairs.length<=2?2:3;
+    const baseX=120+(idx%cols)*(W-240)/cols+20;
+    const baseY=130+Math.floor(idx/cols)*120;
+    // 离子1浮动
+    const dx1=Math.sin(time*1.2+idx)*12;
+    const dy1=Math.cos(time*0.9+idx)*8;
+    const x1=baseX+dx1,y1=baseY+dy1;
+    // 离子2浮动（反相位）
+    const dx2=Math.cos(time*1.1+idx)*12;
+    const dy2=Math.sin(time*1.0+idx)*8;
+    const x2=baseX+80+dx2,y2=baseY+dy2;
+    // 红色不共存框（脉动）
+    const pulse=0.5+0.5*Math.sin(time*3+idx);
+    ctx.strokeStyle='rgba(248,113,113,'+(0.5+pulse*0.5)+')';
+    ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    const bx=Math.min(x1,x2)-14;
+    const by=Math.min(y1,y2)-14;
+    roundRect(bx,by,Math.abs(x2-x1)+28,Math.abs(y2-y1)+28,8);
+    ctx.stroke();ctx.setLineDash([]);
+    drawText('✗ 不共存',bx+8,by-12,'#f87171',11,'left');
+    // 离子1
+    drawIonBall(x1,y1,18,p.ion1,p.color1);
+    // 离子2
+    drawIonBall(x2,y2,18,p.ion2,p.color2);
+    // 反应箭头（中央）
+    ctx.strokeStyle='rgba(251,191,36,0.6)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(x1+18,y1);ctx.lineTo(x2-18,y2);ctx.stroke();
+    // 可选：沉淀颗粒（向下落的小点）
+    if(opts.precip){
+      const midX=(x1+x2)/2,midY=(y1+y2)/2;
+      ctx.fillStyle='rgba(255,255,255,0.7)';
+      for(let k=0;k<3;k++){
+        const fallY=midY+15+((time*40+k*30)%50);
+        ctx.beginPath();ctx.arc(midX-6+k*6,fallY,2,0,7);ctx.fill();
+      }
+      drawText('↓沉淀',midX,midY+70,'#e0e0e0',10);
+    }
+    // 可选：气泡上升（气体规则）
+    if(opts.gas){
+      const midX=(x1+x2)/2,midY=(y1+y2)/2;
+      for(let k=0;k<3;k++){
+        const ph=(time*0.5+k*0.33)%1;
+        drawBubble(midX-10+k*10,midY-10,ph);
+      }
+      drawText(opts.gas+'↑',midX,midY-130,'#fde68a',12);
+    }
+    // 可选：电子转移（氧化还原）
+    if(opts.redox){
+      const phase=(time*0.6+idx*0.2)%1;
+      drawElectronArrow(x1,y1,x2,y2,phase);
+    }
+    // 可选：配位键（络合，虚线连接）
+    if(opts.complex){
+      ctx.strokeStyle='rgba(236,72,153,0.7)';ctx.lineWidth=1.5;ctx.setLineDash([2,3]);
+      ctx.beginPath();ctx.moveTo(x1+18,y1);ctx.lineTo(x2-18,y2);ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  });
+  // 方程式显示
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(60,H-90,W-120,38,8);ctx.fill();ctx.stroke();
+  drawText('反应方程式：'+equation,W/2,H-71,'#34d399',13);
+  drawText(desc,W/2,H-105,'#9ab0d0',11);
+}
+
+function drawBasicScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('离子共存 · 在溶液中能否稳定共存',W/2,32,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 烧杯
+  ctx.fillStyle='rgba(6,182,212,0.05)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(W/2-180,cy-120,360,240,12);ctx.fill();ctx.stroke();
+  drawText('溶液',W/2-160,cy-100,'#06b6d4',12,'left');
+  // 烧杯底部高光
+  ctx.fillStyle='rgba(6,182,212,0.08)';
+  roundRect(W/2-170,cy+90,340,20,4);ctx.fill();
+  // 自由游动的离子（共存示例：Na⁺ K⁺ Cl⁻ NO₃⁻）
+  const ions=[
+    {l:'Na⁺',c:'#34d399',q:'+'},{l:'K⁺',c:'#34d399',q:'+'},{l:'Cl⁻',c:'#06b6d4',q:'-'},{l:'NO₃⁻',c:'#06b6d4',q:'-'},
+    {l:'Na⁺',c:'#34d399',q:'+'},{l:'Cl⁻',c:'#06b6d4',q:'-'},{l:'K⁺',c:'#34d399',q:'+'},{l:'NO₃⁻',c:'#06b6d4',q:'-'},
+    {l:'Na⁺',c:'#34d399',q:'+'},{l:'Cl⁻',c:'#06b6d4',q:'-'},
+  ];
+  ions.forEach((ion,i)=>{
+    const ang=time*0.5+i*0.62;
+    const rad=50+(i%3)*30;
+    const x=cx+Math.cos(ang)*rad;
+    const y=cy+Math.sin(ang*1.1)*70;
+    drawIonBall(x,y,16,ion.l,ion.c);
+  });
+  // 绿色框表示"可共存"（脉动）
+  const gp=0.6+0.4*Math.sin(time*2);
+  ctx.strokeStyle='rgba(52,211,153,'+gp+')';ctx.lineWidth=3;
+  roundRect(cx-170,cy-110,340,220,10);ctx.stroke();
+  drawText('✓ 这些离子彼此不反应，可大量共存',W/2,H-60,'#34d399',13);
+  drawText('判断依据：不生成沉淀 / 气体 / 水 / 弱电解质',W/2,H-35,'#9ab0d0',12);
+  // 左右两侧分别标注"能共存"vs"不能共存"的对照
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1;
+  roundRect(60,H/2-60,90,120,8);ctx.fill();ctx.stroke();
+  drawText('能共存',105,H/2,'#34d399',13);
+  drawText('Na⁺ K⁺',105,H/2+25,'#9ab0d0',11);
+  drawText('Cl⁻ NO₃⁻',105,H/2+45,'#9ab0d0',11);
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=1;
+  roundRect(W-150,H/2-60,90,120,8);ctx.fill();ctx.stroke();
+  drawText('不能共存',W-105,H/2,'#f87171',13);
+  drawText('Ag⁺ + Cl⁻',W-105,H/2+25,'#9ab0d0',11);
+  drawText('Ba²⁺ + SO₄²⁻',W-105,H/2+45,'#9ab0d0',11);
+}
+
+function drawColorScene(){
+  const W=cv.width,H=cv.height;
+  drawText('颜色判定 · 无色溶液排除有色离子',W/2,32,'#fbbf24',16);
+  const data=[
+    {ion:'Cu²⁺',color:'#3b82f6',name:'蓝色',note:'水合铜离子'},{ion:'Fe²⁺',color:'#10b981',name:'浅绿',note:'水合亚铁'},
+    {ion:'Fe³⁺',color:'#eab308',name:'黄色',note:'水合铁离子'},{ion:'MnO₄⁻',color:'#a855f7',name:'紫红',note:'高锰酸根'},
+    {ion:'Cr₂O₇²⁻',color:'#fb923c',name:'橙色',note:'重铬酸根'},{ion:'CrO₄²⁻',color:'#facc15',name:'黄色',note:'铬酸根'},
+  ];
+  data.forEach((d,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=80+row*200;
+    // 试管背景
+    ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+    roundRect(x+10,y,(W-120)/3-20,160,8);ctx.fill();ctx.stroke();
+    // 溶液颜色块（渐变）
+    const grad=ctx.createLinearGradient(x+20,y+10,x+20,y+150);
+    grad.addColorStop(0,d.color+'cc');grad.addColorStop(1,d.color+'55');
+    ctx.fillStyle=grad;
+    roundRect(x+20,y+15,(W-120)/3-40,110,6);ctx.fill();
+    // 试管底部反光
+    ctx.fillStyle='rgba(255,255,255,0.1)';
+    roundRect(x+20,y+110,(W-120)/3-40,15,4);ctx.fill();
+    drawText(d.ion,x+(W-120)/6,y+55,'#fff',18);
+    drawText(d.name,x+(W-120)/6,y+95,'#fff',13);
+    drawText(d.note,x+(W-120)/6,y+135,'#e0e0e0',11);
+  });
+  drawText('结论：题目说"无色溶液" → Cu²⁺ / Fe²⁺ / Fe³⁺ / MnO₄⁻ 全部排除',W/2,H-50,'#f87171',13);
+  drawText('速记：蓝、绿、黄、紫 → 一律不能在无色溶液中存在',W/2,H-28,'#34d399',12);
+}
+
+function drawExampleScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 逐一排除法',W/2,32,'#fbbf24',16);
+  // 题目
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】下列无色溶液中，离子能大量共存的是（    ）',80,85,'#a78bfa',13,'left');
+  drawText('A. Na⁺、Cu²⁺、Cl⁻、SO₄²⁻     B. K⁺、Na⁺、Cl⁻、NO₃⁻',80,108,'#fff',12,'left');
+  drawText('C. NH₄⁺、Ba²⁺、OH⁻、NO₃⁻     D. H⁺、K⁺、CO₃²⁻、SO₄²⁻',80,131,'#fff',12,'left');
+  // 逐项分析
+  const ans=[
+    {opt:'A',jud:'×',reason:'Cu²⁺ 蓝色（非无色）',detail:'颜色判定排除',c:'#f87171'},
+    {opt:'B',jud:'✓',reason:'均为无色，且彼此不反应',detail:'正确答案',c:'#34d399'},
+    {opt:'C',jud:'×',reason:'NH₄⁺ + OH⁻ → NH₃↑ + H₂O',detail:'气体规则排除',c:'#f87171'},
+    {opt:'D',jud:'×',reason:'2H⁺ + CO₃²⁻ → CO₂↑ + H₂O',detail:'气体规则排除',c:'#f87171'},
+  ];
+  ans.forEach((a,i)=>{
+    const y=170+i*58;
+    ctx.fillStyle=a.c+'22';ctx.strokeStyle=a.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,46,8);ctx.fill();ctx.stroke();
+    drawText(a.opt,110,y+23,a.c,16,'left');
+    drawText(a.jud,145,y+23,a.c,18,'left');
+    drawText(a.reason,180,y+17,'#fff',13,'left');
+    drawText(a.detail,180,y+34,a.c,10,'left');
+  });
+  drawText('答案：B    方法：先看颜色，再查反应',W/2,H-35,'#fbbf24',14);
+  // 解题口诀
+  ctx.fillStyle='rgba(52,211,153,0.08)';ctx.strokeStyle='#34d399';ctx.lineWidth=1;
+  roundRect(60,H-80,W-120,28,6);ctx.fill();ctx.stroke();
+  drawText('口诀：一看颜色，二查沉淀，三找气体，四验弱电解质，五审氧化还原',W/2,H-66,'#34d399',12);
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('离子共存核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'复分解',d:'生成沉淀/气体/水',c:'#fbbf24',ex:'Ba²⁺+SO₄²⁻ 不共存'},
+    {t:'氧化还原',d:'氧化性与还原性不共存',c:'#06b6d4',ex:'Fe³⁺+I⁻ 不共存'},
+    {t:'络合',d:'Fe³⁺+SCN⁻ 等',c:'#a855f7',ex:'血红色配合物'},
+    {t:'双水解',d:'Al³⁺ 与 AlO₂⁻',c:'#34d399',ex:'彻底水解'},
+    {t:'颜色判定',d:'无色排除 Cu/Fe/MnO₄',c:'#f87171',ex:'蓝绿黄紫'},
+    {t:'速记口诀',d:'沉气水弱氧络双',c:'#fb923c',ex:'七字真言'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*165;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,135,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+35,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+70,'#fff',12);
+    drawText(m.ex,x+(W-160)/6,y+100,'#9ab0d0',11);
+  });
+  // 底部条件提示带
+  const tips=['强酸条件：排除弱酸根','强碱条件：排除弱碱阳离子','无色条件：排除有色离子'];
+  tips.forEach((tp,i)=>{
+    const tx=80+i*(W-160)/3;
+    ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+    roundRect(tx+10,H-60,(W-160)/3-20,36,6);ctx.fill();ctx.stroke();
+    drawText(tp,tx+(W-160)/6,H-42,'#67e8f9',11);
+  });
+}
+
+// 溶度积 Ksp 速查表（沉淀规则辅助场景）
+function drawKspTableScene(){
+  const W=cv.width,H=cv.height;
+  drawText('常见沉淀物溶度积速记表',W/2,32,'#fbbf24',16);
+  // 表头
+  const rows=[
+    {ion1:'Ba²⁺',ion2:'SO₄²⁻',prod:'BaSO₄',color:'#e0e0e0',ksp:'1.1×10⁻¹⁰',note:'白色，不溶于酸'},
+    {ion1:'Ag⁺',ion2:'Cl⁻',prod:'AgCl',color:'#e0e0e0',ksp:'1.8×10⁻¹⁰',note:'白色，见光分解'},
+    {ion1:'Ag⁺',ion2:'Br⁻',prod:'AgBr',color:'#fde68a',ksp:'5.0×10⁻¹³',note:'淡黄'},
+    {ion1:'Ag⁺',ion2:'I⁻',prod:'AgI',color:'#fbbf24',ksp:'8.5×10⁻¹⁷',note:'黄色'},
+    {ion1:'Ca²⁺',ion2:'CO₃²⁻',prod:'CaCO₃',color:'#e0e0e0',ksp:'2.8×10⁻⁹',note:'白色，溶于酸'},
+    {ion1:'Mg²⁺',ion2:'OH⁻',prod:'Mg(OH)₂',color:'#e0e0e0',ksp:'1.8×10⁻¹¹',note:'白色'},
+    {ion1:'Fe³⁺',ion2:'3OH⁻',prod:'Fe(OH)₃',color:'#eab308',ksp:'2.6×10⁻³⁹',note:'红褐色'},
+    {ion1:'Cu²⁺',ion2:'S²⁻',prod:'CuS',color:'#1f2937',ksp:'6.3×10⁻³⁶',note:'黑色'},
+  ];
+  // 表头行
+  const cols=['阳离子','阴离子','沉淀物','颜色','Ksp','备注'];
+  const colX=[100,200,300,420,540,660];
+  ctx.fillStyle='rgba(251,191,36,0.15)';
+  roundRect(80,65,W-160,30,6);ctx.fill();
+  cols.forEach((c,i)=>drawText(c,colX[i],80,'#fbbf24',12,'left'));
+  // 数据行
+  rows.forEach((r,i)=>{
+    const y=110+i*36;
+    ctx.fillStyle=i%2?'rgba(255,255,255,0.02)':'rgba(255,255,255,0.05)';
+    roundRect(80,y-15,W-160,30,4);ctx.fill();
+    drawText(r.ion1,colX[0],y,'#34d399',12,'left');
+    drawText(r.ion2,colX[1],y,'#06b6d4',12,'left');
+    drawText(r.prod,colX[2],y,'#fff',13,'left');
+    // 颜色色块
+    ctx.fillStyle=r.color;ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    roundRect(colX[3],y-8,30,16,3);ctx.fill();ctx.stroke();
+    drawText(r.ksp,colX[4],y,'#fde68a',11,'left');
+    drawText(r.note,colX[5],y,'#9ab0d0',11,'left');
+  });
+  drawText('规律：Ksp 越小越难溶 → 越容易生成沉淀 → 离子越不能共存',W/2,H-30,'#34d399',12);
+}
+
+// pH 条件场景：强酸/强碱/中性条件下的特殊限制
+function drawConditionScene(){
+  const W=cv.width,H=cv.height;
+  drawText('附加条件 · pH / 酸碱性对离子共存的影响',W/2,32,'#fbbf24',16);
+  const blocks=[
+    {cond:'pH=1 强酸性',color:'#fbbf24',allow:['Na⁺','K⁺','Cl⁻','SO₄²⁻','NO₃⁻'],ban:['CO₃²⁻','SO₃²⁻','S²⁻','CH₃COO⁻','OH⁻'],note:'排除所有弱酸根'},
+    {cond:'pH=14 强碱性',color:'#06b6d4',allow:['Na⁺','K⁺','Cl⁻','NO₃⁻','OH⁻'],ban:['NH₄⁺','Fe³⁺','Al³⁺','Cu²⁺','H⁺'],note:'排除所有弱碱阳离子'},
+    {cond:'中性 pH=7',color:'#34d399',allow:['Na⁺','K⁺','Cl⁻','NO₃⁻','SO₄²⁻'],ban:['Fe³⁺（水解）','Al³⁺（水解）'],note:'大多数离子可共存'},
+  ];
+  blocks.forEach((b,i)=>{
+    const x=60+i*(W-120)/3;
+    ctx.fillStyle=b.color+'18';ctx.strokeStyle=b.color;ctx.lineWidth=2;
+    roundRect(x+8,70,(W-120)/3-16,H-150,10);ctx.fill();ctx.stroke();
+    drawText(b.cond,x+(W-120)/6,95,b.color,14);
+    drawText('可大量共存',x+(W-120)/6,125,'#34d399',12);
+    b.allow.forEach((a,j)=>drawText(a,x+(W-120)/6,150+j*20,'#9ab0d0',11));
+    const banY=150+b.allow.length*20+20;
+    drawText('必须排除',x+(W-120)/6,banY,'#f87171',12);
+    b.ban.forEach((a,j)=>drawText(a,x+(W-120)/6,banY+25+j*20,'#f87171',11));
+    drawText(b.note,x+(W-120)/6,H-90,'#fde68a',11);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawBasicScene(t);
+  else if(stepIdx===1)drawIonPairScene(t,[
+    {ion1:'Ba²⁺',color1:'#34d399',ion2:'SO₄²⁻',color2:'#06b6d4'},
+    {ion1:'Ag⁺',color1:'#a78bfa',ion2:'Cl⁻',color2:'#06b6d4'},
+    {ion1:'Ca²⁺',color1:'#34d399',ion2:'CO₃²⁻',color2:'#fb923c'},
+    {ion1:'Mg²⁺',color1:'#34d399',ion2:'OH⁻',color2:'#06b6d4'},
+  ],'Ba²⁺ + SO₄²⁻ → BaSO₄↓（白）等','沉淀规则：生成难溶盐 → 不共存',{precip:true});
+  else if(stepIdx===2)drawIonPairScene(t,[
+    {ion1:'2H⁺',color1:'#fbbf24',ion2:'CO₃²⁻',color2:'#fb923c'},
+    {ion1:'2H⁺',color1:'#fbbf24',ion2:'SO₃²⁻',color2:'#fb923c'},
+    {ion1:'2H⁺',color1:'#fbbf24',ion2:'S²⁻',color2:'#fb923c'},
+    {ion1:'NH₄⁺',color1:'#34d399',ion2:'OH⁻',color2:'#06b6d4'},
+  ],'2H⁺ + CO₃²⁻ → CO₂↑ + H₂O 等','气体规则：产生挥发物 → 不共存',{gas:'CO₂/SO₂/H₂S/NH₃'});
+  else if(stepIdx===3)drawIonPairScene(t,[
+    {ion1:'CH₃COO⁻',color1:'#06b6d4',ion2:'H⁺',color2:'#fbbf24'},
+    {ion1:'NH₄⁺',color1:'#34d399',ion2:'OH⁻',color2:'#06b6d4'},
+    {ion1:'Fe³⁺',color1:'#eab308',ion2:'3OH⁻',color2:'#06b6d4'},
+    {ion1:'HCO₃⁻',color1:'#06b6d4',ion2:'H⁺',color2:'#fbbf24'},
+  ],'CH₃COO⁻ + H⁺ → CH₃COOH 等','弱酸弱碱：生成弱电解质 → 不共存',{precip:true});
+  else if(stepIdx===4)drawIonPairScene(t,[
+    {ion1:'2Fe³⁺',color1:'#eab308',ion2:'2I⁻',color2:'#06b6d4'},
+    {ion1:'2Fe³⁺',color1:'#eab308',ion2:'S²⁻',color2:'#fb923c'},
+    {ion1:'MnO₄⁻',color1:'#a855f7',ion2:'5Fe²⁺',color2:'#34d399'},
+    {ion1:'MnO₄⁻',color1:'#a855f7',ion2:'I⁻',color2:'#06b6d4'},
+  ],'2Fe³⁺ + 2I⁻ → 2Fe²⁺ + I₂ 等','氧化还原：电子转移 → 不共存',{redox:true});
+  else if(stepIdx===5)drawIonPairScene(t,[
+    {ion1:'Fe³⁺',color1:'#eab308',ion2:'3SCN⁻',color2:'#ec4899'},
+    {ion1:'Ag⁺',color1:'#a78bfa',ion2:'2NH₃',color2:'#06b6d4'},
+    {ion1:'Al³⁺',color1:'#34d399',ion2:'3AlO₂⁻',color2:'#fb923c'},
+    {ion1:'Fe³⁺',color1:'#eab308',ion2:'CO₃²⁻',color2:'#fb923c'},
+  ],'Fe³⁺ + 3SCN⁻ → Fe(SCN)₃（血红色）','络合/双水解：配位或互促水解',{complex:true});
+  else if(stepIdx===6)drawColorScene();
+  else if(stepIdx===7)drawExampleScene();
+  else if(stepIdx===8)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

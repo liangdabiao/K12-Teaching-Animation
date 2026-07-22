@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>盐类水解 · 强酸弱碱盐 · 强碱弱酸盐 · 酸碱性</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">盐类水解</span><span class="subtitle">强酸弱碱盐 · 强碱弱酸盐 · 酸碱性规律</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>水解本质</h4><div class="v">盐电离出的弱离子<br>结合水电离的 H⁺/OH⁻</div></div>
+  <div class="card s2"><div class="num">2</div><h4>水解规律口诀</h4><div class="v">谁弱谁水解<br>谁强显谁性</div></div>
+  <div class="card s3"><div class="num">3</div><h4>影响因素</h4><div class="v">升温促水解<br>稀释促水解</div></div>
+  <div class="card s4"><div class="num">4</div><h4>双水解特例</h4><div class="v">Al³⁺ 与 AlO₂⁻ 完全水解<br>生成 Al(OH)₃ 沉淀</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">本质</span><span id="stepTitle">盐类水解</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'本质',name:'水解本质',body:'<strong>盐类水解</strong>是盐电离出的<strong>弱离子</strong>（NH₄⁺、CH₃COO⁻ 等）与水电离出的 <strong>H⁺ 或 OH⁻</strong> 结合，生成<strong>弱电解质</strong>的过程。本质是<strong>促进了水的电离</strong>，破坏了水的电离平衡。',points:{title:'核心要点',items:['<strong>对象</strong>：盐中的弱离子','<strong>条件</strong>：溶于水电离','<strong>结果</strong>：生成弱电解质','<strong>本质</strong>：促进水的电离']}},
+  {tag:'规律',name:'水解规律',body:'<strong>口诀</strong>：谁弱谁水解，谁强显谁性；都强不水解，溶液显中性。<strong>强酸弱碱盐</strong>（如 NH₄Cl）水解显<strong>酸性</strong>；<strong>强碱弱酸盐</strong>（如 CH₃COONa）水解显<strong>碱性</strong>；<strong>强酸强碱盐</strong>（如 NaCl）不水解显中性。',points:{title:'三类盐判断',items:['<strong>强酸弱碱盐</strong>：显酸性（NH₄Cl）','<strong>强碱弱酸盐</strong>：显碱性（CH₃COONa）','<strong>强酸强碱盐</strong>：中性（NaCl）','<strong>口诀</strong>：谁强显谁性']}},
+  {tag:'强酸弱碱',name:'NH₄Cl 水解',body:'<strong>NH₄Cl</strong> 是强酸弱碱盐：NH₄⁺ 是弱离子，与 OH⁻ 结合成 <code>NH₃·H₂O</code>，消耗 OH⁻ 使溶液 <strong>H⁺ 过剩 → 显酸性</strong>。方程式：<code>NH₄Cl + H₂O ⇌ NH₃·H₂O + HCl</code>（离子方程式：<code>NH₄⁺ + H₂O ⇌ NH₃·H₂O + H⁺</code>）。',points:{title:'酸性来源',items:['<strong>NH₄⁺</strong>：结合 OH⁻','<strong>生成</strong>：NH₃·H₂O 弱碱','<strong>结果</strong>：c(H⁺) > c(OH⁻)','<strong>pH</strong>：< 7（显酸性）']}},
+  {tag:'强碱弱酸',name:'CH₃COONa 水解',body:'<strong>CH₃COONa</strong> 是强碱弱酸盐：CH₃COO⁻ 是弱离子，与 H⁺ 结合成 <code>CH₃COOH</code>，消耗 H⁺ 使溶液 <strong>OH⁻ 过剩 → 显碱性</strong>。方程式：<code>CH₃COONa + H₂O ⇌ CH₃COOH + NaOH</code>（离子方程式：<code>CH₃COO⁻ + H₂O ⇌ CH₃COOH + OH⁻</code>）。',points:{title:'碱性来源',items:['<strong>CH₃COO⁻</strong>：结合 H⁺','<strong>生成</strong>：CH₃COOH 弱酸','<strong>结果</strong>：c(OH⁻) > c(H⁺)','<strong>pH</strong>：> 7（显碱性）']}},
+  {tag:'强碱弱酸',name:'Na₂CO₃ 两步水解',body:'<strong>Na₂CO₃</strong> 是二元弱酸盐，发生<strong>两步水解</strong>。第一步：<code>CO₃²⁻ + H₂O ⇌ HCO₃⁻ + OH⁻</code>（程度大）；第二步：<code>HCO₃⁻ + H₂O ⇌ H₂CO₃ + OH⁻</code>（程度小）。溶液显<strong>碱性</strong>，碱性比 NaHCO₃ 强。',points:{title:'两步水解',items:['<strong>第一步</strong>：CO₃²⁻ → HCO₃⁻','<strong>第二步</strong>：HCO₃⁻ → H₂CO₃','<strong>主</strong>：第一步为主','<strong>碱性</strong>：Na₂CO₃ > NaHCO₃']}},
+  {tag:'影响因素',name:'影响因素',body:'<strong>温度</strong>：水解是<strong>吸热</strong>反应，<strong>升温促水解</strong>；<strong>浓度</strong>：稀释盐溶液<strong>促水解</strong>（越稀越水解）；<strong>酸碱度</strong>：加酸抑制阳离子水解（NH₄⁺），加碱抑制阴离子水解（CH₃COO⁻）。',points:{title:'影响因素口诀',items:['<strong>升温</strong>：促进水解（吸热）','<strong>稀释</strong>：促进水解','<strong>加酸</strong>：抑阳离子水解','<strong>加碱</strong>：抑阴离子水解']}},
+  {tag:'双水解',name:'双水解特例',body:'当<strong>强酸弱碱盐</strong>与<strong>强碱弱酸盐</strong>混合，阴阳离子<strong>同时水解</strong>，相互促进，进行<strong>完全</strong>。典型：<code>Al³⁺ + 3AlO₂⁻ + 6H₂O → 4Al(OH)₃↓</code>。Al(OH)₃ 既不溶于过量酸也不溶于过量碱（两性）。',points:{title:'双水解特点',items:['<strong>双向</strong>：阴阳离子同时水解','<strong>完全</strong>：不可逆（→ 不是 ⇌）','<strong>特征</strong>：产生气体或沉淀','<strong>实例</strong>：Al³⁺ 遇 AlO₂⁻/CO₃²⁻']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// 通用：画圆角粒子（离子）
+function drawIon(x,y,r,color,label){
+  ctx.fillStyle=color+'33';ctx.strokeStyle=color;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.stroke();
+  if(label){drawText(label,x,y,'#fff',11);}
+}
+
+// 通用：画烧杯轮廓（溶液容器）
+function drawBeaker(x,y,w,h,liquidColor,label){
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.lineTo(x,y+h);
+  ctx.lineTo(x+w,y+h);
+  ctx.lineTo(x+w,y);
+  ctx.stroke();
+  if(liquidColor){
+    ctx.fillStyle=liquidColor+'55';
+    ctx.fillRect(x+2,y+h*0.35,w-4,h*0.6-2);
+  }
+  if(label){drawText(label,x+w/2,y-12,'#67e8f9',12);}
+}
+
+// 通用：画 pH 试纸条（0-14 颜色带 + 标记）
+function drawPHStrip(x,y,w,h,pH){
+  // 标准 pH 色带（红→黄→绿→蓝→紫）
+  const colors=['#f87171','#fb923c','#fbbf24','#a3e635','#34d399','#06b6d4','#3b82f6','#a78bfa'];
+  const segW=w/colors.length;
+  colors.forEach((c,i)=>{
+    ctx.fillStyle=c;
+    ctx.fillRect(x+i*segW,y,segW,h);
+  });
+  ctx.strokeStyle='#fff';ctx.lineWidth=1;
+  ctx.strokeRect(x,y,w,h);
+  // pH 标记
+  for(let i=0;i<=14;i+=2){
+    const tx=x+(i/14)*w;
+    ctx.beginPath();ctx.moveTo(tx,y+h);ctx.lineTo(tx,y+h+4);ctx.stroke();
+    drawText(i,tx,y+h+14,'#9ab0d0',9);
+  }
+  // 当前 pH 指针
+  if(pH!=null){
+    const px=x+(pH/14)*w;
+    ctx.fillStyle='#fff';
+    ctx.beginPath();
+    ctx.moveTo(px,y-8);
+    ctx.lineTo(px-6,y-2);
+    ctx.lineTo(px+6,y-2);
+    ctx.fill();
+    drawText('pH='+pH.toFixed(1),px,y-16,'#fbbf24',11);
+  }
+}
+
+// 通用：画温度计
+function drawThermometer(x,y,temp){
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(x,y+100,10,0,7);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+100);ctx.stroke();
+  const fill=Math.max(0,Math.min(1,(temp-0)/100));
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.arc(x,y+100,7,0,7);ctx.fill();
+  ctx.fillRect(x-3,y+100-fill*100,6,fill*100);
+  drawText('T='+temp.toFixed(0)+'°C',x,y-15,'#f87171',11);
+}
+
+// 通用：画箭头
+function drawArrow(x1,y1,x2,y2,color,w){
+  ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=w||2;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1);
+  const len=8;
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-len*Math.cos(ang-0.4),y2-len*Math.sin(ang-0.4));
+  ctx.lineTo(x2-len*Math.cos(ang+0.4),y2-len*Math.sin(ang+0.4));
+  ctx.fill();
+}
+
+// ===== 场景：水解本质 =====
+function drawNatureScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('盐类水解本质 · 弱离子结合水电离的 H⁺/OH⁻',W/2,30,'#fbbf24',16);
+  // 流程：盐溶解 → 电离 → 弱离子结合 → 弱电解质
+  const flowY=70;
+  const steps=['盐溶于水','完全电离','弱离子结合 H⁺/OH⁻','生成弱电解质'];
+  steps.forEach((s,i)=>{
+    const x=80+i*(W-160)/(steps.length-1);
+    const pulse=0.3+0.3*Math.sin(time*1.5+i*0.6);
+    ctx.fillStyle='rgba(251,191,36,'+(0.15+pulse*0.2)+')';
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+    roundRect(x-70,flowY,140,28,8);ctx.fill();ctx.stroke();
+    drawText(s,x,flowY+14,'#fbbf24',12);
+    if(i<steps.length-1){
+      const ax1=x+72,ax2=x+(W-160)/(steps.length-1)-72;
+      drawArrow(ax1,flowY+14,ax2,flowY+14,'rgba(251,191,36,0.6)',1.5);
+    }
+  });
+  const cx=W/2,cy=H/2+30;
+  // 中心：水分子 H2O（自发电离）
+  drawText('H₂O',cx,cy,'#67e8f9',22);
+  drawText('水极弱电离：H₂O ⇌ H⁺ + OH⁻',cx,cy+34,'#9ab0d0',12);
+  // 漂浮的 H+ 和 OH-
+  const wobble=Math.sin(time*1.5)*15;
+  drawIon(cx-90-wobble,cy-50,14,'#f87171','H⁺');
+  drawIon(cx+90+wobble,cy-50,14,'#34d399','OH⁻');
+  // 弱离子（如 NH4+ 和 CH3COO-）
+  drawIon(cx-160,cy+90,20,'#a78bfa','NH₄⁺');
+  drawIon(cx+160,cy+90,20,'#06b6d4','Ac⁻');
+  // 连线（弱离子与对应 H+/OH- 结合）
+  ctx.strokeStyle='rgba(248,113,113,0.5)';ctx.lineWidth=2;
+  ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(cx-160,cy+70);ctx.lineTo(cx-90-wobble,cy-38);ctx.stroke();
+  ctx.strokeStyle='rgba(52,211,153,0.5)';
+  ctx.beginPath();ctx.moveTo(cx+160,cy+70);ctx.lineTo(cx+90+wobble,cy-38);ctx.stroke();
+  ctx.setLineDash([]);
+  // 生成的弱电解质（脉冲呼吸）
+  const pulse=0.5+0.5*Math.sin(time*3);
+  ctx.fillStyle='rgba(248,113,113,'+(0.2+pulse*0.3)+')';
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(cx-280,cy-130,110,34,8);ctx.fill();ctx.stroke();
+  drawText('NH₃·H₂O',cx-225,cy-113,'#f87171',13);
+  ctx.fillStyle='rgba(52,211,153,'+(0.2+pulse*0.3)+')';
+  ctx.strokeStyle='#34d399';
+  roundRect(cx+170,cy-130,110,34,8);ctx.fill();ctx.stroke();
+  drawText('CH₃COOH',cx+225,cy-113,'#34d399',13);
+  drawText('弱离子 + H⁺/OH⁻ → 弱电解质（促进水的电离）',W/2,H-55,'#fbbf24',13);
+  drawText('谁弱谁水解，谁强显谁性',W/2,H-32,'#34d399',12);
+}
+
+// ===== 场景：水解规律 =====
+function drawRuleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('水解规律 · 三类盐水溶液酸碱性',W/2,30,'#fbbf24',16);
+  // 三列对比
+  const cols=[
+    {t:'强酸弱碱盐',ex:'NH₄Cl',ion:'NH₄⁺',color:'#f87171',pH:'pH<7',ac:'显酸性',note:'NH₄⁺+H₂O⇌NH₃·H₂O+H⁺'},
+    {t:'强酸强碱盐',ex:'NaCl',ion:'不水解',color:'#9ab0d0',pH:'pH=7',ac:'显中性',note:'无弱离子，不破坏水的电离'},
+    {t:'强碱弱酸盐',ex:'CH₃COONa',ion:'CH₃COO⁻',color:'#34d399',pH:'pH>7',ac:'显碱性',note:'CH₃COO⁻+H₂O⇌CH₃COOH+OH⁻'},
+  ];
+  cols.forEach((c,i)=>{
+    const x=80+i*(W-160)/3;
+    const w=(W-160)/3-20;
+    const y=80;
+    const pulse=0.3+0.3*Math.sin(time*2+i);
+    ctx.fillStyle=c.color+'22';ctx.strokeStyle=c.color;ctx.lineWidth=2;
+    roundRect(x,y,w,Math.max(200,H-160),10);ctx.fill();ctx.stroke();
+    drawText(c.t,x+w/2,y+30,c.color,15);
+    drawText('示例：'+c.ex,x+w/2,y+60,'#fff',14);
+    drawText('弱离子：'+c.ion,x+w/2,y+90,'#9ab0d0',12);
+    // pH 试纸
+    const stripY=y+120;
+    ctx.fillStyle=c.color;ctx.globalAlpha=0.4+pulse;
+    roundRect(x+20,stripY,w-40,24,4);ctx.fill();ctx.globalAlpha=1;
+    drawText(c.pH,x+w/2,stripY+12,'#1a1a1a',13);
+    drawText(c.ac,x+w/2,stripY+55,c.color,15);
+    drawText(c.note,x+w/2,stripY+95,'#9ab0d0',11);
+  });
+  drawText('口诀：谁弱谁水解，谁强显谁性，都强不水解',W/2,H-35,'#fbbf24',14);
+}
+
+// ===== 场景：NH4Cl 水解（酸性）=====
+function drawNH4ClScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('NH₄Cl 水解 · 强酸弱碱盐显酸性',W/2,30,'#fbbf24',16);
+  // 化学方程式（顶部）
+  ctx.fillStyle='rgba(167,139,250,0.15)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,55,W-120,40,8);ctx.fill();ctx.stroke();
+  drawText('NH₄Cl + H₂O ⇌ NH₃·H₂O + HCl',W/2,75,'#a78bfa',14);
+  const cx=W/2,cy=H/2+10;
+  // 烧杯（左侧）
+  drawBeaker(60,cy-40,80,120,'rgba(248,113,113,0.3)','NH₄Cl 溶液');
+  // NH4Cl → NH4+ + Cl-
+  drawText('NH₄Cl',cx-30,cy-130,'#fff',14);
+  drawText('↓ 完全电离',cx-30,cy-110,'#9ab0d0',11);
+  // 离子（动态漂浮）
+  const fl=Math.sin(time*1.5)*8;
+  drawIon(cx-100,cy-50+fl,20,'#a78bfa','NH₄⁺');
+  drawIon(cx+50,cy-50-fl,16,'#67e8f9','Cl⁻');
+  drawText('（弱离子·水解）',cx-100,cy-18,'#a78bfa',10);
+  drawText('（旁观离子）',cx+50,cy-18,'#67e8f9',10);
+  // 水分子 + 电离
+  drawIon(cx-220,cy+50,14,'#06b6d4','H₂O');
+  drawIon(cx-220+80,cy+50,10,'#f87171','H⁺');
+  drawIon(cx-220+80,cy+50+30,10,'#34d399','OH⁻');
+  // NH4+ 抓住 OH-
+  const grab=(Math.sin(time*2)+1)/2;
+  ctx.strokeStyle='rgba(248,113,113,0.7)';ctx.lineWidth=2;
+  ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(cx-100,cy-30+fl);ctx.lineTo(cx-140,cy+80);ctx.stroke();
+  ctx.setLineDash([]);
+  drawArrow(cx-140,cy+80,cx-220+80,cy+50+30,'#f87171',1.5);
+  // 生成 NH3·H2O
+  ctx.fillStyle='rgba(52,211,153,0.2)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(cx-50,cy+95,200,34,8);ctx.fill();ctx.stroke();
+  drawText('NH₄⁺ + OH⁻ → NH₃·H₂O',cx+50,cy+112,'#34d399',13);
+  // 结果：H+ 剩余，pH<7
+  drawText('OH⁻ 被消耗 → c(H⁺) > c(OH⁻)',cx,cy+150,'#f87171',13);
+  // pH 试纸条（标准色带 + 指针）
+  const pHVal=5.0+Math.sin(time)*0.6;
+  drawPHStrip(W/2-160,H-70,320,22,pHVal);
+  drawText('pH < 7，溶液显酸性（红色区）',W/2,H-100,'#f87171',12);
+}
+
+// ===== 场景：CH3COONa 水解（碱性）=====
+function drawAcONaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('CH₃COONa 水解 · 强碱弱酸盐显碱性',W/2,30,'#fbbf24',16);
+  // 化学方程式（顶部）
+  ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(60,55,W-120,40,8);ctx.fill();ctx.stroke();
+  drawText('CH₃COONa + H₂O ⇌ CH₃COOH + NaOH',W/2,75,'#34d399',14);
+  const cx=W/2,cy=H/2+10;
+  // 烧杯（左侧）
+  drawBeaker(60,cy-40,80,120,'rgba(52,211,153,0.3)','CH₃COONa 溶液');
+  drawText('CH₃COONa',cx-30,cy-130,'#fff',14);
+  drawText('↓ 完全电离',cx-30,cy-110,'#9ab0d0',11);
+  const fl=Math.sin(time*1.5)*8;
+  drawIon(cx-100,cy-50+fl,22,'#06b6d4','Ac⁻');
+  drawIon(cx+50,cy-50-fl,16,'#67e8f9','Na⁺');
+  drawText('（弱离子·水解）',cx-100,cy-18,'#06b6d4',10);
+  drawText('（旁观离子）',cx+50,cy-18,'#67e8f9',10);
+  drawIon(cx-220,cy+50,14,'#06b6d4','H₂O');
+  drawIon(cx-220+80,cy+50,10,'#f87171','H⁺');
+  drawIon(cx-220+80,cy+50+30,10,'#34d399','OH⁻');
+  const grab=(Math.sin(time*2)+1)/2;
+  ctx.strokeStyle='rgba(52,211,153,0.7)';ctx.lineWidth=2;
+  ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(cx-100,cy-30+fl);ctx.lineTo(cx-140,cy+50);ctx.stroke();
+  ctx.setLineDash([]);
+  drawArrow(cx-140,cy+50,cx-220+80,cy+50,'#34d399',1.5);
+  ctx.fillStyle='rgba(52,211,153,0.2)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(cx-50,cy+95,220,34,8);ctx.fill();ctx.stroke();
+  drawText('Ac⁻ + H⁺ → CH₃COOH',cx+60,cy+112,'#34d399',13);
+  drawText('H⁺ 被消耗 → c(OH⁻) > c(H⁺)',cx,cy+150,'#34d399',13);
+  const pHVal=9.0+Math.sin(time)*0.6;
+  drawPHStrip(W/2-160,H-70,320,22,pHVal);
+  drawText('pH > 7，溶液显碱性（蓝绿区）',W/2,H-100,'#34d399',12);
+}
+
+// ===== 场景：Na2CO3 两步水解 =====
+function drawCO3Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('Na₂CO₃ 两步水解 · 碱性强于 NaHCO₃',W/2,30,'#fbbf24',16);
+  const cx=W/2;
+  // 第一步
+  const y1=110;
+  ctx.fillStyle='rgba(167,139,250,0.15)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,y1,W-120,120,8);ctx.fill();ctx.stroke();
+  drawText('第一步水解（程度大，为主）',cx,y1+22,'#a78bfa',14);
+  drawIon(120,y1+70,20,'#06b6d4','CO₃²⁻');
+  drawText('+',200,y1+70,'#fff',16);
+  drawIon(250,y1+70,14,'#06b6d4','H₂O');
+  drawText('⇌',330,y1+70,'#fbbf24',16);
+  drawIon(400,y1+70,20,'#a78bfa','HCO₃⁻');
+  drawText('+',490,y1+70,'#fff',16);
+  drawIon(560,y1+70,12,'#34d399','OH⁻');
+  // 第二步
+  const y2=y1+150;
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(60,y2,W-120,120,8);ctx.fill();ctx.stroke();
+  drawText('第二步水解（程度小）',cx,y2+22,'#06b6d4',14);
+  drawIon(120,y2+70,20,'#a78bfa','HCO₃⁻');
+  drawText('+',200,y2+70,'#fff',16);
+  drawIon(250,y2+70,14,'#06b6d4','H₂O');
+  drawText('⇌',330,y2+70,'#fbbf24',16);
+  drawIon(400,y2+70,20,'#34d399','H₂CO₃');
+  drawText('+',490,y2+70,'#fff',16);
+  drawIon(560,y2+70,12,'#34d399','OH⁻');
+  // 结果
+  const pulse=0.5+0.5*Math.sin(time*2);
+  drawText('两步均产生 OH⁻ → 溶液显碱性',cx,H-70,'#34d399',14);
+  ctx.fillStyle='#34d399';ctx.globalAlpha=0.4+pulse*0.4;
+  roundRect(cx-90,H-50,180,24,4);ctx.fill();ctx.globalAlpha=1;
+  drawText('pH > 7（碱性 Na₂CO₃ > NaHCO₃）',cx,H-38,'#1a1a1a',12);
+}
+
+// ===== 场景：影响因素 =====
+function drawFactorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('影响盐类水解的因素',W/2,30,'#fbbf24',16);
+  const factors=[
+    {t:'温度',rule:'升温促水解',why:'水解是吸热反应',c:'#f87171',icon:'T↑'},
+    {t:'浓度',rule:'稀释促水解',why:'越稀越水解',c:'#06b6d4',icon:'C↓'},
+    {t:'酸碱度',rule:'加酸抑阳水解',why:'同离子效应',c:'#34d399',icon:'pH'},
+  ];
+  factors.forEach((f,i)=>{
+    const x=60+i*(W-120)/3;
+    const w=(W-120)/3-15;
+    const y=80;
+    const pulse=0.3+0.3*Math.sin(time*1.5+i*0.5);
+    ctx.fillStyle=f.c+'22';ctx.strokeStyle=f.c;ctx.lineWidth=2;
+    roundRect(x,y,w,Math.max(180,H-180),12);ctx.fill();ctx.stroke();
+    // 大图标
+    ctx.fillStyle=f.c;ctx.globalAlpha=0.3+pulse*0.5;
+    ctx.beginPath();ctx.arc(x+w/2,y+60,28,0,7);ctx.fill();ctx.globalAlpha=1;
+    drawText(f.icon,x+w/2,y+60,'#fff',18);
+    drawText(f.t,x+w/2,y+110,f.c,16);
+    drawText(f.rule,x+w/2,y+145,'#fff',14);
+    drawText(f.why,x+w/2,y+175,'#9ab0d0',11);
+  });
+  drawText('勒夏特列原理：平衡向削弱改变的方向移动',W/2,H-40,'#fbbf24',13);
+}
+
+// ===== 场景：双水解 =====
+function drawDoubleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('双水解 · Al³⁺ 与 AlO₂⁻ 完全反应',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2-20;
+  // 左：Al3+
+  drawIon(cx-160,cy,22,'#f87171','Al³⁺');
+  drawText('（弱碱阳离子）',cx-160,cy+45,'#f87171',11);
+  drawText('水解结合 OH⁻',cx-160,cy+62,'#9ab0d0',10);
+  // 右：AlO2-
+  drawIon(cx+160,cy,22,'#34d399','AlO₂⁻');
+  drawText('（弱酸阴离子）',cx+160,cy+45,'#34d399',11);
+  drawText('水解结合 H⁺',cx+160,cy+62,'#9ab0d0',10);
+  // 中间：相互促进
+  const pulse=0.4+0.4*Math.sin(time*3);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2+pulse*2;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.moveTo(cx-135,cy);ctx.lineTo(cx+135,cy);ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('相互促进',cx,cy-15,'#fbbf24',13);
+  // 方程式框
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(60,cy+110,W-120,60,10);ctx.fill();ctx.stroke();
+  drawText('Al³⁺ + 3AlO₂⁻ + 6H₂O → 4Al(OH)₃↓',cx,cy+130,'#fbbf24',15);
+  drawText('（完全反应，单向不可逆）',cx,cy+155,'#9ab0d0',12);
+  // 沉淀动画（下方下落）
+  for(let i=0;i<6;i++){
+    const px=120+i*(W-240)/5;
+    const py=cy+185+((time*60+i*40)%80);
+    ctx.fillStyle='rgba(167,139,250,0.8)';
+    ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+  }
+  drawText('Al(OH)₃ 白色沉淀（既不溶过量酸也不溶过量碱，两性）',cx,H-30,'#a78bfa',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawNatureScene(t);
+  else if(stepIdx===1)drawRuleScene(t);
+  else if(stepIdx===2)drawNH4ClScene(t);
+  else if(stepIdx===3)drawAcONaScene(t);
+  else if(stepIdx===4)drawCO3Scene(t);
+  else if(stepIdx===5)drawFactorScene(t);
+  else if(stepIdx===6)drawDoubleScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
