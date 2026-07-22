@@ -3,108 +3,651 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>内能改变的两种方式</title>
+<title>内能改变的两种方式 · 做功 · 热传递 · 分子层面</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fb923c;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,146,60,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,146,60,.2);color:#fed7aa;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">内能改变的两种方式</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">内能改变的两种方式</span><span class="subtitle">做功 · 热传递 · 热力学第一定律 ΔU=Q+W</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>内能定义</h4><div class="v">分子动能+分子势能<br>所有分子热运动能量总和</div></div>
+  <div class="card s2"><div class="num">2</div><h4>热传递三种方式</h4><div class="v">传导 / 对流 / 辐射<br>高温→低温（不做功）</div></div>
+  <div class="card s3"><div class="num">3</div><h4>做功改内能</h4><div class="v">压缩升温 / 膨胀降温<br>机械能↔内能转化</div></div>
+  <div class="card s4"><div class="num">4</div><h4>热力学第一定律</h4><div class="v">ΔU = Q + W<br>Q 与 W 单位均为焦耳 J</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>改变物体内能有两种途径：<b>做功</b>（其他形式能与内能转化，如压缩气体）与<b>热传递</b>（内能转移，如火焰加热）。两者在改变内能上等效。</p>
-    <div class="legend"><span class='dot' style='background:#34d399'></span>做功&nbsp;<span class='dot' style='background:#f87171'></span>热传递/火焰</div>
-  
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>内能改变方式</h3><ul><li><b>做功</b>：机械能↔内能转化</li><li><b>热传递</b>：内能从高温→低温转移</li><li>两种方式等效（都能改变内能）</li><li>温度↑→分子平均动能↑→内能↑</li><li>热力学第一定律：ΔU = Q + W</li></ul></div>
-    </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">内能定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-const N={t:0,p:0,mode:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){N.t=0;N.p=0;N.mode=0;}
-function sceneUpdate(dt){if(N.p<1)N.p=Math.min(1,N.p+dt*0.25);}
-function piston(x,y,w,h,k){ctx.strokeStyle='#9fb0c8';ctx.lineWidth=3;ctx.strokeRect(x,y,w,h);ctx.strokeRect(x+w/2-2,y-30,4,30);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const cx=cv.width/2;
-  // 做功：活塞压缩
-  piston(cx-220,260,140,120,0);
-  // 活塞下降随进度
-  const pd=40*N.p;
-  ctx.fillStyle='#34d399';ctx.fillRect(cx-220,260,140,120-pd);
-  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-150,260-pd);ctx.lineTo(cx-150,230-pd);ctx.stroke();
-  for(let i=0;i<8;i++){const a=i/8*6.28;const r=10+ (i%3)*6;ctx.fillStyle='#7dd3fc';ctx.beginPath();ctx.arc(cx-150+Math.cos(a+N.t*3)*r,260+60-pd/2+Math.sin(a+N.t*3)*r*0.4,3,0,7);ctx.fill();}
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='center';
-  ctx.fillText('方式① 做功：压缩气体升温',cx-150,420);
-  // 热传递：火炉
-  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(cx+150,400,18,0,7);ctx.fill();
-  for(let i=0;i<6;i++){ctx.fillStyle='rgba(245,158,11,'+(0.6-i*0.1)+')';ctx.beginPath();ctx.arc(cx+150,400-i*8-N.p*30,4+i,0,7);ctx.fill();}
-  piston(cx+80,260,140,120,0);
-  ctx.fillStyle='rgba(245,158,11,0.4)';ctx.fillRect(cx+80,260,140,120);
-  ctx.fillStyle='#cdd7ea';ctx.fillText('方式② 热传递：火焰加热',cx+150,420);
-  statusEl.textContent='进度 '+Math.round(N.p*100)+'% ｜ 做功与热传递都能改变内能，本质都是能量转移/转化';
+const STEPS=[
+  {tag:'基础',name:'内能定义',body:'<strong>内能</strong>是物体内<strong>所有分子热运动的动能与分子势能的总和</strong>。温度越高，分子平均动能越大；体积改变时分子势能变化。任何物体都有内能。',points:{title:'内能的组成',items:['<strong>分子动能</strong>：分子无规则运动（平动/转动/振动）','<strong>分子势能</strong>：由分子间相对位置决定','<strong>温度↑</strong>：分子平均动能↑','<strong>内能</strong>：所有分子动能+势能总和']}},
+  {tag:'基础',name:'分子动能与势能',body:'<strong>分子动能</strong>由温度决定（温度是平均动能的标志）；<strong>分子势能</strong>由分子间距（即体积）决定。改变温度或体积都可改变内能。',points:{title:'两部分能量',items:['<strong>温度 T ↑</strong>：动能↑（与状态无关）','<strong>体积 V 变化</strong>：分子间距变 → 势能变','<strong>理想气体</strong>：势能=0，只看动能','<strong>决定因素</strong>：温度、体积、质量、种类']}},
+  {tag:'热传递',name:'热传导',body:'<strong>热传导</strong>：热量通过<strong>分子碰撞</strong>从高温端传向低温端（固体为主）。高温端分子振动剧烈，碰撞邻近分子传递能量，<strong>物质本身不迁移</strong>。',points:{title:'传导特点',items:['<strong>介质</strong>：主要在固体中（金属最好）','<strong>机制</strong>：分子碰撞传递动能','<strong>方向</strong>：高温 → 低温','<strong>物质不迁移</strong>：只有能量传递']}},
+  {tag:'热传递',name:'对流与辐射',body:'<strong>对流</strong>：流体（液体/气体）中<strong>宏观流动</strong>携带热量（如烧开水）。<strong>辐射</strong>：物体以<strong>电磁波</strong>形式发射热量，<strong>不需要介质</strong>（如太阳传热到地球）。',points:{title:'三种传热对比',items:['<strong>传导</strong>：分子碰撞（固体）','<strong>对流</strong>：流体宏观流动','<strong>辐射</strong>：电磁波（真空中也可）','<strong>三都</strong>：高温 → 低温']}},
+  {tag:'做功',name:'压缩气体升温',body:'<strong>外力压缩气体</strong>做功，机械能转化为内能：分子被挤压，<strong>碰撞频率增大、速度加快</strong>，平均动能升高，温度升高。这是<strong>柴油机压燃</strong>的原理。',points:{title:'压缩做功',items:['<strong>活塞下压</strong>：W 为正（外界对气体做功）','<strong>分子速度↑</strong>：碰撞更剧烈','<strong>温度↑</strong>：内能增大','<strong>柴油机</strong>：压缩比足够大直接点燃']}},
+  {tag:'做功',name:'膨胀对外做功',body:'<strong>气体膨胀</strong>对外做功，内能转化为机械能：分子推动活塞消耗动能，<strong>速度减慢</strong>，温度下降。压缩空气喷出时<strong>变冷</strong>就是此原理。',points:{title:'膨胀做功',items:['<strong>气体膨胀</strong>：W 为负（气体对外做功）','<strong>分子速度↓</strong>：动能减少','<strong>温度↓</strong>：内能减小','<strong>实例</strong>：压缩气罐喷气变冷']}},
+  {tag:'等效性',name:'焦耳热功当量',body:'<strong>焦耳实验</strong>证明：消耗一定的机械功 W 与传递一定的热量 Q 在<strong>改变内能上完全等效</strong>。热功当量 <code>J = 4.18 J/cal</code>，即 1 cal 热量 = 4.18 J 功。',points:{title:'焦耳实验',items:['<strong>装置</strong>：重锤下落带动叶片搅水','<strong>测 W</strong>：重锤势能 → 机械功','<strong>测 Q</strong>：水温升高 → 吸热','<strong>结论</strong>：1 cal = 4.18 J']}},
+  {tag:'定律',name:'热力学第一定律',body:'<strong>热力学第一定律</strong>：<code>ΔU = Q + W</code>。其中 Q 是物体吸收的热量（吸热为正、放热为负），W 是外界对物体做的功（压缩为正、膨胀为负），ΔU 是内能变化。',points:{title:'符号约定',items:['<strong>Q &gt; 0</strong>：物体吸热','<strong>Q &lt; 0</strong>：物体放热','<strong>W &gt; 0</strong>：外界对物体做功（压缩）','<strong>W &lt; 0</strong>：物体对外界做功（膨胀）']}},
+  {tag:'计算',name:'典型计算题',body:'例：一定量气体吸热 200 J，同时对外做功 80 J。求 ΔU。解：ΔU = Q + W = 200 + (-80) = 120 J，内能增加。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：识别 Q、W 正负','<strong>步骤2</strong>：吸热 Q&gt;0，放热 Q&lt;0','<strong>步骤3</strong>：被压缩 W&gt;0，膨胀 W&lt;0','<strong>步骤4</strong>：代入 ΔU = Q + W']}},
+  {tag:'总结',name:'核心速记',body:'改变内能有<strong>两种方式</strong>：<strong>做功</strong>（机械能↔内能）与<strong>热传递</strong>（内能转移）。两者等效，遵循<strong>能量守恒</strong>，统一由 <code>ΔU = Q + W</code> 描述。',points:{title:'三句话总结',items:['<strong>做功</strong>：机械能↔内能','<strong>热传递</strong>：内能在物体间转移','<strong>统一公式</strong>：ΔU = Q + W','<strong>应用</strong>：柴油机、保温杯、空调']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：分子动能与势能 =====
+function drawMoleculeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('内能 = 分子动能 + 分子势能',W/2,30,'#fb923c',16);
+  // 左：分子动能（运动快慢）
+  const cx1=W*0.28,cy1=H/2+10;
+  ctx.fillStyle='rgba(251,146,60,0.08)';ctx.strokeStyle='#fb923c';ctx.lineWidth=2;
+  roundRect(cx1-130,cy1-90,260,180,8);ctx.fill();ctx.stroke();
+  drawText('分子动能',cx1,cy1-110,'#fb923c',14);
+  const speed=1+0.7*Math.sin(time);
+  for(let i=0;i<14;i++){
+    const a=i/14*6.28;
+    const r=30+i%3*20;
+    const x=cx1+Math.cos(a+time*speed)*r;
+    const y=cy1+Math.sin(a+time*speed*0.7)*r*0.5;
+    ctx.fillStyle='rgba(251,146,60,'+(0.5+0.4*Math.sin(time+i))+')';
+    ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();
+    // 速度尾迹
+    const vx=Math.cos(a+time*speed+0.1),vy=Math.sin(a+time*speed+0.1)*0.7;
+    ctx.strokeStyle='rgba(251,146,60,0.3)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-vx*10,y-vy*10);ctx.stroke();
+  }
+  drawText('温度↑ → 分子运动↑',cx1,cy1+110,'#fed7aa',12);
+  drawText('T = '+((speed*100)|0)+' K (示意)',cx1,cy1+128,'#9ab0d0',11);
+  // 右：分子势能（间距）
+  const cx2=W*0.72,cy2=H/2+10;
+  ctx.fillStyle='rgba(6,182,212,0.08)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx2-130,cy2-90,260,180,8);ctx.fill();ctx.stroke();
+  drawText('分子势能',cx2,cy2-110,'#06b6d4',14);
+  const spacing=30+10*Math.sin(time*0.5);
+  for(let i=-2;i<=2;i++){
+    const x=cx2+i*spacing;
+    ctx.fillStyle='#67e8f9';
+    ctx.beginPath();ctx.arc(x,cy2,6,0,7);ctx.fill();
+    // 弹簧线
+    if(i<2){
+      ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+      ctx.beginPath();
+      for(let k=0;k<=8;k++){
+        const px=x+spacing*k/8;
+        const py=cy2+(k%2===0?-4:4);
+        if(k===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+      }
+      ctx.stroke();
+    }
+  }
+  drawText('体积变化 → 间距变 → 势能变',cx2,cy2+110,'#67e8f9',12);
+  drawText('间距 r = '+spacing.toFixed(1),cx2,cy2+128,'#9ab0d0',11);
+  // 中间加号
+  drawText('+',W/2,H/2,'#fff',28);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+// ===== 场景：热传导（金属棒） =====
+function drawConductionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('热传导 · 高温端分子碰撞传递能量',W/2,30,'#fb923c',16);
+  const cy=H/2;
+  const barX=80,barW=W-160,barH=50;
+  // 金属棒
+  for(let i=0;i<barW;i++){
+    const f=i/barW; // 0=热端,1=冷端
+    const r=Math.round(251-f*100);
+    const g=Math.round(146-f*80);
+    const b=Math.round(60+f*180);
+    ctx.fillStyle='rgb('+r+','+g+','+b+')';
+    ctx.fillRect(barX+i,cy-barH/2,1,barH);
+  }
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.strokeRect(barX,cy-barH/2,barW,barH);
+  drawText('高温端',barX+30,cy-barH/2-15,'#f87171',13);
+  drawText('低温端',barX+barW-30,cy-barH/2-15,'#67e8f9',13);
+  // 分子（振动）
+  for(let i=0;i<20;i++){
+    const f=i/19;
+    const baseX=barX+10+f*(barW-20);
+    const amp=8*(1-f*0.7); // 高温端振幅大
+    const freq=15+5*(1-f);
+    const ox=Math.sin(time*freq+i)*amp;
+    const oy=Math.cos(time*freq*0.7+i)*amp*0.5;
+    const r=Math.round(251-f*100);
+    const g=Math.round(146-f*80);
+    const b=Math.round(60+f*180);
+    ctx.fillStyle='rgb('+r+','+g+','+b+')';
+    ctx.beginPath();ctx.arc(baseX+ox,cy+oy,5,0,7);ctx.fill();
+    // 振动尾迹
+    if(amp>4){
+      ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(baseX+ox-ox*0.5,cy+oy-oy*0.5);ctx.lineTo(baseX+ox+ox*0.3,cy+oy+oy*0.3);ctx.stroke();
+    }
+  }
+  // 能量传递箭头
+  for(let i=0;i<4;i++){
+    const phase=(time*0.8+i*0.25)%1;
+    const x=barX+phase*barW;
+    ctx.fillStyle='rgba(251,191,36,'+(0.6*(1-Math.abs(phase-0.5)*1.5))+')';
+    ctx.beginPath();
+    ctx.moveTo(x,cy+barH/2+12);
+    ctx.lineTo(x-8,cy+barH/2+25);
+    ctx.lineTo(x+8,cy+barH/2+25);
+    ctx.fill();
+  }
+  drawText('能量传递方向 →',W/2,cy+barH/2+45,'#fbbf24',12);
+  drawText('高温端分子振动剧烈，碰撞邻近分子 → 能量逐级传递',W/2,H-50,'#34d399',12);
+  drawText('物质不迁移，仅能量传递',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景：对流 =====
+function drawConvectionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('对流 · 流体宏观流动传递热量（烧开水）',W/2,30,'#fb923c',16);
+  const cx=W/2,cy=H/2+30;
+  const potW=260,potH=180;
+  // 锅
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(cx-potW/2,cy-potH/2);
+  ctx.lineTo(cx-potW/2,cy+potH/2);
+  ctx.lineTo(cx+potW/2,cy+potH/2);
+  ctx.lineTo(cx+potW/2,cy-potH/2);
+  ctx.stroke();
+  // 水
+  ctx.fillStyle='rgba(6,182,212,0.3)';
+  ctx.fillRect(cx-potW/2+3,cy-potH/2+10,potW-6,potH-13);
+  // 加热源（底部中间）
+  ctx.fillStyle='#f87171';
+  ctx.fillRect(cx-30,cy+potH/2,60,10);
+  drawText('火焰',cx,cy+potH/2+20,'#f87171',11);
+  // 对流环（上升+下沉）
+  for(let i=0;i<8;i++){
+    const phase=(time*0.6+i/8)%1;
+    const side=i%2===0?-1:1;
+    // 上升路径（中间）→ 顶部 → 下沉（两侧）
+    let x,y;
+    if(phase<0.4){
+      // 上升
+      const f=phase/0.4;
+      x=cx+Math.sin(time*2+i)*8;
+      y=cy+potH/2-10-f*(potH-30);
+    }else if(phase<0.55){
+      // 顶部转向
+      const f=(phase-0.4)/0.15;
+      x=cx+side*f*potW/2*0.7;
+      y=cy-potH/2+10+(1-f)*5;
+    }else{
+      // 下沉
+      const f=(phase-0.55)/0.45;
+      x=cx+side*potW/2*0.7;
+      y=cy-potH/2+15+f*(potH-30);
+    }
+    const heat=phase<0.5?1-phase:0.2;
+    const r=Math.round(103+heat*150);
+    const g=Math.round(232-heat*60);
+    const b=Math.round(249-heat*180);
+    ctx.fillStyle='rgb('+r+','+g+','+b+')';
+    ctx.beginPath();ctx.arc(x,y,3.5,0,7);ctx.fill();
+  }
+  // 箭头标注
+  drawText('↑热升',cx,cy-potH/2-15,'#f87171',12);
+  drawText('↓冷降',cx-potW/2*0.75,cy,'#67e8f9',11);
+  drawText('↓冷降',cx+potW/2*0.75,cy,'#67e8f9',11);
+  drawText('热水上升，冷水下沉 → 形成循环流动',W/2,H-50,'#34d399',12);
+  drawText('流体宏观运动携带能量（液体/气体）',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景：辐射 =====
+function drawRadiationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('辐射 · 电磁波传热（无需介质，真空中也可）',W/2,30,'#fb923c',16);
+  const sunX=W*0.18,sunY=H/2,sunR=45;
+  // 太阳
+  const grad=ctx.createRadialGradient(sunX,sunY,5,sunX,sunY,sunR);
+  grad.addColorStop(0,'#fde68a');grad.addColorStop(0.5,'#fb923c');grad.addColorStop(1,'rgba(248,113,113,0)');
+  ctx.fillStyle=grad;
+  ctx.beginPath();ctx.arc(sunX,sunY,sunR,0,7);ctx.fill();
+  ctx.fillStyle='#fde68a';
+  ctx.beginPath();ctx.arc(sunX,sunY,sunR*0.55,0,7);ctx.fill();
+  drawText('太阳',sunX,sunY,'#1a1a1a',13);
+  drawText('高温物体',sunX,sunY+sunR+18,'#fb923c',12);
+  // 电磁波（同心圆波纹）
+  for(let i=0;i<5;i++){
+    const phase=(time*0.6+i/5)%1;
+    const r=phase*(W*0.55);
+    ctx.strokeStyle='rgba(251,191,36,'+(0.6*(1-phase))+')';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(sunX,sunY,r,-Math.PI/2.5,Math.PI/2.5);ctx.stroke();
+  }
+  // 真空区域标注
+  ctx.strokeStyle='rgba(154,176,208,0.3)';ctx.lineWidth=1;
+  ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(sunX+sunR+10,sunY-60);ctx.lineTo(sunX+sunR+10,sunY+60);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('真空',sunX+sunR+30,sunY-50,'#9ab0d0',11);
+  drawText('（无介质）',sunX+sunR+30,sunY-32,'#9ab0d0',11);
+  // 地球
+  const earthX=W*0.85,earthY=H/2,earthR=28;
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.arc(earthX,earthY,earthR,0,7);ctx.fill();
+  // 大陆
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(earthX-8,earthY-6,8,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(earthX+10,earthY+8,6,0,7);ctx.fill();
+  drawText('地球',earthX,earthY,'#fff',11);
+  drawText('低温物体',earthX,earthY+earthR+18,'#67e8f9',12);
+  // 能量吸收
+  ctx.fillStyle='rgba(251,191,36,0.3)';
+  for(let i=0;i<3;i++){
+    const a=Math.sin(time*3+i*2)*0.4;
+    ctx.beginPath();ctx.arc(earthX-Math.cos(a)*earthR,earthY-Math.sin(a)*earthR,4,0,7);ctx.fill();
+  }
+  drawText('电磁波（红外线为主）→ 真空中也能传递',W/2,H-55,'#fbbf24',12);
+  drawText('物体温度越高，辐射越强',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景：压缩气体升温 =====
+function drawCompressScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('做功 · 压缩气体 → 分子运动剧烈 → 温度↑',W/2,30,'#fb923c',16);
+  const cx=W/2,cy=H/2+20;
+  // 气缸
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-120,cy-100);ctx.lineTo(cx-120,cy+80);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+120,cy-100);ctx.lineTo(cx+120,cy+80);ctx.stroke();
+  // 底部封闭
+  ctx.beginPath();ctx.moveTo(cx-120,cy+80);ctx.lineTo(cx+120,cy+80);ctx.stroke();
+  // 活塞位置（压缩）
+  const compressPhase=(Math.sin(time*0.6)+1)/2; // 0-1
+  const pistonY=cy-80+compressPhase*70;
+  ctx.fillStyle='#9ab0d0';
+  ctx.fillRect(cx-130,pistonY-15,260,15);
+  // 活塞杆
+  ctx.fillRect(cx-4,pistonY-60,8,45);
+  // 外力箭头（向下）
+  ctx.strokeStyle='#fb923c';ctx.lineWidth=4;
+  ctx.shadowColor='#fb923c';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(cx,pistonY-80);ctx.lineTo(cx,pistonY-65);ctx.stroke();
+  ctx.fillStyle='#fb923c';
+  ctx.beginPath();ctx.moveTo(cx,pistonY-60);ctx.lineTo(cx-7,pistonY-70);ctx.lineTo(cx+7,pistonY-70);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('F',cx+18,pistonY-72,'#fb923c',14);
+  // 气体分子（压缩后速度更快）
+  const gasH=cy+80-pistonY;
+  const speedFactor=0.5+compressPhase*2.5;
+  const numMolecules=10;
+  for(let i=0;i<numMolecules;i++){
+    const a=i/numMolecules*6.28+time*speedFactor;
+    const px=cx+Math.cos(a+time*speedFactor*0.5)*70;
+    const py=pistonY+10+(gasH-20)*0.5+Math.sin(a*1.3)*((gasH-20)*0.4);
+    const heat=compressPhase;
+    const r=Math.round(103+heat*150);
+    const g=Math.round(232-heat*40);
+    const b=Math.round(249-heat*180);
+    ctx.fillStyle='rgb('+r+','+g+','+','+b+')';
+    if(!ctx.fillStyle.endsWith(')')){
+      ctx.fillStyle='rgb('+r+','+g+','+b+')';
+    }
+    ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
+    // 速度尾迹
+    const vx=-Math.sin(a+time*speedFactor*0.5)*speedFactor*15;
+    const vy=Math.cos(a*1.3)*speedFactor*15;
+    ctx.strokeStyle='rgba(251,146,60,'+(0.3+heat*0.4)+')';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-vx*0.3,py-vy*0.3);ctx.stroke();
+  }
+  // 温度计
+  const tempX=cx+160;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.strokeRect(tempX,cy-70,16,140);
+  const tempH=compressPhase*120;
+  const tr=Math.round(103+compressPhase*150);
+  const tg=Math.round(232-compressPhase*40);
+  const tb=Math.round(249-compressPhase*180);
+  ctx.fillStyle='rgb('+tr+','+tg+','+tb+')';
+  ctx.fillRect(tempX+2,cy+68-tempH,12,tempH);
+  drawText('温度',tempX+8,cy-80,'#9ab0d0',11);
+  drawText(((20+compressPhase*180)|0)+'°C',tempX+8,cy+85,'#fb923c',12);
+  // 说明
+  drawText('W &gt; 0（外界对气体做功）',cx,H-60,'#fbbf24',13);
+  drawText('ΔU &gt; 0  →  内能增加  →  温度升高',cx,H-35,'#34d399',12);
+}
+
+// ===== 场景：膨胀对外做功降温 =====
+function drawExpandScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('做功 · 气体膨胀对外做功 → 温度↓',W/2,30,'#fb923c',16);
+  const cx=W/2,cy=H/2+20;
+  // 气缸
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-120,cy-100);ctx.lineTo(cx-120,cy+80);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+120,cy-100);ctx.lineTo(cx+120,cy+80);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-120,cy+80);ctx.lineTo(cx+120,cy+80);ctx.stroke();
+  // 活塞（上升）
+  const expandPhase=(Math.sin(time*0.6)+1)/2;
+  const pistonY=cy-10-expandPhase*70;
+  ctx.fillStyle='#9ab0d0';
+  ctx.fillRect(cx-130,pistonY-15,260,15);
+  ctx.fillRect(cx-4,pistonY+0,8,60);
+  // 气体推开活塞（向上箭头）
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=4;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(cx,pistonY+5);ctx.lineTo(cx,pistonY+50);ctx.stroke();
+  ctx.fillStyle='#67e8f9';
+  ctx.beginPath();ctx.moveTo(cx,pistonY+55);ctx.lineTo(cx-7,pistonY+45);ctx.lineTo(cx+7,pistonY+45);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('气体推力',cx+22,pistonY+30,'#67e8f9',12);
+  // 分子（膨胀后变慢）
+  const gasH=cy+80-pistonY;
+  const speedFactor=1.5-expandPhase*1.2;
+  for(let i=0;i<10;i++){
+    const a=i/10*6.28+time*speedFactor;
+    const px=cx+Math.cos(a+time*speedFactor*0.5)*70;
+    const py=pistonY+10+(gasH-20)*0.5+Math.sin(a*1.3)*((gasH-20)*0.4);
+    const cool=expandPhase;
+    const r=Math.round(103+(1-cool)*0);
+    const g=Math.round(182+cool*50);
+    const b=Math.round(249);
+    ctx.fillStyle='rgb('+r+','+g+','+b+')';
+    ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
+    const vx=-Math.sin(a+time*speedFactor*0.5)*speedFactor*15;
+    const vy=Math.cos(a*1.3)*speedFactor*15;
+    ctx.strokeStyle='rgba(6,182,212,'+(0.3+0.2*(1-cool))+')';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-vx*0.3,py-vy*0.3);ctx.stroke();
+  }
+  // 温度计
+  const tempX=cx+160;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.strokeRect(tempX,cy-70,16,140);
+  const tempH=(1-expandPhase)*100+20;
+  ctx.fillStyle='rgb(103,232,249)';
+  ctx.fillRect(tempX+2,cy+68-tempH,12,tempH);
+  drawText('温度',tempX+8,cy-80,'#9ab0d0',11);
+  drawText(((20-expandPhase*40)|0)+'°C',tempX+8,cy+85,'#67e8f9',12);
+  // 喷气效果
+  if(expandPhase>0.3){
+    for(let i=0;i<4;i++){
+      const a=-Math.PI/2+(i-1.5)*0.3;
+      const len=30+expandPhase*30;
+      ctx.strokeStyle='rgba(255,255,255,'+(0.5*(1-i/4)*expandPhase)+')';ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(cx+Math.cos(a)*15,pistonY-15+Math.sin(a)*5);
+      ctx.lineTo(cx+Math.cos(a)*(15+len),pistonY-15+Math.sin(a)*5-len*0.5);
+      ctx.stroke();
+    }
+    drawText('冷气喷出',cx,pistonY-70,'#67e8f9',12);
+  }
+  drawText('W &lt; 0（气体对外做功）',cx,H-60,'#fbbf24',13);
+  drawText('ΔU &lt; 0  →  内能减小  →  温度降低',cx,H-35,'#34d399',12);
+}
+
+// ===== 场景：焦耳热功当量实验 =====
+function drawJouleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('焦耳热功当量实验 · 证明做功与热传递等效',W/2,30,'#fb923c',16);
+  const cx=W/2,cy=H/2+20;
+  // 重锤（下落）
+  const dropPhase=(time*0.4)%1;
+  const dropY=dropPhase*120;
+  // 左重锤
+  const lx=cx-120,rx=cx+120;
+  ctx.fillStyle='#9ab0d0';
+  ctx.beginPath();ctx.arc(lx,cy-90+dropY,16,0,7);ctx.fill();
+  drawText('m',lx,cy-90+dropY,'#1a1a1a',12);
+  // 右重锤（上升）
+  ctx.beginPath();ctx.arc(rx,cy-90-dropY+120,16,0,7);ctx.fill();
+  drawText('m',rx,cy-90-dropY+120,'#1a1a1a',12);
+  // 绳子
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(lx,cy-90+dropY);ctx.lineTo(lx,cy-110);ctx.lineTo(cx,cy-110);ctx.lineTo(cx,cy-50);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(rx,cy-90-dropY+120);ctx.lineTo(rx,cy-110);ctx.lineTo(cx,cy-110);ctx.stroke();
+  // 滑轮
+  ctx.fillStyle='#fb923c';ctx.strokeStyle='#fb923c';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy-115,10,0,7);ctx.stroke();
+  // 水容器（绝热）
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx-50,cy-50,100,100,5);ctx.fill();ctx.stroke();
+  // 水
+  ctx.fillStyle='rgba(6,182,212,0.4)';
+  ctx.fillRect(cx-47,cy-30,94,77);
+  // 叶片（旋转）
+  ctx.save();
+  ctx.translate(cx,cy+5);
+  ctx.rotate(time*5);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  for(let i=0;i<4;i++){
+    ctx.save();
+    ctx.rotate(i*Math.PI/2);
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(30,0);ctx.stroke();
+    ctx.restore();
+  }
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(0,0,5,0,7);ctx.fill();
+  ctx.restore();
+  // 转轴
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy-50);ctx.lineTo(cx,cy-115);ctx.stroke();
+  drawText('水 + 叶片',cx,cy+35,'#67e8f9',11);
+  // 温度显示
+  const tempRise=(time*0.3)%3;
+  drawText('温度升高 ΔT = '+tempRise.toFixed(2)+' °C',cx,cy+72,'#fb923c',12);
+  // 数据
+  drawText('机械功 W = mgh（重锤势能）',W*0.25,H-70,'#fbbf24',12);
+  drawText('吸热 Q = cm·ΔT',W*0.75,H-70,'#67e8f9',12);
+  drawText('结论：1 cal = 4.18 J（J = W/Q）',W/2,H-45,'#34d399',13);
+  drawText('消耗的功与传递的热在改变内能上等效',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：热力学第一定律 =====
+function drawFirstLawScene(){
+  const W=cv.width,H=cv.height;
+  drawText('热力学第一定律 · ΔU = Q + W',W/2,40,'#fb923c',20);
+  // 大公式
+  ctx.fillStyle='#fff';ctx.font='bold 36px serif';ctx.textAlign='center';
+  ctx.fillText('ΔU = Q + W',W/2,110);
+  // 三块解释
+  const items=[
+    {sym:'ΔU',name:'内能变化',desc:'&gt; 0 增大\n&lt; 0 减小',color:'#fbbf24',x:W*0.18},
+    {sym:'Q',name:'热量',desc:'&gt; 0 吸热\n&lt; 0 放热',color:'#06b6d4',x:W*0.5},
+    {sym:'W',name:'做功',desc:'&gt; 0 被压缩\n&lt; 0 膨胀',color:'#34d399',x:W*0.82},
+  ];
+  items.forEach(m=>{
+    ctx.fillStyle=m.color+'22';ctx.strokeStyle=m.color;ctx.lineWidth=2;
+    roundRect(m.x-90,160,180,180,10);ctx.fill();ctx.stroke();
+    ctx.fillStyle=m.color;ctx.font='bold 32px serif';ctx.textAlign='center';
+    ctx.fillText(m.sym,m.x,210);
+    drawText(m.name,m.x,250,'#fff',14);
+    const lines=m.desc.split('\n');
+    lines.forEach((ln,i)=>{
+      const txt=ln.replace(/&gt;/g,'>').replace(/&lt;/g,'<');
+      drawText(txt,m.x,280+i*22,m.color,12);
+    });
+  });
+  // 实例
+  drawText('四种情形：',W/2,380,'#fb923c',14);
+  const cases=[
+    {q:'吸热 Q&gt;0',w:'压缩 W&gt;0',r:'ΔU&gt;0 必升温',c:'#34d399'},
+    {q:'放热 Q&lt;0',w:'膨胀 W&lt;0',r:'ΔU&lt;0 必降温',c:'#f87171'},
+    {q:'吸热 Q&gt;0',w:'膨胀 W&lt;0',r:'ΔU 看 |Q| 与 |W|',c:'#fbbf24'},
+    {q:'绝热 Q=0',w:'压缩 W&gt;0',r:'ΔU=W&gt;0 升温',c:'#06b6d4'},
+  ];
+  cases.forEach((c,i)=>{
+    const x=W*0.13+i*W*0.245;
+    ctx.fillStyle=c+'22';ctx.strokeStyle=c;ctx.lineWidth=1.5;
+    roundRect(x,400,W*0.22,75,6);ctx.fill();ctx.stroke();
+    drawText(c.q.replace(/&gt;/g,'>').replace(/&lt;/g,'<'),x+W*0.11,420,c,11);
+    drawText(c.w.replace(/&gt;/g,'>').replace(/&lt;/g,'<'),x+W*0.11,440,c,11);
+    drawText(c.r.replace(/&gt;/g,'>').replace(/&lt;/g,'<'),x+W*0.11,460,'#fff',11);
+  });
+}
+
+// ===== 场景：典型计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · ΔU = Q + W',W/2,30,'#fb923c',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#06b6d4',13,'left');
+  drawText('一定量气体吸热 200 J，同时对外做功 80 J。',120,115,'#fff',13,'left');
+  drawText('求气体内能变化 ΔU。',120,140,'#fff',13,'left');
+  // 解答
+  const steps=[
+    {t:'① 识别 Q',d:'吸热 → Q = +200 J',c:'#06b6d4'},
+    {t:'② 识别 W',d:'对外做功 → W = -80 J',c:'#fb923c'},
+    {t:'③ 公式',d:'ΔU = Q + W',c:'#a78bfa'},
+    {t:'④ 代入',d:'ΔU = 200 + (-80) = 120 J',c:'#34d399'},
+    {t:'⑤ 结论',d:'内能增加 120 J（温度升高）',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=205+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,36,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,260,y+18,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('内能改变两种方式 · 核心总结',W/2,40,'#fb923c',18);
+  const items=[
+    {t:'做功',d:'机械能 ↔ 内能\n压缩/膨胀',c:'#fb923c'},
+    {t:'热传递',d:'内能在物体间转移\n传导/对流/辐射',c:'#06b6d4'},
+    {t:'统一公式',d:'ΔU = Q + W\n能量守恒',c:'#34d399'},
+    {t:'等效性',d:'做功与热传递\n在改变内能上等效',c:'#fbbf24'},
+    {t:'柴油机',d:'压缩气体升温\n→ 压燃点火',c:'#f87171'},
+    {t:'保温杯',d:'减少热传递\n（传导/对流/辐射）',c:'#a78bfa'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+45,m.c,15);
+    m.d.split('\n').forEach((ln,j)=>{
+      drawText(ln,x+(W-160)/6,y+80+j*22,'#fff',12);
+    });
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0||stepIdx===1)drawMoleculeScene(t);
+  else if(stepIdx===2)drawConductionScene(t);
+  else if(stepIdx===3)drawConvectionScene(t);
+  else if(stepIdx===4)drawCompressScene(t);
+  else if(stepIdx===5)drawExpandScene(t);
+  else if(stepIdx===6)drawJouleScene(t);
+  else if(stepIdx===7)drawFirstLawScene();
+  else if(stepIdx===8)drawCalcScene();
+  else if(stepIdx===9){
+    // 辐射场景作为总结一部分（合并）
+    drawRadiationScene(t);
+  }
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

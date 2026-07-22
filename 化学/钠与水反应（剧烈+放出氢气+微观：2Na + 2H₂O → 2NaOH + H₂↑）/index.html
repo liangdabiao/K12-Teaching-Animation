@@ -3,102 +3,472 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>钠与水反应</title>
+<title>钠与水反应 · 浮熔游响红 · 微观机理</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#a78bfa;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(167,139,250,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(167,139,250,.2);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">钠与水反应</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">钠与水反应</span><span class="subtitle">浮熔游响红 · 2Na+2H₂O→2NaOH+H₂↑ · 微观机理</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>物理性质</h4><div class="v">银白色软金属<br>ρ=0.97 g/cm³（比水小）</div></div>
+  <div class="card s2"><div class="num">2</div><h4>五大现象</h4><div class="v">浮、熔、游、响、红<br>酚酞遇 NaOH 变红</div></div>
+  <div class="card s3"><div class="num">3</div><h4>微观机理</h4><div class="v">Na 最外层 1 个电子<br>易失电子，H⁺ 得电子</div></div>
+  <div class="card s4"><div class="num">4</div><h4>安全性</h4><div class="v">极易反应、强碱腐蚀<br>禁止用手直接接触</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>钠与水剧烈反应：2Na + 2H₂O → 2NaOH + H₂↑。现象：钠浮在水面（密度比水小）、熔成银白色小球（反应放热、钠熔点低）、四处游动（产生H₂推动）、溶液变红（生成NaOH使酚酞变红）。</p>
-    <div class="legend"><span class="li"><b style="color:#d63031">●</b> Na原子</span><span class="li"><b style="color:#0984e3">●</b> H₂O分子</span><span class="li"><b style="color:#00b894">●</b> H₂气泡</span><span class="li"><b style="color:#fdcb6e">●</b> Na⁺/OH⁻离子</span></div>
-  <div class="key-points"><h3>反应要点</h3><ul><li>化学方程式：2Na + 2H₂O → 2NaOH + H₂↑</li><li>现象总结：<b>浮、熔、游、响、红</b></li><li>浮→ρ(Na) < ρ(H₂O)；熔→反应放热且Na熔点低</li><li>游→H₂不均匀推出；响→气体产生剧烈</li><li>本质：Na失去电子→Na⁺，H₂O中H⁺得电子→H₂</li><li>安全：钠的取用要用镊子，不能用手接触</li></ul></div>
-    </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">钠的性质</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-const Na={t:0,p:0,H:[]};
-function sceneInit(){sceneReset();}
-function sceneReset(){Na.t=0;Na.p=0;Na.H=[];}
-function sceneUpdate(dt){if(Na.p<1)Na.p=Math.min(1,Na.p+dt*0.25);
-  if(Na.p>0.2&&Na.p<0.85&&Math.random()<dt*22){Na.H.push({x:cv.width/2+(Math.random()*50-25),y:cv.height*0.45,vx:(Math.random()*2-1)*70,vy:-110-Math.random()*130,life:1});}
-  Na.H.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;b.vy+=420*dt;b.life-=dt;});Na.H=Na.H.filter(b=>b.life>0);
+const STEPS=[
+  {tag:'基础',name:'钠的物理性质',body:'钠（Na）是<strong>银白色的软金属</strong>，质软可用小刀切开。<strong>密度 ρ=0.97 g/cm³</strong>，比水（1.0 g/cm³）小，所以会<strong>浮在水面</strong>。熔点低（97.8°C），易被反应放热熔化。',points:{title:'物理性质要点',items:['<strong>颜色</strong>：银白色金属光泽（新鲜切面）','<strong>硬度</strong>：质软，小刀可切','<strong>密度</strong>：0.97 g/cm³（小于水）','<strong>熔点</strong>：97.8°C（很低）']}},
+  {tag:'基础',name:'钠块浮于水面',body:'将一小块钠投入烧杯的水面上，由于<strong>钠密度小于水</strong>（0.97 vs 1.0 g/cm³），钠块<strong>立刻浮在水面上</strong>，与水接触剧烈反应。这是<strong>浮</strong>现象。',points:{title:'现象1：浮',items:['<strong>原因</strong>：ρ(Na)=0.97 < ρ(H₂O)=1.0','<strong>表现</strong>：钠浮于水面','<strong>对比</strong>：K（0.86）也浮，Ca（1.55）沉','<strong>推论</strong>：浮→密度小']}},
+  {tag:'现象',name:'熔化成银白色小球',body:'钠与水反应<strong>剧烈放热</strong>，加之钠熔点仅 97.8°C，放出的热量足以<strong>使钠熔化成闪亮的小球</strong>，在水面游动。这是<strong>熔</strong>现象，证明反应放热且钠熔点低。',points:{title:'现象2：熔',items:['<strong>原因</strong>：反应放热 + 熔点低','<strong>表现</strong>：钠熔成银白色小球','<strong>推论</strong>：反应是放热反应','<strong>关键</strong>：液态钠呈球状（表面张力）']}},
+  {tag:'现象',name:'四处游动+嘶嘶声',body:'反应产生<strong>氢气</strong>推动钠球<strong>四处游动</strong>，伴随<strong>嘶嘶声</strong>（气体逸出与轻微爆鸣）。游动因为钠球各方向产气速率不均，气体反推钠球。这是<strong>游、响</strong>现象。',points:{title:'现象3-4：游、响',items:['<strong>游</strong>：H₂ 不均匀推出 → 钠球游动','<strong>响</strong>：气体逸出 + H₂ 偶尔爆鸣','<strong>声音</strong>：嘶嘶声（气体穿过水面）','<strong>危险</strong>：H₂ 与空气混合可爆鸣']}},
+  {tag:'现象',name:'酚酞变红',body:'反应生成<strong>NaOH（强碱）</strong>，使水溶液呈碱性。加入<strong>酚酞试液</strong>，溶液<strong>由无色变红色</strong>，红色从钠块周围向四周扩散。这是<strong>红</strong>现象，证明生成了碱性物质。',points:{title:'现象5：红',items:['<strong>产物</strong>：2NaOH（强碱）','<strong>试剂</strong>：酚酞试液','<strong>现象</strong>：无色 → 红色','<strong>本质</strong>：OH⁻ 使酚酞变红']}},
+  {tag:'方程',name:'化学方程式',body:'<strong>化学方程式</strong>：<code>2Na + 2H₂O → 2NaOH + H₂↑</code>。两个 Na 原子与两个水分子反应，生成两个 NaOH 和一个 H₂ 分子（共 4 个 H 原子：2 个进 NaOH，2 个合成 H₂）。',points:{title:'化学方程式细节',items:['<strong>反应物</strong>：Na（固体）+ H₂O（液体）','<strong>产物</strong>：NaOH（溶液）+ H₂（气体↑）','<strong>配平</strong>：Na、H、O 原子各自守恒','<strong>类型</strong>：置换反应（活泼金属置换氢）']}},
+  {tag:'方程',name:'离子方程式',body:'<strong>离子方程式</strong>：<code>2Na + 2H₂O → 2Na⁺ + 2OH⁻ + H₂↑</code>。NaOH 在水中完全电离为 Na⁺ 和 OH⁻。此式揭示了<strong>真实参加反应的微粒</strong>，是反应的离子本质。',points:{title:'离子方程式要点',items:['<strong>Na</strong>：固体，保留化学式','<strong>H₂O</strong>：弱电解质，保留分子形式','<strong>Na⁺/OH⁻</strong>：自由离子（强电解质）','<strong>H₂</strong>：气体逸出（↑）']}},
+  {tag:'微观',name:'微观机理：失电子',body:'微观层面：<strong>Na 原子最外层只有 1 个电子</strong>，极易失去，被水中 H⁺（来自水的微弱电离）得到。<strong>Na → Na⁺ + e⁻</strong>；H⁺ 得电子：<strong>2H⁺ + 2e⁻ → H₂↑</strong>。电子从 Na 转移到 H⁺。',points:{title:'电子转移',items:['<strong>Na 失电子</strong>：Na → Na⁺ + e⁻（氧化）','<strong>H⁺ 得电子</strong>：2H⁺ + 2e⁻ → H₂（还原）','<strong>本质</strong>：氧化还原反应','<strong>Na 是还原剂</strong>，H₂O 是氧化剂']}},
+  {tag:'微观',name:'剧烈程度解释',body:'钠反应<strong>极为剧烈</strong>，因为<strong>Na 最外层仅 1 个电子</strong>，原子半径较大，<strong>极易失去该电子</strong>。同族元素（K、Rb、Cs）电子层数更多、半径更大，反应<strong>更剧烈</strong>，K 与水反应会燃烧甚至爆炸。',points:{title:'同族活泼性对比',items:['<strong>Li</strong>：较平稳（半径小，电子难失）','<strong>Na</strong>：剧烈（典型实验）','<strong>K</strong>：更剧烈，会燃烧（紫色火焰）','<strong>规律</strong>：金属性 Li<Na<K<Rb<Cs']}},
+  {tag:'总结',name:'安全与应用总结',body:'<strong>安全</strong>：钠极易反应，<strong>禁止用手接触</strong>（强碱腐蚀皮肤），取用需用<strong>镊子</strong>，保存在<strong>煤油</strong>中（隔绝水与空气）。<strong>应用</strong>：制取 Na₂O₂、NaNH₂，冶炼钛（高温还原剂）。',points:{title:'安全与速记',items:['<strong>取用</strong>：镊子（非手）','<strong>保存</strong>：煤油中（隔绝水/O₂）','<strong>残渣处理</strong>：酒精分解','<strong>五字速记</strong>：浮、熔、游、响、红']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：钠块浮在水面，熔化游动 =====
+function drawFloatScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('钠投入水中 · 浮-熔-游-响',W/2,30,'#a78bfa',16);
+  const bx=W/2,by=H/2+50,bw=300,bh=200;
+  // 烧杯
+  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(bx-bw/2-10,by-bh);ctx.lineTo(bx-bw/2-10,by+10);ctx.lineTo(bx+bw/2+10,by+10);ctx.lineTo(bx+bw/2+10,by-bh);ctx.stroke();
+  // 水面
+  const waterY=by-bh+70;
+  ctx.fillStyle='rgba(6,182,212,0.18)';
+  ctx.fillRect(bx-bw/2-10,waterY,bw+20,by-waterY+10);
+  // 水面波纹
+  ctx.strokeStyle='rgba(125,211,252,0.5)';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  for(let x=bx-bw/2-10;x<=bx+bw/2+10;x+=4){
+    const y=waterY+Math.sin((x-bx)*0.1+time*3)*2;
+    if(x===bx-bw/2-10)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // 钠块/球（熔化游动）
+  const melt=Math.min(1,(time%4)/4); // 熔化进度 0-1
+  const ballX=bx-bw/4+Math.sin(time*2.5)*bw/4;
+  const ballY=waterY-2+Math.sin(time*5)*3;
+  const r=14+Math.sin(time*4)*1.5;
+  // 钠球（银白色，渐变模拟金属光泽）
+  const grd=ctx.createRadialGradient(ballX-4,ballY-4,2,ballX,ballY,r);
+  grd.addColorStop(0,'#ffffff');grd.addColorStop(0.4,'#e2e8f0');grd.addColorStop(1,'#94a3b8');
+  ctx.fillStyle=grd;
+  ctx.shadowColor='#e2e8f0';ctx.shadowBlur=melt>0.5?12:4;
+  ctx.beginPath();ctx.arc(ballX,ballY,r,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 火焰/光晕（剧烈反应时）
+  if(melt>0.3){
+    ctx.fillStyle='rgba(251,191,36,'+(0.3+0.2*Math.sin(time*8))+')';
+    ctx.beginPath();ctx.arc(ballX,ballY-2,r+6,0,7);ctx.fill();
+  }
+  // H₂ 气泡（向上冒）
+  for(let i=0;i<5;i++){
+    const bubT=(time*2+i*0.4)%2;
+    const px=ballX+(i-2)*8;
+    const py=ballY-bubT*60;
+    if(py>waterY-30){
+      ctx.fillStyle='rgba(125,211,252,'+(1-bubT/2)+')';
+      ctx.beginPath();ctx.arc(px,py,2+bubT*2,0,7);ctx.fill();
+    }
+  }
+  // 嘶嘶声波纹
+  ctx.strokeStyle='rgba(251,191,36,0.6)';ctx.lineWidth=1;
+  for(let i=0;i<3;i++){
+    const waveT=(time*3+i*0.3)%1;
+    ctx.globalAlpha=1-waveT;
+    ctx.beginPath();ctx.arc(ballX,ballY-5,r+10+waveT*30,0,7);ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  // 标签
+  drawText('Na（银白色软金属）',ballX,ballY+r+15,'#e2e8f0',12);
+  drawText('浮：ρ(Na)=0.97 < ρ(H₂O)=1.0',bx,by-bh-20,'#a78bfa',13);
+  drawText('熔：放热熔成小球 ｜ 游：H₂ 推动游动 ｜ 响：嘶嘶声',W/2,H-30,'#34d399',12);
 }
-function sceneDraw(){
+
+// ===== 场景：酚酞变红 =====
+function drawPhenolScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('酚酞遇 NaOH 变红',W/2,30,'#a78bfa',16);
+  const bx=W/2,by=H/2+50,bw=320,bh=240;
+  // 烧杯轮廓
+  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(bx-bw/2-10,by-bh);ctx.lineTo(bx-bw/2-10,by+10);ctx.lineTo(bx+bw/2+10,by+10);ctx.lineTo(bx+bw/2+10,by-bh);ctx.stroke();
+  // 钠球位置
+  const naX=bx-30+Math.sin(time*2)*40;
+  const naY=by-bh+90;
+  // 红色扩散半径
+  const spread=Math.min(bw/2+10,(time%5)*bw/8);
+  // 溶液：红色渐变（从钠球向外）
+  const waterY=by-bh+60;
+  ctx.save();
+  ctx.beginPath();ctx.rect(bx-bw/2-10,waterY,bw+20,by-waterY+10);ctx.clip();
+  // 红色扩散
+  const grdR=ctx.createRadialGradient(naX,naY,5,naX,naY,spread);
+  grdR.addColorStop(0,'rgba(239,68,68,0.7)');
+  grdR.addColorStop(0.6,'rgba(239,68,68,0.4)');
+  grdR.addColorStop(1,'rgba(6,182,212,0.15)');
+  ctx.fillStyle=grdR;
+  ctx.fillRect(bx-bw/2-10,waterY,bw+20,by-waterY+10);
+  ctx.restore();
+  // 钠球
+  const grd=ctx.createRadialGradient(naX-4,naY-4,2,naX,naY,14);
+  grd.addColorStop(0,'#ffffff');grd.addColorStop(0.4,'#e2e8f0');grd.addColorStop(1,'#94a3b8');
+  ctx.fillStyle=grd;
+  ctx.beginPath();ctx.arc(naX,naY,14,0,7);ctx.fill();
+  // 酚酞分子（小红点漂浮）
+  for(let i=0;i<12;i++){
+    const ang=i/12*Math.PI*2+time*0.5;
+    const rx=naX+Math.cos(ang)*spread*0.7;
+    const ry=naY+Math.sin(ang)*spread*0.5;
+    if(ry>waterY&&ry<by){
+      ctx.fillStyle='rgba(239,68,68,'+(0.4+0.3*Math.sin(time*2+i))+')';
+      ctx.beginPath();ctx.arc(rx,ry,2,0,7);ctx.fill();
+    }
+  }
+  // 标签
+  drawText('无色酚酞 → 遇 NaOH 变红',bx,by-bh-20,'#ef4444',13);
+  drawText('OH⁻（强碱）使酚酞由无色变红',W/2,H-50,'#34d399',12);
+  drawText('红色由钠块向四周扩散',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：H₂ 气泡上浮 =====
+function drawBubbleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('氢气逸出 · H₂↑',W/2,30,'#a78bfa',16);
+  const bx=W/2,by=H/2+50,bw=280,bh=240;
+  // 烧杯
+  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(bx-bw/2-10,by-bh);ctx.lineTo(bx-bw/2-10,by+10);ctx.lineTo(bx+bw/2+10,by+10);ctx.lineTo(bx+bw/2+10,by-bh);ctx.stroke();
+  const waterY=by-bh+60;
+  ctx.fillStyle='rgba(6,182,212,0.18)';ctx.fillRect(bx-bw/2-10,waterY,bw+20,by-waterY+10);
+  // 钠球
+  const naX=bx+Math.sin(time*3)*bw/4;
+  const naY=waterY+5;
+  const grd=ctx.createRadialGradient(naX-4,naY-4,2,naX,naY,13);
+  grd.addColorStop(0,'#ffffff');grd.addColorStop(0.5,'#e2e8f0');grd.addColorStop(1,'#94a3b8');
+  ctx.fillStyle=grd;
+  ctx.beginPath();ctx.arc(naX,naY,13,0,7);ctx.fill();
+  // 气泡系统（持续生成上浮）
+  const bubbles=[];
+  for(let i=0;i<20;i++){
+    const phase=(time*1.5+i*0.3)%2;
+    if(phase<1.8){
+      bubbles.push({
+        x:naX+(i%5-2)*5+Math.sin(phase*5+i)*3,
+        y:naY-phase*150,
+        r:2+phase*3,
+        a:1-phase/2
+      });
+    }
+  }
+  bubbles.forEach(b=>{
+    ctx.fillStyle='rgba(255,255,255,'+b.a*0.7+')';
+    ctx.strokeStyle='rgba(125,211,252,'+b.a+')';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,7);ctx.fill();ctx.stroke();
+  });
+  // 气体逸出烧杯口
+  for(let i=0;i<6;i++){
+    const phase=(time*2+i*0.5)%3;
+    if(phase<1.5){
+      const ex=naX+(i-3)*15+Math.sin(phase*4)*8;
+      const ey=by-bh-10-phase*30;
+      ctx.fillStyle='rgba(222,222,222,'+(0.5-phase/3)+')';
+      ctx.beginPath();ctx.arc(ex,ey,3+phase*2,0,7);ctx.fill();
+    }
+  }
+  drawText('H₂↑',naX+25,naY-5,'#fff',14);
+  drawText('2H⁺ + 2e⁻ → H₂↑',bx,by-bh-20,'#a78bfa',13);
+  drawText('氢气从钠块周围生成、上浮、逸出',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：微观电子转移 =====
+function drawMicroScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('微观机理 · 电子转移',W/2,30,'#a78bfa',16);
+  const cy=H/2+20;
+  // Na 原子（左）
+  const naX=W*0.25;
+  // 原子核 + 电子
+  ctx.fillStyle='#a78bfa';
+  ctx.shadowColor='#a78bfa';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(naX,cy,28,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('Na',naX,cy,'#fff',16);
+  // 最外层电子（移动中）
+  const orbR=45;
+  const eAng=time*3;
+  // 轨道
+  ctx.strokeStyle='rgba(167,139,250,0.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(naX,cy,orbR,0,7);ctx.stroke();
+  // 电子（待失）
+  const ex=naX+Math.cos(eAng)*orbR,ey=cy+Math.sin(eAng)*orbR;
+  ctx.fillStyle='#fbbf24';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(ex,ey,5,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('e⁻',ex,ey-12,'#fbbf24',11);
+  // H₂O 分子（右）H-O-H
+  const h2oX=W*0.7;
+  // O 原子
+  ctx.fillStyle='#ef4444';
+  ctx.shadowColor='#ef4444';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(h2oX,cy,22,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('O',h2oX,cy,'#fff',14);
+  // 两个 H 原子（角度 104.5°）
+  const hAng=52*Math.PI/180;
+  const bondLen=38;
+  const h1x=h2oX-Math.cos(hAng)*bondLen,h1y=cy+Math.sin(hAng)*bondLen;
+  const h2x=h2oX+Math.cos(hAng)*bondLen,h2y=cy+Math.sin(hAng)*bondLen;
+  // 键
+  ctx.strokeStyle='#94a3b8';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(h2oX,cy);ctx.lineTo(h1x,h1y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(h2oX,cy);ctx.lineTo(h2x,h2y);ctx.stroke();
+  // H 原子（白色）
+  ctx.fillStyle='#ffffff';
+  ctx.beginPath();ctx.arc(h1x,h1y,11,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(h2x,h2y,11,0,7);ctx.fill();
+  drawText('H',h1x,h1y,'#1a1a1a',11);
+  drawText('H',h2x,h2y,'#1a1a1a',11);
+  // 飞行中的电子（从 Na 到 H）
+  const flyT=(time*1.2)%1;
+  for(let i=0;i<2;i++){
+    const ft=(flyT+i*0.5)%1;
+    const fx=naX+(h2oX-naX)*ft;
+    const fy=cy+Math.sin(ft*Math.PI)*-30;
+    ctx.fillStyle='#fbbf24';
+    ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+    ctx.beginPath();ctx.arc(fx,fy,4,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+  }
+  // 箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(naX+50,cy);ctx.lineTo(h2oX-50,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('失 e⁻',naX+70,cy-12,'#fbbf24',11);
+  drawText('得 e⁻',h2oX-70,cy-12,'#fbbf24',11);
+  // 反应产物（底部）
+  drawText('Na → Na⁺ + e⁻（氧化）',W*0.25,H-90,'#a78bfa',13);
+  drawText('2H⁺ + 2e⁻ → H₂↑（还原）',W*0.7,H-90,'#06b6d4',13);
+  drawText('本质：电子由 Na 转移到 H⁺',W/2,H-50,'#34d399',13);
+  drawText('氧化还原反应 · Na 是还原剂',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：五字观察要点 =====
+function drawFiveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('五字观察要点 · 浮-熔-游-响-红',W/2,30,'#a78bfa',16);
+  const items=[
+    {t:'浮',d:'ρ(Na)<ρ(H₂O)\n钠浮于水面',c:'#a78bfa'},
+    {t:'熔',d:'放热+熔点低\n熔成银白色球',c:'#06b6d4'},
+    {t:'游',d:'H₂ 推动不均\n钠球四处游动',c:'#34d399'},
+    {t:'响',d:'气体逸出\n嘶嘶声/爆鸣',c:'#fbbf24'},
+    {t:'红',d:'生成 NaOH\n酚酞变红色',c:'#ef4444'},
+  ];
+  const cardW=(W-160)/5;
+  const cy=H/2;
+  items.forEach((m,i)=>{
+    const x=80+i*(cardW+8);
+    const highlight=Math.floor((time*0.8)%5)===i;
+    ctx.fillStyle=m.c+(highlight?'44':'22');ctx.strokeStyle=m.c;ctx.lineWidth=highlight?3:1.5;
+    roundRect(x,cy-90,cardW,180,10);ctx.fill();ctx.stroke();
+    // 大字
+    ctx.fillStyle=m.c;
+    ctx.font='bold 44px sans-serif';ctx.textAlign='center';
+    if(highlight){ctx.shadowColor=m.c;ctx.shadowBlur=15;}
+    ctx.fillText(m.t,x+cardW/2,cy-30);
+    ctx.shadowBlur=0;
+    // 描述
+    const lines=m.d.split('\n');
+    ctx.font='12px sans-serif';ctx.fillStyle='#e8eef8';
+    lines.forEach((ln,j)=>ctx.fillText(ln,x+cardW/2,cy+20+j*18));
+  });
+  drawText('记忆口诀：浮 熔 游 响 红',W/2,H-50,'#34d399',14);
+  drawText('对应原理：密度小/放热熔点低/气体推动/气体逸出/生成强碱',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景：方程式展示 =====
+function drawEquationScene(){
+  const W=cv.width,H=cv.height;
+  drawText('化学方程式与离子方程式',W/2,30,'#a78bfa',16);
+  // 化学方程式
+  ctx.fillStyle='rgba(167,139,250,0.1)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(60,80,W-120,90,10);ctx.fill();ctx.stroke();
+  drawText('化学方程式',100,100,'#a78bfa',12,'left');
+  ctx.font='bold 24px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('2Na + 2H₂O → 2NaOH + H₂↑',W/2,135);
+  // 离子方程式
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(60,200,W-120,90,10);ctx.fill();ctx.stroke();
+  drawText('离子方程式',100,220,'#06b6d4',12,'left');
+  ctx.font='bold 24px serif';ctx.fillStyle='#fff';
+  ctx.fillText('2Na + 2H₂O → 2Na⁺ + 2OH⁻ + H₂↑',W/2,255);
+  // 反应类型说明
+  const items=[
+    {t:'反应类型',d:'置换反应（活泼金属置换氢）',c:'#a78bfa'},
+    {t:'能量变化',d:'剧烈放热反应',c:'#fbbf24'},
+    {t:'氧化还原',d:'Na 失电子被氧化，H⁺ 得电子被还原',c:'#34d399'},
+    {t:'守恒检验',d:'原子守恒、电荷守恒、电子守恒',c:'#06b6d4'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=320+row*55;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=1.5;
+    roundRect(x+5,y,(W-160)/2-10,42,8);ctx.fill();ctx.stroke();
+    drawText(m.t,x+30,y+15,m.c,12,'left');
+    drawText(m.d,x+(W-160)/4,y+30,'#fff',11);
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('钠与水反应 · 核心总结',W/2,40,'#a78bfa',18);
+  const items=[
+    {t:'化学方程式',d:'2Na + 2H₂O → 2NaOH + H₂↑',c:'#a78bfa'},
+    {t:'五字现象',d:'浮 熔 游 响 红',c:'#06b6d4'},
+    {t:'物理性质',d:'银白软金属，密度小，熔点低',c:'#34d399'},
+    {t:'微观机理',d:'Na 失 e⁻，H⁺ 得 e⁻ → H₂',c:'#fbbf24'},
+    {t:'同族对比',d:'Li<Na<K<Rb<Cs（金属性递增）',c:'#ef4444'},
+    {t:'安全须知',d:'禁手触，存于煤油，镊子取用',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  const bx=cv.width/2,by=cv.height*0.62,bw=210,bh=170;
-  ctx.fillStyle='rgba(59,130,246,0.25)';ctx.fillRect(bx-bw/2,by-bh,bw,bh);
-  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=3;ctx.strokeRect(bx-bw/2,by-bh,bw,bh);
-  const nx=bx-70+Na.p*40, ny=by-bh+24+Math.sin(Na.t*4)*7;
-  ctx.fillStyle='#cbd5e1';ctx.beginPath();ctx.arc(nx,ny,15,0,7);ctx.fill();
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('Na：浮游、熔成银白色小球',nx,ny+34);
-  ctx.fillStyle='#7dd3fc';Na.H.forEach(b=>{ctx.globalAlpha=Math.max(0,b.life);ctx.beginPath();ctx.arc(b.x,b.y,3,0,7);ctx.fill();ctx.globalAlpha=1;});
-  ctx.fillStyle='#34d399';ctx.fillText('生成 NaOH（溶液碱性）与 H₂↑',bx,by+24);
-  ctx.fillStyle='#fbbf24';ctx.fillText('点燃：H₂ 发出爆鸣声',bx+bw/2+70,by-bh/2);
-  statusEl.textContent='2Na + 2H₂O → 2NaOH + H₂↑ ｜ 反应剧烈、放热，H₂ 可燃';
+  if(stepIdx===0)drawFloatScene(t);
+  else if(stepIdx===1)drawFloatScene(t);
+  else if(stepIdx===2)drawFloatScene(t);
+  else if(stepIdx===3)drawFloatScene(t);
+  else if(stepIdx===4)drawPhenolScene(t);
+  else if(stepIdx===5)drawEquationScene();
+  else if(stepIdx===6)drawEquationScene();
+  else if(stepIdx===7)drawMicroScene(t);
+  else if(stepIdx===8)drawBubbleScene(t);
+  else if(stepIdx===9)drawFiveScene(t);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

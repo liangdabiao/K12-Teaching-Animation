@@ -3,106 +3,461 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>晶体与非晶体熔化图像</title>
+<title>晶体非晶体熔化凝固 · 温度时间图 · 分子排列</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#67e8f9;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(103,232,249,.06)}
+.back:hover{background:rgba(103,232,249,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">晶体与非晶体熔化图像</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">晶体非晶体熔化凝固</span><span class="subtitle">温度-时间图 · 分子排列动画</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>晶体熔化</h4><div class="v">有固定熔点<br>熔化时温度不变</div></div>
+  <div class="card s2"><div class="num">2</div><h4>非晶体熔化</h4><div class="v">无固定熔点<br>逐渐软化变黏稠</div></div>
+  <div class="card s3"><div class="num">3</div><h4>分子排列</h4><div class="v">晶体规则晶格<br>非晶体无序分布</div></div>
+  <div class="card s4"><div class="num">4</div><h4>吸热放热</h4><div class="v">熔化吸热<br>凝固放热</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>晶体有固定熔点（如冰0°C、铁1538°C），熔化时温度不变，分子排列从有序变为无序；非晶体（如玻璃、石蜡）没有固定熔点，熔化过程中温度持续升高。凝固是熔化的逆过程。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">■</b> 晶体（有固定熔点）</span><span class="li"><b style="color:#d63031">■</b> 非晶体（无固定熔点）</span><span class="li"><b style="color:#00b894">●</b> 分子排列</span></div>
-  <div class="key-points"><h3>核心知识</h3><ul><li>晶体熔化条件：①达到熔点 ②继续吸热</li><li>熔化过程：温度不变，内能增加（吸热用于破坏晶格）</li><li>非晶体无固定熔点，熔化过程温度持续升高</li><li>凝固是熔化的逆过程，晶体凝固时温度不变</li><li>常见晶体：冰、食盐、金属；非晶体：玻璃、石蜡、松香</li></ul></div></aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">晶体熔化</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-const T={t:0,p:0,kind:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){T.t=0;T.p=0;T.kind=0;}
-function sceneUpdate(dt){if(T.p<1)T.p=Math.min(1,T.p+dt*0.2);}
-function curve(x0,y0,w,h,flat){ctx.strokeStyle=flat?'#7dd3fc':'#f87171';ctx.lineWidth=3;ctx.beginPath();
-  const seg=20;
-  for(let i=0;i<=seg;i++){const u=i/seg;let v;
-    if(u<0.3)v=u/0.3; else if(u<0.6){v=1;} // plateau
-    else v=1+(u-0.6)/0.4;
-    const x=x0+u*w, y=y0-h*Math.min(1.3,v/1.3);
-    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
-  } ctx.stroke();
-  if(flat){ctx.fillStyle='#fbbf24';ctx.fillText('熔点平台（晶体）',x0+w*0.35,y0-h*0.78);}
-  else{ctx.setLineDash([5,5]);ctx.strokeStyle='#f59e0b';ctx.beginPath();ctx.moveTo(x0,y0-h*0.7);ctx.lineTo(x0+w,y0-h*0.78);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#f59e0b';ctx.fillText('无确定熔点（非晶体）',x0+w*0.4,y0-h*0.5);}
+const STEPS=[
+  {tag:'基础',name:'晶体熔化特征',body:'<strong>晶体熔化</strong>时温度<strong>保持不变</strong>，这一固定温度叫<strong>熔点</strong>。熔化过程需<strong>持续吸热</strong>，吸热用于破坏分子间的规则排列（晶格）。',points:{title:'晶体熔化三要素',items:['<strong>有固定熔点</strong>：温度不变','<strong>持续吸热</strong>：能量用于破坏晶格','<strong>固液共存</strong>：熔化过程中','<strong>冰的熔点</strong>：0°C（标准大气压）']}},
+  {tag:'基础',name:'非晶体熔化',body:'<strong>非晶体</strong>熔化时<strong>没有固定熔点</strong>，温度持续升高。物质先<strong>变软</strong>，再变黏稠，最后变成液体，整个过程中<strong>逐渐软化</strong>。',points:{title:'非晶体熔化特点',items:['<strong>无固定熔点</strong>：温度持续上升','<strong>逐渐软化</strong>：硬→软→黏→液','<strong>无固液共存段</strong>：连续过渡','<strong>典型例子</strong>：玻璃、松香、沥青']}},
+  {tag:'对比',name:'熔化曲线对比',body:'在<strong>温度-时间图</strong>上，<strong>晶体</strong>熔化曲线有一段<strong>水平段</strong>（吸热但温度不变），<strong>非晶体</strong>则是<strong>平滑上升</strong>的曲线。水平段对应熔化过程。',points:{title:'曲线识别',items:['<strong>晶体曲线</strong>：先升 → 水平 → 再升','<strong>水平段</strong>：固液共存，温度=熔点','<strong>非晶体曲线</strong>：连续上升','<strong>判断依据</strong>：有无水平段']}},
+  {tag:'对比',name:'凝固曲线',body:'<strong>凝固是熔化的逆过程</strong>。晶体凝固时<strong>放热但温度不变</strong>（凝固点=熔点），非晶体凝固时温度持续下降，逐渐变硬。',points:{title:'凝固特征',items:['<strong>晶体凝固</strong>：放热，温度=凝固点','<strong>熔点=凝固点</strong>：同一种晶体相同','<strong>非晶体凝固</strong>：温度持续下降','<strong>凝固条件</strong>：达到凝固点 + 放热']}},
+  {tag:'结构',name:'分子排列：晶体规则',body:'<strong>晶体</strong>内部分子按<strong>规则晶格</strong>排列（如六边形、方形），长程有序；<strong>非晶体</strong>分子<strong>随机分布</strong>，短程有序、长程无序。',points:{title:'微观结构',items:['<strong>晶体</strong>：分子规则排列','<strong>非晶体</strong>：分子无序分布','<strong>晶格能</strong>：晶体需吸热破坏','<strong>本质区别</strong>：内部结构是否有序']}},
+  {tag:'实例',name:'常见晶体非晶体',body:'<strong>晶体</strong>：冰、食盐、各种金属（铁铜铝）、水晶、明矾；<strong>非晶体</strong>：玻璃、松香、沥青、石蜡、塑料。判断物质是晶体还是非晶体，看<strong>有无固定熔点</strong>。',points:{title:'分类速记',items:['<strong>晶体</strong>：冰、盐、金属','<strong>非晶体</strong>：玻璃、松香、沥青','<strong>金属都是晶体</strong>：有规则晶格','<strong>玻璃非晶体</strong>：软化温度区间宽']}},
+  {tag:'能量',name:'熔化吸热凝固放热',body:'<strong>熔化</strong>过程<strong>吸热</strong>（吸收的能量用于破坏分子排列，转化为分子势能）；<strong>凝固</strong>过程<strong>放热</strong>（分子重新规则排列，释放势能）。',points:{title:'能量转化',items:['<strong>熔化</strong>：吸热 → 分子势能增加','<strong>凝固</strong>：放热 → 分子势能减少','<strong>水平段</strong>：动能不变，势能变','<strong>温度本质</strong>：分子平均动能']}},
+  {tag:'规律',name:'熔点=凝固点',body:'<strong>同一种晶体的熔点和凝固点相同</strong>。例如冰的熔点是 0°C，水的凝固点也是 0°C。在 0°C 时冰和水可以<strong>共存</strong>，吸热则熔化，放热则凝固。',points:{title:'熔点凝固点关系',items:['<strong>熔点</strong>：晶体由固→液的温度','<strong>凝固点</strong>：晶体由液→固的温度','<strong>两者相等</strong>：同种晶体相同','<strong>0°C 的水冰</strong>：可互相转化']}},
+  {tag:'应用',name:'典型图像题',body:'<strong>读图方法</strong>：先看横轴时间、纵轴温度；找水平段对应温度即<strong>熔点</strong>；水平段对应<strong>熔化过程</strong>（固液共存）。常见考题：判断晶体/非晶体、读熔点、分析各段状态。',points:{title:'读图四步',items:['<strong>步骤1</strong>：看坐标轴含义','<strong>步骤2</strong>：找水平段（晶体）','<strong>步骤3</strong>：读熔点温度值','<strong>步骤4</strong>：分析各段物态']}},
+  {tag:'总结',name:'核心速记',body:'晶体有<strong>固定熔点</strong>（熔化温度不变），非晶体<strong>无固定熔点</strong>（逐渐软化）。本质区别在于<strong>分子排列是否规则</strong>。熔化吸热，凝固放热，同种晶体熔点=凝固点。',points:{title:'三句话总结',items:['<strong>晶体</strong>：有熔点，温度不变，规则晶格','<strong>非晶体</strong>：无熔点，逐渐软化，无序排列','<strong>能量</strong>：熔化吸热，凝固放热','<strong>关键</strong>：熔点=凝固点']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景1：T-t 图实时绘制（晶体水平段 vs 非晶体平滑）=====
+function drawTGraphScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('温度-时间图 · 晶体（水平段）vs 非晶体',W/2,30,'#fbbf24',16);
+  const x0=80,y0=H-80,w=W-160,h=H-180;
+  // 坐标轴
+  ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,y0-h-10);ctx.lineTo(x0+w,y0-h-10);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0+w,y0);ctx.stroke();
+  drawText('温度 /°C',x0-40,y0-h-10,'#9ab0d0',12);
+  drawText('时间 /min',x0+w,y0+25,'#9ab0d0',12);
+  // 熔点参考线
+  const meltY=y0-h*0.55;
+  ctx.strokeStyle='#fbbf2444';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(x0,meltY);ctx.lineTo(x0+w,meltY);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('熔点',x0+30,meltY-10,'#fbbf24',11);
+  // 进度（0~1 循环）
+  const p=(time*0.2)%1;
+  const seg=w/40;
+  // 晶体曲线：升-平-升
+  function crystalPt(u){
+    if(u<0.3)return{x:u/0.3*0.3*w,y:y0-h*0.55*(u/0.3*0.85)};
+    if(u<0.6)return{x:(0.3+(u-0.3)/0.3*0.3)*w,y:y0-h*0.55};
+    const uu=(u-0.6)/0.4;
+    return{x:(0.6+uu*0.4)*w,y:y0-h*0.55-h*0.35*uu};
+  }
+  // 非晶体曲线：平滑上升
+  function amorphPt(u){
+    return{x:u*w,y:y0-h*(0.1+0.75*u*u*0.9)};
+  }
+  // 绘制完整曲线（半透明）
+  ctx.strokeStyle='#67e8f933';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=100;i++){const u=i/100;const pt=crystalPt(u);i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y);}
+  ctx.stroke();
+  ctx.strokeStyle='#f8717133';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=100;i++){const u=i/100;const pt=amorphPt(u);i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y);}
+  ctx.stroke();
+  // 实时绘制到 p
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;ctx.shadowColor='#67e8f9';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=Math.floor(p*100);i++){const u=i/100;const pt=crystalPt(u);i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y);}
+  ctx.stroke();ctx.shadowBlur=0;
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=Math.floor(p*100);i++){const u=i/100;const pt=amorphPt(u);i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y);}
+  ctx.stroke();ctx.shadowBlur=0;
+  // 当前点
+  const cp=crystalPt(p),ap=amorphPt(p);
+  ctx.fillStyle='#67e8f9';ctx.beginPath();ctx.arc(cp.x,cp.y,7,0,7);ctx.fill();
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(ap.x,ap.y,7,0,7);ctx.fill();
+  // 图例
+  drawText('● 晶体（冰）',W-160,60,'#67e8f9',13,'left');
+  drawText('● 非晶体（玻璃）',W-160,82,'#f87171',13,'left');
+  // 标注水平段
+  if(p>0.35&&p<0.6){
+    drawText('← 水平段：吸热但温度不变（熔化过程）',x0+w*0.45,meltY-35,'#fbbf24',12);
+  }
 }
-function sceneDraw(){
+
+// ===== 场景2：分子排列（晶体规则 vs 非晶体随机）=====
+function drawMoleculeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('分子排列 · 晶体（规则晶格）vs 非晶体（无序）',W/2,30,'#fbbf24',16);
+  const cx1=W*0.27,cx2=W*0.73,cy=H/2+20;
+  // 左侧：晶体（六边形晶格，轻微振动）
+  ctx.fillStyle='rgba(103,232,249,0.08)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(cx1-140,cy-130,280,260,10);ctx.fill();ctx.stroke();
+  drawText('晶体（规则排列）',cx1,cy-150,'#67e8f9',14);
+  const R=30;
+  for(let row=-2;row<=2;row++){
+    for(let col=-3;col<=3;col++){
+      const ox=col*R*1.15+(row%2?R*0.57:0);
+      const oy=row*R*1.0;
+      if(Math.abs(ox)>120||Math.abs(oy)>110)continue;
+      const jx=Math.sin(time*3+row+col)*2;
+      const jy=Math.cos(time*3+row*1.3)*2;
+      // 连线（晶格键）
+      if(col<3){
+        const ox2=(col+1)*R*1.15+(row%2?R*0.57:0);
+        if(Math.abs(ox2)<=120){
+          ctx.strokeStyle='#67e8f955';ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(cx1+ox+jx,cy+oy+jy);ctx.lineTo(cx1+ox2+jx,cy+oy+jy);ctx.stroke();
+        }
+      }
+      ctx.fillStyle='#67e8f9';
+      ctx.shadowColor='#67e8f9';ctx.shadowBlur=6;
+      ctx.beginPath();ctx.arc(cx1+ox+jx,cy+oy+jy,6,0,7);ctx.fill();
+      ctx.shadowBlur=0;
+    }
+  }
+  // 右侧：非晶体（随机分布）
+  ctx.fillStyle='rgba(248,113,113,0.08)';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+  roundRect(cx2-140,cy-130,280,260,10);ctx.fill();ctx.stroke();
+  drawText('非晶体（无序分布）',cx2,cy-150,'#f87171',14);
+  // 用固定种子的伪随机点（保持稳定）
+  const seedPts=[];
+  for(let i=0;i<40;i++){
+    const a=i*2.399,b=i*1.618;
+    const px=(Math.sin(a)*Math.cos(b)*0.85+Math.cos(a*0.7)*0.4)*110;
+    const py=(Math.cos(a)*Math.sin(b*1.3)*0.85+Math.sin(a*0.5)*0.4)*110;
+    seedPts.push({x:px,y:py});
+  }
+  // 连近邻（不规则）
+  ctx.strokeStyle='#f8717133';ctx.lineWidth=1;
+  for(let i=0;i<seedPts.length;i++){
+    for(let j=i+1;j<seedPts.length;j++){
+      const dx=seedPts[i].x-seedPts[j].x,dy=seedPts[i].y-seedPts[j].y;
+      if(dx*dx+dy*dy<1400){
+        const jx=Math.sin(time*2+i)*1.5,jy=Math.cos(time*2+i)*1.5;
+        ctx.beginPath();ctx.moveTo(cx2+seedPts[i].x+jx,cy+seedPts[i].y+jy);
+        ctx.lineTo(cx2+seedPts[j].x+jx,cy+seedPts[j].y+jy);ctx.stroke();
+      }
+    }
+  }
+  seedPts.forEach((p,i)=>{
+    const jx=Math.sin(time*2+i)*1.5,jy=Math.cos(time*2+i)*1.5;
+    ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(cx2+p.x+jx,cy+p.y+jy,6,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+  });
+  drawText('长程有序',cx1,cy+155,'#67e8f9',12);
+  drawText('短程有序 · 长程无序',cx2,cy+155,'#f87171',12);
+}
+
+// ===== 场景3：能量分解（动能 + 势能）=====
+function drawEnergyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('能量分解 · 水平段时分子势能增加',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 冰块（左侧）→ 水（右侧）的过渡
+  const ph=(time*0.3)%1;
+  // 三个阶段
+  drawText('固体（冰）',W*0.18,90,'#67e8f9',13);
+  drawText('熔化中（固液共存）',W*0.5,90,'#fbbf24',13);
+  drawText('液体（水）',W*0.82,90,'#67e8f9',13);
+  // 容器（三个）
+  function vessel(x,fill,kind){
+    ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x-60,cy-60);ctx.lineTo(x-60,cy+50);ctx.lineTo(x+60,cy+50);ctx.lineTo(x+60,cy-60);ctx.stroke();
+    // 内容物
+    ctx.fillStyle=kind==='solid'?'rgba(103,232,249,0.5)':kind==='mix'?'rgba(251,191,36,0.45)':'rgba(103,232,249,0.3)';
+    ctx.fillRect(x-58,cy-30,116,78);
+    if(kind==='solid'){
+      // 规则晶格点
+      for(let i=-2;i<=2;i++)for(let j=-1;j<=2;j++){
+        ctx.fillStyle='#67e8f9';
+        ctx.beginPath();ctx.arc(x+i*20,cy-20+j*20,5,0,7);ctx.fill();
+      }
+    }else if(kind==='mix'){
+      // 一半晶格一半流动
+      for(let i=-2;i<=0;i++)for(let j=-1;j<=2;j++){
+        ctx.fillStyle='#67e8f9';
+        ctx.beginPath();ctx.arc(x+i*20,cy-20+j*20,5,0,7);ctx.fill();
+      }
+      // 波浪面
+      ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+      ctx.beginPath();
+      for(let xx=0;xx<=60;xx+=4){
+        const yy=cy-10+Math.sin(time*4+xx*0.2)*4;
+        xx?ctx.lineTo(x+xx,yy):ctx.moveTo(x+xx,yy);
+      }
+      ctx.stroke();
+    }else{
+      // 液体波浪
+      ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+      ctx.beginPath();
+      for(let xx=-58;xx<=58;xx+=4){
+        const yy=cy-30+Math.sin(time*4+xx*0.15)*5;
+        xx===-58?ctx.moveTo(x+xx,yy):ctx.lineTo(x+xx,yy);
+      }
+      ctx.stroke();
+    }
+  }
+  const kind=ph<0.3?'solid':ph<0.7?'mix':'liquid';
+  vessel(W*0.18,0.4,ph<0.5?'solid':'mix');
+  vessel(W*0.5,0.7,kind);
+  vessel(W*0.82,0.9,ph>0.5?'liquid':'mix');
+  // 箭头表示吸热
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+  ctx.fillStyle='#f87171';
+  [W*0.32,W*0.64].forEach(ax=>{
+    const ay=cy-5;
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+40,ay);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ax+40,ay);ctx.lineTo(ax+33,ay-6);ctx.lineTo(ax+33,ay+6);ctx.fill();
+  });
+  ctx.shadowBlur=0;
+  drawText('吸热',W*0.34,cy-25,'#f87171',12);
+  drawText('吸热',W*0.66,cy-25,'#f87171',12);
+  // 能量条
+  const eY=H-90;
+  drawText('分子动能（温度）',120,eY,'#67e8f9',12,'left');
+  ctx.fillStyle='#243a5e';ctx.fillRect(120,eY+15,W-240,12);
+  const ke=kind==='solid'?0.3:kind==='mix'?0.55:0.85;
+  ctx.fillStyle='#67e8f9';ctx.fillRect(120,eY+15,(W-240)*ke,12);
+  drawText('分子势能（破坏晶格）',120,eY+40,'#fbbf24',12,'left');
+  ctx.fillStyle='#243a5e';ctx.fillRect(120,eY+55,W-240,12);
+  const pe=kind==='solid'?0.1:kind==='mix'?(0.3+ph*0.4):0.85;
+  ctx.fillStyle='#fbbf24';ctx.fillRect(120,eY+55,(W-240)*pe,12);
+  drawText('水平段：动能不变（温度恒定），势能增加（破坏晶格）',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景4：凝固过程反向演示 =====
+function drawFreezeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('凝固过程 · 反向演示（放热，温度不变）',W/2,30,'#fbbf24',16);
+  const x0=80,y0=H-80,w=W-160,h=H-180;
+  // 坐标轴
+  ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,y0-h-10);ctx.lineTo(x0+w,y0);ctx.stroke();
+  drawText('温度 /°C',x0-40,y0-h-10,'#9ab0d0',12);
+  drawText('时间 /min',x0+w,y0+25,'#9ab0d0',12);
+  // 凝固点参考线
+  const fzY=y0-h*0.55;
+  ctx.strokeStyle='#fbbf2444';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(x0,fzY);ctx.lineTo(x0+w,fzY);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('凝固点',x0+30,fzY-10,'#fbbf24',11);
+  // 凝固曲线（下降-水平-下降）
+  const p=(time*0.2)%1;
+  function freezePt(u){
+    if(u<0.3)return{x:u/0.3*0.3*w,y:y0-h*0.9+(h*0.35)*(u/0.3)};
+    if(u<0.6)return{x:(0.3+(u-0.3)/0.3*0.3)*w,y:fzY};
+    const uu=(u-0.6)/0.4;
+    return{x:(0.6+uu*0.4)*w,y:fzY+(h*0.4)*uu};
+  }
+  // 完整曲线
+  ctx.strokeStyle='#67e8f933';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=100;i++){const u=i/100;const pt=freezePt(u);i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y);}
+  ctx.stroke();
+  // 实时
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;ctx.shadowColor='#67e8f9';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=Math.floor(p*100);i++){const u=i/100;const pt=freezePt(u);i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y);}
+  ctx.stroke();ctx.shadowBlur=0;
+  // 当前点
+  const cp=freezePt(p);
+  ctx.fillStyle='#67e8f9';ctx.beginPath();ctx.arc(cp.x,cp.y,7,0,7);ctx.fill();
+  // 放热箭头
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  for(let i=0;i<5;i++){
+    const u=0.32+i*0.06;
+    const pt=freezePt(u);
+    const ay=pt.y-25-Math.sin(time*3+i)*5;
+    ctx.beginPath();ctx.moveTo(pt.x,pt.y-10);ctx.lineTo(pt.x,ay);ctx.stroke();
+    ctx.fillStyle='#f87171';
+    ctx.beginPath();ctx.moveTo(pt.x,ay);ctx.lineTo(pt.x-4,ay+8);ctx.lineTo(pt.x+4,ay+8);ctx.fill();
+  }
+  drawText('放热箭头：凝固时放热，温度不变',W/2,H-35,'#f87171',12);
+  if(p>0.35&&p<0.6){
+    drawText('水平段：放热但温度不变（凝固过程，固液共存）',W/2,fzY-40,'#fbbf24',12);
+  }
+}
+
+// ===== 场景5：常见晶体非晶体对照表 =====
+function drawTableScene(){
+  const W=cv.width,H=cv.height;
+  drawText('常见晶体与非晶体对照',W/2,30,'#fbbf24',16);
+  // 表头
+  ctx.fillStyle='rgba(251,191,36,0.12)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(80,70,W-160,40,8);ctx.fill();ctx.stroke();
+  drawText('类别',W*0.18,90,'#fbbf24',14);
+  drawText('代表物质',W*0.4,90,'#fbbf24',14);
+  drawText('熔化特点',W*0.68,90,'#fbbf24',14);
+  // 晶体行
+  const rows=[
+    {c:'#67e8f9',cat:'晶体',items:'冰 · 食盐 · 金属',feat:'有固定熔点，温度不变'},
+    {c:'#f87171',cat:'非晶体',items:'玻璃 · 松香 · 沥青',feat:'无固定熔点，逐渐软化'},
+  ];
+  rows.forEach((r,i)=>{
+    const y=130+i*100;
+    ctx.fillStyle=r.c+'22';ctx.strokeStyle=r.c;ctx.lineWidth=2;
+    roundRect(80,y,W-160,80,8);ctx.fill();ctx.stroke();
+    drawText(r.cat,W*0.18,y+40,r.c,16);
+    drawText(r.items,W*0.4,y+30,'#fff',13);
+    drawText(r.feat,W*0.68,y+30,'#9ab0d0',12);
+    drawText(r.cat==='晶体'?'规则晶格，长程有序':'无序分布，逐渐软化',W*0.68,y+55,r.c,11);
+  });
+  // 补充说明
+  drawText('判断方法：测熔化过程温度是否恒定',W/2,H-60,'#34d399',13);
+  drawText('有水平段 → 晶体；持续上升 → 非晶体',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景6：总结 =====
+function drawSummaryScene(){
+  const W=cv.height,H=cv.height;
+  const W2=cv.width;
+  drawText('晶体非晶体熔化凝固 · 核心总结',W2/2,40,'#fbbf24',18);
+  const items=[
+    {t:'晶体熔化',d:'有固定熔点，温度不变',c:'#fbbf24'},
+    {t:'非晶体熔化',d:'无固定熔点，逐渐软化',c:'#67e8f9'},
+    {t:'分子排列',d:'晶体规则 / 非晶体无序',c:'#34d399'},
+    {t:'熔化吸热',d:'能量破坏晶格，势能增加',c:'#fb923c'},
+    {t:'凝固放热',d:'分子重新排列，势能减少',c:'#f87171'},
+    {t:'熔点=凝固点',d:'同种晶体两者相等',c:'#a78bfa'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W2-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W2-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W2-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W2-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  const x0=70,y0=cv.height-90,w=cv.width-140,h=200;
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,y0-h-20);ctx.lineTo(x0+w,y0);ctx.stroke();
-  ctx.fillStyle='#9fb0c8';ctx.font='12px sans-serif';ctx.textAlign='left';ctx.fillText('温度',x0-30,y0-h-10);ctx.fillText('时间',x0+w-30,y0+18);
-  curve(x0,y0,w*0.48,h,true);
-  curve(x0+w*0.52,y0,w*0.48,h,false);
-  ctx.fillStyle='#cdd7ea';ctx.fillText('晶体（有熔点）',x0+w*0.12,y0+30);ctx.fillText('非晶体（无熔点）',x0+w*0.62,y0+30);
-  statusEl.textContent='晶体熔化时温度不变（平台），非晶体无确定熔点';
+  if(stepIdx===0)drawTGraphScene(t);
+  else if(stepIdx===1)drawTGraphScene(t);
+  else if(stepIdx===2)drawTGraphScene(t);
+  else if(stepIdx===3)drawFreezeScene(t);
+  else if(stepIdx===4)drawMoleculeScene(t);
+  else if(stepIdx===5)drawTableScene();
+  else if(stepIdx===6)drawEnergyScene(t);
+  else if(stepIdx===7)drawFreezeScene(t);
+  else if(stepIdx===8)drawTGraphScene(t);
+  else if(stepIdx===9)drawSummaryScene();
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

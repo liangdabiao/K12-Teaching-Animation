@@ -1,72 +1,639 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>酸碱指示剂与pH（石蕊、酚酞变色原理）</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>酸碱指示剂与pH · 石蕊 · 酚酞 · 变色原理</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#e84393;--line:#1e3050;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
-main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#e84393;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(232,67,147,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(232,67,147,.2);color:#fbcfe8;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
-<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">酸碱指示剂与pH（石蕊、酚酞变色原理）</span></header>
-<main><div class="stage"><canvas id="cv"></canvas></div>
-<aside class="panel"><h2>原理说明</h2>
-<p>酸碱指示剂：在不同pH范围内变色的有机弱酸或弱碱。石蕊：pH<5红色、5-8紫色、>8蓝色。酚酞：pH<8.2无色、8.2-10浅红、>10红色。pH = -lg[c(H⁺)]，pH<7酸性、=7中性、>7碱性。</p>
-<div class="key-points"><h3>常用指示剂</h3><ul>
-<li><b>石蕊</b>：酸→红 碱→蓝（变色范围5-8）</li>
-<li><b>酚酞</b>：酸→无色 碱→红（变色范围8.2-10）</li>
-<li><b>甲基橙</b>：酸→红 碱→黄（变色范围3.1-4.4）</li>
-<li>pH试纸：广范(pH1-14)和精密型</li>
-<li>pH = -lg c(H⁺) | 25°C: pH<7酸 =7中 >7碱</li>
-</ul></div></aside></main>
-<div class="controls"><button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><span id="status" class="status"></span></div>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">酸碱指示剂与pH</span><span class="subtitle">石蕊 · 酚酞 · 甲基橙 · pH试纸 · 变色原理</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>pH 定义</h4><div class="v">pH = -lg[H+]<br>氢离子浓度的负对数</div></div>
+  <div class="card s2"><div class="num">2</div><h4>酸碱判定</h4><div class="v">pH&lt;7 酸性 =7 中性<br>&gt;7 碱性（25°C）</div></div>
+  <div class="card s3"><div class="num">3</div><h4>石蕊</h4><div class="v">&lt;5 红 5-8 紫 &gt;8 蓝<br>变色范围最宽</div></div>
+  <div class="card s4"><div class="num">4</div><h4>酚酞</h4><div class="v">&lt;8.2 无色 8.2-10 浅红<br>&gt;10 红色</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">pH 定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>pH <input id="phSlider" type="range" min="0" max="14" step="0.1" value="7"></label>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
-let t=0,playing=false,lastT=0;
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-let ph=7;
-function getColor(p){if(p<3)return'#d63031';if(p<5)return'#e17055';if(p<6.5)return'#fdcb6e';if(p<7.5)return'#00b894';if(p<9)return'#0984e3';if(p<11)return'#6C5CE7';return'#a29bfe';}
-function draw(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
-  ctx.fillText('pH = '+ph.toFixed(1),W/2,30);
-  const barY=H*0.2,barH=30;
-  for(let i=0;i<=14;i++){const x=60+i*(W-120)/14;ctx.fillStyle=getColor(i);ctx.fillRect(x,barY,(W-120)/14,barH);}
-  const px=60+ph*(W-120)/14;
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(px,barY+barH+5);ctx.lineTo(px-5,barY+barH+15);ctx.lineTo(px+5,barY+barH+15);ctx.fill();
-  const tx=W/2,ty=H*0.5,tw=50,th=120;
-  ctx.strokeStyle='#74b9ff';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(tx-tw/2,ty);ctx.lineTo(tx-tw/2,ty+th);ctx.arc(tx,ty+th,tw/2,Math.PI,0);ctx.lineTo(tx+tw/2,ty);ctx.stroke();
-  const color=getColor(ph);ctx.fillStyle=color+'88';ctx.fillRect(tx-tw/2+2,ty+20,tw-4,th-20);
-  ctx.fillStyle='#e8edf6';ctx.font='13px sans-serif';
-  ctx.fillText('石蕊: '+(ph<5?'红色':ph>8?'蓝色':'紫色'),W/2,H*0.85);
-  ctx.fillText('酚酞: '+(ph<8.2?'无色':ph>10?'红色':'浅红'),W/2,H*0.92);
-  ctx.fillStyle=ph<7?'#d63031':ph===7?'#00b894':'#0984e3';ctx.font='bold 14px sans-serif';
-  ctx.fillText(ph<7?'酸性':ph===7?'中性':'碱性',W/2,H*0.78);
-  statusEl.textContent='pH='+ph.toFixed(1)+' | '+(ph<7?'酸性':ph===7?'中性':'碱性');
+// pH 转通用彩虹色（红橙黄绿蓝紫）
+function phColor(p){
+  if(p<1)return'#b71c1c';if(p<2)return'#d63031';if(p<3)return'#e74c3c';if(p<4)return'#e17055';
+  if(p<5)return'#f39c12';if(p<6)return'#fdcb6e';if(p<6.5)return'#f1c40f';
+  if(p<7.5)return'#00b894';if(p<9)return'#1abc9c';if(p<10)return'#0984e3';
+  if(p<11)return'#3b82f6';if(p<12)return'#6C5CE7';if(p<13)return'#7c3aed';
+  return'#a29bfe';
 }
-document.getElementById('resetBtn').onclick=function(){ph=7;draw();};
-cv.parentElement.parentElement.parentElement.querySelector('.controls').insertAdjacentHTML('beforeend','<label>pH <input id="ph" type="range" min="0" max="14" step="0.5" value="7"></label>');
-document.getElementById('ph').oninput=function(){ph=+this.value;draw();};
+// 石蕊颜色
+function litmusColor(p){if(p<5)return'#e74c3c';if(p<8)return'#8e44ad';return'#2563eb';}
+function litmusText(p){if(p<5)return'红色';if(p<8)return'紫色';return'蓝色';}
+// 酚酞颜色
+function phenolColor(p){if(p<8.2)return'transparent';if(p<10)return'#f48fb1';return'#e91e63';}
+function phenolText(p){if(p<8.2)return'无色';if(p<10)return'浅红';return'红色';}
+// 甲基橙颜色
+function methylColor(p){if(p<3.1)return'#e74c3c';if(p<4.4)return'#ff8a65';return'#fbc02d';}
+function methylText(p){if(p<3.1)return'红色';if(p<4.4)return'橙色';return'黄色';}
 
-let animId;
-function loop(ts){const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();if(playing)animId=requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);};
-document.getElementById('resetBtn').onclick=function(){t=0;draw();};
-draw();
-</script></body></html>
+const STEPS=[
+  {tag:'基础',name:'pH 定义',body:'<strong>pH</strong> 是表示溶液<strong>酸碱性强弱</strong>的指标，定义为<strong>氢离子浓度的负常用对数</strong>：<code>pH = -lg[H+]</code>。[H+] 单位 mol/L。25°C 纯水中 [H+]=[OH-]=10^-7 mol/L，pH=7。',points:{title:'核心要点',items:['<strong>定义</strong>：pH = -lg[H+]','<strong>范围</strong>：通常 0-14','<strong>酸性</strong>：[H+] > 10^-7，pH < 7','<strong>中性</strong>：[H+] = 10^-7，pH = 7']}},
+  {tag:'基础',name:'酸中碱判定',body:'25°C 水溶液中：<strong>pH < 7 显酸性</strong>（[H+] > [OH-]），<strong>pH = 7 显中性</strong>（[H+] = [OH-]），<strong>pH > 7 显碱性</strong>（[H+] < [OH-]）。每相差 1 个 pH 单位，[H+] 相差 10 倍。',points:{title:'判定规则',items:['<strong>酸性</strong>：pH < 7，红色区','<strong>中性</strong>：pH = 7，绿色区','<strong>碱性</strong>：pH > 7，蓝色区','<strong>pH 相差 1</strong>：[H+] 差 10 倍']}},
+  {tag:'石蕊',name:'石蕊变色范围',body:'<strong>石蕊</strong>是从地衣中提取的有机弱酸，变色范围 <strong>pH 5.0-8.0</strong>：<strong>pH<5 红色</strong>，<strong>5-8 紫色</strong>（过渡），<strong>>8 蓝色</strong>。是中学最常用的指示剂。',points:{title:'石蕊三段',items:['<strong>pH < 5</strong>：红色（酸式）','<strong>pH 5-8</strong>：紫色（过渡）','<strong>pH > 8</strong>：蓝色（碱式）','<strong>变色点</strong>：约 pH 6.5']}},
+  {tag:'酚酞',name:'酚酞变色范围',body:'<strong>酚酞</strong>是有机弱酸，变色范围 <strong>pH 8.2-10.0</strong>：<strong>pH<8.2 无色</strong>，<strong>8.2-10 浅红</strong>，<strong>>10 红色</strong>。在酸性和弱酸性溶液中无色，常用于<strong>强碱滴定</strong>。',points:{title:'酚酞三段',items:['<strong>pH < 8.2</strong>：无色','<strong>pH 8.2-10</strong>：浅红色','<strong>pH > 10</strong>：深红色','<strong>用途</strong>：强碱滴定终点指示']}},
+  {tag:'甲基橙',name:'甲基橙变色范围',body:'<strong>甲基橙</strong>变色范围 <strong>pH 3.1-4.4</strong>：<strong>pH<3.1 红色</strong>，<strong>3.1-4.4 橙色</strong>，<strong>>4.4 黄色</strong>。变色范围偏酸性，常用于<strong>强酸滴定强碱</strong>。',points:{title:'甲基橙三段',items:['<strong>pH < 3.1</strong>：红色','<strong>pH 3.1-4.4</strong>：橙色','<strong>pH > 4.4</strong>：黄色','<strong>用途</strong>：强酸滴定（颜色变化敏锐）']}},
+  {tag:'指示剂',name:'三色卡对比',body:'三种常用指示剂在不同 pH 下颜色对比：石蕊变色范围最宽（5-8），酚酞偏碱性（8.2-10），甲基橙偏酸性（3.1-4.4）。选择指示剂要根据滴定<strong>终点 pH</strong>。',points:{title:'指示剂选择',items:['<strong>石蕊</strong>：5-8，颜色变化宽','<strong>酚酞</strong>：8.2-10，强碱滴定','<strong>甲基橙</strong>：3.1-4.4，强酸滴定','<strong>多色叠加</strong>：可判断大致 pH']}},
+  {tag:'试纸',name:'pH 试纸使用',body:'<strong>pH 试纸</strong>分广范（pH 1-14）和精密型。用法：<strong>用玻璃棒蘸取待测液</strong>点在试纸上，<strong>30 秒后</strong>与标准比色卡对比读数。<strong>不可直接浸入</strong>溶液（会污染溶液、且会冲淡颜色）。',points:{title:'操作规范',items:['<strong>步骤1</strong>：玻璃棒蘸待测液','<strong>步骤2</strong>：点在 pH 试纸中央','<strong>步骤3</strong>：等待 30 秒','<strong>步骤4</strong>：与比色卡对比读 pH']}},
+  {tag:'应用',name:'常见溶液 pH',body:'生活中的溶液 pH 差异巨大：<strong>胃酸 pH≈1.5</strong>（盐酸），<strong>柠檬汁 pH≈2</strong>（柠檬酸），<strong>纯水 pH=7</strong>（中性），<strong>海水 pH≈8</strong>（弱碱性），<strong>肥皂水 pH≈10</strong>（碱性）。',points:{title:'生活 pH 表',items:['<strong>胃液</strong>：pH≈1.5（强酸消化食物）','<strong>柠檬</strong>：pH≈2.0（富含柠檬酸）','<strong>纯水</strong>：pH=7（中性）','<strong>肥皂水</strong>：pH≈10（碱性去油污）']}},
+  {tag:'滴定',name:'中和反应 pH 曲线',body:'<strong>中和反应</strong>：HCl + NaOH → NaCl + H₂O。<strong>强酸滴定强碱</strong>时，pH 随加入酸体积变化：开始缓慢下降，<strong>接近等量点（pH=7）时发生突跃</strong>，之后又缓慢下降。突跃范围约 pH 4-10。',points:{title:'滴定曲线特征',items:['<strong>起点</strong>：pH≈13（强碱）','<strong>等量点</strong>：V 酸=V 碱，pH=7','<strong>突跃范围</strong>：pH 4-10（急剧变化）','<strong>选指示剂</strong>：酚酞或甲基橙']}},
+  {tag:'总结',name:'核心速记',body:'<strong>pH = -lg[H+]</strong>，pH<7 酸、=7 中、>7 碱。石蕊（5-8 红/紫/蓝）、酚酞（8.2-10 无/浅红/红）、甲基橙（3.1-4.4 红/橙/黄）。指示剂选择需匹配滴定终点 pH。',points:{title:'三句话总结',items:['<strong>pH</strong>：-lg[H+]，越小越酸','<strong>三种指示剂</strong>：石蕊/酚酞/甲基橙','<strong>滴定突跃</strong>：强酸强碱 pH 4-10','<strong>试纸操作</strong>：蘸取不浸入，30 秒读数']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+let ph=7; // 全局 pH（可由滑块和场景动画驱动）
+const STEP_DURATION=3.5;
+
+// ===== 场景1：pH 定义 + 滑块驱动试管变色 =====
+function drawTubeScene(time){
+  const W=cv.width,H=cv.height;
+  // pH 随时间在 0-14 振荡（若用户未拖动）
+  ph=7+7*Math.sin(time*0.5);
+  drawText('pH 滑块驱动 · 试管实时变色',W/2,30,'#e84393',16);
+  drawText('pH = -lg[H+]',W/2,58,'#fbcfe8',14);
+  const cx=W/2,cy=H/2+10;
+  // 试管
+  const tw=70,th=180;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-tw/2,cy-th/2);
+  ctx.lineTo(cx-tw/2,cy+th/2-20);
+  ctx.arc(cx,cy+th/2-20,tw/2,Math.PI,0);
+  ctx.lineTo(cx+tw/2,cy-th/2);
+  ctx.stroke();
+  // 液体
+  const col=phColor(ph);
+  ctx.fillStyle=col;
+  ctx.beginPath();
+  ctx.moveTo(cx-tw/2+3,cy-th/2+3);
+  ctx.lineTo(cx-tw/2+3,cy+th/2-22);
+  ctx.arc(cx,cy+th/2-22,tw/2-3,Math.PI,0);
+  ctx.lineTo(cx+tw/2-3,cy-th/2+3);
+  ctx.closePath();ctx.fill();
+  // 液面波纹
+  ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  for(let i=0;i<=tw-6;i++){
+    const x=cx-tw/2+3+i;
+    const y=cy-th/2+5+Math.sin(i*0.3+time*3)*1.5;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // pH 显示
+  drawText('pH = '+ph.toFixed(1),cx,cy-th/2-25,'#fff',20);
+  // 酸碱判定
+  const judge=ph<7?'酸性':ph>7?'碱性':'中性';
+  const jc=ph<7?'#f87171':ph>7?'#0984e3':'#34d399';
+  drawText(judge,cx,cy+th/2+25,jc,16);
+  // [H+]
+  const hcon=Math.pow(10,-ph);
+  drawText('[H+] = '+hcon.toExponential(1)+' mol/L',cx,cy+th/2+50,'#9ab0d0',11);
+  // 彩虹色带
+  drawRainbowBar(80,H-50,W-160,14);
+}
+
+// ===== 场景2：三指示剂色卡对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  ph=7+7*Math.sin(time*0.4);
+  drawText('三种指示剂 · 同 pH 下颜色对比',W/2,30,'#e84393',16);
+  drawText('当前 pH = '+ph.toFixed(1),W/2,56,'#fff',14);
+  // 三个试管
+  const names=['石蕊','酚酞','甲基橙'];
+  const colors=[litmusColor(ph),phenolColor(ph),methylColor(ph)];
+  const texts=[litmusText(ph),phenolText(ph),methylText(ph)];
+  const ranges=['pH 5 - 8','pH 8.2 - 10','pH 3.1 - 4.4'];
+  const xs=[W/2-180,W/2,W/2+180];
+  xs.forEach((x,i)=>{
+    const cy=H/2+10;
+    const tw=70,th=170;
+    ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(x-tw/2,cy-th/2);
+    ctx.lineTo(x-tw/2,cy+th/2-20);
+    ctx.arc(x,cy+th/2-20,tw/2,Math.PI,0);
+    ctx.lineTo(x+tw/2,cy-th/2);
+    ctx.stroke();
+    // 液体
+    if(colors[i]==='transparent'){
+      ctx.fillStyle='rgba(255,255,255,0.08)';
+    }else{
+      ctx.fillStyle=colors[i];
+    }
+    ctx.beginPath();
+    ctx.moveTo(x-tw/2+3,cy-th/2+3);
+    ctx.lineTo(x-tw/2+3,cy+th/2-22);
+    ctx.arc(x,cy+th/2-22,tw/2-3,Math.PI,0);
+    ctx.lineTo(x+tw/2-3,cy-th/2+3);
+    ctx.closePath();ctx.fill();
+    drawText(names[i],x,cy-th/2-25,'#fff',15);
+    drawText(texts[i],x,cy+th/2+25,colors[i]==='transparent'?'#9ab0d0':colors[i],14);
+    drawText(ranges[i],x,cy+th/2+48,'#9ab0d0',11);
+  });
+  // 提示
+  drawText('石蕊宽，酚酞偏碱，甲基橙偏酸',W/2,H-40,'#34d399',12);
+}
+
+// ===== 场景3：pH 0-14 彩虹色带（标注分段） =====
+function drawRainbowScene(){
+  const W=cv.width,H=cv.height;
+  drawText('pH 0-14 彩虹色带 · 分段标注',W/2,40,'#e84393',16);
+  const bx=80,by=H/2-30,bw=W-160,bh=80;
+  // 主色带
+  for(let i=0;i<=140;i++){
+    const p=i/10;
+    ctx.fillStyle=phColor(p);
+    ctx.fillRect(bx+i*bw/140,by,bw/140+1,bh);
+  }
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+  ctx.strokeRect(bx,by,bw,bh);
+  // 刻度
+  for(let i=0;i<=14;i++){
+    const x=bx+i*bw/14;
+    ctx.strokeStyle='#fff';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,by+bh);ctx.lineTo(x,by+bh+8);ctx.stroke();
+    drawText(i,x,by+bh+22,'#fff',12);
+  }
+  // 分段标注（上方）
+  const segs=[
+    {p1:0,p2:3,label:'强酸',c:'#f87171'},{p1:3,p2:5,label:'弱酸',c:'#e17055'},
+    {p1:5,p2:6,label:'微酸',c:'#fdcb6e'},{p1:6,p2:8,label:'中性',c:'#34d399'},
+    {p1:8,p2:11,label:'弱碱',c:'#06b6d4'},{p1:11,p2:14,label:'强碱',c:'#7c3aed'},
+  ];
+  segs.forEach(s=>{
+    const x1=bx+s.p1*bw/14,x2=bx+s.p2*bw/14;
+    ctx.fillStyle=s.c+'55';
+    ctx.fillRect(x1,by-30,x2-x1,24);
+    ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    ctx.strokeRect(x1,by-30,x2-x1,24);
+    drawText(s.label,(x1+x2)/2,by-18,'#fff',12);
+  });
+  // 指示剂范围（下方）
+  const ranges=[
+    {p1:3.1,p2:4.4,label:'甲基橙',c:'#fbc02d'},
+    {p1:5,p2:8,label:'石蕊',c:'#8e44ad'},
+    {p1:8.2,p2:10,label:'酚酞',c:'#e91e63'},
+  ];
+  ranges.forEach((r,i)=>{
+    const x1=bx+r.p1*bw/14,x2=bx+r.p2*bw/14;
+    const y=by+bh+45+i*22;
+    ctx.fillStyle=r.c+'66';ctx.strokeStyle=r.c;ctx.lineWidth=1.5;
+    ctx.fillRect(x1,y,x2-x1,18);ctx.strokeRect(x1,y,x2-x1,18);
+    drawText(r.label+' ('+r.p1+'-'+r.p2+')',(x1+x2)/2,y+9,'#fff',11);
+  });
+}
+
+// ===== 通用彩虹色带（辅助）=====
+function drawRainbowBar(x,y,w,h){
+  for(let i=0;i<=140;i++){
+    const p=i/10;
+    ctx.fillStyle=phColor(p);
+    ctx.fillRect(x+i*w/140,y,w/140+1,h);
+  }
+  ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.strokeRect(x,y,w,h);
+  for(let i=0;i<=14;i++){
+    const xx=x+i*w/14;
+    drawText(i,xx,y+h+12,'#9ab0d0',10);
+  }
+}
+
+// ===== 场景4：强酸滴定强碱 pH 曲线 =====
+function drawTitrationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('强酸滴定强碱 · pH 变化曲线',W/2,30,'#e84393',16);
+  drawText('HCl + NaOH → NaCl + H₂O',W/2,56,'#fbcfe8',13);
+  // 坐标轴
+  const px=80,py=90,pw=W-160,phh=H-200;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+phh);ctx.lineTo(px+pw,py+phh);ctx.stroke();
+  // 轴标签
+  drawText('pH',px-40,py+phh/2,'#9ab0d0',12);
+  ctx.save();ctx.translate(px-50,py+phh/2);ctx.rotate(-Math.PI/2);
+  drawText('pH',0,0,'#9ab0d0',12);ctx.restore();
+  drawText('加入 HCl 体积 V (mL)',px+pw/2,py+phh+40,'#9ab0d0',12);
+  // Y 轴刻度 0-14
+  for(let i=0;i<=14;i+=2){
+    const y=py+phh-i*phh/14;
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(px-3,y);ctx.lineTo(px+3,y);ctx.stroke();
+    drawText(i,px-15,y,'#5a6a8a',10);
+  }
+  // X 轴刻度 0-40 mL
+  for(let i=0;i<=40;i+=10){
+    const x=px+i*pw/40;
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,py+phh);ctx.lineTo(x,py+phh+3);ctx.stroke();
+    drawText(i,x,py+phh+15,'#5a6a8a',10);
+  }
+  // 网格
+  ctx.strokeStyle='#1a2a44';ctx.lineWidth=0.5;
+  for(let i=0;i<=14;i+=2){
+    const y=py+phh-i*phh/14;
+    ctx.beginPath();ctx.moveTo(px,y);ctx.lineTo(px+pw,y);ctx.stroke();
+  }
+  // 计算 pH 曲线（强酸滴定强碱）
+  // NaOH 25mL 0.1M, HCl 0.1M
+  // 等量点 V=25mL, pH=7
+  function phAt(v){
+    const V0=25,c0=0.1,c1=0.1;
+    const mol_b=V0*c0/1000;
+    const mol_a=v*c1/1000;
+    const tot=(V0+v)/1000;
+    if(mol_b>mol_a){ // 碱过量
+      const oh=(mol_b-mol_a)/tot;
+      return 14+Math.log10(oh);
+    }else if(mol_a>mol_b){ // 酸过量
+      const h=(mol_a-mol_b)/tot;
+      return -Math.log10(h);
+    }
+    return 7;
+  }
+  // 限制
+  function clampPH(v){let p=phAt(v);if(p<0)p=0;if(p>14)p=14;return p;}
+  // 绘制完整曲线（淡）
+  ctx.strokeStyle='#3a5a7a';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  for(let v=0;v<=40;v+=0.5){
+    const p=clampPH(v);
+    const x=px+v*pw/40,y=py+phh-p*phh/14;
+    if(v===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // 已滴定部分（随时间增长）
+  const curV=(time*4)%40;
+  ctx.strokeStyle='#e84393';ctx.lineWidth=3;
+  ctx.shadowColor='#e84393';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let v=0;v<=curV;v+=0.3){
+    const p=clampPH(v);
+    const x=px+v*pw/40,y=py+phh-p*phh/14;
+    if(v===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 当前点
+  const curP=clampPH(curV);
+  const cx=px+curV*pw/40,cy=py+phh-curP*phh/14;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('V='+curV.toFixed(1)+'mL, pH='+curP.toFixed(1),cx,cy-22,'#fbbf24',12);
+  // 等量点
+  const ex=px+25*pw/40,ey=py+phh-7*phh/14;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(ex,py);ctx.lineTo(ex,py+phh);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('等量点 (25, 7)',ex,py-10,'#34d399',12);
+  // 突跃标注
+  drawText('突跃范围 pH 4 → 10',px+pw*0.55,py+phh-9*phh/14,'#f87171',12);
+  // 提示
+  drawText('酚酞、甲基橙均可在突跃范围内准确指示终点',px+pw/2,py+phh+58,'#34d399',12);
+}
+
+// ===== 场景5：常见溶液 pH 条形图 =====
+function drawCommonPHScene(){
+  const W=cv.width,H=cv.height;
+  drawText('常见溶液 pH 条形图',W/2,30,'#e84393',16);
+  const data=[
+    {name:'胃液',ph:1.5,c:'#d63031'},
+    {name:'柠檬汁',ph:2.0,c:'#e74c3c'},
+    {name:'食醋',ph:3.0,c:'#e17055'},
+    {name:'番茄汁',ph:4.0,c:'#f39c12'},
+    {name:'咖啡',ph:5.0,c:'#fdcb6e'},
+    {name:'牛奶',ph:6.5,c:'#f1c40f'},
+    {name:'纯水',ph:7.0,c:'#00b894'},
+    {name:'血液',ph:7.4,c:'#1abc9c'},
+    {name:'海水',ph:8.0,c:'#06b6d4'},
+    {name:'小苏打',ph:8.5,c:'#0984e3'},
+    {name:'肥皂水',ph:10.0,c:'#3b82f6'},
+    {name:'石灰水',ph:12.5,c:'#6C5CE7'},
+  ];
+  const x0=120,y0=70,w=W-220,h=(H-130)/data.length;
+  // 中性参考线
+  const nx=x0+7*w/14;
+  ctx.strokeStyle='#34d39955';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(nx,y0-10);ctx.lineTo(nx,y0+data.length*h);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('中性',nx,y0-20,'#34d399',10);
+  data.forEach((d,i)=>{
+    const y=y0+i*h+h/2;
+    drawText(d.name,x0-10,y,'#fff',12,'right');
+    // 条形
+    const bw=d.ph*w/14;
+    ctx.fillStyle=d.c+'aa';ctx.strokeStyle=d.c;ctx.lineWidth=1.5;
+    roundRect(x0,y-h*0.3,bw,h*0.6,4);ctx.fill();ctx.stroke();
+    drawText('pH '+d.ph.toFixed(1),x0+bw+8,y,d.c,11,'left');
+  });
+  // 轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(x0,y0+data.length*h);ctx.lineTo(x0+w,y0+data.length*h);ctx.stroke();
+  for(let i=0;i<=14;i+=2){
+    const x=x0+i*w/14;
+    drawText(i,x,y0+data.length*h+15,'#5a6a8a',10);
+  }
+}
+
+// ===== 场景6：pH 试纸使用步骤 =====
+function drawPaperScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('pH 试纸使用规范',W/2,30,'#e84393',16);
+  const steps=[
+    {n:'1',t:'取试纸',d:'剪取一小段 pH 试纸\n放在表面皿上',c:'#06b6d4'},
+    {n:'2',t:'蘸取溶液',d:'用洁净玻璃棒\n蘸取待测液',c:'#34d399'},
+    {n:'3',t:'点在试纸',d:'将溶液点在\n试纸中央',c:'#fbbf24'},
+    {n:'4',t:'变色对比',d:'等待 30 秒\n与比色卡对比',c:'#e84393'},
+  ];
+  const active=Math.floor(time*0.6)%4;
+  steps.forEach((s,i)=>{
+    const x=80+i*(W-160)/4;
+    const w=(W-160)/4-20;
+    const on=active===i;
+    ctx.fillStyle=on?s.c+'44':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=on?s.c:'#3a4a6a';ctx.lineWidth=on?2.5:1.5;
+    roundRect(x+10,80,w,300,12);ctx.fill();ctx.stroke();
+    drawText('步骤 '+s.n,x+w/2+10,110,on?s.c:'#9ab0d0',13);
+    drawText(s.t,x+w/2+10,150,on?s.c:'#9ab0d0',15);
+    // 小图示：试纸 + 操作
+    const ix=x+w/2+10,iy=220;
+    if(i===0){
+      // 试纸条
+      ctx.fillStyle='#f5e6d3';ctx.fillRect(ix-40,iy-10,80,30);
+      ctx.strokeStyle='#a89070';ctx.strokeRect(ix-40,iy-10,80,30);
+    }else if(i===1){
+      // 玻璃棒
+      ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(ix-30,iy-30);ctx.lineTo(ix+30,iy+20);ctx.stroke();
+      drawText('玻璃棒',ix,iy+40,'#9ab0d0',10);
+    }else if(i===2){
+      // 试纸 + 液滴
+      ctx.fillStyle='#f5e6d3';ctx.fillRect(ix-40,iy-10,80,30);
+      ctx.fillStyle=phColor(4);
+      ctx.beginPath();ctx.arc(ix,iy+5,8+Math.sin(time*4)*2,0,7);ctx.fill();
+    }else{
+      // 比色卡
+      for(let j=0;j<7;j++){
+        ctx.fillStyle=phColor(j*2+1);
+        ctx.fillRect(ix-40+j*12,iy-10,12,30);
+      }
+      ctx.strokeStyle='#fff';ctx.strokeRect(ix-40,iy-10,84,30);
+    }
+    const lines=s.d.split('\n');
+    lines.forEach((ln,k)=>drawText(ln,x+w/2+10,290+k*22,'#9ab0d0',11));
+  });
+  drawText('注意：不能直接将试纸浸入溶液（污染+冲淡）',W/2,H-40,'#f87171',12);
+}
+
+// ===== 场景7：中和反应（动态）=====
+function drawNeutralScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('中和反应 · HCl + NaOH → NaCl + H₂O',W/2,30,'#e84393',16);
+  const cx=W/2,cy=H/2+10;
+  // 左烧杯（酸，红色）
+  const lx=cx-150;
+  drawBeaker(lx,cy,'#e74c3c55','#e74c3c','HCl',time);
+  // 右烧杯（碱，蓝色）
+  const rx=cx+150;
+  drawBeaker(rx,cy,'#0984e355','#0984e3','NaOH',time);
+  // 中间混合（紫色）
+  drawBeaker(cx,cy,'#8e44ad55','#8e44ad','NaCl+H₂O',time);
+  // 流动箭头
+  const flow=(Math.sin(time*2)*0.5+0.5);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();
+  ctx.moveTo(lx+45,cy);ctx.lineTo(cx-45,cy);
+  ctx.moveTo(rx-45,cy);ctx.lineTo(cx+45,cy);
+  ctx.stroke();ctx.shadowBlur=0;
+  // 箭头
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(cx-45,cy);ctx.lineTo(cx-55,cy-6);ctx.lineTo(cx-55,cy+6);ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx+45,cy);ctx.lineTo(cx+35,cy-6);ctx.lineTo(cx+35,cy+6);ctx.fill();
+  // 标注
+  drawText('酸',lx,cy-80,'#e74c3c',13);
+  drawText('碱',rx,cy-80,'#0984e3',13);
+  drawText('盐+水',cx,cy-80,'#8e44ad',13);
+  drawText('酸 + 碱 → 盐 + 水（中和反应）',W/2,H-40,'#34d399',13);
+}
+function drawBeaker(x,y,fillColor,strokeColor,label,time){
+  ctx.fillStyle=fillColor;ctx.strokeStyle=strokeColor;ctx.lineWidth=2;
+  roundRect(x-45,y-50,90,100,6);ctx.fill();ctx.stroke();
+  // 液面波
+  ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  for(let i=-42;i<=42;i++){
+    const yy=y-50+Math.sin(i*0.2+time*3)*1.5;
+    if(i===-42)ctx.moveTo(x+i,yy);else ctx.lineTo(x+i,yy);
+  }
+  ctx.stroke();
+  drawText(label,x,y-75,strokeColor,12);
+}
+
+// ===== 场景8：甲基橙单独展示 =====
+function drawMethylScene(time){
+  const W=cv.width,H=cv.height;
+  ph=2+4*Math.sin(time*0.4)+2; // 0-6
+  if(ph<0)ph=0;if(ph>6)ph=6;
+  drawText('甲基橙 · pH 3.1-4.4 变色',W/2,30,'#e84393',16);
+  drawText('当前 pH = '+ph.toFixed(1),W/2,56,'#fff',14);
+  const cx=W/2,cy=H/2;
+  const tw=90,th=200;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-tw/2,cy-th/2);
+  ctx.lineTo(cx-tw/2,cy+th/2-25);
+  ctx.arc(cx,cy+th/2-25,tw/2,Math.PI,0);
+  ctx.lineTo(cx+tw/2,cy-th/2);
+  ctx.stroke();
+  ctx.fillStyle=methylColor(ph);
+  ctx.beginPath();
+  ctx.moveTo(cx-tw/2+3,cy-th/2+3);
+  ctx.lineTo(cx-tw/2+3,cy+th/2-27);
+  ctx.arc(cx,cy+th/2-27,tw/2-3,Math.PI,0);
+  ctx.lineTo(cx+tw/2-3,cy-th/2+3);
+  ctx.closePath();ctx.fill();
+  drawText(methylText(ph),cx,cy-th/2-25,methylColor(ph),18);
+  // 范围说明
+  drawText('pH<3.1 红色',W/2-120,cy+th/2+30,'#e74c3c',12);
+  drawText('3.1-4.4 橙色',W/2,cy+th/2+30,'#ff8a65',12);
+  drawText('>4.4 黄色',W/2+120,cy+th/2+30,'#fbc02d',12);
+}
+
+// ===== 场景9：pH 试纸全色带 + 滑块 =====
+function drawPHPaperScene(){
+  const W=cv.width,H=cv.height;
+  drawText('pH 1-14 广范试纸 · 比色卡',W/2,30,'#e84393',16);
+  // 比色卡
+  const bx=80,by=H/2-40,bw=W-160,bh=80;
+  for(let i=1;i<=14;i++){
+    ctx.fillStyle=phColor(i);
+    ctx.fillRect(bx+(i-1)*bw/14,by,bw/14+1,bh);
+  }
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.strokeRect(bx,by,bw,bh);
+  // 数字
+  for(let i=1;i<=14;i++){
+    const x=bx+(i-0.5)*bw/14;
+    drawText(i,x,by+bh/2,'#fff',13);
+  }
+  // 当前指针
+  const px=bx+(ph-1)*bw/14+bw/28;
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.moveTo(px,by-5);ctx.lineTo(px-8,by-20);ctx.lineTo(px+8,by-20);ctx.fill();
+  drawText('pH '+ph.toFixed(1),px,by-30,'#fbbf24',14);
+  // 酸碱判定
+  const judge=ph<7?'酸性':ph>7?'碱性':'中性';
+  const jc=ph<7?'#f87171':ph>7?'#0984e3':'#34d399';
+  drawText('判定：'+judge,W/2,by+bh+50,jc,16);
+  drawText('拖动下方 pH 滑块查看变色',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景10：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('酸碱指示剂与 pH · 核心总结',W/2,40,'#e84393',18);
+  const items=[
+    {t:'pH 定义',d:'pH = -lg[H+]',c:'#e84393'},
+    {t:'酸碱判定',d:'pH<7酸 =7中 >7碱',c:'#06b6d4'},
+    {t:'石蕊变色',d:'5-8：红/紫/蓝',c:'#8e44ad'},
+    {t:'酚酞变色',d:'8.2-10：无/浅红/红',c:'#e91e63'},
+    {t:'甲基橙变色',d:'3.1-4.4：红/橙/黄',c:'#fbc02d'},
+    {t:'中和反应',d:'HCl+NaOH→NaCl+H₂O',c:'#34d399'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawTubeScene(t);
+  else if(stepIdx===1)drawTubeScene(t);
+  else if(stepIdx===2)drawTubeScene(t);
+  else if(stepIdx===3)drawTubeScene(t);
+  else if(stepIdx===4)drawMethylScene(t);
+  else if(stepIdx===5)drawCompareScene(t);
+  else if(stepIdx===6)drawPaperScene(t);
+  else if(stepIdx===7)drawCommonPHScene();
+  else if(stepIdx===8)drawTitrationScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed'),phSlider=document.getElementById('phSlider');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;t=0;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+phSlider.oninput=()=>{ph=parseFloat(phSlider.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

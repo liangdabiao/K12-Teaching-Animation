@@ -3,160 +3,578 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>牛顿第二定律 F=ma</title>
+<title>牛顿第二定律 · F=ma 力质量加速度</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;--good:#00b894;--warn:#fdcb6e;--bad:#d63031;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
-.back:hover{background:#1a2d4a}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#a78bfa;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(167,139,250,.06)}
+.back:hover{background:rgba(167,139,250,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}
+.card.s3::before{background:var(--good)}
+.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#060e1a;border:1px solid var(--line);border-radius:12px;max-width:100%}
-.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin-bottom:10px;color:var(--accent)}
-.panel p{font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:12px}
-.key-points{margin-top:12px;padding:12px;background:rgba(9,132,227,0.08);border-radius:8px;font-size:13px;line-height:1.8}
-.key-points h3{font-size:14px;margin-bottom:8px;color:var(--warn)}
-.key-points ul{padding-left:18px}
-.key-points li{margin-bottom:4px}
-.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-.legend span{font-size:12px;display:flex;align-items:center;gap:5px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#1a2d4a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#243d5e}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#67e8f9;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
 input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.slider-group{display:flex;flex-direction:column;gap:8px;margin:10px 0}
-.slider-group label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
-.slider-group input{width:100%}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回物理</a>
-  <span>牛顿第二定律 F = ma</span>
+  <a class="back" href="../index.html">← 返回物理目录</a>
+  <span class="title">牛顿第二定律</span>
+  <span class="subtitle">F=ma · 力、质量与加速度的定量关系</span>
 </header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>定律内容</h4><div class="v">F=ma<br>加速度与力成正比</div></div>
+  <div class="card s2"><div class="num">2</div><h4>矢量性</h4><div class="v">a 与 F 同向<br>与 m 成反比</div></div>
+  <div class="card s3"><div class="num">3</div><h4>控制变量</h4><div class="v">m 不变 a-F 正比<br>F 不变 a-1/m 正比</div></div>
+  <div class="card s4"><div class="num">4</div><h4>应用</h4><div class="v">汽车刹车启动<br>实时计算 a</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>牛顿第二定律：物体的加速度a与所受合外力F成正比，与质量m成反比。公式：<b>F = ma</b>。力的方向与加速度方向相同。这是连接力和运动的桥梁——已知力求运动，或已知运动求力。</p>
-    <div class="legend">
-      <span><span class="dot" style="background:#0984e3"></span>物体(质量m)</span>
-      <span><span class="dot" style="background:#d63031"></span>力F(红色箭头)</span>
-      <span><span class="dot" style="background:#00b894"></span>加速度a</span>
-      <span><span class="dot" style="background:#fdcb6e"></span>速度v</span>
-    </div>
-    <div class="slider-group">
-      <label>力 F = <span id="fVal">10</span> N <input type="range" id="fSlider" min="1" max="30" value="10"></label>
-      <label>质量 m = <span id="mVal">2</span> kg <input type="range" id="mSlider" min="1" max="10" value="2"></label>
-    </div>
-    <div class="key-points">
-      <h3>核心公式</h3>
-      <ul>
-        <li><b>F = ma</b>（核心公式）</li>
-        <li>a = F/m（加速度与力成正比，与质量成反比）</li>
-        <li>1N = 1kg·m/s²</li>
-        <li>力的方向 = 加速度方向</li>
-        <li>适用于惯性参考系</li>
-        <li>瞬时性：力变→a立即变</li>
-      </ul>
-    </div>
+  <aside class="panel" id="panel">
+    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">牛顿第二定律</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
   </aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择左侧步骤开始</span>
 </div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const statusEl=document.getElementById('status');
-const fSlider=document.getElementById('fSlider'),mSlider=document.getElementById('mSlider');
-const fVal=document.getElementById('fVal'),mVal=document.getElementById('mVal');
-let playing=false,t=0,speed=1;
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(350,Math.min(550,r.height-8));}
-window.addEventListener('resize',()=>{fit();});
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
 
-let F=10,M=2;
-fSlider.oninput=()=>{F=+fSlider.value;fVal.textContent=F;};
-mSlider.oninput=()=>{M=+mSlider.value;mVal.textContent=M;};
+const STEPS=[
+  {tag:'基础',name:'定律介绍',body:'<strong>牛顿第二定律</strong>：物体的加速度大小与<strong>所受合外力</strong>成正比，与<strong>物体质量</strong>成反比，加速度方向与合外力方向<strong>相同</strong>。公式 <code>F = ma</code>。',points:{title:'核心关系',items:['<strong>正比</strong>：a ∝ F（m 不变时）','<strong>反比</strong>：a ∝ 1/m（F 不变时）','<strong>矢量性</strong>：a 方向 = F 方向','<strong>瞬时性</strong>：F 变 a 立即变']}},
+  {tag:'公式',name:'公式 F=ma 矢量性',body:'<strong>F = ma</strong> 是<strong>矢量方程</strong>。加速度方向始终与合外力方向一致。合外力为零时加速度为零，物体保持静止或匀速（牛顿第一定律）。',points:{title:'矢量理解',items:['<strong>F 合力</strong>：所有外力的矢量和','<strong>a 方向</strong>：与 F 合力同向','<strong>F=0</strong>：a=0，匀速或静止','<strong>曲线运动</strong>：a 指向合外力方向']}},
+  {tag:'单位',name:'单位与量纲',body:'力的国际单位是<strong>牛顿（N）</strong>。1 N = 1 kg·m/s²，即<strong>使 1 kg 物体产生 1 m/s² 加速度的力</strong>。',points:{title:'单位换算',items:['<strong>1 N</strong> = 1 kg·m/s²','<strong>1 kgf</strong> ≈ 9.8 N（千克力）','<strong>重力</strong>：G = mg，g ≈ 9.8 m/s²','<strong>1 kN</strong> = 1000 N']}},
+  {tag:'实验',name:'控制变量法',body:'研究 a 与 F、m 关系时采用<strong>控制变量法</strong>：① 保持 m 不变，研究 a 与 F 关系；② 保持 F 不变，研究 a 与 m 关系。',points:{title:'实验步骤',items:['<strong>保持 m 不变</strong>：改变 F，测 a','<strong>保持 F 不变</strong>：改变 m，测 a','<strong>打点计时器</strong>：测加速度','<strong>平衡摩擦力</strong>：垫高斜面补偿']}},
+  {tag:'图像',name:'a-F 图像（m 不变）',body:'保持质量 m 不变，<strong>a-F 图像</strong>是一条<strong>过原点的直线</strong>，斜率 = 1/m。质量越大，直线越平缓。',points:{title:'图像分析',items:['<strong>形状</strong>：过原点的直线','<strong>斜率</strong>：k = 1/m','<strong>m 越大</strong>：斜率越小','<strong>线性关系</strong>：a 与 F 严格正比']}},
+  {tag:'图像',name:'a-1/m 图像（F 不变）',body:'保持 F 不变，<strong>a-m 图像是双曲线</strong>。但<strong>a-1/m 图像</strong>是过原点的直线，斜率 = F。这是验证反比关系的常用方法。',points:{title:'反比图像',items:['<strong>a-m</strong>：双曲线','<strong>a-1/m</strong>：过原点直线','<strong>斜率</strong>：k = F','<strong>验证反比</strong>：化曲为直']}},
+  {tag:'计算',name:'典型计算',body:'例：质量 2 kg 物体受水平力 10 N，摩擦力 2 N，求加速度。<br>合力 F = 10 - 2 = 8 N，<code>a = F/m = 8/2 = 4 m/s²</code>。',points:{title:'解题步骤',items:['<strong>第一步</strong>：分析受力，画受力图','<strong>第二步</strong>：求合力 F','<strong>第三步</strong>：a = F/m','<strong>第四步</strong>：注意单位（kg、N、m/s²）']}},
+  {tag:'方向',name:'a 与 v 方向关系',body:'<strong>加速度方向</strong>与<strong>合外力方向</strong>一致，但<strong>不一定与速度方向</strong>一致。a 与 v 同向时加速，反向时减速，垂直时只改方向不改大小。',points:{title:'方向判定',items:['<strong>a 与 v 同向</strong>：加速直线运动','<strong>a 与 v 反向</strong>：减速直线运动','<strong>a 与 v 垂直</strong>：匀速圆周运动','<strong>a 与 v 成角</strong>：曲线运动']}},
+  {tag:'应用',name:'汽车刹车与启动',body:'<strong>刹车</strong>：摩擦力 f 提供反向加速度，a = f/m，刹车距离 <code>s = v²/(2a)</code>。<strong>启动</strong>：牵引力 F 提供加速度 a = (F-f)/m。',points:{title:'汽车动力学',items:['<strong>刹车</strong>：a = -μg（μ 为摩擦因数）','<strong>刹车距离</strong>：s = v²/(2μg)','<strong>启动</strong>：a = (F-f)/m','<strong>限速原因</strong>：v 翻倍，刹车距离变 4 倍']}},
+  {tag:'总结',name:'核心总结',body:'牛顿第二定律 <strong>F=ma</strong> 是<strong>力学的核心</strong>，定量连接<strong>受力</strong>与<strong>运动</strong>。它是牛顿第一定律的推广，是解决动力学问题的根本工具。',points:{title:'速记要点',items:['<strong>公式</strong>：F = ma（矢量式）','<strong>单位</strong>：N = kg·m/s²','<strong>同向</strong>：a 与 F 合力同向','<strong>瞬时</strong>：F 变则 a 立即变']}},
+];
 
-function draw(){
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.8;
+
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
+function arrow(x1,y1,x2,y2,color,w){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=w||3;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const ang=Math.atan2(y2-y1,x2-x1);const s=10;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-s*Math.cos(ang-0.4),y2-s*Math.sin(ang-0.4));ctx.lineTo(x2-s*Math.cos(ang+0.4),y2-s*Math.sin(ang+0.4));ctx.fill();}
+
+// ===== 场景：定律介绍 =====
+function drawIntroScene(time){
   const W=cv.width,H=cv.height;
-  ctx.clearRect(0,0,W,H);
-  const a=F/M;
-  const groundY=H*0.7;
-  ctx.strokeStyle='#1e3050';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(40,groundY);ctx.lineTo(W-40,groundY);ctx.stroke();
-  for(let x=60;x<W-40;x+=40){ctx.beginPath();ctx.moveTo(x,groundY);ctx.lineTo(x,groundY+8);ctx.stroke();}
-  const blockSize=30+M*4;
-  const bx=80+t*t*a*0.3;
-  const by=groundY-blockSize;
-  if(bx<W-60){
-    ctx.fillStyle='#0984e3';ctx.fillRect(bx,by,blockSize,blockSize);
-    ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
-    ctx.fillText(M+'kg',bx+blockSize/2,by+blockSize/2+5);
-    const arrowLen=F*4;
-    ctx.strokeStyle='#d63031';ctx.lineWidth=3;ctx.fillStyle='#d63031';
-    ctx.beginPath();ctx.moveTo(bx+blockSize,by+blockSize/2);
-    ctx.lineTo(bx+blockSize+arrowLen,by+blockSize/2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(bx+blockSize+arrowLen,by+blockSize/2);
-    ctx.lineTo(bx+blockSize+arrowLen-10,by+blockSize/2-6);
-    ctx.lineTo(bx+blockSize+arrowLen-10,by+blockSize/2+6);ctx.fill();
-    ctx.fillStyle='#d63031';ctx.font='bold 13px sans-serif';
-    ctx.fillText('F='+F+'N',bx+blockSize+arrowLen/2,by+blockSize/2-12);
-    ctx.fillStyle='#00b894';ctx.font='13px sans-serif';
-    ctx.fillText('a='+a.toFixed(1)+'m/s²',bx+blockSize/2,by-20);
-    const v=a*t*0.5;
-    ctx.fillStyle='#fdcb6e';
-    ctx.fillText('v='+v.toFixed(1)+'m/s',bx+blockSize/2,by-40);
-  }
-  ctx.fillStyle='rgba(17,29,51,0.9)';ctx.fillRect(W-220,20,200,120);
-  ctx.strokeStyle='#1e3050';ctx.strokeRect(W-220,20,200,120);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 14px sans-serif';ctx.textAlign='left';
-  ctx.fillText('F = ma',W-200,45);
-  ctx.font='13px sans-serif';ctx.fillStyle='#8b9dc3';
-  ctx.fillText('F = '+F+' N',W-200,70);
-  ctx.fillText('m = '+M+' kg',W-200,90);
-  ctx.fillStyle='#00b894';ctx.fillText('a = F/m = '+a.toFixed(2)+' m/s²',W-200,115);
-  ctx.fillStyle='#fdcb6e';ctx.fillText('t = '+t.toFixed(1)+' s',W-200,135);
-  statusEl.textContent='F='+F+'N  m='+M+'kg  a='+a.toFixed(1)+'m/s²';
+  drawText('牛顿第二定律 · F = m × a',W/2,40,'#06b6d4',20);
+  // 三个量
+  const items=[
+    {t:'F',desc:'合外力 (N)',c:'#06b6d4',x:W/2-180},
+    {t:'m',desc:'质量 (kg)',c:'#a78bfa',x:W/2},
+    {t:'a',desc:'加速度 (m/s²)',c:'#34d399',x:W/2+180},
+  ];
+  items.forEach((it,i)=>{
+    const appear=time>i*0.4;
+    if(!appear)return;
+    const pulse=0.8+0.2*Math.sin(time*2+i);
+    ctx.fillStyle=it.c+'22';ctx.strokeStyle=it.c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(it.x,160,55*pulse,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle=it.c;ctx.font='bold 36px serif';ctx.textAlign='center';
+    ctx.fillText(it.t,it.x,165);
+    ctx.font='12px sans-serif';
+    drawText(it.desc,it.x,235,it.c,12);
+  });
+  // 关系图
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  arrow(W/2-120,160,W/2-60,160,'#fbbf24',2);
+  arrow(W/2+60,160,W/2+120,160,'#fbbf24',2);
+  drawText('×',W/2-90,150,'#fbbf24',16);
+  drawText('=',W/2-30,150,'#fbbf24',18);
+  drawText('正比',W/2-90,185,'#9ab0d0',10);
+  drawText('反比',W/2+90,185,'#9ab0d0',10);
+  // 公式说明
+  ctx.fillStyle='#fff';ctx.font='bold 18px serif';ctx.textAlign='center';
+  ctx.fillText('加速度 ∝ 合外力，加速度 ∝ 1/质量',W/2,H-80);
+  ctx.font='13px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('a 与 F 同向 · 与 m 反比',W/2,H-50);
+  drawText('瞬时性：F 改变时 a 立即改变',W/2,H-25,'#fbbf24',12);
 }
 
-let lastTime=0;
+// ===== 场景：斜面小车 =====
+function drawSlopeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('斜面上小车的运动 · F=ma 实例',W/2,30,'#06b6d4',16);
+  // 斜面
+  const x0=80,y0=H-100;
+  const x1=W-80,y1=H-100;
+  const x2=W-80,y2=200;
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(x0,y0);ctx.lineTo(x1,y0);ctx.lineTo(x2,y2);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // 斜面角度标注
+  const ang=Math.atan2(y0-y2,x1-x2);
+  drawText('θ='+Math.round(ang*180/Math.PI)+'°',(x0+x1)/2,y0-15,'#fbbf24',12);
+  // 小车位置（沿斜面运动）
+  const len=Math.hypot(x1-x2,y0-y2);
+  const pos=Math.min(0.9,(time%3)/3);
+  const cx=x2+(x1-x2)*pos;
+  const cy=y2+(y0-y2)*pos;
+  // 重力 mg
+  arrow(cx,cy,cx,cy+60,'#f87171',3);
+  drawText('mg',cx+15,cy+30,'#f87171',12);
+  // 支持力 N
+  const nx=-Math.sin(ang),ny=-Math.cos(ang);
+  arrow(cx,cy,cx+nx*50,cy+ny*50,'#67e8f9',3);
+  drawText('N',cx+nx*60,cy+ny*60,'#67e8f9',12);
+  // 合力（沿斜面向下）
+  const fx=Math.cos(ang),fy=Math.sin(ang);
+  arrow(cx,cy,cx+fx*60,cy+fy*60,'#34d399',3);
+  drawText('F合',cx+fx*75,cy+fy*75,'#34d399',12);
+  // 小车
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(ang);
+  roundRect(-22,-12,44,16,3);ctx.fill();
+  ctx.fillStyle='#9ab0d0';
+  ctx.beginPath();ctx.arc(-12,8,5,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(12,8,5,0,7);ctx.fill();
+  ctx.restore();
+  ctx.shadowBlur=0;
+  // 公式
+  const a=9.8*Math.sin(ang);
+  drawText('F合 = mg·sinθ',W/2,H-80,'#fff',14);
+  drawText('a = g·sinθ = '+(a).toFixed(2)+' m/s²',W/2,H-55,'#34d399',14);
+  drawText('（光滑斜面，忽略摩擦力）',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：控制变量实验台 =====
+function drawControlVarScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('控制变量法 · 双小车对比实验',W/2,30,'#06b6d4',16);
+  // 两组实验
+  const tests=[
+    {label:'m 不变 · F 不同',y:90,left:{m:2,F:2,c:'#06b6d4'},right:{m:2,F:4,c:'#a78bfa'}},
+    {label:'F 不变 · m 不同',y:H/2+30,left:{m:2,F:3,c:'#34d399'},right:{m:4,F:3,c:'#fbbf24'}},
+  ];
+  tests.forEach((test,ti)=>{
+    drawText(test.label,W/2,test.y-20,'#fbbf24',13);
+    // 地面
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(60,test.y);ctx.lineTo(W-60,test.y);ctx.stroke();
+    [test.left,test.right].forEach((cfg,ci)=>{
+      const startX=ci===0?W/4:3*W/4;
+      const a=cfg.F/cfg.m;
+      const tt=Math.min(time*0.6,3);
+      const dx=0.5*a*tt*tt*10;
+      const x=startX+dx;
+      // 小车
+      const w=30+cfg.m*4;
+      ctx.fillStyle=cfg.c+'33';ctx.strokeStyle=cfg.c;ctx.lineWidth=2;
+      roundRect(x-w/2,test.y-25,w,20,4);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#9ab0d0';
+      ctx.beginPath();ctx.arc(x-w/3,test.y,4,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(x+w/3,test.y,4,0,7);ctx.fill();
+      // 力箭头
+      arrow(x+w/2+5,test.y-15,x+w/2+5+cfg.F*8,test.y-15,cfg.c,3);
+      // 参数
+      drawText('m='+cfg.m+'kg',x,test.y-40,cfg.c,11);
+      drawText('F='+cfg.F+'N',x+w/2+15,test.y-15,cfg.c,11,'left');
+      drawText('a='+a.toFixed(2),x,test.y+18,'#fff',12);
+    });
+  });
+  drawText('对比左右两侧小车的加速度差异',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：a-F 图像 =====
+function drawAFGraphScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('a-F 图像 · 质量不变时',W/2,30,'#06b6d4',16);
+  // 坐标系
+  const ox=120,oy=H-100;
+  const gw=W-240,gh=H-200;
+  // 坐标轴
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
+  // 轴标签
+  drawText('F (N)',ox+gw,oy+25,'#9ab0d0',12);
+  drawText('a (m/s²)',ox-30,oy-gh,'#9ab0d0',12);
+  // 网格
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  for(let i=1;i<=5;i++){
+    ctx.beginPath();ctx.moveTo(ox+i*gw/5,oy);ctx.lineTo(ox+i*gw/5,oy-gh);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ox,oy-i*gh/5);ctx.lineTo(ox+gw,oy-i*gh/5);ctx.stroke();
+  }
+  // 三条不同 m 的直线
+  const masses=[1,2,4];
+  const colors=['#06b6d4','#a78bfa','#34d399'];
+  masses.forEach((m,i)=>{
+    const reveal=Math.min(1,time-i*0.3);
+    if(reveal<=0)return;
+    const slope=1/m;
+    const endX=ox+gw*reveal;
+    const endY=oy-slope*(endX-ox)*0.5;
+    ctx.strokeStyle=colors[i];ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(endX,endY);ctx.stroke();
+    drawText('m='+m+'kg',ox+gw*0.8,oy-gh*0.3-i*25,colors[i],12);
+  });
+  // 动态点
+  const fx=Math.min(time*2,5);
+  const ax=fx;
+  masses.forEach((m,i)=>{
+    const px=ox+fx*gw/5;
+    const py=oy-(ax/m)*gh/5;
+    ctx.fillStyle=colors[i];
+    ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+  });
+  drawText('斜率 = 1/m，质量越大直线越平缓',W/2,H-35,'#fbbf24',13);
+}
+
+// ===== 场景：a-1/m 图像 =====
+function drawAInvMGraphScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('a-1/m 图像 · 力不变时（化曲为直）',W/2,30,'#a78bfa',16);
+  const ox=120,oy=H-100;
+  const gw=W-240,gh=H-200;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-gh);ctx.stroke();
+  drawText('1/m (1/kg)',ox+gw,oy+25,'#9ab0d0',12);
+  drawText('a (m/s²)',ox-30,oy-gh,'#9ab0d0',12);
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  for(let i=1;i<=5;i++){
+    ctx.beginPath();ctx.moveTo(ox+i*gw/5,oy);ctx.lineTo(ox+i*gw/5,oy-gh);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ox,oy-i*gh/5);ctx.lineTo(ox+gw,oy-i*gh/5);ctx.stroke();
+  }
+  // 多条不同 F 的直线
+  const Fs=[2,4,6];
+  const colors=['#06b6d4','#a78bfa','#34d399'];
+  Fs.forEach((F,i)=>{
+    const reveal=Math.min(1,time-i*0.3);
+    if(reveal<=0)return;
+    const endX=ox+gw*reveal;
+    const endY=oy-F*(endX-ox)*0.2;
+    ctx.strokeStyle=colors[i];ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(endX,endY);ctx.stroke();
+    drawText('F='+F+'N',ox+gw*0.8,oy-gh*0.5-i*25,colors[i],12);
+  });
+  drawText('斜率 = F，验证 a 与 m 成反比',W/2,H-35,'#fbbf24',13);
+  drawText('注：a-m 图像为双曲线，化曲为直更易验证',W/2,H-55,'#9ab0d0',11);
+}
+
+// ===== 场景：实时计算器 =====
+function drawCalculatorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('加速度实时计算器 · a = F/m',W/2,30,'#34d399',16);
+  // 参数（随时间变化模拟输入）
+  const F=4+3*Math.sin(time*0.7);
+  const m=2+1.5*Math.sin(time*0.5);
+  const a=F/m;
+  // 输入卡片
+  const cards=[
+    {label:'合外力 F',val:F.toFixed(2)+' N',c:'#06b6d4'},
+    {label:'质量 m',val:m.toFixed(2)+' kg',c:'#a78bfa'},
+    {label:'加速度 a',val:a.toFixed(2)+' m/s²',c:'#34d399'},
+  ];
+  cards.forEach((c,i)=>{
+    const x=80+i*(W-160)/3;
+    const cw=(W-160)/3-15;
+    ctx.fillStyle=c.c+'22';ctx.strokeStyle=c.c;ctx.lineWidth=2;
+    roundRect(x,90,cw,90,10);ctx.fill();ctx.stroke();
+    drawText(c.label,x+cw/2,115,c.c,13);
+    ctx.fillStyle='#fff';ctx.font='bold 18px monospace';ctx.textAlign='center';
+    ctx.fillText(c.val,x+cw/2,150);
+    ctx.font='12px sans-serif';
+  });
+  // 公式
+  ctx.fillStyle='#fff';ctx.font='bold 22px serif';ctx.textAlign='center';
+  ctx.fillText('a = F / m',W/2,H/2+30);
+  ctx.font='14px monospace';ctx.fillStyle='#34d399';
+  ctx.fillText('= '+F.toFixed(2)+' / '+m.toFixed(2)+' = '+a.toFixed(3)+' m/s²',W/2,H/2+60);
+  // 直观演示：物体受力运动
+  const cx=W/2,cy=H-100;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(80,cy);ctx.lineTo(W-80,cy);ctx.stroke();
+  // 标尺
+  for(let i=0;i<=10;i++){
+    const sx=80+(W-160)*i/10;
+    ctx.beginPath();ctx.moveTo(sx,cy);ctx.lineTo(sx,cy+6);ctx.stroke();
+  }
+  // 物体位置（随时间累积）
+  if(!drawCalculatorScene.pos)drawCalculatorScene.pos=cx;
+  drawCalculatorScene.pos+=a*0.5;
+  if(drawCalculatorScene.pos>W-100)drawCalculatorScene.pos=100;
+  if(drawCalculatorScene.pos<100)drawCalculatorScene.pos=W-100;
+  const px=drawCalculatorScene.pos;
+  // 物体
+  ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+  roundRect(px-30,cy-35,60,30,5);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#9ab0d0';
+  ctx.beginPath();ctx.arc(px-15,cy-5,5,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(px+15,cy-5,5,0,7);ctx.fill();
+  // 力箭头
+  arrow(px,cy-50,px+F*15,cy-50,'#06b6d4',3);
+  drawText('F',px+F*15+15,cy-50,'#06b6d4',12,'left');
+  // 速度
+  const v=Math.abs(drawCalculatorScene.pos-cx)*0.5;
+  drawText('a 越大 → 速度增长越快',W/2,cy+30,'#fbbf24',12);
+}
+
+// ===== 场景：a 与 v 方向 =====
+function drawDirectionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('加速度方向与速度方向关系',W/2,30,'#06b6d4',16);
+  const cases=[
+    {label:'加速（a 与 v 同向）',y:110,va:1,color:'#34d399',desc:'速度增大'},
+    {label:'减速（a 与 v 反向）',y:H/2,color:'#f87171',desc:'速度减小'},
+    {label:'匀速圆周（a 与 v 垂直）',y:H-130,color:'#a78bfa',desc:'只改方向'},
+  ];
+  cases.forEach((c,i)=>{
+    drawText(c.label,100,c.y-25,c.color,13);
+    // 物体
+    const x=200+(time*40*(i===0?1:i===1?-1:0))%200;
+    if(i<2){
+      // 直线
+      ctx.fillStyle=c.color;
+      roundRect(x,c.y-15,40,30,5);ctx.fill();
+      // 速度箭头
+      const vdir=i===0?1:-1;
+      arrow(x+20*vdir+30,c.y,x+20*vdir+90,c.y,'#67e8f9',3);
+      drawText('v',x+20*vdir+95,c.y-15,'#67e8f9',12);
+      // 加速度箭头
+      arrow(x+20*vdir+30,c.y+30,x+20*vdir+90*vdir,c.y+30,c.color,3);
+      drawText('a',x+20*vdir+95*vdir,c.y+45,c.color,12);
+      drawText(c.desc,x+20,c.y+60,'#9ab0d0',11);
+    } else {
+      // 圆周
+      const cx=W-200,cy=c.y;
+      const r=60;
+      const ang=time*1.5;
+      ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+      ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke();
+      ctx.setLineDash([]);
+      const px=cx+r*Math.cos(ang),py=cy+r*Math.sin(ang);
+      ctx.fillStyle=c.color;ctx.shadowColor=c.color;ctx.shadowBlur=10;
+      ctx.beginPath();ctx.arc(px,py,10,0,7);ctx.fill();
+      ctx.shadowBlur=0;
+      // 切向速度（垂直于半径）
+      arrow(px,py,px+r*0.7*Math.cos(ang+1.57),py+r*0.7*Math.sin(ang+1.57),'#67e8f9',3);
+      drawText('v',px+r*0.7*Math.cos(ang+1.57)+8,py+r*0.7*Math.sin(ang+1.57)+8,'#67e8f9',11);
+      // 向心加速度（指向圆心）
+      arrow(px,py,px-r*0.6*Math.cos(ang),py-r*0.6*Math.sin(ang),c.color,3);
+      drawText('a',px-r*0.6*Math.cos(ang)-10,py-r*0.6*Math.sin(ang)-10,c.color,11);
+      drawText(c.desc,cx,cy+r+30,'#9ab0d0',11);
+    }
+  });
+}
+
+// ===== 场景：汽车刹车 =====
+function drawCarScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('汽车刹车 · a = μg，s = v²/(2μg)',W/2,30,'#fbbf24',16);
+  // 道路
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,H-100);ctx.lineTo(W-40,H-100);ctx.stroke();
+  // 车道线
+  for(let i=40;i<W-40;i+=40){
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(i,H-95);ctx.lineTo(i+20,H-95);ctx.stroke();
+  }
+  // 初始速度
+  const v0=20; // m/s
+  const mu=0.7; // 摩擦因数
+  const a=mu*9.8;
+  const tt=time*0.6;
+  const v=Math.max(0,v0-a*tt);
+  const x=80+(v0*tt-0.5*a*tt*tt)*4;
+  const stopT=v0/a;
+  const stopped=tt>=stopT;
+  // 车
+  ctx.fillStyle=stopped?'#9ab0d0':'#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  roundRect(x,H-145,80,40,6);ctx.fill();
+  ctx.shadowBlur=0;
+  // 车窗
+  ctx.fillStyle='#06101f';
+  roundRect(x+15,H-135,50,15,3);ctx.fill();
+  // 轮
+  ctx.fillStyle='#1e345a';
+  ctx.beginPath();ctx.arc(x+20,H-100,8,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(x+60,H-100,8,0,7);ctx.fill();
+  // 摩擦力（反向）
+  if(!stopped){
+    arrow(x+40,H-160,x+40-30,H-160,'#f87171',3);
+    drawText('f (摩擦力)',x-5,H-160,'#f87171',11);
+    drawText('a = '+a.toFixed(1)+' m/s² (反向)',x+40,H-175,'#f87171',11);
+  }
+  // 速度
+  drawText('v = '+v.toFixed(1)+' m/s',x+40,H-195,stopped?'#9ab0d0':'#34d399',12);
+  // 刹车距离
+  const totalS=v0*v0/(2*a);
+  drawText('总刹车距离 = v²/(2μg) = '+totalS.toFixed(1)+' m',W/2,H-50,'#fff',13);
+  drawText('速度翻倍 → 刹车距离变 4 倍（v² 关系）',W/2,H-25,'#fbbf24',12);
+  // 数据条
+  drawText('初速 v₀ = '+v0+' m/s, μ = '+mu,W/2,60,'#9ab0d0',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('牛顿第二定律 · 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'核心公式',d:'F = ma',c:'#06b6d4'},
+    {t:'矢量性',d:'a 与 F 同向',c:'#a78bfa'},
+    {t:'单位',d:'1 N = 1 kg·m/s²',c:'#34d399'},
+    {t:'正比关系',d:'a ∝ F（m 不变）',c:'#fbbf24'},
+    {t:'反比关系',d:'a ∝ 1/m（F 不变）',c:'#fb923c'},
+    {t:'瞬时性',d:'F 变则 a 立即变',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+  drawText('连接受力与运动的桥梁',W/2,H-40,'#fbbf24',14);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const p=Math.min(1.5,stepTime/STEP_DURATION);
+  if(stepIdx===0)drawIntroScene(t);
+  else if(stepIdx===1)drawIntroScene(t);
+  else if(stepIdx===2)drawUnitScene(t);
+  else if(stepIdx===3)drawControlVarScene(p);
+  else if(stepIdx===4)drawAFGraphScene(t);
+  else if(stepIdx===5)drawAInvMGraphScene(t);
+  else if(stepIdx===6)drawCalculatorScene(t);
+  else if(stepIdx===7)drawDirectionScene(t);
+  else if(stepIdx===8)drawCarScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function drawUnitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('力的单位 · 牛顿（N）',W/2,30,'#06b6d4',16);
+  ctx.fillStyle='#fff';ctx.font='bold 22px serif';ctx.textAlign='center';
+  ctx.fillText('1 N = 1 kg × 1 m/s²',W/2,90);
+  ctx.font='13px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('使 1 kg 物体产生 1 m/s² 加速度所需的力',W/2,115);
+  // 图示
+  const cx=W/2,cy=H/2+20;
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-50,cy-30,100,60,8);ctx.fill();ctx.stroke();
+  drawText('1 kg',cx,cy,'#a78bfa',14);
+  // 力
+  arrow(cx,cy,cx+80,cy,'#06b6d4',4);
+  drawText('F = 1 N',cx+90,cy-20,'#06b6d4',14);
+  // 加速度
+  arrow(cx,cy+50,cx+60,cy+50,'#34d399',3);
+  drawText('a = 1 m/s²',cx+90,cy+50,'#34d399',13,'left');
+  drawText('→',cx,cy+30,'#9ab0d0',18);
+  // 重力举例
+  drawText('举例：1 kg 物体所受重力 G = mg ≈ 9.8 N',W/2,H-60,'#fbbf24',13);
+  drawText('成年人约 60 kg，重力约 588 N',W/2,H-35,'#9ab0d0',12);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
 function loop(ts){
-  if(!lastTime)lastTime=ts;
-  const dt=(ts-lastTime)/1000*speed;
-  lastTime=ts;
-  if(playing){t+=dt;draw();}
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
   requestAnimationFrame(loop);
 }
 
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;
-  this.textContent=playing?'⏸ 暂停':'▶ 播放';
-};
-document.getElementById('resetBtn').onclick=function(){t=0;draw();};
-document.getElementById('speed').oninput=function(){speed=+this.value;};
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;t=0;drawCalculatorScene.pos=null;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
 
-function init(){fit();draw();requestAnimationFrame(loop);}
-requestAnimationFrame(function(){requestAnimationFrame(init);});
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();
+syncStep();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

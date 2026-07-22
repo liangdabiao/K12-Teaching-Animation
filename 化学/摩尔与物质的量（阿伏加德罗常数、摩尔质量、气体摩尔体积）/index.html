@@ -1,180 +1,376 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>摩尔与物质的量</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>摩尔与物质的量 · 阿伏加德罗常数 · 气体摩尔体积</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#e84393;--line:#26324a;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#f59e0b;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(245,158,11,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(245,158,11,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
-.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回化学目录</a>
-  <span class="title">摩尔与物质的量</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">摩尔与物质的量</span><span class="subtitle">阿伏加德罗常数 · 摩尔质量 · 气体摩尔体积</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>物质的量 n</h4><div class="v">单位 mol<br>度量微观粒子集体的物理量</div></div>
+  <div class="card s2"><div class="num">2</div><h4>阿伏加德罗常数</h4><div class="v">Nₐ = 6.02×10²³ /mol<br>1 mol 粒子数</div></div>
+  <div class="card s3"><div class="num">3</div><h4>摩尔质量 M</h4><div class="v">M = g/mol<br>数值 = 相对分子质量</div></div>
+  <div class="card s4"><div class="num">4</div><h4>气体摩尔体积</h4><div class="v">Vₘ = 22.4 L/mol<br>标准状况下 1 mol 气体</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>物质的量(n)是国际单位制7个基本物理量之一，单位是摩尔(mol)。1mol含有阿伏加德罗常数Nₐ≈6.02×10²³个微粒。摩尔质量(M)：1mol物质的质量(g/mol)，数值=相对分子质量。标准状况下(S.T.P: 0°C,101kPa)气体摩尔体积Vm=22.4L/mol。</p>
-    <div class="legend"><span><b style="color:#e84393">●</b> 分子/原子</span><span><b style="color:#0984e3">●</b> 1mol集合体</span><span><b style="color:#fdcb6e">●</b> 气体22.4L</span></div>
-    <div class="key-points"><h3>核心公式</h3><ul>
-      <li><b>n = N / Nₐ</b> （Nₐ = 6.02×10²³ mol⁻¹）</li>
-      <li><b>n = m / M</b> （m:质量g，M:摩尔质量g/mol）</li>
-      <li><b>n = V / Vm</b> （S.T.P下Vm = 22.4 L/mol）</li>
-      <li><b>c = n / V</b> （c:物质的量浓度 mol/L）</li>
-      <li>例：1mol H₂O = 18g = 6.02×10²³个分子</li>
-      <li>例：S.T.P下 1mol O₂ = 22.4L = 32g</li>
-    </ul></div>
-  </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">物质的量</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="conceptBtn">概念</button>
-  <button id="calcBtn">计算</button>
-  <button id="gasBtn">气体</button>
-  <span id="status" class="status"></span>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-let mode='concept',t=0,playing=false,lastT=0,particles=[];
+const STEPS=[
+  {tag:'基础',name:'物质的量 n',body:'<strong>物质的量</strong>是国际单位制七个基本物理量之一，符号 <strong>n</strong>，单位是 <strong>mol（摩尔）</strong>。它用来度量微观粒子的集体，1 mol 含 <strong>阿伏加德罗常数</strong>个粒子。',points:{title:'核心要点',items:['<strong>符号</strong>：n（物质的量）','<strong>单位</strong>：mol 摩尔','<strong>适用对象</strong>：原子、分子、离子、电子等微观粒子','<strong>1 mol</strong>：含 Nₐ 个粒子的集体']}},
+  {tag:'基础',name:'阿伏加德罗常数',body:'<strong>阿伏加德罗常数</strong> <code>Nₐ = 6.02×10²³ /mol</code>。1 mol 任何粒子的粒子数都等于这个值。粒子数 N 与物质的量 n 的关系：<code>n = N / Nₐ</code>。',points:{title:'关键关系',items:['<strong>Nₐ</strong>：6.02×10²³ /mol','<strong>1 mol H₂O</strong>：含 6.02×10²³ 个水分子','<strong>1 mol Fe</strong>：含 6.02×10²³ 个铁原子','<strong>n = N / Nₐ</strong>：粒子数换算公式']}},
+  {tag:'基础',name:'摩尔质量 M',body:'<strong>摩尔质量</strong> M 是单位物质的量物质所具有的质量，单位 <code>g/mol</code>。<strong>数值上等于该物质的相对分子（原子）质量</strong>。例如 H₂O 的 M = 18 g/mol。',points:{title:'M 的规律',items:['<strong>H₂O</strong>：M = 18 g/mol','<strong>NaCl</strong>：M = 58.5 g/mol','<strong>CO₂</strong>：M = 44 g/mol','<strong>数值规律</strong>：M 数值 = 相对分子质量']}},
+  {tag:'公式',name:'n = m / M',body:'物质的量、质量、摩尔质量三者的关系式：<code>n = m / M</code>。已知任意两个量，可求第三个。这是<strong>化学计算的基础公式</strong>之一。',points:{title:'公式变形',items:['<strong>n = m / M</strong>：求物质的量','<strong>m = n · M</strong>：求质量','<strong>M = m / n</strong>：求摩尔质量','<strong>单位</strong>：m 用 g，M 用 g/mol，n 用 mol']}},
+  {tag:'公式',name:'n = N / Nₐ',body:'粒子数 N 与物质的量 n 的换算：<code>n = N / Nₐ</code>。已知粒子数可求 n；已知 n 可求粒子数 N = n · Nₐ。这是<strong>宏观与微观的桥梁</strong>。',points:{title:'换算规律',items:['<strong>n = N / Nₐ</strong>：粒子数 → 物质的量','<strong>N = n · Nₐ</strong>：物质的量 → 粒子数','<strong>Nₐ</strong>：6.02×10²³ /mol','<strong>本质</strong>：用倍数关系简化大数计算']}},
+  {tag:'气体',name:'气体摩尔体积 Vₘ',body:'<strong>气体摩尔体积</strong> Vₘ 是单位物质的量气体所占的体积。在<strong>标准状况</strong>下（0℃、101 kPa），任何理想气体的 Vₘ 都约等于 <code>22.4 L/mol</code>。',points:{title:'Vₘ 的特征',items:['<strong>Vₘ 数值</strong>：22.4 L/mol','<strong>适用条件</strong>：标准状况（标况）','<strong>适用对象</strong>：任何气体（理想气体）','<strong>公式</strong>：Vₘ = V / n']}},
+  {tag:'气体',name:'标准状况',body:'<strong>标准状况（标况）</strong>指温度 <strong>0℃（273.15 K）</strong>、压强 <strong>101.325 kPa（1 atm）</strong>的状态。在此状况下 1 mol 气体约占 <strong>22.4 L</strong>，与气体种类无关。',points:{title:'标况条件',items:['<strong>温度</strong>：0℃ = 273.15 K','<strong>压强</strong>：101.325 kPa = 1 atm','<strong>体积</strong>：1 mol ≈ 22.4 L','<strong>普适性</strong>：与气体种类无关']}},
+  {tag:'溶液',name:'物质的量浓度 c',body:'<strong>物质的量浓度</strong> c 是单位体积溶液中所含溶质的物质的量，单位 <code>mol/L</code>。公式：<code>c = n / V</code>。用<strong>容量瓶</strong>可准确配制一定浓度的溶液。',points:{title:'浓度公式',items:['<strong>c = n / V</strong>：核心公式','<strong>单位</strong>：mol/L（即 M）','<strong>配制仪器</strong>：容量瓶','<strong>关键操作</strong>：定容、摇匀']}},
+  {tag:'计算',name:'典型计算题',body:'<strong>例题</strong>：36 g H₂O 的物质的量是多少？含有多少个水分子？解：M(H₂O) = 18 g/mol，n = m/M = 36/18 = 2 mol；N = n·Nₐ = 2×6.02×10²³ = 1.204×10²⁴ 个。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：求 M(H₂O) = 18 g/mol','<strong>步骤2</strong>：n = m/M = 36/18 = 2 mol','<strong>步骤3</strong>：N = n·Nₐ = 12.04×10²³ 个','<strong>结论</strong>：36 g 水 = 2 mol = 12.04×10²³ 个分子']}},
+  {tag:'总结',name:'核心速记',body:'物质的量 n（mol）是<strong>宏观与微观的桥梁</strong>，连接质量 m、粒子数 N、气体体积 V、溶液浓度 c。掌握 <strong>n = m/M = N/Nₐ = V/Vₘ</strong>，化学计算畅通无阻。',points:{title:'三句话总结',items:['<strong>桥梁公式</strong>：n = m/M = N/Nₐ = V/Vₘ','<strong>核心常数</strong>：Nₐ = 6.02×10²³ /mol','<strong>标况体积</strong>：Vₘ = 22.4 L/mol','<strong>浓度公式</strong>：c = n / V（mol/L）']}},
+];
 
-function initParticles(){
-  particles=[];
-  for(let i=0;i<100;i++){
-    particles.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
-      vx:(Math.random()-0.5)*80,vy:(Math.random()-0.5)*80,r:3+Math.random()*3});
-  }
-}
-initParticles();
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
 
-function drawConcept(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  // 中心大数字
-  ctx.fillStyle='#e84393';ctx.font='bold 36px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('1 mol',W/2,H*0.2);
-  ctx.fillStyle='#fdcb6e';ctx.font='bold 20px sans-serif';
-  ctx.fillText('= 6.02 × 10²³ 个微粒',W/2,H*0.32);
-  
-  // 三个关系图
-  const items=[
-    {label:'n = N/Nₐ',desc:'微粒数→物质的量',x:W*0.2,y:H*0.55,color:'#e84393'},
-    {label:'n = m/M',desc:'质量→物质的量',x:W*0.5,y:H*0.55,color:'#0984e3'},
-    {label:'n = V/Vm',desc:'气体体积→物质的量',x:W*0.8,y:H*0.55,color:'#fdcb6e'}
-  ];
-  items.forEach(item=>{
-    ctx.beginPath();ctx.arc(item.x,item.y,45,0,Math.PI*2);
-    ctx.fillStyle=item.color+'22';ctx.fill();ctx.strokeStyle=item.color;ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.fillText(item.label,item.x,item.y-8);
-    ctx.fillStyle='#9fb0c8';ctx.font='11px sans-serif';ctx.fillText(item.desc,item.x,item.y+14);
-  });
-  
-  // 粒子动画
-  const count=Math.min(particles.length,Math.floor(t*15));
-  for(let i=0;i<count;i++){
-    const p=particles[i];
-    p.x+=p.vx*0.016;p.y+=p.vy*0.016;
-    if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
-    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle='rgba(232,67,143,0.5)';ctx.fill();
-  }
-  ctx.fillStyle='#9fb0c8';ctx.font='11px sans-serif';
-  ctx.fillText(`已计数: ${count} / 6.02×10²³ (动画示意)`,W/2,H*0.85);
-}
-
-function drawCalc(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 18px sans-serif';ctx.textAlign='center';
-  ctx.fillText('摩尔计算实例',W/2,35);
-  
-  const examples=[
-    {q:'36g H₂O = ? mol',a:'n = m/M = 36/18 = 2 mol',y:H*0.2},
-    {q:'2mol O₂ 的质量 = ?',a:'m = n×M = 2×32 = 64 g',y:H*0.38},
-    {q:'S.T.P下 44.8L CO₂ = ? mol',a:'n = V/Vm = 44.8/22.4 = 2 mol',y:H*0.56},
-    {q:'0.5mol NaCl含几个Na⁺?',a:'N = n×Nₐ = 0.5×6.02×10²³ = 3.01×10²³',y:H*0.74}
-  ];
-  const p=Math.min(1,t*0.4);
-  examples.forEach((ex,i)=>{
-    const show=i/4<p;
-    if(show){
-      ctx.fillStyle='#74b9ff';ctx.font='14px sans-serif';ctx.textAlign='center';
-      ctx.fillText(ex.q,W/2,ex.y);
-      ctx.fillStyle='#00b894';ctx.font='bold 14px sans-serif';
-      ctx.fillText(ex.a,W/2,ex.y+22);
-    }
-  });
-}
-
-function drawGas(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
-  ctx.fillText('气体摩尔体积 Vm = 22.4 L/mol (S.T.P)',W/2,30);
-  
+// ===== 场景1：1 摩尔概念可视化（堆叠粒子到 6.02×10²³）=====
+function drawMoleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('1 mol = 6.02×10²³ 个微观粒子',W/2,30,'#f59e0b',16);
+  const cx=W/2,cy=H/2+20;
   // 容器
-  const bw=120,bh=200;
-  const bx=W/2-bw/2,by=H*0.15;
-  ctx.strokeStyle='#74b9ff';ctx.lineWidth=2;
-  ctx.strokeRect(bx,by,bw,bh);
-  ctx.fillStyle='rgba(9,132,227,0.1)';ctx.fillRect(bx,by,bw,bh);
-  
-  // 气体分子
-  const n=Math.min(50,Math.floor(t*20));
-  for(let i=0;i<n;i++){
-    const p=particles[i%particles.length];
-    const px=bx+10+((p.x*0.5+t*30+i*17)%(bw-20));
-    const py=by+10+((p.y*0.5+t*20+i*13)%(bh-20));
-    ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);
-    ctx.fillStyle='#0984e3';ctx.fill();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx-150,cy-110,300,220,10);ctx.stroke();
+  // 动态增加的粒子
+  const progress=Math.min(1,(time%4)/4);
+  const total=180;
+  const count=Math.floor(total*progress);
+  for(let i=0;i<count;i++){
+    const col=i%15;
+    const row=Math.floor(i/15);
+    const px=cx-140+col*20;
+    const py=cy-100+row*15;
+    const hue=(col*15+row*20)%360;
+    ctx.fillStyle='hsl('+hue+',70%,60%)';
+    ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=4;
+    ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
   }
-  
-  ctx.fillStyle='#fdcb6e';ctx.font='13px sans-serif';
-  ctx.fillText('1 mol 任何气体',W/2,by+bh+25);
-  ctx.fillText('在 S.T.P 下体积 = 22.4 L',W/2,by+bh+45);
-  
-  // 对比
-  ctx.font='12px sans-serif';ctx.fillStyle='#9fb0c8';
-  ctx.fillText('注意：只适用于气体；必须是标准状况(0°C, 101kPa)',W/2,H*0.88);
+  ctx.shadowBlur=0;
+  // 数量标识
+  const displayN=Math.floor(progress*602);
+  drawText('已堆叠粒子数：'+(displayN>0?displayN+'×10²¹':'0')+'  (示意)',W/2,cy+140,'#9ab0d0',12);
+  drawText('粒子总数 = 1 mol = Nₐ = 6.02×10²³',W/2,H-60,'#34d399',13);
+  drawText('粒子可是：分子、原子、离子、电子等',W/2,H-35,'#9ab0d0',11);
+}
+
+// ===== 场景2：n / Nₐ / M 关系转换图 =====
+function drawRelationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('n / Nₐ / M 关系转换三角',W/2,30,'#f59e0b',16);
+  const cx=W/2,cy=H/2+10;
+  // 三角形顶点
+  const pts=[
+    {x:cx,y:cy-130,label:'物质的量',sym:'n',unit:'mol',c:'#f59e0b'},
+    {x:cx-180,y:cy+100,label:'质量',sym:'m',unit:'g',c:'#34d399'},
+    {x:cx+180,y:cy+100,label:'粒子数',sym:'N',unit:'个',c:'#06b6d4'},
+  ];
+  // 连接边
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);ctx.lineTo(pts[1].x,pts[1].y);ctx.lineTo(pts[2].x,pts[2].y);ctx.closePath();ctx.stroke();
+  // 边上的关系式
+  drawText('n = m/M',(pts[0].x+pts[1].x)/2-20,(pts[0].y+pts[1].y)/2,'#fbbf24',13);
+  drawText('n = N/Nₐ',(pts[0].x+pts[2].x)/2+20,(pts[0].y+pts[2].y)/2,'#fbbf24',13);
+  drawText('N = n·Nₐ',(pts[1].x+pts[2].x)/2,cy+100,'#fbbf24',13);
+  // 三个顶点圆（脉动）
+  const pulse=1+0.08*Math.sin(time*3);
+  pts.forEach(p=>{
+    ctx.fillStyle=p.c+'22';ctx.strokeStyle=p.c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(p.x,p.y,40*pulse,0,7);ctx.fill();ctx.stroke();
+    drawText(p.sym,p.x,p.y-8,p.c,18);
+    drawText(p.unit,p.x,p.y+12,'#fff',11);
+    drawText(p.label,p.x,p.y+60,p.c,13);
+  });
+  drawText('n 是核心枢纽，连接质量 m 与粒子数 N',W/2,H-50,'#34d399',13);
+}
+
+// ===== 场景3：标况下 22.4L 立方体容器 =====
+function drawCubeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('标准状况下 1 mol 气体 = 22.4 L',W/2,30,'#f59e0b',16);
+  const cx=W/2-60,cy=H/2;
+  // 等距投影立方体
+  const sz=140,dep=70;
+  const front={x:cx-sz/2,y:cy-sz/2};
+  const dx=dep*0.6,dy=-dep*0.5;
+  // 后面
+  ctx.fillStyle='rgba(6,182,212,0.12)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(front.x+dx,front.y+dy);
+  ctx.lineTo(front.x+sz+dx,front.y+dy);
+  ctx.lineTo(front.x+sz+dx,front.y+sz+dy);
+  ctx.lineTo(front.x+dx,front.y+sz+dy);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 连接线
+  ctx.beginPath();
+  ctx.moveTo(front.x,front.y);ctx.lineTo(front.x+dx,front.y+dy);
+  ctx.moveTo(front.x+sz,front.y);ctx.lineTo(front.x+sz+dx,front.y+dy);
+  ctx.moveTo(front.x+sz,front.y+sz);ctx.lineTo(front.x+sz+dx,front.y+sz+dy);
+  ctx.moveTo(front.x,front.y+sz);ctx.lineTo(front.x+dx,front.y+sz+dy);
+  ctx.stroke();
+  // 前面
+  ctx.fillStyle='rgba(245,158,11,0.08)';ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  ctx.fillRect(front.x,front.y,sz,sz);ctx.strokeRect(front.x,front.y,sz,sz);
+  // 气体分子（运动）
+  for(let i=0;i<14;i++){
+    const seed=i*37;
+    const px=front.x+15+((seed*7)%sz-15);
+    const py=front.y+15+((seed*11)%sz-15);
+    const off=Math.sin(time*2+i)*6;
+    ctx.fillStyle='rgba(245,158,11,0.8)';
+    ctx.shadowColor='#f59e0b';ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(px+off,py,3,0,7);ctx.fill();
+  }
+  ctx.shadowBlur=0;
+  // 标注
+  drawText('22.4 L',cx,cy,'#f59e0b',20);
+  drawText('1 mol 气体',cx,cy+25,'#fff',13);
+  drawText('0℃  101 kPa',cx,cy+50,'#34d399',12);
+  // 右侧公式
+  const rx=cx+180;
+  drawText('标况条件',rx,cy-80,'#f59e0b',14);
+  drawText('温度：0℃ (273 K)',rx,cy-50,'#9ab0d0',12,'left');
+  drawText('压强：101 kPa (1 atm)',rx,cy-30,'#9ab0d0',12,'left');
+  drawText('体积：22.4 L/mol',rx,cy-10,'#9ab0d0',12,'left');
+  drawText('适用于任何气体',rx,cy+15,'#34d399',12,'left');
+  drawText('（与气体种类无关）',rx,cy+35,'#34d399',11,'left');
+}
+
+// ===== 场景4：浓度配制（容量瓶定容）=====
+function drawFlaskScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('容量瓶配制溶液 · 定容操作',W/2,30,'#f59e0b',16);
+  const cx=W/2,cy=H/2+20;
+  // 容量瓶轮廓
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.fillStyle='rgba(6,182,212,0.08)';
+  ctx.beginPath();
+  ctx.moveTo(cx-12,cy-110);
+  ctx.lineTo(cx-12,cy-75);
+  ctx.quadraticCurveTo(cx-12,cy-55,cx-55,cy-20);
+  ctx.quadraticCurveTo(cx-80,cy+30,cx-55,cy+80);
+  ctx.quadraticCurveTo(cx,cy+105,cx+55,cy+80);
+  ctx.quadraticCurveTo(cx+80,cy+30,cx+55,cy-20);
+  ctx.quadraticCurveTo(cx+12,cy-55,cx+12,cy-75);
+  ctx.lineTo(cx+12,cy-110);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 标线
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-25,cy-65);ctx.lineTo(cx+25,cy-65);ctx.stroke();
+  drawText('标线',cx+45,cy-65,'#f59e0b',11,'left');
+  // 液面动画
+  const level=Math.min(1,(time%4)/3);
+  const liquidY=cy+80-level*145;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx-12,cy-75);
+  ctx.quadraticCurveTo(cx-12,cy-55,cx-55,cy-20);
+  ctx.quadraticCurveTo(cx-80,cy+30,cx-55,cy+80);
+  ctx.quadraticCurveTo(cx,cy+105,cx+55,cy+80);
+  ctx.quadraticCurveTo(cx+80,cy+30,cx+55,cy-20);
+  ctx.quadraticCurveTo(cx+12,cy-55,cx+12,cy-75);
+  ctx.closePath();
+  ctx.clip();
+  ctx.fillStyle='rgba(52,211,153,0.4)';
+  ctx.fillRect(cx-90,liquidY,180,200);
+  ctx.restore();
+  // 重描边
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-12,cy-110);ctx.lineTo(cx-12,cy-75);
+  ctx.quadraticCurveTo(cx-12,cy-55,cx-55,cy-20);
+  ctx.quadraticCurveTo(cx-80,cy+30,cx-55,cy+80);
+  ctx.quadraticCurveTo(cx,cy+105,cx+55,cy+80);
+  ctx.quadraticCurveTo(cx+80,cy+30,cx+55,cy-20);
+  ctx.quadraticCurveTo(cx+12,cy-55,cx+12,cy-75);
+  ctx.lineTo(cx+12,cy-110);
+  ctx.stroke();
+  // 瓶塞
+  ctx.fillStyle='rgba(245,158,11,0.4)';ctx.strokeStyle='#f59e0b';
+  ctx.fillRect(cx-14,cy-125,28,18);ctx.strokeRect(cx-14,cy-125,28,18);
+  // 胶头滴管
+  const dropY=cy-145-Math.sin(time*3)*3;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx,dropY);ctx.lineTo(cx,dropY-50);ctx.stroke();
+  ctx.fillStyle='rgba(248,113,113,0.6)';
+  ctx.fillRect(cx-6,dropY-65,12,15);
+  // 说明
+  drawText('加蒸馏水至液面距标线 1-2 cm 处改用胶头滴管定容',W/2,H-70,'#9ab0d0',12);
+  drawText('视线与凹液面最低处相平',W/2,H-48,'#fbbf24',12);
+  drawText('c = n / V  （V 取容量瓶标定容积）',W/2,H-25,'#34d399',13);
+}
+
+// ===== 场景5：典型计算题分步 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 36 g H₂O 的物质的量',W/2,30,'#f59e0b',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',100,80,'#a78bfa',13,'left');
+  drawText('已知水的摩尔质量 M(H₂O) = 18 g/mol。',100,105,'#fff',13,'left');
+  drawText('求 36 g 水的物质的量 n 及含有水分子数 N。',100,130,'#fff',13,'left');
+  // 解答
+  const steps=[
+    {t:'① 求物质的量',d:'n = m / M = 36 g / 18 g/mol = 2 mol',c:'#06b6d4'},
+    {t:'② 写出 Nₐ',d:'Nₐ = 6.02 × 10²³ /mol',c:'#a78bfa'},
+    {t:'③ 求分子数',d:'N = n · Nₐ = 2 × 6.02×10²³',c:'#67e8f9'},
+    {t:'④ 计算',d:'N = 1.204 × 10²⁴ = 12.04 × 10²³ 个',c:'#34d399'},
+    {t:'⑤ 结论',d:'36 g H₂O = 2 mol = 12.04×10²³ 个分子',c:'#f59e0b'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=180+i*55;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,110,y+21,s.c,13,'left');
+    drawText(s.d,280,y+21,'#fff',13,'left');
+  });
+}
+
+// ===== 场景6：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('物质的量核心总结',W/2,40,'#f59e0b',18);
+  const items=[
+    {t:'核心物理量',d:'n（mol）',c:'#f59e0b'},
+    {t:'阿伏加德罗常数',d:'Nₐ = 6.02×10²³ /mol',c:'#06b6d4'},
+    {t:'摩尔质量',d:'M = m/n （g/mol）',c:'#34d399'},
+    {t:'气体摩尔体积',d:'Vₘ = 22.4 L/mol（标况）',c:'#a78bfa'},
+    {t:'物质的量浓度',d:'c = n/V （mol/L）',c:'#fb923c'},
+    {t:'桥梁公式',d:'n = m/M = N/Nₐ = V/Vₘ',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/3-20,150,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/6,y+45,m.c,15);
+    drawText(m.d,x+(W-120)/6,y+90,'#fff',12);
+  });
 }
 
 function draw(){
-  if(mode==='concept')drawConcept();
-  else if(mode==='calc')drawCalc();
-  else drawGas();
-  statusEl.textContent=`模式: ${mode==='concept'?'概念':mode==='calc'?'计算':'气体'}`;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawMoleScene(t);
+  else if(stepIdx===1||stepIdx===4)drawRelationScene(t);
+  else if(stepIdx===2||stepIdx===3)drawRelationScene(t);
+  else if(stepIdx===5||stepIdx===6)drawCubeScene(t);
+  else if(stepIdx===7)drawFlaskScene(t);
+  else if(stepIdx===8)drawCalcScene();
+  else if(stepIdx===9)drawSummaryScene();
 }
 
-let animId;
-function loop(ts){
-  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();
-  if(playing)animId=requestAnimationFrame(loop);
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
 }
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
-  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
-};
-document.getElementById('resetBtn').onclick=function(){t=0;initParticles();draw();};
-document.getElementById('conceptBtn').onclick=function(){mode='concept';t=0;draw();};
-document.getElementById('calcBtn').onclick=function(){mode='calc';t=0;draw();};
-document.getElementById('gasBtn').onclick=function(){mode='gas';t=0;draw();};
-draw();
-</script></body></html>
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

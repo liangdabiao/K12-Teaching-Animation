@@ -3,106 +3,462 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>带电粒子在复合场</title>
+<title>带电粒子在复合场 · 速度选择器</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
-main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#34d399;--accent2:#fbbf24;--line:#243a5e;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(251,191,36,.06)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(52,211,153,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:#06b6d4}.card.s4::before{background:#a78bfa}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(52,211,153,.2);color:#6ee7b7;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">带电粒子在复合场</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">带电粒子在复合场</span><span class="subtitle">电场+磁场 · 速度选择器 · 质谱仪 · 回旋加速器</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>电场偏转</h4><div class="v">F=qE<br>类平抛运动</div></div>
+  <div class="card s2"><div class="num">2</div><h4>磁场偏转</h4><div class="v">F=qvB<br>圆周运动</div></div>
+  <div class="card s3"><div class="num">3</div><h4>速度选择器</h4><div class="v">E 与 B 垂直<br>v=E/B 才直线</div></div>
+  <div class="card s4"><div class="num">4</div><h4>应用装置</h4><div class="v">质谱仪/回旋加速器<br>霍尔效应</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>当带电粒子同时处于电场和磁场中时，受到电场力 F=qE 和洛伦兹力 F=qvB 的共同作用。速度选择器原理：当 qE = qvB 即 v = E/B 时，粒子做匀速直线运动通过选择器。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">→</b> 电场 E</span><span class="li"><b style="color:#00b894">⊗</b> 磁场 B（垂直纸面）</span><span class="li"><b style="color:#d63031">●</b> 带电粒子</span><span class="li"><b style="color:#fdcb6e">→</b> 速度选择方向</span></div>
-  <div class="key-points"><h3>核心公式</h3><ul><li>电场力：F_E = qE（方向沿电场方向）</li><li>洛伦兹力：F_B = qvB（方向由左手定则判定）</li><li>速度选择器条件：v = E/B</li><li>质谱仪：先速度选择→再磁场偏转→测荷质比</li><li>应用：速度选择器、质谱仪、霍尔效应</li></ul></div></aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">复合场</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-const P={t:0,p:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){P.t=0;P.p=0;}
-function sceneUpdate(dt){P.t+=dt;if(P.p<1)P.p=Math.min(1,P.p+dt*0.2);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  // plates (E field downward)
-  ctx.fillStyle='#34d399';ctx.fillRect(40,60,cv.width-80,8);
-  ctx.fillStyle='#f87171';ctx.fillRect(40,cv.height-100,cv.width-80,8);
-  ctx.fillStyle='#9fb0c8';ctx.font='12px sans-serif';ctx.textAlign='left';
-  ctx.fillText('匀强电场 E（上+下−）',50,55);
-  // B into page (crosses)
-  ctx.fillStyle='#cdd7ea';ctx.fillText('匀强磁场 B（垂直纸面向里 ✕）',50,cv.height-78);
-  for(let i=0;i<6;i++)for(let j=0;j<4;j++){const x=120+i*120,y=140+j*70;ctx.strokeStyle='#9fb0c8';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-5,y-5);ctx.lineTo(x+5,y+5);ctx.moveTo(x+5,y-5);ctx.lineTo(x-5,y+5);ctx.stroke();}
-  // particle path: circle (velocity selector when qE=qvB -> straight)
-  const cx=cv.width/2,cy=cv.height/2-10;
-  let path=[];
-  const straight=(P.p<0.5);
-  for(let a=0;a<=Math.PI*2*P.p;a+=0.1){if(straight){path.push([cx-200+a*60,cy]);}else{path.push([cx+Math.cos(a)*120,cy+Math.sin(a)*120]);}}
-  ctx.strokeStyle='#7dd3fc';ctx.lineWidth=3;ctx.beginPath();path.forEach((pt,i)=>i?ctx.lineTo(pt[0],pt[1]):ctx.moveTo(pt[0],pt[1]));ctx.stroke();
-  const last=path[path.length-1];
-  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(last[0],last[1],6,0,7);ctx.fill();
-  ctx.fillStyle='#cdd7ea';ctx.fillText(straight?'速度选择器：qE=qvB → 直线通过':'qE≠qvB → 圆周偏转',50,cv.height-40);
-  statusEl.textContent='复合场中粒子受电场力与洛伦兹力共同作用';
+const STEPS=[
+  {tag:'电场',name:'电场偏转',body:'<strong>电场对运动电荷</strong>：无论速度方向，<strong>F=qE</strong>（与 v 无关），加速度 a=qE/m，运动为<strong>类平抛</strong>。',points:{title:'电场偏转特点',items:['<strong>F=qE</strong>：恒力（匀强场）','<strong>轨迹</strong>：抛物线','<strong>x 方向</strong>：匀速 v₀t','<strong>y 方向</strong>：匀加速 ½at²']}},
+  {tag:'磁场',name:'磁场偏转',body:'<strong>磁场对运动电荷</strong>：<strong>F=qvBsinθ</strong>（洛伦兹力），方向始终<strong>垂直于 v</strong>，<strong>不做功</strong>。v⊥B 时做<strong>匀速圆周运动</strong>。',points:{title:'磁场偏转特点',items:['<strong>F=qvB</strong>：v⊥B 时','<strong>不做功</strong>：力⊥v','<strong>轨迹</strong>：圆周（半径 r=mv/qB）','<strong>周期 T=2πm/qB</strong>：与 v 无关']}},
+  {tag:'对比',name:'电场 vs 磁场',body:'<strong>电场</strong>：对静止/运动电荷都作用，做功改变动能；<strong>磁场</strong>：只对运动电荷作用，永不做功，只改变方向。',points:{title:'三方面对比',items:['<strong>静止电荷</strong>：电场受力，磁场不受','<strong>动能</strong>：电场改变，磁场不改变','<strong>轨迹</strong>：电场抛物线，磁场圆周','<strong>本质</strong>：都是场对电荷的作用']}},
+  {tag:'复合',name:'复合场概念',body:'<strong>复合场</strong>：电场 + 磁场<strong>同时存在</strong>的区域。带电粒子受力 F=qE+qv×B，运动由两力共同决定。',points:{title:'复合场关键',items:['<strong>总力</strong>：F=F电+F磁','<strong>方向</strong>：电场力沿E，磁场力⊥v','<strong>解题</strong>：分别分析再合成','<strong>典型</strong>：速度选择器、霍尔效应']}},
+  {tag:'复合',name:'速度选择器',body:'<strong>速度选择器</strong>：相互垂直的<strong>匀强 E 场和 B 场</strong>。当粒子以特定速度 <code>v=E/B</code> 直线穿过时，<strong>qE=qvB</strong> 力平衡。',points:{title:'速度选择器核心',items:['<strong>条件</strong>：E⊥B⊥v','<strong>力平衡</strong>：qE=qvB','<strong>临界速度</strong>：v=E/B','<strong>v&gt;E/B</strong>：偏一侧；<strong>v&lt;E/B</strong>：偏另一侧']}},
+  {tag:'复合',name:'速度选择器演示',body:'不同速度的粒子进入选择器：<strong>只有 v=E/B 的能直线穿过</strong>；速度大的偏向磁场力方向；速度小的偏向电场力方向。',points:{title:'筛选应用',items:['<strong>过滤</strong>：只让特定 v 通过','<strong>质谱仪前置</strong>：先选速度','<strong>方向</strong>：受力大者偏','<strong>正负电荷</strong>：偏转方向相反']}},
+  {tag:'应用',name:'质谱仪',body:'<strong>质谱仪</strong>：先经速度选择器，再进入<strong>分析磁场</strong>做圆周。<strong>同荷质比</strong>粒子半径 r=mv/(qB)，半径不同则质量不同，可分离同位素。',points:{title:'质谱仪结构',items:['<strong>① 离子源</strong>：产生带电粒子','<strong>② 速度选择</strong>：v=E/B','<strong>③ 分析磁场</strong>：圆周分离','<strong>④ 探测器</strong>：测量半径']}},
+  {tag:'应用',name:'回旋加速器',body:'<strong>回旋加速器</strong>：粒子在两个 D 型盒的磁场中做圆周，缝隙处交变电场加速。<strong>周期 T=2πm/qB 与 v 无关</strong>，所以固定频率即可同步加速。',points:{title:'加速器原理',items:['<strong>D 型盒</strong>：内部只有 B 场','<strong>缝隙</strong>：交变 E 场加速','<strong>半径 r=mv/qB</strong>：v 增大半径增','<strong>固定频率</strong>：T 与 v 无关']}},
+  {tag:'应用',name:'霍尔效应',body:'<strong>霍尔效应</strong>：通电导体置于磁场中，载流子受洛伦兹力偏转，在<strong>横向产生电势差</strong> <code>U_H = IB/(nqd)</code>。可判断载流子正负。',points:{title:'霍尔应用',items:['<strong>载流子</strong>：金属是电子，半导体可正可负','<strong>测量</strong>：磁场强度计','<strong>判断</strong>：正负电荷方向不同','<strong>霍尔电压</strong>：与 B、I 成正比']}},
+  {tag:'总结',name:'核心要点',body:'复合场中粒子运动由<strong>电场力（qE）+磁场力（qvB）</strong>合成。速度选择器用 <strong>v=E/B</strong> 筛选；质谱仪/回旋加速器/霍尔效应都是复合场应用。',points:{title:'核心速记',items:['<strong>电场力</strong>：qE（沿 E）','<strong>磁场力</strong>：qvB（⊥v⊥B）','<strong>速度选择</strong>：v=E/B','<strong>圆周半径</strong>：r=mv/(qB)']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+// 粒子轨迹缓存
+let trails={};
+
+// 场景：电场偏转
+function drawElectricScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电场偏转 · 类平抛',W/2,30,'#fbbf24',16);
+  const cx=W/2-100,cy=H/2;
+  // 极板
+  ctx.fillStyle='rgba(251,191,36,0.05)';
+  ctx.fillRect(cx-100,cy-100,250,200);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-100,cy-100);ctx.lineTo(cx+150,cy-100);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-100,cy+100);ctx.lineTo(cx+150,cy+100);ctx.stroke();
+  drawText('+',cx-110,cy-100,'#f87171',20);
+  drawText('-',cx-110,cy+100,'#67e8f9',20);
+  drawText('E ↓',cx-110,cy,'#fbbf24',15);
+  // 粒子轨迹（抛物线）
+  const phase=time%4;
+  const px=cx-100+phase*100;
+  const py=cy+(phase*phase*8);
+  // 轨迹
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=phase*30;i++){
+    const x=cx-100+i*3.3;
+    const y=cy+(i*i*0.08);
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 粒子
+  ctx.fillStyle='#f87171';
+  ctx.shadowColor='#f87171';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('q+',px,py-20,'#f87171',13);
+  // 速度方向
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+30,py+phase*8);ctx.stroke();
+  drawText('v',px+38,py+phase*4,'#67e8f9',12);
+  // 力方向
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+40);ctx.stroke();
+  drawText('F=qE',px+25,py+25,'#fbbf24',13);
+  // 公式
+  drawText('y = ½ · (qE/m) · t²',W/2,H-50,'#9ab0d0',13);
+  drawText('x = v₀t（匀速）',W/2,H-30,'#9ab0d0',12);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+// 场景：磁场偏转（圆周）
+function drawMagneticScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('磁场偏转 · 匀速圆周',W/2,30,'#a78bfa',16);
+  const cx=W/2,cy=H/2;
+  // 磁场（出纸面）
+  ctx.fillStyle='rgba(167,139,250,0.06)';
+  ctx.fillRect(cx-250,cy-150,500,300);
+  for(let i=0;i<7;i++)for(let j=0;j<5;j++){
+    ctx.fillStyle='#a78bfa';
+    ctx.beginPath();ctx.arc(cx-220+i*70,cy-130+j*65,2.5,0,7);ctx.fill();
+  }
+  drawText('B 出纸面 ⊙',cx,cy-180,'#a78bfa',13);
+  // 圆轨迹
+  const R=120;
+  ctx.strokeStyle='rgba(52,211,153,0.3)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();
+  ctx.setLineDash([]);
+  // 粒子位置
+  const angle=-time*1.2;
+  const px=cx+Math.cos(angle)*R;
+  const py=cy+Math.sin(angle)*R;
+  // 轨迹
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(cx,cy,R,angle-0.3,angle+0.05);ctx.stroke();
+  ctx.shadowBlur=0;
+  // 粒子
+  ctx.fillStyle='#f87171';
+  ctx.shadowColor='#f87171';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,py,10,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // v 切线
+  const tx=-Math.sin(angle),ty=Math.cos(angle);
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+tx*40,py+ty*40);ctx.stroke();
+  drawText('v',px+tx*48,py+ty*48,'#67e8f9',13);
+  // F 指向圆心
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-tx*40,py-ty*40);ctx.stroke();
+  drawText('F=qvB',px-tx*50,py-ty*50,'#fbbf24',13);
+  // 半径公式
+  drawText('r = mv / (qB)',cx,cy+R+40,'#9ab0d0',14);
+  drawText('周期 T = 2πm / (qB)（与 v 无关）',cx,cy+R+65,'#34d399',12);
+}
+
+// 场景：速度选择器
+function drawSelectorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('速度选择器 · v=E/B 才能直线穿过',W/2,30,'#34d399',16);
+  const cx=W/2,cy=H/2;
+  // 极板（电场）
+  ctx.fillStyle='rgba(251,191,36,0.05)';
+  ctx.fillRect(cx-200,cy-80,400,160);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-200,cy-80);ctx.lineTo(cx+200,cy-80);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-200,cy+80);ctx.lineTo(cx+200,cy+80);ctx.stroke();
+  drawText('+ 极板',cx,cy-100,'#f87171',12);
+  drawText('- 极板',cx,cy+100,'#67e8f9',12);
+  drawText('E ↓',cx-220,cy,'#fbbf24',15);
+  // 磁场（入纸面 ⊗）
+  for(let i=0;i<8;i++)for(let j=0;j<3;j++){
+    const x=cx-180+i*50;
+    const y=cy-30+j*30;
+    ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-3,y-3);ctx.lineTo(x+3,y+3);ctx.moveTo(x-3,y+3);ctx.lineTo(x+3,y-3);ctx.stroke();
+  }
+  drawText('B 入纸面 ⊗',cx,cy+130,'#a78bfa',12);
+  // 三个不同速度的粒子
+  const speeds=[0.5,1,1.5];
+  const colors=['#06b6d4','#34d399','#fb923c'];
+  const labels=['v<E/B','v=E/B','v>E/B'];
+  speeds.forEach((s,i)=>{
+    const phase=((time*s)+i*0.3)%2;
+    const px=cx-200+phase*200;
+    let py=cy+(s-1)*(s>1?phase*phase*30:-phase*phase*30);
+    py=cy-(s-1)*phase*phase*30;
+    // 轨迹
+    ctx.strokeStyle=colors[i]+'66';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    for(let j=0;j<=phase*50;j++){
+      const x=cx-200+j*4;
+      const y=cy-(s-1)*(j/50)*(j/50)*phase*phase*30;
+      if(j===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // 粒子
+    ctx.fillStyle=colors[i];
+    ctx.shadowColor=colors[i];ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    // 标签
+    if(phase<0.3)drawText(labels[i],cx-230,cy+i*25-25,colors[i],11);
+  });
+  drawText('v=E/B 直线通过 · 其他速度偏转',W/2,H-50,'#fbbf24',13);
+  drawText('力平衡：qE=qvB → v=E/B',W/2,H-25,'#34d399',13);
+}
+
+// 场景：质谱仪
+function drawSpectrometerScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('质谱仪 · 分离同位素',W/2,30,'#a78bfa',16);
+  const cx=W/2-50,cy=H/2;
+  // 三个阶段：① 速度选择器 ② 分析磁场 ③ 探测器
+  // ①
+  ctx.fillStyle='rgba(251,191,36,0.06)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(60,cy-30,80,60,5);ctx.fill();ctx.stroke();
+  drawText('①',100,cy,'#fbbf24',14);
+  drawText('速度选择',100,cy+45,'#9ab0d0',10);
+  // ② 半圆分析磁场
+  ctx.fillStyle='rgba(167,139,250,0.06)';
+  ctx.beginPath();ctx.arc(cx+30,cy,120,Math.PI,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx+30,cy,120,Math.PI,2*Math.PI);ctx.stroke();
+  drawText('② 分析磁场（B 出纸面）',cx+30,cy-140,'#a78bfa',12);
+  // 磁场点
+  for(let r=30;r<120;r+=30)for(let a=180;a<=360;a+=20){
+    const x=cx+30+Math.cos(a*Math.PI/180)*r;
+    const y=cy+Math.sin(a*Math.PI/180)*r;
+    ctx.fillStyle='#a78bfa';
+    ctx.beginPath();ctx.arc(x,y,2,0,7);ctx.fill();
+  }
+  // ③ 探测器
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.fillRect(cx-90,cy-50,30,100);ctx.strokeRect(cx-90,cy-50,30,100);
+  drawText('③ 探测器',cx-75,cy+70,'#34d399',11);
+  // 不同质量粒子轨迹（不同半径）
+  const masses=[0.7,1,1.3];
+  const colors=['#06b6d4','#34d399','#fb923c'];
+  masses.forEach((m,i)=>{
+    const phase=((time*0.5)+i*0.1)%1;
+    const R=m*80;
+    // 半圆轨迹
+    ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.arc(cx+30,cy,R,Math.PI,Math.PI+phase*Math.PI);
+    ctx.stroke();
+    // 粒子位置
+    const pa=Math.PI+phase*Math.PI;
+    const px=cx+30+Math.cos(pa)*R;
+    const py=cy+Math.sin(pa)*R;
+    ctx.fillStyle=colors[i];
+    ctx.shadowColor=colors[i];ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    // 落点标签
+    if(phase>0.95){
+      drawText('m='+m,cx+30-R,cy-15-i*18,colors[i],11);
+    }
+  });
+  drawText('r = mv/(qB) · 质量越大半径越大',W/2,H-50,'#fbbf24',13);
+  drawText('可分离同位素（如 U-235 / U-238）',W/2,H-25,'#34d399',12);
+}
+
+// 场景：回旋加速器
+function drawCyclotronScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('回旋加速器 · 同步加速',W/2,30,'#34d399',16);
+  const cx=W/2,cy=H/2;
+  // 两个 D 型盒
+  ctx.fillStyle='rgba(167,139,250,0.06)';
+  ctx.beginPath();ctx.arc(cx,cy,150,Math.PI/2,3*Math.PI/2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,150,-Math.PI/2,Math.PI/2);ctx.fill();
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,150,Math.PI/2,3*Math.PI/2);ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,150,-Math.PI/2,Math.PI/2);ctx.stroke();
+  drawText('D₁',cx-80,cy,'#a78bfa',14);
+  drawText('D₂',cx+80,cy,'#a78bfa',14);
+  drawText('B 出纸面',cx,cy-180,'#a78bfa',12);
+  // 缝隙
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx,cy-150);ctx.lineTo(cx,cy+150);ctx.stroke();
+  drawText('缝隙（交变 E）',cx,cy+180,'#fbbf24',12);
+  // 粒子轨迹（螺旋向外）
+  const spiral=time*0.8;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let a=0;a<spiral*2;a+=0.05){
+    const r=20+a*5;
+    if(r>140)break;
+    const x=cx+Math.cos(a)*r;
+    const y=cy+Math.sin(a)*r;
+    if(a===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 粒子当前位置
+  const lastA=Math.min(spiral*2,28);
+  const lastR=20+lastA*5;
+  if(lastR<140){
+    const px=cx+Math.cos(lastA)*lastR;
+    const py=cy+Math.sin(lastA)*lastR;
+    ctx.fillStyle='#f87171';
+    ctx.shadowColor='#f87171';ctx.shadowBlur=15;
+    ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+  }
+  drawText('半径 r=mv/(qB) 随 v 增大',W/2,H-60,'#9ab0d0',12);
+  drawText('周期 T=2πm/(qB) 与 v 无关 → 固定频率同步加速',W/2,H-35,'#fbbf24',12);
+}
+
+// 场景：霍尔效应
+function drawHallScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('霍尔效应 · 横向电压产生',W/2,30,'#a78bfa',16);
+  const cx=W/2,cy=H/2;
+  // 导体板
+  ctx.fillStyle='rgba(103,232,249,0.1)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  roundRect(cx-150,cy-50,300,100,5);ctx.fill();ctx.stroke();
+  drawText('导体板（厚 d）',cx,cy-70,'#67e8f9',12);
+  // 电流方向（向右）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx-150,cy);ctx.lineTo(cx-50,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(cx-50,cy);ctx.lineTo(cx-60,cy-7);ctx.lineTo(cx-60,cy+7);ctx.fill();
+  drawText('I →',cx-130,cy+20,'#fbbf24',13);
+  // 磁场（出纸面）
+  for(let i=0;i<6;i++)for(let j=0;j<2;j++){
+    const x=cx-130+i*55;
+    const y=cy-30+j*60;
+    ctx.fillStyle='#a78bfa';
+    ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();
+  }
+  drawText('B ⊙ 出纸面',cx,cy+80,'#a78bfa',12);
+  // 电子（向上偏转）
+  for(let i=0;i<5;i++){
+    const phase=((time*0.8+i*0.2)%1);
+    const ex=cx-100+i*40;
+    const ey=cy+40-phase*60;
+    ctx.fillStyle='#67e8f9';
+    ctx.beginPath();ctx.arc(ex,ey,5,0,7);ctx.fill();
+    drawText('-',ex,ey,'#1a1a1a',9);
+  }
+  // 上下电势
+  drawText('上：负电荷积累 → 低电势',cx,cy-90,'#67e8f9',12);
+  drawText('下：正电荷 → 高电势',cx,cy+100,'#f87171',12);
+  drawText('霍尔电压 U = IB/(nqd)',W/2,H-50,'#fbbf24',14);
+  drawText('可判断载流子类型（金属负、半导体正负）',W/2,H-25,'#34d399',12);
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('复合场核心总结',W/2,40,'#34d399',18);
+  const items=[
+    {t:'电场力',d:'F=qE（沿 E）',c:'#fbbf24'},
+    {t:'磁场力',d:'F=qvB（⊥v⊥B）',c:'#a78bfa'},
+    {t:'速度选择',d:'v=E/B',c:'#34d399'},
+    {t:'圆周半径',d:'r=mv/(qB)',c:'#06b6d4'},
+    {t:'圆周期',d:'T=2πm/(qB)',c:'#fb923c'},
+    {t:'应用',d:'质谱仪/加速器/霍尔',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawElectricScene(t);
+  else if(stepIdx===1)drawMagneticScene(t);
+  else if(stepIdx===2)drawElectricScene(t);
+  else if(stepIdx===3||stepIdx===4||stepIdx===5)drawSelectorScene(t);
+  else if(stepIdx===6)drawSpectrometerScene(t);
+  else if(stepIdx===7)drawCyclotronScene(t);
+  else if(stepIdx===8)drawHallScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

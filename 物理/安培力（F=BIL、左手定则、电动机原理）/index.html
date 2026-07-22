@@ -1,126 +1,440 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>安培力</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>安培力 · F=BIL · 左手定则 · 电动机</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
-.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回物理目录</a>
-  <span class="title">安培力与左手定则</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">安培力</span><span class="subtitle">F=BIL · 左手定则 · 电动机原理</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>安培力公式</h4><div class="v">F = BILsinθ<br>磁场对通电导线的作用力</div></div>
+  <div class="card s2"><div class="num">2</div><h4>左手定则</h4><div class="v">磁感线穿掌心<br>四指电流，拇指力</div></div>
+  <div class="card s3"><div class="num">3</div><h4>电动机原理</h4><div class="v">线圈两边反向电流<br>受力方向相反，转动</div></div>
+  <div class="card s4"><div class="num">4</div><h4>方向判断</h4><div class="v">F⊥B 且 F⊥I<br>三方向互相垂直</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>安培力：通电导体在磁场中受到的力。F = BILsinθ（B为磁感应强度，I为电流，L为导体长度，θ为电流与磁场的夹角）。方向由左手定则判定：伸开左手使拇指与四指垂直，磁感线穿过手心，四指指向电流方向，拇指所指即为安培力方向。</p>
-    <div class="legend"><span><b style="color:#0984e3">→</b> 电流I</span><span><b style="color:#00b894">→</b> 磁场B</span><span><b style="color:#d63031">↑</b> 安培力F</span></div>
-    <div class="key-points"><h3>核心要点</h3><ul>
-      <li><b>F = BILsinθ</b>（θ为I与B的夹角）</li>
-      <li>θ=90°时F最大=BIL；θ=0°时F=0</li>
-      <li><b>左手定则</b>：手心迎B，四指指I，拇指指F</li>
-      <li>安培力⊥I且⊥B（垂直于I-B平面）</li>
-      <li>电动机原理：通电线圈在磁场中受力转动</li>
-      <li>应用：电流表、电动机、扬声器</li>
-    </ul></div>
-  </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">安培力</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <label>B(T) <input id="bField" type="range" min="0.1" max="2" step="0.1" value="1"></label>
-  <label>I(A) <input id="current" type="range" min="0.5" max="5" step="0.5" value="2"></label>
-  <span id="status" class="status"></span>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-let t=0,B=1,I=2,L=1,playing=false,lastT=0;
+const STEPS=[
+  {tag:'基础',name:'安培力定义',body:'<strong>安培力</strong>是<strong>通电导线在磁场中受到的力</strong>。当电流方向与磁场方向<strong>不平行</strong>时，导线会受到安培力。公式 <code>F = BILsinθ</code>，θ 为 I 与 B 的夹角。',points:{title:'核心要点',items:['<strong>方向</strong>：F 同时垂直于 I 和 B','<strong>大小</strong>：F = BILsinθ','<strong>θ=90°</strong>：F 最大 = BIL','<strong>θ=0°</strong>：F = 0（I∥B 不受力）']}},
+  {tag:'基础',name:'左手定则',body:'<strong>左手定则</strong>判断安培力方向：让<strong>磁感线穿入掌心</strong>（B 从手背穿到掌心），<strong>四指指向电流方向</strong>，则<strong>拇指</strong>指向安培力 F 方向。',points:{title:'左手三步法',items:['<strong>伸左手</strong>：拇指与四指垂直','<strong>B 穿掌心</strong>：从背到心','<strong>四指=I</strong>：电流方向','<strong>拇指=F</strong>：安培力方向']}},
+  {tag:'方向',name:'F⊥B⊥I 三垂直',body:'安培力 F <strong>同时垂直于</strong>磁场 B 和电流 I。三者构成<strong>右手正交系</strong>（实际用左手判断 F 方向）。',points:{title:'三个方向关系',items:['<strong>F ⊥ B</strong>：力垂直磁场','<strong>F ⊥ I</strong>：力垂直电流','<strong>B 与 I</strong>：可成任意角 θ','<strong>特殊情况</strong>：B∥I 时 F=0']}},
+  {tag:'方向',name:'方向判断演示',body:'不同方向组合下的安培力方向：当电流或磁场方向反转，力方向也反转；电流与磁场都反转则力方向不变。',points:{title:'反向规律',items:['<strong>I 反</strong>：F 反','<strong>B 反</strong>：F 反','<strong>I、B 都反</strong>：F 不变','<strong>旋转 I、B 平面</strong>：F 始终垂直']}},
+  {tag:'大小',name:'F=BILsinθ 计算',body:'<strong>公式</strong>：<code>F = BILsinθ</code>，单位：F 用 N、B 用 T（特斯拉）、I 用 A、L 用 m。θ 为 I 与 B 的夹角。',points:{title:'公式细节',items:['<strong>sinθ 因子</strong>：分解 B 的垂直分量','<strong>B⊥分量</strong>：Bsinθ 才产生力','<strong>B∥分量</strong>：Bcosθ 不产生力','<strong>1 T</strong>：1 m 长 1 A 电流受 1 N 力']}},
+  {tag:'大小',name:'角度对 F 的影响',body:'当导线在磁场中旋转（改变 θ），F 随 sinθ 变化：θ=0 时 F=0；θ=90° 时 F=BIL 最大；θ=180° 时 F=0。',points:{title:'θ-F 关系',items:['<strong>θ=0°（I∥B）</strong>：F = 0','<strong>θ=30°</strong>：F = 0.5 BIL','<strong>θ=90°（I⊥B）</strong>：F = BIL 最大','<strong>θ=180°</strong>：F = 0']}},
+  {tag:'应用',name:'电动机原理',body:'<strong>电动机</strong>：线圈在磁场中通入电流，<strong>两边电流方向相反</strong>，安培力方向相反形成<strong>力偶</strong>，使线圈<strong>持续转动</strong>。换向器保证电流方向同步切换。',points:{title:'电动机核心',items:['<strong>线圈两边的力</strong>：大小相等方向相反','<strong>力偶矩</strong>：使线圈转动','<strong>换向器</strong>：每半圈切换电流方向','<strong>电能 → 机械能</strong>：持续转动']}},
+  {tag:'应用',name:'扬声器原理',body:'<strong>扬声器</strong>：音圈（线圈）置于永磁体中，音频电流通过音圈时受安培力作用而<strong>振动</strong>，带动纸盆发声。',points:{title:'应用对比',items:['<strong>扬声器</strong>：电信号→机械振动→声波','<strong>磁电式电流表</strong>：电流→指针偏转','<strong>直流电动机</strong>：电流→转动','<strong>都是 F=BIL 的应用</strong>']}},
+  {tag:'计算',name:'典型计算题',body:'例：长 0.5 m 的直导线通 2 A 电流，置于 0.4 T 匀强磁场中（I⊥B）。求 F。解：F = BIL = 0.4×2×0.5 = 0.4 N。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：识别 B、I、L','<strong>步骤2</strong>：判断夹角 θ','<strong>步骤3</strong>：代入 F = BILsinθ','<strong>步骤4</strong>：用左手定则判断方向']}},
+  {tag:'总结',name:'核心速记',body:'安培力是<strong>磁场对电流</strong>的作用力，<strong>F=BILsinθ</strong>，方向用<strong>左手定则</strong>判断。是电动机、扬声器、电流表的物理基础。',points:{title:'三句话总结',items:['<strong>大小</strong>：F = BILsinθ','<strong>方向</strong>：左手定则','<strong>本质</strong>：磁场对运动电荷力的宏观表现','<strong>应用</strong>：电动机、扬声器、电流表']}},
+];
 
-function draw(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  const F=B*I*L;
-  
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
-  ctx.fillText('F = BILsinθ = BIL (θ=90°)',W/2,28);
-  ctx.fillStyle='#fdcb6e';ctx.font='14px sans-serif';
-  ctx.fillText(`F = ${B.toFixed(1)} × ${I.toFixed(1)} × ${L} = ${F.toFixed(1)} N`,W/2,50);
-  
-  // 磁场(×表示进入纸面)
-  ctx.fillStyle='#00b894';ctx.font='16px sans-serif';
-  for(let x=60;x<W-60;x+=40){
-    for(let y=80;y<H-60;y+=35){
-      ctx.fillText('×',x,y);
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：左手定则 =====
+function drawLeftHandScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('左手定则 · 判安培力方向',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 磁场 B（从上向下穿入掌心）
+  const bDir=Math.sin(time*0.5);
+  // 电流方向（左右变化）
+  const iDir=Math.cos(time*0.3)>0?1:-1;
+  // 力方向：根据 F = I × B 计算（这里简化为视觉化）
+  // 假设 B 向 +y, I 向 +x，则 F 向 -z（出屏幕）或 +z
+  // 我们绘制：磁场用箭头从上到下，电流用横向箭头，力用另一方向
+  // 画磁场 B（垂直下箭头，多条）
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  for(let i=-2;i<=2;i++){
+    const x=cx+i*80;
+    ctx.beginPath();ctx.moveTo(x,cy-100);ctx.lineTo(x,cy+60);ctx.stroke();
+    // 箭头
+    ctx.fillStyle='#a78bfa';
+    ctx.beginPath();ctx.moveTo(x,cy+60);ctx.lineTo(x-5,cy+50);ctx.lineTo(x+5,cy+50);ctx.fill();
+    drawText('B',x,cy-115,'#a78bfa',13);
+  }
+  // 画导线（横向）
+  const wireY=cy+30;
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(cx-150,wireY);ctx.lineTo(cx+150,wireY);ctx.stroke();
+  // 电流箭头
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  const arrowX=cx+iDir*(60+Math.sin(time*2)*30);
+  ctx.beginPath();ctx.moveTo(arrowX+iDir*15,wireY);ctx.lineTo(arrowX-iDir*8,wireY-7);ctx.lineTo(arrowX-iDir*8,wireY+7);ctx.fill();
+  drawText('I',arrowX+iDir*30,wireY,'#06b6d4',14);
+  // 安培力 F：根据左手定则，B 向下，I 向右(+)，则 F 向外（出屏幕，画成向上）
+  // F 方向：垂直于 I 和 B 平面，视觉化用大向上箭头
+  const fUp=iDir>0?1:-1;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.moveTo(cx,wireY-20);ctx.lineTo(cx,wireY-20-fUp*100);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(cx,wireY-20-fUp*100);ctx.lineTo(cx-10,wireY-20-fUp*85);ctx.lineTo(cx+10,wireY-20-fUp*85);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('F',cx,wireY-20-fUp*115,'#fbbf24',15);
+  // 说明
+  drawText('B 向下，I 向'+(iDir>0?'右':'左')+' → F 向'+(fUp>0?'上':'下'),W/2,H-60,'#9ab0d0',12);
+  drawText('左手：B 穿掌心，四指=I，拇指=F',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：F=BIL 计算 =====
+function drawFormulaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('安培力公式 · F = BILsinθ',W/2,30,'#fbbf24',16);
+  // 公式
+  ctx.font='bold 22px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('F = B · I · L · sin θ',W/2,75);
+  // 输入参数（动态变化）
+  const B=0.5+0.3*Math.sin(time);
+  const I=2+1*Math.cos(time*0.7);
+  const L=0.4;
+  const theta=(Math.sin(time*0.4)*90+90)*Math.PI/180; // 0-180°
+  const F=B*I*L*Math.sin(theta);
+  // 参数显示
+  drawText('B = '+B.toFixed(2)+' T',120,120,'#a78bfa',14);
+  drawText('I = '+I.toFixed(2)+' A',W/2,120,'#06b6d4',14);
+  drawText('L = '+L.toFixed(2)+' m',W-120,120,'#67e8f9',14);
+  drawText('θ = '+(theta*180/Math.PI).toFixed(0)+'°',W/2,150,'#34d399',14);
+  // 导线绘制（在磁场中）
+  const cx=W/2,cy=H/2+30;
+  // 磁场
+  ctx.fillStyle='rgba(167,139,250,0.3)';
+  for(let i=0;i<6;i++)for(let j=0;j<3;j++){
+    ctx.beginPath();ctx.arc(80+i*((W-160)/6),cy-60+j*40,2,0,7);ctx.fill();
+  }
+  drawText('B 均匀磁场区域',80,cy-90,'#a78bfa',12,'left');
+  // 导线（倾斜角度 θ）
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(theta-Math.PI/2);
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=5;
+  ctx.beginPath();ctx.moveTo(-80,0);ctx.lineTo(80,0);ctx.stroke();
+  // 电流箭头
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.moveTo(80,0);ctx.lineTo(70,-7);ctx.lineTo(70,7);ctx.fill();
+  ctx.restore();
+  drawText('导线 L（电流方向）',cx,cy+50,'#06b6d4',12);
+  // 力箭头（垂直纸面向上）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx,cy-100*F);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(cx,cy-100*F);ctx.lineTo(cx-8,cy-100*F+15);ctx.lineTo(cx+8,cy-100*F+15);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('F',cx+15,cy-50*F,'#fbbf24',16);
+  // 结果
+  drawText('计算结果：F = '+B.toFixed(2)+' × '+I.toFixed(2)+' × '+L.toFixed(2)+' × sin('+(theta*180/Math.PI).toFixed(0)+'°)',W/2,H-80,'#9ab0d0',12);
+  ctx.font='bold 18px sans-serif';ctx.fillStyle='#34d399';
+  drawText('= '+F.toFixed(3)+' N',W/2,H-50,'#34d399',18);
+}
+
+// ===== 场景：电动机 =====
+function drawMotorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电动机原理 · 线圈在磁场中转动',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 磁场（左右两极）
+  ctx.fillStyle='#a78bfa22';
+  ctx.fillRect(cx-180,cy-100,80,200);
+  ctx.fillRect(cx+100,cy-100,80,200);
+  drawText('N',cx-140,cy-115,'#f87171',16);
+  drawText('S',cx+140,cy-115,'#67e8f9',16);
+  drawText('B →',cx,cy-90,'#a78bfa',12);
+  // 磁场箭头（N→S）
+  ctx.strokeStyle='#a78bfa66';ctx.lineWidth=1.5;
+  for(let i=-50;i<=50;i+=20){
+    ctx.beginPath();ctx.moveTo(cx-100,cy+i);ctx.lineTo(cx+100,cy+i);ctx.stroke();
+  }
+  // 线圈（旋转）
+  const angle=time*2;
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(angle);
+  // 线圈（矩形）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.strokeRect(-50,-30,100,60);
+  // 电流方向（红色 X 圆点表示进出）
+  // 上边电流出（⊙），下边电流入（⊗）
+  ctx.fillStyle='#fbbf24';
+  // 上边：电流向外
+  ctx.beginPath();ctx.arc(0,-30,8,0,7);ctx.fill();
+  ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.arc(0,-30,3,0,7);ctx.fill();
+  // 下边：电流向里
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(0,30,8,0,7);ctx.fill();
+  ctx.strokeStyle='#1a1a1a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(-5,25);ctx.lineTo(5,35);ctx.moveTo(-5,35);ctx.lineTo(5,25);ctx.stroke();
+  ctx.restore();
+  // 力箭头（上边向上，下边向下，形成力偶）
+  const upForce=60*Math.cos(angle);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+  // 力方向始终垂直于 B 平面（这里简化）
+  // 上边力向上
+  const topX=cx+Math.sin(angle)*(-30); // 上边中点 x
+  const topY=cy-Math.cos(angle)*30;
+  // 简化：画力的方向标签
+  drawText('F↑',cx-70,cy-50,'#f87171',13);
+  drawText('F↓',cx+70,cy+50,'#f87171',13);
+  ctx.shadowBlur=0;
+  drawText('电流方向相反 → 力方向相反 → 形成力偶 → 持续转动',W/2,H-50,'#34d399',12);
+  drawText('换向器每半圈切换电流方向',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：扬声器 =====
+function drawSpeakerScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('扬声器 · 音圈在磁场中振动',W/2,30,'#fbbf24',16);
+  const cx=W/2-100,cy=H/2;
+  // 永磁体（环形）
+  ctx.fillStyle='#a78bfa33';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,80,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,40,0,7);ctx.fill();ctx.stroke();
+  drawText('永磁体',cx,cy-100,'#a78bfa',12);
+  // 磁场方向
+  drawText('B 向心',cx,cy,'#fff',11);
+  // 音圈（在环形磁场中）
+  const vib=Math.sin(time*4)*15;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(cx+vib,cy,55,0,7);ctx.stroke();
+  ctx.beginPath();ctx.arc(cx+vib,cy,65,0,7);ctx.stroke();
+  drawText('音圈',cx+vib,cy+85,'#06b6d4',12);
+  // 纸盆（与音圈相连）
+  ctx.fillStyle='rgba(251,191,36,0.2)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx+vib+55,cy);
+  ctx.lineTo(cx+vib+200,cy-80+vib);
+  ctx.lineTo(cx+vib+200,cy+80+vib);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  drawText('纸盆',cx+vib+200,cy,'#fbbf24',12);
+  // 声波（根据振动）
+  if(Math.abs(vib)>5){
+    for(let i=0;i<3;i++){
+      const r=20+i*30+Math.abs(vib)*2;
+      ctx.strokeStyle='rgba(251,191,36,'+(0.5-i*0.15)+')';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(cx+vib+220,cy,r,-Math.PI/3,Math.PI/3);ctx.stroke();
     }
   }
-  ctx.fillStyle='#00b894';ctx.font='12px sans-serif';ctx.textAlign='left';
-  ctx.fillText('B (⊗ 进入纸面)',20,H-15);
-  
-  // 导线截面
-  const wx=W/2,wy=H/2;
-  ctx.beginPath();ctx.arc(wx,wy,18,0,Math.PI*2);
-  ctx.fillStyle='rgba(9,132,227,0.4)';ctx.fill();
-  ctx.strokeStyle='#0984e3';ctx.lineWidth=2;ctx.stroke();
-  // 电流方向(出纸面·)
-  ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
-  ctx.fillText('·',wx,wy+7);
-  ctx.fillStyle='#0984e3';ctx.font='11px sans-serif';
-  ctx.fillText('I (出纸面)',wx,wy+35);
-  
-  // 安培力箭头(向上)
-  const fLen=F*30;
-  ctx.strokeStyle='#d63031';ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(wx,wy-20);ctx.lineTo(wx,wy-20-fLen);ctx.stroke();
-  ctx.fillStyle='#d63031';ctx.beginPath();
-  ctx.moveTo(wx,wy-20-fLen-10);ctx.lineTo(wx-8,wy-20-fLen);ctx.lineTo(wx+8,wy-20-fLen);ctx.fill();
-  ctx.fillStyle='#d63031';ctx.font='bold 14px sans-serif';
-  ctx.fillText(`F=${F.toFixed(1)}N ↑`,wx+50,wy-20-fLen/2);
-  
-  // 左手定则示意(右下角)
-  const hx=W-100,hy=H-80;
-  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(hx-50,hy-40,100,80);
-  ctx.strokeStyle='#1e3050';ctx.strokeRect(hx-50,hy-40,100,80);
-  ctx.fillStyle='#9fb0c8';ctx.font='10px sans-serif';ctx.textAlign='center';
-  ctx.fillText('左手定则',hx,hy-28);
-  ctx.fillText('拇指→F',hx,hy-10);
-  ctx.fillText('四指→I',hx,hy+8);
-  ctx.fillText('手心→B',hx,hy+26);
-  
-  statusEl.textContent=`B=${B.toFixed(1)}T I=${I.toFixed(1)}A F=${F.toFixed(1)}N`;
+  // 电流方向（影响振动）
+  drawText('音频电流 I = '+vib.toFixed(1),cx,cy+130,'#06b6d4',12);
+  drawText('I 变化 → F 变化 → 振动 → 声波',W/2,H-40,'#34d399',13);
 }
 
-let animId;
-function loop(ts){
-  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();
-  if(playing)animId=requestAnimationFrame(loop);
+// ===== 场景：θ-F 关系图 =====
+function drawAngleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('角度对安培力的影响',W/2,30,'#fbbf24',16);
+  // sinθ 曲线
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,H/2);ctx.lineTo(W-80,H/2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(80,80);ctx.lineTo(80,H-80);ctx.stroke();
+  drawText('sinθ',60,H/2-100,'#9ab0d0',12);
+  drawText('θ (°)',W-80,H/2+25,'#9ab0d0',12);
+  // 0-180°
+  for(let a=0;a<=180;a+=30){
+    const x=80+a*(W-160)/180;
+    drawText(a+'°',x,H/2+18,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,H/2-3);ctx.lineTo(x,H/2+3);ctx.stroke();
+  }
+  // y 轴刻度
+  [0,0.5,1].forEach(v=>{
+    const y=H/2-v*200;
+    drawText(v,60,y,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(77,y);ctx.lineTo(83,y);ctx.stroke();
+  });
+  // sin 曲线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let a=0;a<=180;a++){
+    const x=80+a*(W-160)/180;
+    const y=H/2-Math.sin(a*Math.PI/180)*200;
+    if(a===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 当前 θ 点
+  const curT=(time*30)%180;
+  const cx=80+curT*(W-160)/180;
+  const cy=H/2-Math.sin(curT*Math.PI/180)*200;
+  ctx.fillStyle='#fbbf24';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('θ='+curT.toFixed(0)+'°, sinθ='+Math.sin(curT*Math.PI/180).toFixed(2),cx,cy-25,'#fbbf24',13);
+  // 关键点标注
+  drawText('θ=0° : F=0（I∥B）',W/2,H-80,'#f87171',12);
+  drawText('θ=90° : F=BIL 最大（I⊥B）',W/2,H-55,'#34d399',12);
+  drawText('θ=180° : F=0',W/2,H-30,'#f87171',12);
 }
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
-  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
-};
-document.getElementById('resetBtn').onclick=function(){B=1;I=2;document.getElementById('bField').value=1;document.getElementById('current').value=2;draw();};
-document.getElementById('bField').oninput=function(){B=+this.value;draw();};
-document.getElementById('current').oninput=function(){I=+this.value;draw();};
-draw();
-</script></body></html>
+
+// ===== 场景：典型计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 三步法',W/2,30,'#fbbf24',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,140,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('长 0.5 m 直导线通 2 A 电流，置于',120,115,'#fff',13,'left');
+  drawText('0.4 T 匀强磁场中，I 与 B 夹角 30°。',120,140,'#fff',13,'left');
+  drawText('求安培力 F 的大小和方向。',120,165,'#fff',13,'left');
+  // 解答
+  const steps=[
+    {t:'① 已知',d:'B=0.4T, I=2A, L=0.5m, θ=30°',c:'#06b6d4'},
+    {t:'② 公式',d:'F = BILsinθ',c:'#a78bfa'},
+    {t:'③ 代入',d:'F = 0.4 × 2 × 0.5 × sin30°',c:'#67e8f9'},
+    {t:'④ 计算',d:'F = 0.4 × 0.5 = 0.2 N',c:'#34d399'},
+    {t:'⑤ 方向',d:'左手定则判断（垂直 I 和 B 平面）',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=240+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,36,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,260,y+18,'#fff',13,'left');
+  });
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('安培力核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'大小公式',d:'F = BILsinθ',c:'#fbbf24'},
+    {t:'方向判断',d:'左手定则',c:'#06b6d4'},
+    {t:'物理本质',d:'磁场对运动电荷力的宏观表现',c:'#a78bfa'},
+    {t:'垂直条件',d:'F ⊥ B 且 F ⊥ I',c:'#34d399'},
+    {t:'电动机原理',d:'线圈两边反向电流形成力偶',c:'#fb923c'},
+    {t:'扬声器原理',d:'音频电流→音圈振动→发声',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0||stepIdx===1)drawLeftHandScene(t);
+  else if(stepIdx===2||stepIdx===3)drawLeftHandScene(t);
+  else if(stepIdx===4)drawFormulaScene(t);
+  else if(stepIdx===5)drawAngleScene(t);
+  else if(stepIdx===6)drawMotorScene(t);
+  else if(stepIdx===7)drawSpeakerScene(t);
+  else if(stepIdx===8)drawCalcScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

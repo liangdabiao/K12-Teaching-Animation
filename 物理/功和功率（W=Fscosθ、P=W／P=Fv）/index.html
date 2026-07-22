@@ -1,145 +1,495 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>功和功率</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>功和功率 · W=Fscosθ, P=Fv</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}
+.card.s3::before{background:var(--good)}
+.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#0a1628;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a1628;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#0a1628;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
-.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
 <header class="topbar">
   <a class="back" href="../index.html">← 返回物理目录</a>
   <span class="title">功和功率</span>
+  <span class="subtitle">W=Fscosθ · P=W/t=Fv · 正功负功 · 瞬时功率</span>
 </header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>功的定义</h4><div class="v">W=Fscosθ<br>力对位移的累积</div></div>
+  <div class="card s2"><div class="num">2</div><h4>正负功</h4><div class="v">θ&lt;90° 正功<br>θ&gt;90° 负功</div></div>
+  <div class="card s3"><div class="num">3</div><h4>功率</h4><div class="v">P=W/t=Fv<br>做功快慢</div></div>
+  <div class="card s4"><div class="num">4</div><h4>汽车启动</h4><div class="v">恒功率启动<br>恒牵引力启动</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>功：力对物体做的功 W = F·s·cosθ，其中F为力的大小，s为位移，θ为力与位移的夹角。当θ<90°做正功，θ=90°不做功，θ>90°做负功。功率：P = W/t = F·v，表示做功的快慢。单位：瓦特(W)。</p>
-    <div class="legend"><span><b style="color:#0984e3">→</b> 拉力F</span><span><b style="color:#d63031">→</b> 位移s</span><span><b style="color:#fdcb6e">→</b> Fcosθ(有效分力)</span></div>
-    <div class="key-points"><h3>核心公式</h3><ul>
-      <li><b>W = F·s·cosθ</b>（θ为力与位移夹角）</li>
-      <li><b>P = W/t = F·v</b>（功率=力×速度）</li>
-      <li>正功(θ<90°)：力促进运动</li>
-      <li>负功(θ>90°)：力阻碍运动（如摩擦力）</li>
-      <li>不做功(θ=90°)：力⊥位移（如匀速圆周运动的向心力）</li>
-      <li>合力的功 = 各分力的功之和（功的叠加原理）</li>
-    </ul></div>
+  <aside class="panel" id="panel">
+    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">功和功率</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
   </aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
-  <label>角度θ <input id="angle" type="range" min="0" max="180" step="5" value="30"></label>
-  <span id="status" class="status"></span>
+  <button id="stepBackBtn">◀ 上一步</button>
+  <button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择左侧步骤开始</span>
 </div>
 <script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-let t=0,angle=30,playing=false,lastT=0,boxX=0;
+const STEPS=[
+  {tag:'基础',name:'功的定义',body:'<strong>功</strong>：力对物体做功的大小 <code>W = F·s·cosθ</code>，其中 F 为恒力大小，s 为位移大小，θ 为力与位移方向的<strong>夹角</strong>。功是<strong>标量</strong>。',points:{title:'公式要素',items:['<strong>F</strong>：恒力大小（N）','<strong>s</strong>：位移大小（m）','<strong>θ</strong>：力与位移夹角','<strong>W</strong>：功（J，焦耳）']}},
+  {tag:'夹角',name:'力与位移夹角 cosθ',body:'<strong>cosθ</strong> 是力在位移方向上的<strong>投影系数</strong>。θ=0° 时 cosθ=1（最大），θ=90° 时 cosθ=0（不做功），θ=180° 时 cosθ=-1。',points:{title:'典型角度',items:['<strong>θ=0°</strong>：cos=1，力与位移同向','<strong>θ=90°</strong>：cos=0，垂直不做功','<strong>θ=180°</strong>：cos=-1，反向','<strong>θ=60°</strong>：cos=0.5，做一半功']}},
+  {tag:'正负',name:'正功与负功',body:'<strong>正功</strong>（θ&lt;90°）：力促进物体运动，动能增加。<strong>负功</strong>（θ&gt;90°）：力阻碍物体运动，动能减少。<strong>不做功</strong>（θ=90°）：力垂直于位移。',points:{title:'正负判断',items:['<strong>0 ≤ θ &lt; 90°</strong>：正功（动力）','<strong>θ = 90°</strong>：不做功','<strong>90° &lt; θ ≤ 180°</strong>：负功（阻力）','<strong>摩擦力</strong>通常做负功']}},
+  {tag:'特殊',name:'垂直不做功情形',body:'<strong>典型情况</strong>：① 提着物体水平走（提力向上，位移水平，垂直不做功）；② 圆周运动中向心力（始终垂直于速度，不做功）；③ 摆球受绳拉力。',points:{title:'零功实例',items:['<strong>提物水平移动</strong>：支持力或拉力不做功','<strong>向心力</strong>：匀速圆周运动中不做功','<strong>洛伦兹力</strong>：始终垂直速度不做功','<strong>法向力</strong>：曲面运动中法向不做功']}},
+  {tag:'功率',name:'功率 P=W/t',body:'<strong>功率</strong>：单位时间内完成的功，<code>P = W/t</code>。反映做功的<strong>快慢</strong>。单位瓦特（W），1 W = 1 J/s。',points:{title:'功率要点',items:['<strong>公式</strong>：P = W/t（平均功率）','<strong>单位</strong>：W（瓦特），1 W = 1 J/s','<strong>1 kW</strong> = 1000 W','<strong>1 马力</strong> ≈ 735 W']}},
+  {tag:'功率',name:'瞬时功率 P=Fv',body:'<strong>瞬时功率</strong>：<code>P = F·v·cosθ</code>，其中 v 为瞬时速度，θ 为力与速度夹角。当力与速度同向时 P=Fv。',points:{title:'瞬时与平均',items:['<strong>P=Fv</strong>：力与速度同向时','<strong>v 变化</strong>：P 为瞬时功率','<strong>P=W/t</strong>：平均功率','<strong>推导</strong>：W=Fs，P=W/t=Fs/t=Fv']}},
+  {tag:'汽车',name:'恒定功率启动',body:'汽车以<strong>恒定功率 P</strong> 启动：随速度 v 增大，牵引力 <code>F=P/v</code> 减小，加速度 <code>a=(F-f)/m</code> 减小，当 F=f 时达到<strong>最大速度</strong> v_max=P/f。',points:{title:'恒 P 启动分析',items:['<strong>牵引力</strong>：F = P/v，v 增 F 减','<strong>加速度</strong>：a = (F-f)/m，逐渐减小','<strong>最大速度</strong>：v_max = P/f','<strong>运动性质</strong>：加速度减小的加速运动']}},
+  {tag:'汽车',name:'恒定牵引力启动',body:'汽车以<strong>恒定牵引力 F</strong> 启动：加速度 <code>a=(F-f)/m</code> 恒定，速度均匀增大，功率 <code>P=Fv</code> 线性增大。达到额定功率后转为恒功率运动。',points:{title:'恒 F 启动分析',items:['<strong>加速度</strong>：a = (F-f)/m 恒定','<strong>速度</strong>：v = at 均匀增大','<strong>功率</strong>：P = Fv 线性增大','<strong>达到额定功率</strong>：切换为恒 P 模式']}},
+  {tag:'计算',name:'典型计算',body:'例：用 10 N 力与水平成 60° 角拉物体前进 5 m。<code>W = Fscosθ = 10×5×cos60° = 25 J</code>。若用时 10 s，平均功率 P=2.5 W。',points:{title:'解题要点',items:['<strong>步骤 1</strong>：识别 F、s、θ','<strong>步骤 2</strong>：W = Fscosθ','<strong>步骤 3</strong>：P = W/t','<strong>注意</strong>：cosθ 必须代入']}},
+  {tag:'总结',name:'核心总结',body:'功与功率是能量转化的<strong>度量</strong>。<strong>W=Fscosθ</strong> 描述力对空间的累积效应，<strong>P=Fv</strong> 描述做功的快慢。两者是<strong>力学与能量</strong>的桥梁。',points:{title:'速记口诀',items:['<strong>功</strong>：W = Fscosθ（标量）','<strong>功率</strong>：P = W/t = Fv','<strong>单位</strong>：J、W、kW','<strong>正负</strong>：θ 决定动力或阻力']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.8;
+
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
+function arrow(x1,y1,x2,y2,color,w){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=w||3;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const ang=Math.atan2(y2-y1,x2-x1);const s=10;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-s*Math.cos(ang-0.4),y2-s*Math.sin(ang-0.4));ctx.lineTo(x2-s*Math.cos(ang+0.4),y2-s*Math.sin(ang+0.4));ctx.fill();}
+
+// ===== 场景：功的定义 =====
+function drawWorkDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('功的定义 · W = F · s · cosθ',W/2,30,'#fbbf24',16);
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,H-80);ctx.lineTo(W-40,H-80);ctx.stroke();
+  const startX=120;
+  const s=(time*40)%400;
+  const x=startX+s;
+  ctx.fillStyle='#fbbf2433';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(x-30,H-130,60,50,6);ctx.fill();ctx.stroke();
+  drawText('m',x,H-105,'#fde68a',14);
+  const theta=Math.PI/4;
+  const F=60;
+  const fx=x+F*Math.cos(theta);
+  const fy=H-130-F*Math.sin(theta);
+  arrow(x,H-130,fx,fy,'#06b6d4',4);
+  drawText('F',fx+15,fy-10,'#06b6d4',14);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x,H-130,30,0,-theta,true);ctx.stroke();
+  drawText('θ',x+35,H-135,'#34d399',12);
+  arrow(startX,H-50,x,H-50,'#a78bfa',3);
+  drawText('s',x/2+60,H-60,'#a78bfa',13);
+  arrow(x,H-130,x+F*Math.cos(theta),H-130,'#67e8f9',2);
+  drawText('Fcosθ',x+30,H-140,'#67e8f9',11);
+  ctx.fillStyle='#fff';ctx.font='bold 20px serif';ctx.textAlign='center';
+  ctx.fillText('W = F · s · cosθ',W/2,H/2-20);
+  drawText('θ=45°, cosθ=0.707',W/2,H/2+10,'#9ab0d0',12);
+  drawText('W = '+F+' × '+(s/40).toFixed(1)+' × 0.707 = '+(F*0.707*s/40).toFixed(1)+' J',W/2,H/2+35,'#34d399',13);
+  drawText('只有沿位移方向的分力 Fcosθ 才做功',W/2,H-20,'#fbbf24',12);
+}
+
+// ===== 场景：角度对比 =====
+function drawAngleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('不同角度的做功对比',W/2,30,'#fbbf24',16);
+  const angles=[
+    {deg:0,rad:0,label:'θ=0°',color:'#34d399',desc:'正功（最大）'},
+    {deg:60,rad:Math.PI/3,label:'θ=60°',color:'#67e8f9',desc:'正功（一半）'},
+    {deg:90,rad:Math.PI/2,label:'θ=90°',color:'#9ab0d0',desc:'不做功'},
+    {deg:180,rad:Math.PI,label:'θ=180°',color:'#f87171',desc:'负功'},
+  ];
+  const caseW=(W-160)/2;
+  const caseH=(H-150)/2;
+  angles.forEach((a,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const cx=80+col*caseW;
+    const cy=80+row*caseH;
+    ctx.strokeStyle=a.color+'66';ctx.lineWidth=1;
+    roundRect(cx,cy,caseW-10,caseH-10,8);ctx.stroke();
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(cx+20,cy+caseH-30);ctx.lineTo(cx+caseW-30,cy+caseH-30);ctx.stroke();
+    const ox=cx+60,oy=cy+caseH-50;
+    ctx.fillStyle=a.color+'33';ctx.strokeStyle=a.color;ctx.lineWidth=2;
+    roundRect(ox-15,oy-20,30,20,3);ctx.fill();ctx.stroke();
+    const Flen=50;
+    const fdx=Math.cos(a.rad)*Flen;
+    const fdy=-Math.sin(a.rad)*Flen;
+    arrow(ox,oy,ox+fdx,oy+fdy,a.color,3);
+    drawText('F',ox+fdx+10,oy+fdy-5,a.color,12);
+    const sLen=60;
+    arrow(ox,oy+25,ox+sLen,oy+25,'#a78bfa',3);
+    drawText('s',ox+sLen/2,oy+40,'#a78bfa',11);
+    ctx.strokeStyle=a.color;ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(ox,oy,20,0,-a.rad,true);ctx.stroke();
+    drawText(a.label,cx+caseW/2,cy+20,a.color,13);
+    const cosv=Math.cos(a.rad);
+    drawText('cosθ='+cosv.toFixed(3),cx+caseW/2,cy+40,'#fff',11);
+    drawText(a.desc,cx+caseW/2,cy+60,a.color,11);
+    drawText('W = Fscosθ = '+(50*cosv).toFixed(1)+' J',cx+caseW/2,cy+caseH-50,'#fbbf24',11);
+  });
+}
+
+// ===== 场景：垂直不做功 =====
+function drawPerpScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('力垂直于位移 · 不做功',W/2,30,'#fbbf24',16);
+  const lx=W/4;
+  drawText('提物水平移动',lx,70,'#06b6d4',14);
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(lx-100,H/2+50);ctx.lineTo(lx+100,H/2+50);ctx.stroke();
+  const px=lx+Math.sin(time)*(60);
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=6;
+  ctx.beginPath();ctx.arc(px,H/2+20,8,0,7);ctx.fill();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=4;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(px,H/2+28);ctx.lineTo(px,H/2+45);ctx.stroke();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#a78bfa';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(px-10,H/2+45,20,15,3);ctx.fill();
+  arrow(px,H/2+10,px,H/2-30,'#f87171',3);
+  drawText('F (提力)',px+15,H/2-15,'#f87171',11);
+  arrow(lx-100,H/2+80,lx+100,H/2+80,'#34d399',3);
+  drawText('s (位移)',lx,H/2+95,'#34d399',11);
+  drawText('θ=90°, W=0',lx,H/2+150,'#f87171',14);
+  const rx=3*W/4;
+  drawText('匀速圆周运动',rx,70,'#a78bfa',14);
+  const ccx=rx,ccy=H/2+30,r=70;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.arc(ccx,ccy,r,0,7);ctx.stroke();
+  ctx.setLineDash([]);
+  const ang=time*1.5;
+  const obx=ccx+r*Math.cos(ang),oby=ccy+r*Math.sin(ang);
+  ctx.fillStyle='#a78bfa';ctx.shadowColor='#a78bfa';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(obx,oby,10,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  arrow(obx,oby,ccx,ccy,'#f87171',3);
+  drawText('F (向心力)',ccx,ccy-15,'#f87171',11);
+  const vtx=obx-r*0.6*Math.sin(ang);
+  const vty=oby+r*0.6*Math.cos(ang);
+  arrow(obx,oby,vtx,vty,'#34d399',3);
+  drawText('v',vtx+10,vty,'#34d399',12);
+  drawText('F ⊥ v，W=0',rx,H/2+150,'#f87171',14);
+  drawText('向心力不做功 → 动能不变（速率恒定）',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景：功率 P=W/t =====
+function drawPowerScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('功率 · P = W/t',W/2,30,'#06b6d4',16);
+  ctx.fillStyle='#fff';ctx.font='bold 22px serif';ctx.textAlign='center';
+  ctx.fillText('P = W / t',W/2,80);
+  ctx.font='13px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('W：功（J），t：时间（s），P：功率（W）',W/2,105);
+  const tests=[
+    {label:'慢速 10s',y:H/2-40,c:'#67e8f9',T:10},
+    {label:'快速 5s',y:H/2+50,c:'#f87171',T:5},
+  ];
+  tests.forEach((tt,i)=>{
+    const phase=(time/tt.T)%1;
+    const x=80+phase*(W-160);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(80,tt.y+20);ctx.lineTo(W-80,tt.y+20);ctx.stroke();
+    ctx.fillStyle=tt.c+'33';ctx.strokeStyle=tt.c;ctx.lineWidth=2;
+    roundRect(x-20,tt.y-5,40,25,4);ctx.fill();ctx.stroke();
+    drawText(tt.label+' · 相同功',x,tt.y+8,tt.c,11);
+    drawText('t = '+(phase*tt.T).toFixed(1)+' s / '+tt.T+' s',x,tt.y+35,'#9ab0d0',10);
+  });
+  drawText('做相同功，时间短的功率大',W/2,H-80,'#fbbf24',13);
+  drawText('P_fast / P_slow = 10/5 = 2',W/2,H-55,'#34d399',13);
+  drawText('功率单位：瓦特 W，1 W = 1 J/s',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：瞬时功率 P=Fv =====
+function drawFvScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('瞬时功率 · P = F·v',W/2,30,'#a78bfa',16);
+  ctx.fillStyle='#fff';ctx.font='bold 22px serif';ctx.textAlign='center';
+  ctx.fillText('P = F · v',W/2,80);
+  ctx.font='13px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('F：牵引力，v：瞬时速度',W/2,105);
+  const cx=120,cy=H/2+40;
+  const a=0.5;
+  const v=Math.min(20,time*a*5);
+  const x=cx+v*time*8;
+  const xx=Math.min(x,W-100);
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(80,cy);ctx.lineTo(W-80,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  roundRect(xx-30,cy-40,60,30,5);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#9ab0d0';
+  ctx.beginPath();ctx.arc(xx-15,cy-5,5,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(xx+15,cy-5,5,0,7);ctx.fill();
+  arrow(xx+30,cy-25,xx+80,cy-25,'#06b6d4',3);
+  drawText('F=10N',xx+85,cy-25,'#06b6d4',11,'left');
+  arrow(xx,cy-50,xx+v*4,cy-50,'#34d399',3);
+  drawText('v='+v.toFixed(1)+' m/s',xx+v*2,cy-65,'#34d399',11);
+  const F=10;
+  const P=F*v;
+  ctx.fillStyle='#fff';ctx.font='bold 18px monospace';ctx.textAlign='center';
+  ctx.fillText('P = F·v = '+F+' × '+v.toFixed(2)+' = '+P.toFixed(1)+' W',W/2,H-100);
+  drawText('速度越大，瞬时功率越大',W/2,H-60,'#fbbf24',13);
+  drawText('汽车爬坡时：v 小 → 需要 F 大才能维持功率',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：汽车恒功率启动 =====
+function drawCarPowerScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('汽车恒定功率启动 · 加速度减小的加速运动',W/2,30,'#fbbf24',16);
+  const P=6000;
+  const f=300;
+  const m=500;
+  const vmax=P/f;
+  const tt=time*0.8;
+  if(!drawCarPowerScene.vv)drawCarPowerScene.vv=0;
+  if(!drawCarPowerScene.tprev)drawCarPowerScene.tprev=0;
+  const dt=tt-drawCarPowerScene.tprev;
+  if(dt>0&&drawCarPowerScene.vv<vmax){
+    const F=P/Math.max(0.5,drawCarPowerScene.vv);
+    const a=(F-f)/m;
+    drawCarPowerScene.vv+=a*dt;
+    if(drawCarPowerScene.vv>vmax)drawCarPowerScene.vv=vmax;
+  }
+  drawCarPowerScene.tprev=tt;
+  if(time<0.1){drawCarPowerScene.vv=0;drawCarPowerScene.tprev=0;}
+  const v=drawCarPowerScene.vv;
+  const F=P/Math.max(0.5,v);
+  const a=(F-f)/m;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,H-80);ctx.lineTo(W-40,H-80);ctx.stroke();
+  const cx=80+(time*v*8)%(W-160);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  roundRect(cx-30,H-130,60,40,6);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#06101f';
+  roundRect(cx-15,H-120,30,10,3);ctx.fill();
+  ctx.fillStyle='#1e345a';
+  ctx.beginPath();ctx.arc(cx-15,H-90,7,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+15,H-90,7,0,7);ctx.fill();
+  drawText('P = '+P+' W（恒定）',W/2,80,'#fbbf24',13);
+  drawText('v = '+v.toFixed(2)+' m/s, v_max = '+vmax.toFixed(1)+' m/s',W/2,105,'#34d399',13);
+  drawText('F = P/v = '+F.toFixed(1)+' N',W/2,130,'#06b6d4',13);
+  drawText('a = (F-f)/m = '+a.toFixed(3)+' m/s²',W/2,155,'#a78bfa',13);
+  drawText('v 越大 → F 越小 → a 越小，最终 a=0 时达到最大速度',W/2,H-40,'#9ab0d0',12);
+  drawText('f = '+f+' N, m = '+m+' kg',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景：汽车恒牵引力启动 =====
+function drawCarForceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('汽车恒定牵引力启动 · 匀加速运动',W/2,30,'#a78bfa',16);
+  const F=400;
+  const f=200;
+  const m=500;
+  const a=(F-f)/m;
+  const tt=time*0.6;
+  const v=a*tt;
+  const P=F*v;
+  const Pmax=8000;
+  const tMax=Pmax/F/a;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,H-80);ctx.lineTo(W-40,H-80);ctx.stroke();
+  const cx=80+(0.5*a*tt*tt)*4;
+  const cx2=Math.min(cx,W-100);
+  ctx.fillStyle='#a78bfa';ctx.shadowColor='#a78bfa';ctx.shadowBlur=8;
+  roundRect(cx2-30,H-130,60,40,6);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#06101f';
+  roundRect(cx2-15,H-120,30,10,3);ctx.fill();
+  ctx.fillStyle='#1e345a';
+  ctx.beginPath();ctx.arc(cx2-15,H-90,7,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(cx2+15,H-90,7,0,7);ctx.fill();
+  arrow(cx2+30,H-110,cx2+70,H-110,'#fbbf24',3);
+  drawText('F',cx2+80,H-110,'#fbbf24',11,'left');
+  arrow(cx2-30,H-110,cx2-60,H-110,'#f87171',3);
+  drawText('f',cx2-70,H-110,'#f87171',11,'right');
+  drawText('F = '+F+' N（恒定）',W/2,80,'#fbbf24',13);
+  drawText('a = (F-f)/m = '+a.toFixed(2)+' m/s²（恒定）',W/2,105,'#34d399',13);
+  drawText('v = at = '+v.toFixed(2)+' m/s',W/2,130,'#67e8f9',13);
+  drawText('P = Fv = '+P.toFixed(0)+' W',W/2,155,'#06b6d4',13);
+  drawText('功率随 v 线性增大，达额定功率后切换恒 P 模式',W/2,H-40,'#9ab0d0',12);
+  drawText('达到 P_max 的时间 t = '+(tMax).toFixed(2)+' s',W/2,H-20,'#fbbf24',11);
+}
+
+// ===== 场景：典型计算 =====
+function drawCalcScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 拉力做功',W/2,30,'#fbbf24',16);
+  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='left';
+  const q='题目：用 10 N 力与水平成 60° 拉物体前进 5 m，';
+  const q2='求拉力做功；若用时 10 s，求平均功率。';
+  ctx.fillText(q,80,80);
+  ctx.fillText(q2,80,105);
+  const known=[
+    {p:'F',v:'10 N',c:'#06b6d4'},
+    {p:'θ',v:'60°',c:'#a78bfa'},
+    {p:'s',v:'5 m',c:'#34d399'},
+    {p:'t',v:'10 s',c:'#fbbf24'},
+  ];
+  known.forEach((k,i)=>{
+    const x=80+i*(W-160)/4;
+    ctx.fillStyle=k.c+'22';ctx.strokeStyle=k.c;ctx.lineWidth=2;
+    roundRect(x,140,(W-160)/4-10,60,8);ctx.fill();ctx.stroke();
+    drawText(k.p+' = '+k.v,x+(W-160)/8,170,k.c,14);
+  });
+  const cosv=Math.cos(Math.PI/3);
+  const W_=10*5*cosv;
+  const P=W_/10;
+  ctx.fillStyle='#34d399';ctx.font='bold 16px monospace';ctx.textAlign='center';
+  ctx.fillText('解：',W/2,230);
+  ctx.fillText('W = Fscosθ = 10 × 5 × 0.5 = '+W_+' J',W/2,260);
+  ctx.fillText('P = W/t = '+W_+' / 10 = '+P+' W',W/2,290);
+  const cx=W/2,cy=H-110;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-100,cy+30);ctx.lineTo(cx+100,cy+30);ctx.stroke();
+  ctx.fillStyle='#fbbf2433';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(cx-25,cy+5,50,25,4);ctx.fill();ctx.stroke();
+  arrow(cx,cy+5,cx+40,cy+5-40*Math.tan(Math.PI/3),'#06b6d4',3);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy+5,25,0,-Math.PI/3,true);ctx.stroke();
+  drawText('60°',cx+30,cy,'#34d399',11);
+  arrow(cx-80,cy+50,cx+80,cy+50,'#a78bfa',3);
+  drawText('s = 5 m',cx,cy+62,'#a78bfa',11);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('功和功率 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'功',d:'W = Fscosθ',c:'#fbbf24'},
+    {t:'正负功',d:'θ 决定动力或阻力',c:'#34d399'},
+    {t:'功率',d:'P = W/t',c:'#06b6d4'},
+    {t:'瞬时功率',d:'P = Fv',c:'#a78bfa'},
+    {t:'单位',d:'J · W · kW',c:'#fb923c'},
+    {t:'汽车启动',d:'恒 P 或恒 F',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+  drawText('功是能量转化的量度',W/2,H-40,'#fbbf24',14);
+}
 
 function draw(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  const rad=angle*Math.PI/180;
-  const cosVal=Math.cos(rad);
-  const W_val=(100*cosVal*boxX*0.01).toFixed(1);
-  
-  // 地面
-  ctx.strokeStyle='#1e3050';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(40,H*0.7);ctx.lineTo(W-40,H*0.7);ctx.stroke();
-  
-  // 物体
-  const bx=80+boxX*2,by=H*0.7-40;
-  ctx.fillStyle='rgba(9,132,227,0.3)';ctx.fillRect(bx,by,50,40);
-  ctx.strokeStyle='#0984e3';ctx.lineWidth=2;ctx.strokeRect(bx,by,50,40);
-  ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
-  ctx.fillText('m',bx+25,by+24);
-  
-  // 位移箭头
-  if(boxX>0){
-    ctx.strokeStyle='#d63031';ctx.lineWidth=2;ctx.setLineDash([4,4]);
-    ctx.beginPath();ctx.moveTo(80,H*0.7+15);ctx.lineTo(80+boxX*2,H*0.7+15);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='#d63031';ctx.font='12px sans-serif';
-    ctx.fillText(`s=${(boxX*0.1).toFixed(1)}m`,80+boxX,H*0.7+30);
-  }
-  
-  // 力F箭头
-  const fx=bx+50,fy=by+20;
-  const fLen=80;
-  const fex=fx+fLen*Math.cos(rad),fey=fy-fLen*Math.sin(rad);
-  ctx.strokeStyle='#0984e3';ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fex,fey);ctx.stroke();
-  // 箭头
-  const aa=Math.atan2(fy-fey,fex-fx);
-  ctx.fillStyle='#0984e3';ctx.beginPath();
-  ctx.moveTo(fex,fey);ctx.lineTo(fex-10*Math.cos(aa-0.4),fey+10*Math.sin(aa-0.4));
-  ctx.lineTo(fex-10*Math.cos(aa+0.4),fey+10*Math.sin(aa+0.4));ctx.fill();
-  ctx.fillStyle='#0984e3';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
-  ctx.fillText('F',fex+15,fey-5);
-  
-  // Fcosθ分解(水平分量)
-  const cx2=fx+fLen*cosVal,cy2=fy;
-  ctx.strokeStyle='#fdcb6e';ctx.lineWidth=2;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(cx2,cy2);ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle='#fdcb6e';ctx.font='12px sans-serif';
-  ctx.fillText('Fcosθ',cx2+20,cy2+5);
-  
-  // 角度标注
-  ctx.beginPath();ctx.arc(fx,fy,25,0,-rad,true);
-  ctx.strokeStyle='#fdcb6e';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle='#fdcb6e';ctx.font='11px sans-serif';
-  ctx.fillText(`θ=${angle}°`,fx+35,fy-10);
-  
-  // 标题和数据
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
-  ctx.fillText('W = F·s·cosθ',W/2,30);
-  ctx.fillStyle='#fdcb6e';ctx.font='14px sans-serif';
-  ctx.fillText(`cos${angle}° = ${cosVal.toFixed(3)} | W = ${W_val} J`,W/2,55);
-  
-  // 功的性质
-  let workType='正功(力促进运动)';
-  if(angle===90)workType='不做功(力⊥位移)';
-  else if(angle>90)workType='负功(力阻碍运动)';
-  ctx.fillStyle=angle<90?'#00b894':angle===90?'#fdcb6e':'#d63031';
-  ctx.font='13px sans-serif';
-  ctx.fillText(workType,W/2,H-15);
-  
-  statusEl.textContent=`θ=${angle}° | cosθ=${cosVal.toFixed(3)} | W=${W_val}J`;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const p=Math.min(1.5,stepTime/STEP_DURATION);
+  if(stepIdx===0)drawWorkDefScene(t);
+  else if(stepIdx===1)drawAngleScene(t);
+  else if(stepIdx===2)drawAngleScene(t);
+  else if(stepIdx===3)drawPerpScene(t);
+  else if(stepIdx===4)drawPowerScene(t);
+  else if(stepIdx===5)drawFvScene(t);
+  else if(stepIdx===6)drawCarPowerScene(t);
+  else if(stepIdx===7)drawCarForceScene(t);
+  else if(stepIdx===8)drawCalcScene(t);
+  else if(stepIdx===9)drawSummaryScene();
 }
 
-let animId;
-function loop(ts){
-  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;
-  boxX=Math.min(150,t*30);
-  draw();
-  if(playing)animId=requestAnimationFrame(loop);
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
 }
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
-  if(playing){lastT=performance.now();boxX=0;t=0;loop(lastT);}else cancelAnimationFrame(animId);
-};
-document.getElementById('resetBtn').onclick=function(){t=0;boxX=0;draw();};
-document.getElementById('angle').oninput=function(){angle=+this.value;draw();};
-draw();
-</script></body></html>
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;t=0;drawCarPowerScene.vv=null;drawCarPowerScene.tprev=null;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();
+syncStep();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

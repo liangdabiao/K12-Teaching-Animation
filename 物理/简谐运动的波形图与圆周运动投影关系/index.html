@@ -3,108 +3,461 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>简谐运动与圆周运动投影</title>
+<title>简谐运动 · 圆周运动投影 · 波形图</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#a78bfa;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(167,139,250,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(167,139,250,.2);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">简谐运动与圆周运动投影</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">简谐运动与圆周运动投影</span><span class="subtitle">参考圆 · 位移/速度/加速度 · 波形图</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>回复力</h4><div class="v">F = -kx<br>始终指向平衡位置</div></div>
+  <div class="card s2"><div class="num">2</div><h4>参考圆</h4><div class="v">圆周运动投影<br>即为简谐运动</div></div>
+  <div class="card s3"><div class="num">3</div><h4>三大方程</h4><div class="v">x=Acos(ωt+φ)<br>v, a 与 x 相位差 90°/180°</div></div>
+  <div class="card s4"><div class="num">4</div><h4>周期公式</h4><div class="v">T = 2π/ω<br>ω=√(k/m)</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>简谐运动的位移可看作<b>匀速圆周运动</b>在一条直径上的投影。投影点做正弦（或余弦）式往复运动，轨迹即为正弦波形。</p>
-    <div class="legend"><span class='dot' style='background:#fbbf24'></span>圆周上点&nbsp;<span class='dot' style='background:#34d399'></span>波形</div>
-  
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>简谐运动</h3><ul><li>位移：x = A·cos(ωt + φ)</li><li>匀速圆周运动在直径上的投影=简谐运动</li><li>周期 T = 2π/ω</li><li>能量：动能↔势能相互转化</li><li>应用：弹簧振子、单摆（小角度）</li></ul></div>
-    </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">简谐运动</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-const H={t:0,p:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){H.t=0;H.p=0;}
-function sceneUpdate(dt){H.t+=dt;if(H.p<1)H.p=Math.min(1,H.p+dt*0.2);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const cy=cv.height/2-20;
-  // circle
-  const ccx=140,ccy=cy,r=70;
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=2;ctx.beginPath();ctx.arc(ccx,ccy,r,0,7);ctx.stroke();
-  const ang=H.t*2;
-  const px=ccx+r*Math.cos(ang),py=ccy-r*Math.sin(ang);
-  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();
-  ctx.strokeStyle='#9fb0c8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,ccy);ctx.stroke();
-  ctx.fillStyle='#cdd7ea';ctx.fillText('匀速圆周运动',ccx-50,cy+r+24);
-  // projection wave
-  const wx=260;
-  ctx.strokeStyle='#34d399';ctx.lineWidth=3;ctx.beginPath();
-  for(let i=0;i<cv.width-wx-40;i+=4){const y=cy-r*Math.sin(ang - i/40);i?ctx.lineTo(wx+i,y):ctx.moveTo(wx+i,y);}ctx.stroke();
-  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(wx,py,7,0,7);ctx.fill();
-  ctx.strokeStyle='#9fb0c8';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(wx,py);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='left';
-  ctx.fillText('圆周运动在直径上的投影 = 简谐运动',wx,cy-r-20);
-  statusEl.textContent='简谐运动的位移 = 圆周运动投影，波形为正弦曲线';
+const STEPS=[
+  {tag:'基础',name:'简谐运动定义',body:'<strong>简谐运动</strong>是最简单、最基本的周期性振动。物体所受回复力 <code>F = -kx</code> 与<strong>位移成正比、方向相反</strong>，则做简谐运动。位移随时间按正弦/余弦规律变化。',points:{title:'核心要点',items:['<strong>回复力</strong>：F = -kx（指向平衡位置）','<strong>k</strong>：回复力常数（劲度/重力分量系数）','<strong>位移</strong>：x = A·cos(ωt+φ)','<strong>实例</strong>：弹簧振子、单摆（小角度）']}},
+  {tag:'基础',name:'圆周运动投影',body:'<strong>匀速圆周运动</strong>在直径上的<strong>投影</strong>就是<strong>简谐运动</strong>。该圆称为<strong>参考圆</strong>。圆周上点做匀速圆周运动（半径 A、角速度 ω），它在 x 轴上的投影点做简谐振动。',points:{title:'参考圆三要素',items:['<strong>半径 = A</strong>：振幅','<strong>角速度 = ω</strong>：圆频率','<strong>投影 = x</strong>：A·cos(ωt+φ)','<strong>本步骤观察</strong>：黄点在圆上转，红点在 x 轴上简谐振动']}},
+  {tag:'方程',name:'位移方程 x',body:'<strong>位移方程</strong>：<code>x = A·cos(ωt+φ)</code>。其中 A 是<strong>振幅</strong>（最大位移），ω 是<strong>圆频率</strong>（rad/s），φ 是<strong>初相</strong>。t=0 时刻的位移由 φ 决定。',points:{title:'位移三参数',items:['<strong>A</strong>：振幅，决定振动范围 [-A, A]','<strong>ω</strong>：圆频率，角速度大小','<strong>φ</strong>：初相，决定起始位置','<strong>ωt+φ</strong>：相位，决定某时刻状态']}},
+  {tag:'方程',name:'速度方程 v',body:'<strong>速度</strong>是位移对时间的导数：<code>v = -Aω·sin(ωt+φ)</code>。最大速度 <strong>v_max = Aω</strong>。速度相位<strong>超前</strong>位移 90°（π/2）。',points:{title:'速度特点',items:['<strong>平衡位置</strong>：v 最大 = Aω（x=0）','<strong>极端位置</strong>：v = 0（x=±A）','<strong>方向</strong>：始终指向平衡位置','<strong>相位</strong>：超前 x 的 90°']}},
+  {tag:'方程',name:'加速度方程 a',body:'<strong>加速度</strong>由 F=ma 与 F=-kx 联立：<code>a = -Aω²·cos(ωt+φ) = -ω²·x</code>。加速度方向<strong>始终与位移相反</strong>，永远指向平衡位置。',points:{title:'加速度特点',items:['<strong>a = -ω²x</strong>：与 x 反向','<strong>a_max = Aω²</strong>：极端位置最大','<strong>平衡位置</strong>：a = 0','<strong>相位</strong>：与 x 相差 180°（反相）']}},
+  {tag:'方程',name:'相位与初相',body:'<strong>相位</strong> (ωt+φ) 决定振动状态；<strong>初相</strong> φ 决定 t=0 的起始状态。两个同频率振动的<strong>相位差</strong> Δφ = φ₂-φ₁ 决定它们是否同步。',points:{title:'相位关系',items:['<strong>初相 φ=0</strong>：从正向极端开始','<strong>初相 φ=π/2</strong>：从平衡位置正向出发','<strong>v 与 x</strong>：Δφ = π/2','<strong>a 与 x</strong>：Δφ = π（反相）']}},
+  {tag:'周期',name:'T = 2π/ω',body:'<strong>周期</strong>：<code>T = 2π/ω</code>；<strong>频率</strong>：<code>f = 1/T = ω/(2π)</code>。弹簧振子：<code>ω = √(k/m)</code>，单摆（小角度）：<code>ω = √(g/L)</code>。',points:{title:'周期公式',items:['<strong>T = 2π/ω</strong>：完整振动一次用时','<strong>弹簧振子</strong>：T = 2π√(m/k)','<strong>单摆</strong>：T = 2π√(L/g)','<strong>周期与振幅无关</strong>：等时性']}},
+  {tag:'波形',name:'x-t / v-t / a-t 三图',body:'三条曲线<strong>同频率</strong>、相位差固定：x（紫）→v（青）超前 π/2→a（绿）超前 π（与 x 反相）。这就是<strong>波形图</strong>：横轴是时间 t，纵轴是物理量。',points:{title:'三图相位差',items:['<strong>x-t</strong>：紫色，cos 曲线','<strong>v-t</strong>：青色，-sin 曲线（超前 x π/2）','<strong>a-t</strong>：绿色，-cos 曲线（与 x 反相）','<strong>同步绘制</strong>：相位差一目了然']}},
+  {tag:'计算',name:'典型计算题',body:'例：弹簧振子振幅 A=10cm，周期 T=2s，t=0 时 x=5cm（正向）。求 ω、φ、t=0.5s 时 x、v。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：ω = 2π/T = π rad/s','<strong>步骤2</strong>：由 x₀=Acosφ 解出 φ = π/3','<strong>步骤3</strong>：x(0.5)=10cos(π/2+π/3) ≈ -8.66 cm','<strong>步骤4</strong>：v(0.5)=-10π·sin(π/2+π/3) ≈ -15.7 cm/s']}},
+  {tag:'总结',name:'核心速记',body:'简谐运动 = <strong>回复力 F=-kx</strong> = <strong>参考圆投影</strong>。x=A·cos(ωt+φ)，v 与 a 由求导得到。波形图直观显示相位关系，T=2π/ω。',points:{title:'三句话总结',items:['<strong>本质</strong>：F=-kx 的周期运动','<strong>方法</strong>：参考圆投影法','<strong>三大方程</strong>：x、v=-Aωsin、a=-ω²x','<strong>周期</strong>：T=2π/ω']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景1：参考圆（圆周运动投影 = 简谐运动）=====
+function drawReferenceCircleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('参考圆 · 圆周运动投影 = 简谐运动',W/2,30,'#a78bfa',16);
+  const cx=180,cy=H/2,r=80,A=r;
+  const omega=1.6,phi=0;
+  const angle=omega*time+phi;
+  // 参考圆
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke();ctx.setLineDash([]);
+  // x 轴
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-r-20,cy);ctx.lineTo(cx+r+20,cy);ctx.stroke();
+  // 投影连线
+  const px=cx+A*Math.cos(angle),py=cy-A*Math.sin(angle);
+  ctx.strokeStyle='rgba(167,139,250,0.5)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,cy);ctx.stroke();
+  // 圆周上匀速转动的点（黄）
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,py,10,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('圆周点',px,py-22,'#fbbf24',11);
+  // x 轴上的投影点（红）
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,cy,9,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('投影=振子',px,cy+22,'#f87171',11);
+  // 半径线
+  ctx.strokeStyle='rgba(6,182,212,0.6)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+  // 平衡位置
+  drawText('O (平衡位置)',cx,cy+r+22,'#9ab0d0',11);
+  // 右侧绘制实时 x-t 曲线
+  const wx=320,wy=H/2,wA=A*0.7;
+  drawText('x-t 实时波形',wx+(W-wx-40)/2,60,'#a78bfa',13);
+  // 坐标轴
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(wx,cy);ctx.lineTo(W-30,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(wx,cy-wA-10);ctx.lineTo(wx,cy+wA+10);ctx.stroke();
+  // 振幅边界
+  ctx.strokeStyle='#3a4a6a';ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(wx,cy-wA);ctx.lineTo(W-30,cy-wA);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(wx,cy+wA);ctx.lineTo(W-30,cy+wA);ctx.stroke();ctx.setLineDash([]);
+  drawText('+A',wx-15,cy-wA,'#9ab0d0',10,'right');
+  drawText('-A',wx-15,cy+wA,'#9ab0d0',10,'right');
+  // 曲线（绘制 2 个周期的历史）
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;ctx.shadowColor='#a78bfa';ctx.shadowBlur=8;
+  ctx.beginPath();
+  const span=W-wx-40;
+  for(let i=0;i<=span;i+=2){
+    const tt=time-(span-i)/30; // 时间轴方向
+    const x=wx+i;
+    const y=cy-wA*Math.cos(omega*tt+phi);
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 当前点
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.arc(wx,cy-wA*Math.cos(omega*time+phi),7,0,7);ctx.fill();
+  drawText('t →',W-40,cy+wA+20,'#9ab0d0',11);
+  // 位移标量显示
+  const xval=A*Math.cos(angle);
+  drawText('x = '+xval.toFixed(1)+' (cos(ωt+φ))',W/2,H-40,'#34d399',13);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+// ===== 场景2：弹簧振子 + x-t 曲线 =====
+function drawSpringScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('弹簧振子 · 实时绘制 x-t 曲线',W/2,30,'#a78bfa',16);
+  const omega=1.6,A=70;
+  const x=A*Math.cos(omega*time);
+  const cy=H/2+20;
+  // 左侧固定墙
+  ctx.fillStyle='#22304a';ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.fillRect(40,cy-50,18,100);ctx.strokeRect(40,cy-50,18,100);
+  for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(40,cy-50+i*20);ctx.lineTo(28,cy-40+i*20);ctx.stroke();}
+  // 弹簧
+  const startX=58,endX=180+x;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(startX,cy);
+  const coils=14,len=endX-startX;
+  for(let i=0;i<=coils;i++){
+    const px=startX+len*i/coils;
+    const py=cy+(i%2===0?-10:10)*(i>0&&i<coils?1:0.2);
+    ctx.lineTo(px,py);
+  }
+  ctx.lineTo(endX,cy);ctx.stroke();
+  // 振子（小球）
+  ctx.fillStyle='#a78bfa';ctx.shadowColor='#a78bfa';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(endX,cy,18,0,7);ctx.fill();ctx.shadowBlur=0;
+  // 平衡位置参考线
+  ctx.strokeStyle='#3a4a6a';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(180,cy-40);ctx.lineTo(180,cy+40);ctx.stroke();ctx.setLineDash([]);
+  drawText('O',180,cy+45,'#9ab0d0',11);
+  // 右侧 x-t 曲线
+  const wx=300,wy=H/2,wA=70;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(wx,cy);ctx.lineTo(W-30,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(wx,cy-wA-10);ctx.lineTo(wx,cy+wA+10);ctx.stroke();
+  ctx.strokeStyle='#3a4a6a';ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(wx,cy-wA);ctx.lineTo(W-30,cy-wA);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(wx,cy+wA);ctx.lineTo(W-30,cy+wA);ctx.stroke();ctx.setLineDash([]);
+  drawText('x',wx-12,cy-wA,'#a78bfa',12,'right');
+  drawText('t',W-30,cy+15,'#9ab0d0',12);
+  // 曲线
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;ctx.shadowColor='#a78bfa';ctx.shadowBlur=8;
+  ctx.beginPath();
+  const span=W-wx-40;
+  for(let i=0;i<=span;i+=2){
+    const tt=time-(span-i)/30;
+    const px=wx+i,py=cy-wA*Math.cos(omega*tt);
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 当前点
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.arc(wx,cy-wA*Math.cos(omega*time),6,0,7);ctx.fill();
+  drawText('振子位移 x = '+x.toFixed(1)+' px',W/2,H-40,'#34d399',12);
+}
+
+// ===== 场景3：x-t / v-t / a-t 三条曲线 =====
+function drawTripleCurvesScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('x-t · v-t · a-t 三图同步（相位差 90°）',W/2,30,'#a78bfa',16);
+  const omega=1.6,A=1;
+  const layouts=[
+    {y0:130,color:'#a78bfa',label:'x = A cos(ωt+φ)',fn:(s)=>A*Math.cos(omega*s),unit:'x',amp:50},
+    {y0:280,color:'#06b6d4',label:'v = -Aω sin(ωt+φ)',fn:(s)=>-A*Math.sin(omega*s),unit:'v',amp:50},
+    {y0:430,color:'#34d399',label:'a = -Aω² cos(ωt+φ)',fn:(s)=>-A*Math.cos(omega*s),unit:'a',amp:50},
+  ];
+  layouts.forEach(l=>{
+    // 基线
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(80,l.y0);ctx.lineTo(W-40,l.y0);ctx.stroke();
+    drawText(l.unit,70,l.y0-l.amp-5,l.color,12,'right');
+    drawText('t',W-40,l.y0+15,'#9ab0d0',11);
+    // 振幅边界
+    ctx.strokeStyle='#3a4a6a';ctx.setLineDash([2,4]);
+    ctx.beginPath();ctx.moveTo(80,l.y0-l.amp);ctx.lineTo(W-40,l.y0-l.amp);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(80,l.y0+l.amp);ctx.lineTo(W-40,l.y0+l.amp);ctx.stroke();ctx.setLineDash([]);
+    // 曲线
+    ctx.strokeStyle=l.color;ctx.lineWidth=2.5;ctx.shadowColor=l.color;ctx.shadowBlur=6;
+    ctx.beginPath();
+    const span=W-120;
+    for(let i=0;i<=span;i+=2){
+      const tt=time-(span-i)/30;
+      const px=80+i,py=l.y0-l.amp*l.fn(tt);
+      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+    // 当前点
+    ctx.fillStyle=l.color;
+    ctx.beginPath();ctx.arc(80,l.y0-l.amp*l.fn(time),6,0,7);ctx.fill();
+    // 公式
+    drawText(l.label,110,l.y0-l.amp-12,l.color,11,'left');
+  });
+  // 相位差说明
+  drawText('v 比 x 超前 π/2，a 与 x 反相（π）',W/2,H-35,'#fbbf24',12);
+}
+
+// ===== 场景4：参考圆 + 弹簧 + 曲线三联动 =====
+function drawCombinedScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('参考圆 + 弹簧振子 + 波形 · 三联动',W/2,30,'#a78bfa',16);
+  const omega=1.6,A=60,phi=0;
+  const angle=omega*time+phi;
+  const x=A*Math.cos(angle);
+  // 左：参考圆
+  const cx1=120,cy1=H/2;
+  ctx.strokeStyle='#3a4a6a';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(cx1,cy1,A,0,7);ctx.stroke();ctx.setLineDash([]);
+  const p1x=cx1+A*Math.cos(angle),p1y=cy1-A*Math.sin(angle);
+  ctx.strokeStyle='rgba(167,139,250,0.5)';
+  ctx.beginPath();ctx.moveTo(p1x,p1y);ctx.lineTo(p1x,cy1);ctx.stroke();
+  ctx.strokeStyle='rgba(6,182,212,0.5)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx1,cy1);ctx.lineTo(p1x,p1y);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(p1x,p1y,8,0,7);ctx.fill();
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(p1x,cy1,7,0,7);ctx.fill();
+  drawText('参考圆',cx1,cy1+A+22,'#9ab0d0',11);
+  // 中：弹簧振子（共享 x）
+  const springX=260,cy2=H/2;
+  ctx.fillStyle='#22304a';ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.fillRect(springX-2,cy2-40,12,80);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  const ballX=springX+50+x;
+  ctx.beginPath();ctx.moveTo(springX+10,cy2);
+  const coils=10,len=ballX-springX-10;
+  for(let i=0;i<=coils;i++){
+    const px=springX+10+len*i/coils;
+    const py=cy2+(i%2===0?-8:8)*(i>0&&i<coils?1:0.2);
+    ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  ctx.fillStyle='#a78bfa';ctx.shadowColor='#a78bfa';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(ballX,cy2,15,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('弹簧振子',springX+50,cy2+40,'#9ab0d0',11);
+  // 右：x-t 曲线
+  const wx=460,wy=H/2,wA=A;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(wx,wy);ctx.lineTo(W-30,wy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(wx,wy-wA-10);ctx.lineTo(wx,wy+wA+10);ctx.stroke();
+  ctx.strokeStyle='#3a4a6a';ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(wx,wy-wA);ctx.lineTo(W-30,wy-wA);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(wx,wy+wA);ctx.lineTo(W-30,wy+wA);ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;ctx.shadowColor='#a78bfa';ctx.shadowBlur=8;
+  ctx.beginPath();
+  const span=W-wx-40;
+  for(let i=0;i<=span;i+=2){
+    const tt=time-(span-i)/30;
+    const px=wx+i,py=wy-wA*Math.cos(omega*tt+phi);
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(wx,wy-wA*Math.cos(angle),6,0,7);ctx.fill();
+  drawText('x-t 波形',wx+(W-wx-40)/2,wy-wA-18,'#9ab0d0',11);
+  drawText('三者同步：圆点→弹簧振子→波形点',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景5：不同初相 φ 的曲线对比 =====
+function drawPhaseCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('不同初相 φ 的位移曲线对比',W/2,30,'#a78bfa',16);
+  const omega=1.6,A=1;
+  const phases=[
+    {phi:0,c:'#a78bfa',label:'φ = 0（正向极端开始）'},
+    {phi:Math.PI/2,c:'#06b6d4',label:'φ = π/2（平衡位置正向出发）'},
+    {phi:Math.PI,c:'#34d399',label:'φ = π（负向极端开始）'},
+    {phi:3*Math.PI/2,c:'#fbbf24',label:'φ = 3π/2（平衡位置负向出发）'},
+  ];
+  const cy=H/2,amp=70;
+  // 坐标轴
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,cy);ctx.lineTo(W-40,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(80,cy-amp-10);ctx.lineTo(80,cy+amp+10);ctx.stroke();
+  ctx.strokeStyle='#3a4a6a';ctx.setLineDash([2,4]);
+  ctx.beginPath();ctx.moveTo(80,cy-amp);ctx.lineTo(W-40,cy-amp);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(80,cy+amp);ctx.lineTo(W-40,cy+amp);ctx.stroke();ctx.setLineDash([]);
+  drawText('+A',70,cy-amp,'#9ab0d0',10,'right');
+  drawText('-A',70,cy+amp,'#9ab0d0',10,'right');
+  drawText('t',W-40,cy+15,'#9ab0d0',11);
+  // 四条曲线
+  phases.forEach(p=>{
+    ctx.strokeStyle=p.c;ctx.lineWidth=2.5;ctx.shadowColor=p.c;ctx.shadowBlur=5;
+    ctx.beginPath();
+    const span=W-120;
+    for(let i=0;i<=span;i+=2){
+      const tt=time-(span-i)/30;
+      const px=80+i,py=cy-amp*A*Math.cos(omega*tt+p.phi);
+      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+    // 当前点
+    ctx.fillStyle=p.c;
+    ctx.beginPath();ctx.arc(80,cy-amp*A*Math.cos(omega*time+p.phi),5,0,7);ctx.fill();
+  });
+  // 图例
+  phases.forEach((p,i)=>{
+    const lx=120+i*((W-160)/4),ly=H-60;
+    ctx.fillStyle=p.c;ctx.fillRect(lx,ly,16,4);
+    drawText(p.label,lx+22,ly+2,p.c,11,'left','middle');
+  });
+  drawText('同频率、同振幅，仅初相不同 → 相位差固定',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景6：典型计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 弹簧振子三步法',W/2,30,'#a78bfa',16);
+  // 例题框
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,100,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('弹簧振子 A=10cm，周期 T=2s，t=0 时 x₀=5cm（正向）。',120,115,'#fff',13,'left');
+  drawText('求 ω、初相 φ 及 t=0.5s 时的 x 与 v。',120,140,'#fff',13,'left');
+  const steps=[
+    {t:'① 求圆频率',d:'ω = 2π/T = 2π/2 = π rad/s ≈ 3.14',c:'#06b6d4'},
+    {t:'② 求初相',d:'x₀=Acosφ → cosφ=0.5 → φ = π/3',c:'#a78bfa'},
+    {t:'③ 求 x(0.5)',d:'x = 10·cos(π/2+π/3) ≈ -8.66 cm',c:'#67e8f9'},
+    {t:'④ 求 v(0.5)',d:'v = -10π·sin(π/2+π/3) ≈ -15.7 cm/s',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=190+i*52;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+21,s.c,13,'left');
+    drawText(s.d,300,y+21,'#fff',13,'left');
+  });
+}
+
+// ===== 场景7：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('简谐运动核心总结',W/2,40,'#a78bfa',18);
+  const items=[
+    {t:'回复力',d:'F = -kx',c:'#a78bfa'},
+    {t:'参考圆',d:'圆周投影=简谐',c:'#06b6d4'},
+    {t:'位移',d:'x = A·cos(ωt+φ)',c:'#67e8f9'},
+    {t:'速度',d:'v = -Aω·sin(ωt+φ)',c:'#34d399'},
+    {t:'加速度',d:'a = -Aω²·cos(ωt+φ)',c:'#fbbf24'},
+    {t:'周期',d:'T = 2π/ω',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawSpringScene(t);
+  else if(stepIdx===1)drawReferenceCircleScene(t);
+  else if(stepIdx===2)drawReferenceCircleScene(t);
+  else if(stepIdx===3)drawTripleCurvesScene(t);
+  else if(stepIdx===4)drawTripleCurvesScene(t);
+  else if(stepIdx===5)drawPhaseCompareScene(t);
+  else if(stepIdx===6)drawCombinedScene(t);
+  else if(stepIdx===7)drawTripleCurvesScene(t);
+  else if(stepIdx===8)drawCalcScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;t=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

@@ -3,122 +3,504 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>浓硫酸稀释（错误操作喷溅危险，动画显示放热+水分子被拉开）</title>
+<title>浓硫酸稀释 · 酸入水 · 放热与喷溅危险</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#dc2626;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(220,38,38,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(220,38,38,.2);color:#fca5a5;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">浓硫酸稀释（错误操作喷溅危险，动画显示放热+水分子被拉开）</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">浓硫酸稀释</span><span class="subtitle">酸入水 · 放热反应 · 喷溅危险</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>稀释准则</h4><div class="v">酸入水，不可水入酸<br>沿器壁慢注，不断搅拌</div></div>
+  <div class="card s2"><div class="num">2</div><h4>密度对比</h4><div class="v">浓硫酸 1.84 g/cm³<br>水 1.00 g/cm³，酸下沉</div></div>
+  <div class="card s3"><div class="num">3</div><h4>稀释放热</h4><div class="v">H₂SO₄ + H₂O → 水合<br>大量放热，属物理化学变化</div></div>
+  <div class="card s4"><div class="num">4</div><h4>喷溅危险</h4><div class="v">水入酸：水浮表面沸腾<br>酸液飞溅，腐蚀皮肤</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>浓硫酸稀释必须"酸入水"：将浓硫酸沿容器壁缓慢注入水中，并用玻璃棒不断搅拌。绝不能将水倒入浓硫酸中！因为浓硫酸密度大于水，水入酸会浮在表面，剧烈放热导致水沸腾飞溅。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">●</b> 水分子</span><span class="li"><b style="color:#d63031">●</b> H₂SO₄分子</span><span class="li"><b style="color:#fdcb6e">~</b> 热量释放</span></div>
-  <div class="key-points"><h3>安全操作要点</h3><ul><li>原则：<b>"酸入水，沿壁慢注，不断搅拌"</b></li><li>原因：ρ(浓H₂SO₄) = 1.84 g/cm³ > ρ(水)</li><li>错误操作（水入酸）：水浮在酸表面→剧烈放热→飞溅</li><li>浓硫酸三大特性：吸水性、脱水性、强氧化性</li><li>稀释过程大量放热，属于物理变化+化学变化</li></ul></div></aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">浓硫酸稀释</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-const S={p:0,splash:[],beaker:[],timer:0};
-function beaker(cx,baseY,w,h,color,label,temp,danger){
-  ctx.save();
-  // liquid
-  const liqTop=baseY-h*0.72;
-  ctx.fillStyle='rgba('+((color>>16)&255)+','+((color>>8)&255)+','+(color&255)+',0.30)';
-  ctx.fillRect(cx-w/2,liqTop,w,baseY-liqTop);
-  ctx.fillStyle='rgba('+((color>>16)&255)+','+((color>>8)&255)+','+(color&255)+',0.55)';
-  ctx.fillRect(cx-w/2,liqTop,w,Math.min(h,baseY-liqTop));
-  // glass
+const STEPS=[
+  {tag:'安全',name:'酸入水准则',body:'<strong>浓硫酸稀释</strong>必须遵守<strong>"酸入水"</strong>原则：将浓硫酸<strong>沿容器壁缓慢注入</strong>水中，并用<strong>玻璃棒不断搅拌</strong>散热。<strong>绝不能将水倒入浓硫酸</strong>，否则会引发沸腾喷溅事故。',points:{title:'安全操作三步',items:['<strong>酸入水</strong>：浓硫酸注入水中（不是反过来）','<strong>沿器壁</strong>：沿烧杯壁缓慢流入','<strong>不断搅拌</strong>：玻璃棒引流并散热','<strong>严禁水入酸</strong>：违反必喷溅']}},
+  {tag:'正确',name:'正确操作演示',body:'<strong>正确操作</strong>：烧杯盛水，将浓硫酸沿玻璃棒/器壁<strong>缓慢</strong>注入，同时<strong>搅拌</strong>。溶液温度<strong>缓慢上升</strong>，无飞溅。温度计显示温升可控。',points:{title:'正确操作要点',items:['<strong>容器</strong>：烧杯 + 水 + 玻璃棒引流','<strong>速度</strong>：缓慢，分批加入','<strong>搅拌</strong>：均匀散热，避免局部过热','<strong>温度</strong>：可控上升，无沸腾']}},
+  {tag:'错误',name:'错误操作喷溅',body:'<strong>错误操作</strong>：将水倒入浓硫酸中。水密度小<strong>浮在酸表面</strong>，溶解放热<strong>集中在界面</strong>，瞬间形成<strong>局部高温</strong>使水<strong>剧烈沸腾</strong>，酸液以<strong>液滴飞溅</strong>出来，极具腐蚀危险。',points:{title:'事故成因四步',items:['<strong>水浮表面</strong>：ρ水 < ρ酸','<strong>界面放热</strong>：水合反应剧烈','<strong>水沸腾</strong>：局部温度突升','<strong>酸液飞溅</strong>：灼伤皮肤衣物']}},
+  {tag:'微观',name:'放热量子化',body:'<strong>放热本质</strong>：浓硫酸中 H₂SO₄ 分子与水分子发生<strong>水合作用</strong>，形成<strong>水合离子</strong> H₂SO₄·nH₂O，<strong>H–O 键重组</strong>释放大量能量。这是<strong>化学键</strong>层面的放热。',points:{title:'微观水合过程',items:['<strong>H₂SO₄ 分子</strong>：强极性，吸引水分子','<strong>水合壳层</strong>：H₂O 包围 H₂SO₄','<strong>氢键重组</strong>：释放能量','<strong>放热 Q</strong>：约 880 kJ/mol']}},
+  {tag:'物性',name:'密度对比分层',body:'<strong>密度数据</strong>：浓硫酸 ρ = <code>1.84 g/cm³</code>，水 ρ = <code>1.00 g/cm³</code>。酸入水时，<strong>酸下沉</strong>，自然<strong>混合均匀</strong>；水入酸时，<strong>水浮表面</strong>，热量无法扩散。',points:{title:'密度与混合行为',items:['<strong>ρ(浓硫酸)</strong>：1.84 g/cm³','<strong>ρ(水)</strong>：1.00 g/cm³','<strong>酸入水</strong>：酸下沉，自然扩散','<strong>水入酸</strong>：水浮顶，热量聚集']}},
+  {tag:'化学',name:'稀释热方程',body:'<strong>稀释热方程</strong>：<code>H₂SO₄ + nH₂O → H₂SO₄·nH₂O + Q</code>。n 越大稀释越充分，<strong>Q 为释放的热量</strong>。浓硫酸稀释放热是<strong>典型的放热反应</strong>。',points:{title:'方程解析',items:['<strong>H₂SO₄</strong>：浓硫酸（反应物）','<strong>nH₂O</strong>：n 个水分子','<strong>H₂SO₄·nH₂O</strong>：水合产物','<strong>Q &gt; 0</strong>：放热反应标志']}},
+  {tag:'应用',name:'稀释配制溶液',body:'<strong>应用</strong>：用浓硫酸配制一定浓度的稀硫酸。例：配制 500 mL 20% 稀硫酸。需先加水，<strong>再缓慢注入计算量的浓硫酸</strong>，搅拌定容。',points:{title:'配制流程',items:['<strong>步骤1</strong>：计算所需浓硫酸体积','<strong>步骤2</strong>：烧杯中加入适量蒸馏水','<strong>步骤3</strong>：沿玻璃棒缓慢注入浓硫酸','<strong>步骤4</strong>：搅拌冷却后定容']}},
+  {tag:'应急',name:'事故处理方法',body:'<strong>事故处理</strong>：浓硫酸沾到皮肤上，应<strong>立即用大量清水冲洗</strong>（先布拭后水冲更佳），再用<strong>3%~5% NaHCO₃ 溶液</strong>中和。溅入眼睛立即冲 15 分钟并就医。',points:{title:'应急四步',items:['<strong>皮肤沾染</strong>：大量清水持续冲洗','<strong>中和</strong>：3~5% NaHCO₃ 溶液','<strong>眼睛溅入</strong>：清水冲 15 分钟','<strong>严重灼伤</strong>：立即就医']}},
+  {tag:'总结',name:'安全总结九宫',body:'<strong>浓硫酸稀释</strong>三要素：<strong>酸入水</strong>、<strong>沿壁注</strong>、<strong>勤搅拌</strong>。理解密度差异、放热本质与喷溅机理，才能安全操作。安全意识比实验技能更重要。',points:{title:'安全速记',items:['<strong>原则</strong>：酸入水，不可水入酸','<strong>操作</strong>：沿壁、慢注、勤搅拌','<strong>物性</strong>：ρ酸 > ρ水','<strong>应急</strong>：大量清水 + NaHCO₃']}},
+  {tag:'计算',name:'稀释计算例题',body:'<strong>例题</strong>：配制 500 g 20% 稀硫酸，需要 98% 浓硫酸（ρ=1.84 g/cm³）多少毫升？加水多少？利用<strong>溶质守恒</strong>求解。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：溶质守恒 m·w = const','<strong>步骤2</strong>：求浓硫酸质量','<strong>步骤3</strong>：换算为体积 V = m/ρ','<strong>步骤4</strong>：补加水至 500 g']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景一：酸入水正确操作（烧杯+温度计+搅拌棒） =====
+function drawCorrectScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('正确操作 · 酸入水 · 沿壁慢注 · 搅拌散热',W/2,30,'#dc2626',16);
+  const cx=W/2,cy=H/2+30;
+  const bw=220,bh=200,baseY=cy+bh/2-20;
+  // 烧杯外形
   ctx.strokeStyle='#cdd7ea';ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(cx-w/2,baseY-h);ctx.lineTo(cx-w/2,baseY);ctx.lineTo(cx+w/2,baseY);ctx.lineTo(cx+w/2,baseY-h);ctx.stroke();
-  // thermometer
-  const tx=cx+w/2+26;
-  ctx.strokeStyle='#8aa';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(tx,baseY-h-10);ctx.lineTo(tx,baseY+6);ctx.stroke();
-  const th=Math.min(1,Math.max(0,(temp-20)/240));
-  ctx.fillStyle=th>0.7?'#f87171':'#f59e0b';ctx.fillRect(tx-2,baseY+6-th*40,4,th*40);
-  // label
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='center';
-  ctx.fillText(label,cx,baseY+22);
-  ctx.fillText(temp.toFixed(0)+'℃',tx,baseY-h-22);
-  ctx.restore();
-}
-function sceneInit(){sceneReset();}
-function sceneReset(){S.p=0;S.splash=[];S.timer=0;}
-function sceneUpdate(dt){
-  if(S.p<1)S.p=Math.min(1,S.p+dt*0.22);
-  if(S.p>0.25&&S.p<0.7&&Math.random()<dt*10){
-    S.splash.push({x:cv.width*0.72+(Math.random()*50-25),y:cv.height*0.5,vx:(Math.random()*2-1)*140,vy:-140-Math.random()*140,life:1});
+  ctx.beginPath();ctx.moveTo(cx-bw/2,baseY-bh);ctx.lineTo(cx-bw/2,baseY);ctx.lineTo(cx+bw/2,baseY);ctx.lineTo(cx+bw/2,baseY-bh);ctx.stroke();
+  // 烧杯口
+  ctx.beginPath();ctx.moveTo(cx-bw/2-8,baseY-bh);ctx.lineTo(cx-bw/2+4,baseY-bh-6);ctx.lineTo(cx-bw/2+4,baseY-bh);ctx.stroke();
+  // 水层（底层）
+  const waterLevel=baseY-bh*0.45;
+  ctx.fillStyle='rgba(6,182,212,0.30)';ctx.fillRect(cx-bw/2,waterLevel,bw,baseY-waterLevel);
+  drawText('水（下层）',cx,waterLevel+30,'#06b6d4',12);
+  // 浓硫酸下沉混合（动画：注入流+下沉扩散）
+  const injectP=(time*0.5)%1;
+  // 玻璃棒（斜插入）
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-60,baseY-bh-40);ctx.lineTo(cx-10,baseY-20);ctx.stroke();
+  // 注入流（沿玻璃棒流下）
+  if(injectP<0.8){
+    ctx.strokeStyle='#dc2626';ctx.lineWidth=4;ctx.shadowColor='#dc2626';ctx.shadowBlur=8;
+    ctx.beginPath();ctx.moveTo(cx-60,baseY-bh-40);ctx.lineTo(cx-10,baseY-20);ctx.stroke();
+    ctx.shadowBlur=0;
+    // 入液波纹
+    ctx.fillStyle='rgba(220,38,38,0.5)';
+    for(let i=0;i<3;i++){
+      const r=8+i*6+(time*20%12);
+      ctx.strokeStyle='rgba(220,38,38,'+(0.5-i*0.15)+')';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(cx-10,waterLevel,r,0,Math.PI*2);ctx.stroke();
+    }
   }
-  S.splash.forEach(s=>{s.x+=s.vx*dt;s.y+=s.vy*dt;s.vy+=500*dt;s.life-=dt*1.3;});
-  S.splash=S.splash.filter(s=>s.life>0&&s.y<cv.height);
-}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  beaker(cv.width*0.30,cv.height*0.62,150,150,0x3b82f6,'正确：酸入水',120+S.p*50,false);
-  beaker(cv.width*0.72,cv.height*0.62,150,150,0xf87171,'错误：水入酸',120+S.p*230,true);
-  ctx.fillStyle='#fbbf24';ctx.font='12px sans-serif';ctx.textAlign='left';
-  S.splash.forEach(s=>{ctx.globalAlpha=Math.max(0,s.life);ctx.beginPath();ctx.arc(s.x,s.y,3,0,7);ctx.fill();ctx.globalAlpha=1;});
-  statusEl.textContent='进度 '+Math.round(S.p*100)+'% ｜ 右杯剧烈放热、酸液飞溅，严禁把水倒入浓硫酸！';
+  // 浓硫酸下沉扩散（红雾）
+  for(let i=0;i<8;i++){
+    const ang=time*1.5+i*0.8;
+    const r=15+i*8+Math.sin(time*2+i)*5;
+    const x=cx-10+Math.cos(ang)*r*0.4;
+    const y=waterLevel+20+i*12+Math.sin(time+i)*4;
+    ctx.fillStyle='rgba(220,38,38,'+(0.4-i*0.04)+')';
+    ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.fill();
+  }
+  drawText('浓硫酸下沉扩散',cx,baseY-15,'#dc2626',11);
+  // 温度计
+  const tx=cx+bw/2+30;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(tx,baseY-bh-10);ctx.lineTo(tx,baseY+10);ctx.stroke();
+  // 温度球
+  ctx.fillStyle='#dc2626';ctx.beginPath();ctx.arc(tx,baseY+15,8,0,7);ctx.fill();
+  // 水银柱（温升可控）
+  const temp=20+injectP*25;
+  const th=(temp-20)/100*Math.min(bh,160);
+  ctx.fillStyle='#dc2626';ctx.fillRect(tx-3,baseY+7-th,6,th);
+  drawText(temp.toFixed(0)+' ℃',tx+25,baseY-bh/2,'#fbbf24',13);
+  drawText('温升可控',tx+25,baseY-bh/2+20,'#34d399',11);
+  // 搅拌指示（旋转箭头）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.save();ctx.translate(cx+30,baseY-40);ctx.rotate(time*4);
+  ctx.beginPath();ctx.arc(0,0,15,0,Math.PI*1.5);ctx.stroke();
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.moveTo(15,0);ctx.lineTo(10,-6);ctx.lineTo(10,6);ctx.fill();
+  ctx.restore();
+  drawText('搅拌',cx+30,baseY-40,'#06b6d4',10);
+  // 底部提示
+  drawText('正确：酸入水 → 下沉扩散 → 温升可控 → 无飞溅',W/2,H-35,'#34d399',13);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+// ===== 场景二：错误操作喷溅（水入酸） =====
+function drawSplashScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('错误操作 · 水入酸 · 沸腾喷溅危险',W/2,30,'#dc2626',16);
+  const cx=W/2,cy=H/2+30;
+  const bw=220,bh=200,baseY=cy+bh/2-20;
+  // 烧杯
+  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-bw/2,baseY-bh);ctx.lineTo(cx-bw/2,baseY);ctx.lineTo(cx+bw/2,baseY);ctx.lineTo(cx+bw/2,baseY-bh);ctx.stroke();
+  // 浓硫酸层（底层，满）
+  const acidLevel=baseY-bh*0.35;
+  ctx.fillStyle='rgba(220,38,38,0.45)';ctx.fillRect(cx-bw/2,acidLevel,bw,baseY-acidLevel);
+  drawText('浓硫酸（下层）',cx,baseY-30,'#dc2626',12);
+  // 水浮在表面（动画：注入水滴）
+  const dropP=(time*0.8)%1;
+  if(dropP<0.5){
+    // 倒水的容器
+    ctx.fillStyle='rgba(6,182,212,0.4)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(cx-90,baseY-bh-60);
+    ctx.lineTo(cx-30,baseY-bh-50);
+    ctx.lineTo(cx-30,baseY-bh-30);
+    ctx.lineTo(cx-90,baseY-bh-40);
+    ctx.closePath();ctx.fill();ctx.stroke();
+    drawText('水',cx-60,baseY-bh-45,'#06b6d4',11);
+    // 水柱
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=5;
+    ctx.beginPath();ctx.moveTo(cx-40,baseY-bh-30);ctx.lineTo(cx-20,acidLevel);ctx.stroke();
+  }
+  // 水浮在酸表面（界面）
+  ctx.fillStyle='rgba(6,182,212,0.5)';
+  ctx.fillRect(cx-bw/2,acidLevel-6,bw,8);
+  drawText('水浮表面',cx+70,acidLevel-15,'#06b6d4',11);
+  // 界面沸腾波纹
+  for(let i=0;i<5;i++){
+    const x=cx-bw/2+30+i*(bw-60)/4;
+    ctx.strokeStyle='rgba(251,191,36,'+(0.6-i*0.1)+')';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(x,acidLevel,6+Math.sin(time*8+i)*3,0,Math.PI*2);ctx.stroke();
+  }
+  // 喷溅液滴（粒子系统）
+  const splashes=[];
+  const seed=Math.floor(time*3);
+  for(let i=0;i<14;i++){
+    const ph=((time*2+i*0.4)%1.5);
+    if(ph<1.2){
+      const ang=-Math.PI/2+(i-7)*0.15;
+      const v0=200+((seed*7+i*13)%80);
+      const g=380;
+      const x0=cx+(i-7)*8;
+      const y0=acidLevel-2;
+      const x=x0+Math.cos(ang)*v0*ph;
+      const y=y0+Math.sin(ang)*v0*ph+0.5*g*ph*ph;
+      const r=4+((seed+i)%3);
+      const col=i%2?'#dc2626':'#06b6d4';
+      ctx.fillStyle=col;ctx.globalAlpha=Math.max(0,1-ph*0.8);
+      ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+      // 拖尾
+      ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.globalAlpha=Math.max(0,1-ph*0.8)*0.5;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-Math.cos(ang)*8,y-Math.sin(ang)*8+4);ctx.stroke();
+      ctx.globalAlpha=1;
+    }
+  }
+  // 警告标志
+  ctx.fillStyle='rgba(220,38,38,0.2)';ctx.strokeStyle='#dc2626';ctx.lineWidth=2;
+  ctx.beginPath();
+  const wx=cx+bw/2+40,wy=baseY-bh+30;
+  ctx.moveTo(wx,wy+30);ctx.lineTo(wx-18,wy);ctx.lineTo(wx+18,wy);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  drawText('!',wx,wy+15,'#fff',18);
+  drawText('危险',wx,wy+40,'#dc2626',12);
+  // 底部
+  drawText('错误：水入酸 → 水浮表面 → 界面沸腾 → 酸液飞溅',W/2,H-50,'#f87171',13);
+  drawText('严重灼伤！严禁将水倒入浓硫酸！',W/2,H-30,'#dc2626',13);
+}
+
+// ===== 场景三：微观放热（H2SO4 + H2O 结合） =====
+function drawMicroScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('微观放热 · H₂SO₄ 与 H₂O 水合反应',W/2,30,'#dc2626',16);
+  const cx=W/2,cy=H/2+10;
+  // H2SO4 分子（中心）
+  ctx.fillStyle='#dc2626';ctx.shadowColor='#dc2626';ctx.shadowBlur=20;
+  ctx.beginPath();ctx.arc(cx,cy,40,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('H₂SO₄',cx,cy,'#fff',13);
+  // 周围水分子（被吸引拉开）
+  for(let i=0;i<6;i++){
+    const ang=time*0.8+i*Math.PI/3;
+    const r=80+Math.sin(time*2+i)*15;
+    const x=cx+Math.cos(ang)*r;
+    const y=cy+Math.sin(ang)*r;
+    // 水分子（O+两个H）
+    ctx.fillStyle='#06b6d4';
+    ctx.beginPath();ctx.arc(x,y,12,0,7);ctx.fill();
+    drawText('O',x,y,'#fff',10);
+    ctx.fillStyle='#e8eef8';
+    ctx.beginPath();ctx.arc(x-8,y-8,4,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(x+8,y-8,4,0,7);ctx.fill();
+    // 吸引线
+    ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(cx+Math.cos(ang)*40,cy+Math.sin(ang)*40);ctx.lineTo(x,y);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // 热量释放（波动光圈）
+  for(let i=0;i<4;i++){
+    const ph=(time*1.5+i*0.4)%2;
+    if(ph<1.5){
+      const r=40+ph*80;
+      ctx.strokeStyle='rgba(251,191,36,'+(0.6-ph*0.4)+')';ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke();
+    }
+  }
+  // 热量 Q 标签（向外飞出）
+  for(let i=0;i<5;i++){
+    const ang=time*1.2+i*Math.PI*2/5;
+    const r=130+Math.sin(time*3+i)*20;
+    const x=cx+Math.cos(ang)*r;
+    const y=cy+Math.sin(ang)*r;
+    ctx.fillStyle='#fbbf24';ctx.globalAlpha=0.8;
+    drawText('Q',x,y,'#fbbf24',14);
+    ctx.globalAlpha=1;
+  }
+  // 方程
+  ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('H₂SO₄ + H₂O → H₂SO₄·H₂O + Q',W/2,H-60);
+  drawText('水分子被 H₂SO₄ 吸引结合，氢键重组释放热量',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景四：密度分层 =====
+function drawDensityScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('密度对比 · 浓硫酸 1.84 > 水 1.00',W/2,30,'#dc2626',16);
+  // 左：酸入水（酸下沉）
+  const lx=W*0.28,cx=W*0.72,cy=H/2+20;
+  // 左烧杯
+  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(lx-70,cy-120);ctx.lineTo(lx-70,cy+60);ctx.lineTo(lx+70,cy+60);ctx.lineTo(lx+70,cy-120);ctx.stroke();
+  // 水
+  ctx.fillStyle='rgba(6,182,212,0.35)';ctx.fillRect(lx-70,cy-50,140,110);
+  drawText('水 ρ=1.00',lx,cy-70,'#06b6d4',11);
+  // 酸下沉动画
+  for(let i=0;i<5;i++){
+    const ph=((time*0.8+i*0.3)%1.5);
+    const y=cy-50+ph*100;
+    ctx.fillStyle='rgba(220,38,38,'+(0.8-ph*0.5)+')';
+    ctx.beginPath();ctx.arc(lx+(i-2)*8,y,6,0,7);ctx.fill();
+  }
+  drawText('酸入水：下沉扩散',lx,cy+90,'#34d399',12);
+  // 箭头下沉
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(lx,cy-30);ctx.lineTo(lx,cy+30);ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(lx,cy+35);ctx.lineTo(lx-5,cy+25);ctx.lineTo(lx+5,cy+25);ctx.fill();
+
+  // 右烧杯：水入酸（水浮顶）
+  ctx.strokeStyle='#cdd7ea';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx-70,cy-120);ctx.lineTo(cx-70,cy+60);ctx.lineTo(cx+70,cy+60);ctx.lineTo(cx+70,cy-120);ctx.stroke();
+  // 酸满
+  ctx.fillStyle='rgba(220,38,38,0.35)';ctx.fillRect(cx-70,cy-110,140,170);
+  drawText('浓硫酸 ρ=1.84',cx,cy+90,'#dc2626',11);
+  // 水浮顶
+  const floatP=(time*0.7)%1;
+  for(let i=0;i<4;i++){
+    const ph=((time*0.6+i*0.25)%1.5);
+    const y=cy-120+ph*70;
+    if(ph<0.7){
+      ctx.fillStyle='rgba(6,182,212,'+(0.9-ph*0.7)+')';
+      ctx.beginPath();ctx.arc(cx+(i-1.5)*10,cy-110,6,0,7);ctx.fill();
+    }
+  }
+  // 水浮顶层
+  ctx.fillStyle='rgba(6,182,212,0.6)';ctx.fillRect(cx-70,cy-115,140,8);
+  drawText('水浮表面',cx,cy-95,'#06b6d4',11);
+  // 警告
+  ctx.fillStyle='#f87171';
+  drawText('水入酸：浮顶喷溅',cx,cy-135,'#f87171',12);
+  // 中间分隔
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.setLineDash([6,6]);
+  ctx.beginPath();ctx.moveTo(W/2,H*0.2);ctx.lineTo(W/2,H*0.85);ctx.stroke();
+  ctx.setLineDash([]);
+  // 结论
+  drawText('密度差导致混合方向不同，决定安全与否',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景五：温度计读数上升 =====
+function drawTempScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('温度计读数 · 稀释过程放热',W/2,30,'#dc2626',16);
+  // 温度计（大）
+  const tx=W/2,baseY=H-100;
+  // 外管
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(tx,80);ctx.lineTo(tx,baseY);ctx.stroke();
+  // 储液球
+  ctx.fillStyle='#dc2626';ctx.beginPath();ctx.arc(tx,baseY+15,18,0,7);ctx.fill();
+  // 刻度
+  for(let t=0;t<=100;t+=20){
+    const y=baseY-t*3.5;
+    ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(tx-15,y);ctx.lineTo(tx-8,y);ctx.stroke();
+    drawText(t+' ℃',tx-30,y,'#9ab0d0',11,'right');
+  }
+  // 当前温度（动态上升）
+  const temp=20+((time*15)%80);
+  const th=temp*3.5;
+  ctx.fillStyle='#dc2626';ctx.fillRect(tx-4,baseY-th,8,th);
+  drawText(temp.toFixed(0)+' ℃',tx+40,baseY-th,'#fbbf24',18);
+  // 温度曲线（时间-温度）
+  ctx.strokeStyle='#dc2626';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<60;i++){
+    const tt=i/60*4;
+    const T=20+tt*15+Math.sin(tt*3)*3;
+    const px=tx+80+i*5;
+    const py=baseY-(T-20)*3.5;
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  drawText('温度随时间',tx+220,120,'#dc2626',12);
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(tx+80,80);ctx.lineTo(tx+80,baseY);ctx.lineTo(tx+380,baseY);ctx.stroke();
+  drawText('t (s) →',tx+380,baseY+15,'#9ab0d0',11);
+  drawText('T',tx+70,85,'#9ab0d0',11);
+  // 说明
+  drawText('稀释过程持续放热，温度快速上升后趋于稳定',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景六：安全图标九宫格总结 =====
+function drawSafetyScene(){
+  const W=cv.width,H=cv.height;
+  drawText('安全操作 · 九宫格速记',W/2,30,'#dc2626',18);
+  const items=[
+    {t:'酸入水',d:'浓硫酸注入水',c:'#dc2626'},
+    {t:'沿器壁',d:'缓慢流下',c:'#fbbf24'},
+    {t:'勤搅拌',d:'玻璃棒引流',c:'#06b6d4'},
+    {t:'禁水入酸',d:'违反必喷溅',c:'#f87171'},
+    {t:'戴护具',d:'手套护目镜',c:'#34d399'},
+    {t:'密度差',d:'1.84 > 1.00',c:'#a78bfa'},
+    {t:'放热强',d:'水合释能',c:'#fb923c'},
+    {t:'皮肤沾染',d:'清水冲洗',c:'#06b6d4'},
+    {t:'中和剂',d:'NaHCO₃ 溶液',c:'#34d399'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const cw=(W-160)/3;
+    const x=80+col*cw;
+    const y=80+row*((H-160)/3);
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+8,y,cw-16,(H-160)/3-10,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+cw/2,y+30,m.c,15);
+    drawText(m.d,x+cw/2,y+60,'#fff',11);
+    // 小图标
+    ctx.fillStyle=m.c;
+    ctx.beginPath();ctx.arc(x+cw/2,y+(H-160)/3-30,10,0,7);ctx.fill();
+    drawText((i+1),x+cw/2,y+(H-160)/3-30,'#fff',12);
+  });
+}
+
+// ===== 场景七：计算例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('稀释计算 · 溶质守恒法',W/2,30,'#dc2626',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#dc2626';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#dc2626',13,'left');
+  drawText('配制 500 g 质量分数 20% 的稀硫酸，',120,115,'#fff',13,'left');
+  drawText('需要 98% 浓硫酸（ρ=1.84）多少 mL？加水多少？',120,140,'#fff',13,'left');
+  // 解答
+  const steps=[
+    {t:'① 守恒',d:'m₁w₁ = m₂w₂（溶质质量不变）',c:'#06b6d4'},
+    {t:'② 求酸',d:'m₁ = 500×20%/98% = 102.04 g',c:'#dc2626'},
+    {t:'③ 体积',d:'V = m/ρ = 102.04/1.84 ≈ 55.5 mL',c:'#fbbf24'},
+    {t:'④ 加水',d:'m水 = 500 − 102.04 ≈ 397.96 g',c:'#34d399'},
+    {t:'⑤ 操作',d:'先加水，再缓慢注入 55.5 mL 浓硫酸',c:'#fb923c'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=185+i*55;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,46,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+23,s.c,13,'left');
+    drawText(s.d,260,y+23,'#fff',13,'left');
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawCorrectScene(t);
+  else if(stepIdx===1)drawCorrectScene(t);
+  else if(stepIdx===2)drawSplashScene(t);
+  else if(stepIdx===3)drawMicroScene(t);
+  else if(stepIdx===4)drawDensityScene(t);
+  else if(stepIdx===5)drawMicroScene(t);
+  else if(stepIdx===6)drawCorrectScene(t);
+  else if(stepIdx===7)drawSafetyScene();
+  else if(stepIdx===8)drawSafetyScene();
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

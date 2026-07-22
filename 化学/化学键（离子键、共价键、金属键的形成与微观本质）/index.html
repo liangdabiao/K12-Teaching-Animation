@@ -1,221 +1,467 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>化学键</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>化学键 · 离子键 · 共价键 · 金属键</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#e84393;--line:#26324a;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#10b981;--accent2:#f59e0b;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(245,158,11,.06)}
+.back:hover{background:rgba(245,158,11,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(16,185,129,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(16,185,129,.2);color:#a7f3d0;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
-.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回化学目录</a>
-  <span class="title">化学键（离子键、共价键、金属键）</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">化学键</span><span class="subtitle">离子键 · 共价键 · 金属键 · 形成与微观本质</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>化学键定义</h4><div class="v">相邻原子间强烈的相互作用<br>分为离子键、共价键、金属键</div></div>
+  <div class="card s2"><div class="num">2</div><h4>离子键</h4><div class="v">阴阳离子间的静电作用<br>活泼金属 + 活泼非金属</div></div>
+  <div class="card s3"><div class="num">3</div><h4>共价键</h4><div class="v">共用电子对<br>非金属元素之间</div></div>
+  <div class="card s4"><div class="num">4</div><h4>金属键</h4><div class="v">金属阳离子与自由电子<br>电子海模型</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>化学键是原子间强烈的相互作用。离子键：活泼金属与活泼非金属通过电子转移形成阴阳离子，靠静电作用结合（如NaCl）。共价键：非金属原子间通过共用电子对结合（如H₂、H₂O）。金属键：金属阳离子与自由电子之间的作用力，解释导电导热延展性。</p>
-    <div class="legend"><span><b style="color:#e84393">●</b> 电子</span><span><b style="color:#0984e3">●</b> 阳离子</span><span><b style="color:#00b894">●</b> 阴离子</span><span><b style="color:#fdcb6e">●</b> 共用电子对</span></div>
-    <div class="key-points"><h3>三种化学键对比</h3><ul>
-      <li><b>离子键</b>：电子转移→Na⁺+Cl⁻→NaCl；熔沸点高、硬而脆</li>
-      <li><b>共价键</b>：共用电子对；分极性(HCl)和非极性(H₂)</li>
-      <li><b>金属键</b>：金属阳离子+自由电子"电子海"模型</li>
-      <li>键能越大越稳定；键长越短键能越大</li>
-      <li>电负性差>1.7→离子键；<1.7→共价键</li>
-    </ul></div>
-  </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">化学键</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="ionicBtn">离子键</button>
-  <button id="covalentBtn">共价键</button>
-  <button id="metallicBtn">金属键</button>
-  <span id="status" class="status"></span>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-let mode='ionic',t=0,playing=false,lastT=0;
+// 元素颜色：Na=紫，Cl=绿，H=白，O=红，C=黑
+const EL={Na:'#a855f7',Cl:'#10b981',H:'#f5f5f5',O:'#ef4444',C:'#1a1a1a'};
 
-function drawIonic(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  const p=Math.min(1,t*0.3);
-  // Na原子
-  const nax=W*0.25,nay=H*0.45;
-  const clx=W*0.75,cly=H*0.45;
-  // 电子转移动画
-  const eTransX=nax+(clx-nax)*Math.min(1,p*2);
-  const eTransY=nay+(cly-nay)*Math.min(1,p*2);
-  
-  // Na
-  ctx.beginPath();ctx.arc(nax,nay,35,0,Math.PI*2);
-  ctx.fillStyle=p>0.5?'rgba(9,132,227,0.3)':'rgba(232,67,143,0.3)';ctx.fill();
-  ctx.strokeStyle=p>0.5?'#0984e3':'#e84393';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(p>0.5?'Na⁺':'Na',nax,nay);
-  
-  // 最外层电子
-  if(p<0.5){
-    for(let i=0;i<1;i++){
-      const a=i*Math.PI*2+t*2;
-      ctx.beginPath();ctx.arc(nax+28*Math.cos(a),nay+28*Math.sin(a),4,0,Math.PI*2);
-      ctx.fillStyle='#e84393';ctx.fill();
-    }
-  }
-  
-  // Cl
-  ctx.beginPath();ctx.arc(clx,cly,40,0,Math.PI*2);
-  ctx.fillStyle=p>0.5?'rgba(0,184,148,0.3)':'rgba(0,206,202,0.3)';ctx.fill();
-  ctx.strokeStyle=p>0.5?'#00b894':'#00cec9';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';
-  ctx.fillText(p>0.5?'Cl⁻':'Cl',clx,cly);
-  
-  // 外层电子(Cl)
-  for(let i=0;i<7;i++){
-    const a=i*Math.PI*2/7+t;
-    ctx.beginPath();ctx.arc(clx+32*Math.cos(a),cly+32*Math.sin(a),3,0,Math.PI*2);
-    ctx.fillStyle='#00cec9';ctx.fill();
-  }
-  
-  // 转移的电子
-  if(p<0.5){
-    ctx.beginPath();ctx.arc(eTransX,eTransY,5,0,Math.PI*2);
-    ctx.fillStyle='#e84393';ctx.fill();
-    ctx.fillStyle='#fdcb6e';ctx.font='12px sans-serif';
-    ctx.fillText('e⁻转移',W/2,H*0.25);
-  }
-  
-  // 离子键结合
-  if(p>0.5){
-    const gap=60*(1-Math.min(1,(p-0.5)*4));
-    ctx.beginPath();ctx.arc(nax+gap,nay,35,0,Math.PI*2);ctx.strokeStyle='#74b9ff';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
-    ctx.beginPath();ctx.arc(clx-gap,cly,40,0,Math.PI*2);ctx.stroke();
-    ctx.fillStyle='#fdcb6e';ctx.font='13px sans-serif';
-    ctx.fillText('静电引力（离子键）',W/2,H*0.75);
-  }
-  
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';
-  ctx.fillText('离子键形成：Na + Cl → NaCl',W/2,30);
-  ctx.font='12px sans-serif';ctx.fillStyle='#9fb0c8';
-  ctx.fillText('Na失去1个电子→Na⁺，Cl得到1个电子→Cl⁻',W/2,52);
+const STEPS=[
+  {tag:'基础',name:'化学键定义',body:'<strong>化学键</strong>是<strong>相邻原子之间强烈的相互作用</strong>。常见分为三类：<code>离子键</code>、<code>共价键</code>、<code>金属键</code>。化学键的本质是<strong>电子的转移或共用</strong>。',points:{title:'三类化学键',items:['<strong>离子键</strong>：电子转移，阴阳离子静电吸引','<strong>共价键</strong>：共用电子对','<strong>金属键</strong>：自由电子海','<strong>本质</strong>：原子趋向稳定结构']}},
+  {tag:'离子键',name:'NaCl形成过程',body:'<strong>氯化钠</strong>形成：Na 原子<strong>失去 1 个电子</strong>形成 Na⁺，Cl 原子<strong>得到 1 个电子</strong>形成 Cl⁻，阴阳离子通过<strong>静电吸引</strong>形成离子键。',points:{title:'NaCl 形成步骤',items:['<strong>Na：1s²2s²2p⁶3s¹</strong> 失 1e⁻ → Na⁺','<strong>Cl：1s²2s²2p⁶3s²3p⁵</strong> 得 1e⁻ → Cl⁻','<strong>静电吸引</strong>：Na⁺ 与 Cl⁻','<strong>电子转移</strong>：3s → 3p']}},
+  {tag:'离子键',name:'离子化合物',body:'<strong>离子化合物</strong>：由<strong>离子键</strong>构成的化合物，如 <code>NaCl</code>、<code>KCl</code>、<code>MgCl₂</code>、<code>CaO</code>。常温下为<strong>固体晶体</strong>，熔沸点高，水溶液导电。',points:{title:'离子化合物特点',items:['<strong>组成</strong>：活泼金属 + 活泼非金属','<strong>结构</strong>：Na⁺Cl⁻ 交替排列成晶体','<strong>熔沸点</strong>：高（静电作用强）','<strong>导电性</strong>：熔融或水溶液导电']}},
+  {tag:'共价键',name:'共用电子对',body:'<strong>共价键</strong>：原子间通过<strong>共用电子对</strong>形成的化学键。常见于非金属元素之间，如 <code>H₂</code>、<code>Cl₂</code>、<code>H₂O</code>、<code>CO₂</code>。',points:{title:'共价键分类',items:['<strong>H₂</strong>：H-H 单键，非极性','<strong>Cl₂</strong>：Cl-Cl 单键，非极性','<strong>H₂O</strong>：H-O 极性键','<strong>CO₂</strong>：C=O 双键，极性键']}},
+  {tag:'共价键',name:'极性与非极性',body:'同种元素原子间共用电子对<strong>不偏移</strong>，称为<strong>非极性共价键</strong>（如 H-H、Cl-Cl）。不同元素原子间共用电子对<strong>偏向吸引电子能力强</strong>的一方，称为<strong>极性共价键</strong>（如 H-O、H-Cl）。',points:{title:'极性判断',items:['<strong>非极性</strong>：同种元素，电子对居中','<strong>极性</strong>：不同元素，电子对偏向','<strong>电负性差</strong>：越大极性越强','<strong>H₂O</strong>：电子对偏向 O（氧电负性大）']}},
+  {tag:'金属键',name:'金属自由电子海',body:'<strong>金属键</strong>：金属原子失去外层电子形成<strong>金属阳离子</strong>，<strong>自由电子</strong>在阳离子间自由移动形成"电子海"，把阳离子"粘合"在一起。',points:{title:'金属键本质',items:['<strong>金属阳离子</strong>：失去外层电子','<strong>自由电子</strong>：在金属内部自由移动','<strong>电子海模型</strong>：阳离子浸在电子海中','<strong>解释</strong>：导电、导热、延展性']}},
+  {tag:'键参数',name:'键能键长键角',body:'<strong>键能</strong>：拆开 1 mol 共价键所需能量（kJ/mol），越大越牢固。<strong>键长</strong>：成键两原子核间距。<strong>键角</strong>：相邻两键夹角，决定分子空间构型。',points:{title:'键参数对比',items:['<strong>H-H</strong>：键能 436 kJ/mol','<strong>Cl-Cl</strong>：键能 243 kJ/mol','<strong>H-O</strong>：键能 463 kJ/mol','<strong>键角</strong>：H₂O=104.5°, CO₂=180°']}},
+  {tag:'稳定结构',name:'8电子稳定结构',body:'原子通过得失或共用电子，使<strong>最外层达到 8 电子稳定结构</strong>（He、H 为 2 电子），即<strong>稀有气体结构</strong>。这是化学键形成的<strong>根本驱动力</strong>。',points:{title:'稳定结构规则',items:['<strong>Na</strong>：失 1e⁻ → Ne 结构（2,8）','<strong>Cl</strong>：得 1e⁻ → Ar 结构（2,8,8）','<strong>O</strong>：得/共用 2e⁻ → 8 电子','<strong>H</strong>：得/共用 1e⁻ → 2 电子（He）']}},
+  {tag:'电子式',name:'电子式表示',body:'用<strong>电子式</strong>表示化学键形成：在元素符号周围用<strong>小黑点</strong>表示最外层电子。离子键用方括号 [ ] 标出阴离子并带电荷；共价键用共用电子对表示。',points:{title:'电子式写法',items:['<strong>NaCl</strong>：Na⁺[ Cl ]⁻（带圈为 8e⁻）','<strong>H₂</strong>：H:H（共用一对）','<strong>H₂O</strong>：H:O:H（两对共用）','<strong>CO₂</strong>：O::C::O（两对双键）']}},
+  {tag:'总结',name:'核心速记',body:'化学键是<strong>相邻原子间的强烈作用</strong>：离子键靠<strong>电子转移</strong>，共价键靠<strong>共用电子</strong>，金属键靠<strong>自由电子海</strong>。化学键的形成本质是<strong>原子趋向稳定结构</strong>。',points:{title:'三键对比',items:['<strong>离子键</strong>：电子转移，静电吸引','<strong>共价键</strong>：共用电子对','<strong>金属键</strong>：自由电子海','<strong>本质</strong>：趋向 8 电子稳定']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+function setDash(time){ctx.setLineDash([5,3]);ctx.lineDashOffset=-time*10;}
+function setSolid(){ctx.setLineDash([]);}
+function drawAtom(x,y,r,color,label,tc){
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(x,y,r*1.3,0,7);ctx.stroke();
+  drawText(label,x,y,tc,14);
 }
 
-function drawCovalent(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  const p=Math.min(1,t*0.3);
-  const hx=W*0.35,hy=H*0.5;
-  const ox=W*0.65,oy=H*0.5;
-  
-  // H原子
-  ctx.beginPath();ctx.arc(hx,hy,25,0,Math.PI*2);ctx.fillStyle='rgba(9,132,227,0.3)';ctx.fill();
-  ctx.strokeStyle='#0984e3';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('H',hx,hy);
-  
-  // O原子
-  ctx.beginPath();ctx.arc(ox,oy,35,0,Math.PI*2);ctx.fillStyle='rgba(232,67,143,0.3)';ctx.fill();
-  ctx.strokeStyle='#e84393';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle='#fff';ctx.fillText('O',ox,oy);
-  
-  // 共用电子对
-  if(p>0.3){
-    const mx=(hx+ox)/2,my=(hy+oy)/2;
-    ctx.beginPath();ctx.arc(mx,my-8,5,0,Math.PI*2);ctx.fillStyle='#fdcb6e';ctx.fill();
-    ctx.beginPath();ctx.arc(mx,my+8,5,0,Math.PI*2);ctx.fillStyle='#fdcb6e';ctx.fill();
-    ctx.fillStyle='#fdcb6e';ctx.font='12px sans-serif';
-    ctx.fillText('共用电子对',mx,my+30);
-    // 连接线
-    ctx.strokeStyle='#fdcb6e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(hx+25,hy);ctx.lineTo(ox-35,oy);ctx.stroke();
-  }
-  
-  // O外层电子
-  for(let i=0;i<6;i++){
-    const a=i*Math.PI*2/6+t;
-    ctx.beginPath();ctx.arc(ox+28*Math.cos(a),oy+28*Math.sin(a),3,0,Math.PI*2);
-    ctx.fillStyle='#e84393';ctx.fill();
-  }
-  // H电子
-  ctx.beginPath();ctx.arc(hx+20*Math.cos(t*2),hy+20*Math.sin(t*2),3,0,Math.PI*2);
-  ctx.fillStyle='#0984e3';ctx.fill();
-  
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
-  ctx.fillText('共价键：H₂O分子（共用电子对）',W/2,30);
-  ctx.font='12px sans-serif';ctx.fillStyle='#9fb0c8';
-  ctx.fillText('非金属原子通过共用电子对结合',W/2,52);
+// ===== 场景1：化学键定义（三键并列）=====
+function drawDefScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化学键 · 相邻原子间的强烈相互作用',W/2,30,'#10b981',16);
+  const cols=['离子键','共价键','金属键'];
+  const colors=['#10b981','#f59e0b','#a855f7'];
+  cols.forEach((name,i)=>{
+    const cx=120+i*(W-240)/3+30;
+    const cy=H/2;
+    ctx.fillStyle=colors[i]+'22';ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+    roundRect(cx-90,cy-90,180,180,12);ctx.fill();ctx.stroke();
+    drawText(name,cx,cy-60,colors[i],15);
+    if(i===0){
+      ctx.fillStyle=EL.Na;ctx.beginPath();ctx.arc(cx-40,cy,20,0,7);ctx.fill();
+      drawText('Na⁺',cx-40,cy,'#fff',11);
+      ctx.fillStyle=EL.Cl;ctx.beginPath();ctx.arc(cx+40,cy,20,0,7);ctx.fill();
+      drawText('Cl⁻',cx+40,cy,'#1a1a1a',11);
+      ctx.strokeStyle=colors[i];ctx.lineWidth=1.5;setDash(time);
+      ctx.beginPath();ctx.moveTo(cx-20,cy);ctx.lineTo(cx+20,cy);ctx.stroke();
+      setSolid();
+    }else if(i===1){
+      ctx.fillStyle=EL.H;ctx.beginPath();ctx.arc(cx-30,cy,18,0,7);ctx.fill();
+      drawText('H',cx-30,cy,'#1a1a1a',12);
+      ctx.fillStyle=EL.H;ctx.beginPath();ctx.arc(cx+30,cy,18,0,7);ctx.fill();
+      drawText('H',cx+30,cy,'#1a1a1a',12);
+      drawText(':',cx,cy-4,colors[i],16);
+      drawText('·',cx,cy+8,colors[i],14);
+    }else{
+      ctx.fillStyle='#a855f755';
+      roundRect(cx-70,cy-30,140,60,6);ctx.fill();
+      for(let k=-2;k<=2;k++){
+        ctx.fillStyle=EL.Na;
+        ctx.beginPath();ctx.arc(cx+k*28,cy,12,0,7);ctx.fill();
+        drawText('+',cx+k*28,cy,'#fff',11);
+      }
+      const ex=cx+Math.sin(time*3+i)*30;
+      ctx.fillStyle='#67e8f9';
+      ctx.beginPath();ctx.arc(ex,cy+20,4,0,7);ctx.fill();
+      drawText('e⁻',ex,cy+32,'#67e8f9',9);
+    }
+    drawText(['电子转移','共用电子','自由电子'][i],cx,cy+60,'#9ab0d0',11);
+  });
+  drawText('本质：原子趋向最外层 8 电子稳定结构',W/2,H-35,'#34d399',12);
 }
 
-function drawMetallic(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  // 金属阳离子晶格+自由电子
-  const rows=4,cols=5;
-  const sx=W*0.2,sy=H*0.2,gx=(W*0.6)/(cols-1),gy=(H*0.5)/(rows-1);
-  
-  // 自由电子(随机运动)
-  for(let i=0;i<20;i++){
-    const ex=W*0.15+Math.sin(t*1.5+i*7)*W*0.35+W*0.35;
-    const ey=H*0.15+Math.cos(t*1.2+i*5)*H*0.35+H*0.3;
-    ctx.beginPath();ctx.arc(ex,ey,3,0,Math.PI*2);
-    ctx.fillStyle='rgba(232,67,143,0.7)';ctx.fill();
+// ===== 场景2：NaCl 形成电子转移 =====
+function drawNaClScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('NaCl 形成 · 电子转移 · 静电吸引',W/2,30,'#10b981',16);
+  const cx=W/2,cy=H/2+10;
+  const transPhase=(Math.sin(time*1.5)+1)/2;
+  const naX=cx-180;
+  drawAtom(naX,cy,40,EL.Na,'Na','#fff');
+  if(transPhase>0.5){
+    drawText('Na⁺',naX,cy+70,EL.Na,13);
+  }else{
+    drawText('Na',naX,cy+70,EL.Na,13);
   }
-  
-  // 阳离子
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
-      const x=sx+c*gx,y=sy+r*gy;
-      ctx.beginPath();ctx.arc(x,y,18,0,Math.PI*2);
-      ctx.fillStyle='rgba(9,132,227,0.3)';ctx.fill();
-      ctx.strokeStyle='#0984e3';ctx.lineWidth=1.5;ctx.stroke();
-      ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText('M⁺',x,y);
+  const clX=cx+180;
+  drawAtom(clX,cy,50,EL.Cl,'Cl','#1a1a1a');
+  drawText('Cl',clX,cy+80,EL.Cl,13);
+  if(transPhase>0.7) drawText('→ Cl⁻',clX+60,cy,'#10b981',13);
+  const eFlyX=naX+45+(clX-naX-95)*transPhase;
+  ctx.fillStyle='#67e8f9';
+  ctx.beginPath();ctx.arc(eFlyX,cy,7,0,7);ctx.fill();
+  drawText('e⁻',eFlyX,cy-18,'#67e8f9',11);
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;setDash(time);
+  ctx.beginPath();ctx.moveTo(naX+45,cy);ctx.lineTo(clX-55,cy);ctx.stroke();
+  setSolid();
+  if(transPhase>0.85){
+    ctx.strokeStyle='#f59e0b';ctx.lineWidth=3;
+    ctx.shadowColor='#f59e0b';ctx.shadowBlur=15;
+    ctx.beginPath();ctx.moveTo(naX+45,cy);ctx.lineTo(clX-55,cy);ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText('离子键（静电吸引）',cx,cy-90,'#f59e0b',14);
+  }
+  drawText('Na  +  Cl  →  Na⁺Cl⁻  →  NaCl',W/2,H-60,'#9ab0d0',13);
+  drawText('Na 失 1e⁻（达 Ne 结构），Cl 得 1e⁻（达 Ar 结构）',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景3：H₂ 共用电子对 =====
+function drawH2Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('H₂ · 共用电子对 · 非极性共价键',W/2,30,'#10b981',16);
+  const cx=W/2,cy=H/2;
+  const bondLen=90;
+  drawAtom(cx-bondLen/2,cy,28,EL.H,'H','#1a1a1a');
+  drawAtom(cx+bondLen/2,cy,28,EL.H,'H','#1a1a1a');
+  const off=Math.sin(time*4)*4;
+  ctx.fillStyle='#67e8f9';
+  ctx.beginPath();ctx.arc(cx,cy-5+off,5,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy+5-off,5,0,7);ctx.fill();
+  drawText('共用电子对',cx,cy-50,'#67e8f9',12);
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;setDash(time);
+  ctx.beginPath();ctx.moveTo(cx-25,cy-10);ctx.lineTo(cx-6,cy-5+off);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+25,cy-10);ctx.lineTo(cx+6,cy-5+off);ctx.stroke();
+  setSolid();
+  drawText('H:H',cx,cy+60,EL.H,16);
+  drawText('每个 H 都"看到" 2 个电子 → 达到 He 稳定结构',W/2,H-60,'#9ab0d0',12);
+  drawText('同种元素 → 电子对不偏移 → 非极性键',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景4：H₂O 极性分子 =====
+function drawH2OScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('H₂O · 极性分子 · 电子对偏向 O',W/2,30,'#10b981',16);
+  const cx=W/2,cy=H/2+10;
+  const angle=104.5*Math.PI/180;
+  const bondLen=70;
+  drawAtom(cx,cy,36,EL.O,'O','#fff');
+  const h1x=cx-bondLen*Math.sin(angle/2);
+  const h1y=cy+bondLen*Math.cos(angle/2);
+  const h2x=cx+bondLen*Math.sin(angle/2);
+  const h2y=cy+bondLen*Math.cos(angle/2);
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(h1x,h1y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(h2x,h2y);ctx.stroke();
+  drawAtom(h1x,h1y,22,EL.H,'H','#1a1a1a');
+  drawAtom(h2x,h2y,22,EL.H,'H','#1a1a1a');
+  const off=Math.sin(time*3)*3;
+  ctx.fillStyle='#67e8f9';
+  for(let k=0;k<2;k++){
+    const ex1=cx+(h1x-cx)*0.35;
+    const ey1=cy+(h1y-cy)*0.35;
+    const ex2=cx+(h2x-cx)*0.35;
+    const ey2=cy+(h2y-cy)*0.35;
+    ctx.beginPath();ctx.arc(ex1+(k?-3:3),ey1+off,4,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(ex2+(k?-3:3),ey2-off,4,0,7);ctx.fill();
+  }
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo((cx+h1x)/2,(cy+h1y)/2);ctx.lineTo(cx+(h1x-cx)*0.4,cy+(h1y-cy)*0.4);ctx.stroke();
+  drawText('δ⁻',cx,cy-50,'#f59e0b',14);
+  drawText('δ⁺',h1x-20,h1y+18,'#f59e0b',13);
+  drawText('δ⁺',h2x+20,h2y+18,'#f59e0b',13);
+  drawText('104.5°',cx,cy+bondLen+30,'#34d399',13);
+  drawText('电子对偏向 O（电负性大）→ 极性键 + 极性分子',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景5：CO₂ 直线型 =====
+function drawCO2Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('CO₂ · 直线型 · O=C=O',W/2,30,'#10b981',16);
+  const cx=W/2,cy=H/2+10;
+  const bondLen=90;
+  drawAtom(cx,cy,34,EL.C,'C','#fff');
+  drawAtom(cx-bondLen,cy,30,EL.O,'O','#fff');
+  drawAtom(cx+bondLen,cy,30,EL.O,'O','#fff');
+  ctx.fillStyle='#67e8f9';
+  for(let s=-1;s<=1;s+=2){
+    for(let dy=-7;dy<=7;dy+=14){
+      const ex=cx+s*bondLen*0.5;
+      ctx.beginPath();ctx.arc(ex,cy+dy+Math.sin(time*2+s)*2,4,0,7);ctx.fill();
     }
   }
-  
-  ctx.fillStyle='#e8edf6';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
-  ctx.fillText('金属键："电子海"模型',W/2,30);
-  ctx.font='12px sans-serif';ctx.fillStyle='#9fb0c8';
-  ctx.fillText('金属阳离子沉浸在自由电子的"电子海"中 → 导电、导热、延展性',W/2,H*0.88);
+  drawText('δ⁻',cx-bondLen,cy-45,'#f59e0b',13);
+  drawText('δ⁻',cx+bondLen,cy-45,'#f59e0b',13);
+  drawText('δ⁺',cx,cy-45,'#f59e0b',13);
+  drawText('180°',cx,cy+55,'#34d399',13);
+  drawText('O = C = O（双键，直线型）',W/2,H-60,'#9ab0d0',13);
+  drawText('极性键，但结构对称 → 非极性分子',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景6：金属自由电子海 =====
+function drawMetalScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('金属键 · 自由电子海模型',W/2,30,'#a855f7',16);
+  const cx=W/2,cy=H/2+10;
+  ctx.fillStyle='rgba(103,232,249,0.08)';
+  roundRect(80,cy-90,W-160,180,12);ctx.fill();
+  drawText('电子海（自由移动的电子）',W/2,cy-110,'#67e8f9',12);
+  for(let i=-3;i<=3;i++){
+    for(let j=-1;j<=1;j++){
+      const x=cx+i*70;
+      const y=cy+j*70;
+      const wobble=Math.sin(time*2+i+j)*2;
+      ctx.fillStyle=EL.Na;
+      ctx.beginPath();ctx.arc(x+wobble,y,18,0,7);ctx.fill();
+      drawText('Na⁺',x+wobble,y,'#fff',10);
+    }
+  }
+  for(let k=0;k<12;k++){
+    const phase=time*1.5+k*0.7;
+    const ex=cx+Math.cos(phase+k)*(W/2-100);
+    const ey=cy+Math.sin(phase*1.3+k)*70;
+    ctx.fillStyle='#67e8f9';
+    ctx.beginPath();ctx.arc(ex,ey,4,0,7);ctx.fill();
+  }
+  drawText('阳离子浸在自由电子海中 → 解释导电、导热、延展性',W/2,H-50,'#34d399',12);
+  drawText('金属原子失外层电子 → 阳离子 + 自由电子',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景7：键能柱状图 =====
+function drawBondEnergyScene(){
+  const W=cv.width,H=cv.height;
+  drawText('常见共价键键能对比（kJ/mol）',W/2,30,'#10b981',16);
+  const data=[
+    {name:'H-H',v:436,c:'#10b981'},
+    {name:'Cl-Cl',v:243,c:'#f59e0b'},
+    {name:'H-Cl',v:431,c:'#a855f7'},
+    {name:'H-O',v:463,c:'#ef4444'},
+    {name:'C-H',v:413,c:'#67e8f9'},
+    {name:'C=O',v:745,c:'#ec4899'},
+    {name:'N≡N',v:945,c:'#fbbf24'},
+  ];
+  const maxV=1000;
+  const barW=(W-160)/data.length-10;
+  const baseY=H-90;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,80);ctx.lineTo(80,baseY);ctx.lineTo(W-80,baseY);ctx.stroke();
+  for(let v=0;v<=1000;v+=200){
+    const y=baseY-v/maxV*(baseY-100);
+    drawText(v,70,y,'#5a6a8a',10,'right');
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(80,y);ctx.lineTo(W-80,y);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  data.forEach((d,i)=>{
+    const x=90+i*(barW+10);
+    const h=d.v/maxV*(baseY-100);
+    ctx.fillStyle=d.c+'cc';ctx.strokeStyle=d.c;ctx.lineWidth=2;
+    roundRect(x,baseY-h,barW,h,4);ctx.fill();ctx.stroke();
+    drawText(d.v,x+barW/2,baseY-h-15,d.c,12);
+    drawText(d.name,x+barW/2,baseY+18,'#fff',11);
+  });
+  drawText('键能越大，化学键越牢固',W/2,H-40,'#34d399',12);
+  drawText('三键 > 双键 > 单键（同类原子）',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景8：8 电子稳定结构 =====
+function drawStableScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('8 电子稳定结构 · 稀有气体构型',W/2,30,'#10b981',16);
+  const cx=W/2,cy=H/2;
+  const items=[
+    {label:'Na → Na⁺',sub:'失 1e⁻ → 2,8（Ne）',c:EL.Na},
+    {label:'Cl → Cl⁻',sub:'得 1e⁻ → 2,8,8（Ar）',c:EL.Cl},
+    {label:'H → H⁺/H:',sub:'得/共用 1e⁻ → 2（He）',c:'#67e8f9'},
+  ];
+  items.forEach((it,i)=>{
+    const x=120+i*(W-240)/3;
+    drawAtom(x,cy-20,32,it.c,it.label.split('→')[0].trim(),'#fff');
+    ctx.strokeStyle=it.c;ctx.lineWidth=2;setDash(time);
+    ctx.beginPath();ctx.moveTo(x,cy+15);ctx.lineTo(x,cy+50);ctx.stroke();
+    setSolid();
+    drawText('▼',x,cy+58,it.c,12);
+    drawText(it.label,x,cy+85,it.c,13);
+    drawText(it.sub,x,cy+110,'#9ab0d0',11);
+  });
+  drawText('驱动化学键形成：原子趋向最外层 8 电子（He 为 2）',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景9：电子式表示 =====
+function drawEleFormulaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电子式 · 表示化学键形成',W/2,30,'#10b981',16);
+  const items=[
+    {name:'NaCl',formula:'Na⁺ [ :Cl: ]⁻',desc:'离子键：方括号 + 电荷',c:'#10b981'},
+    {name:'H₂',formula:'H : H',desc:'共用一对电子',c:'#67e8f9'},
+    {name:'H₂O',formula:'H : O : H',desc:'两对共用电子对',c:'#ef4444'},
+    {name:'CO₂',formula:'O :: C :: O',desc:'双键（两对共用电子）',c:'#f59e0b'},
+  ];
+  items.forEach((it,i)=>{
+    const y=80+i*95;
+    ctx.fillStyle=it.c+'22';ctx.strokeStyle=it.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,80,8);ctx.fill();ctx.stroke();
+    drawText(it.name,120,y+25,it.c,15,'left');
+    ctx.font='bold 18px Consolas,monospace';ctx.fillStyle='#fff';ctx.textAlign='left';
+    ctx.fillText(it.formula,220,y+30);
+    drawText(it.desc,W-120,y+30,'#9ab0d0',12,'right');
+    const dotX=120+Math.sin(time*2+i)*5;
+    ctx.fillStyle=it.c;
+    ctx.beginPath();ctx.arc(dotX,y+55,3,0,7);ctx.fill();
+  });
+  drawText('小黑点 · 表示最外层电子；共用对在两原子之间',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景10：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('化学键 · 核心总结',W/2,40,'#10b981',18);
+  const items=[
+    {t:'离子键',d:'电子转移，静电吸引',c:'#10b981',ex:'NaCl, KCl, MgCl₂'},
+    {t:'共价键',d:'共用电子对',c:'#f59e0b',ex:'H₂, Cl₂, H₂O, CO₂'},
+    {t:'金属键',d:'自由电子海',c:'#a855f7',ex:'Fe, Cu, Al'},
+    {t:'键能',d:'拆键所需能量',c:'#34d399',ex:'越大越牢固'},
+    {t:'键角',d:'决定分子构型',c:'#67e8f9',ex:'H₂O=104.5°'},
+    {t:'稳定结构',d:'8 电子驱动力',c:'#ec4899',ex:'稀有气体结构'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,150,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+40,m.c,16);
+    drawText(m.d,x+(W-160)/6,y+80,'#fff',12);
+    drawText(m.ex,x+(W-160)/6,y+115,'#9ab0d0',11);
+  });
 }
 
 function draw(){
-  if(mode==='ionic')drawIonic();
-  else if(mode==='covalent')drawCovalent();
-  else drawMetallic();
-  statusEl.textContent=`当前: ${mode==='ionic'?'离子键':mode==='covalent'?'共价键':'金属键'}`;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawDefScene(t);
+  else if(stepIdx===1)drawNaClScene(t);
+  else if(stepIdx===2)drawNaClScene(t);
+  else if(stepIdx===3)drawH2Scene(t);
+  else if(stepIdx===4)drawH2OScene(t);
+  else if(stepIdx===5)drawMetalScene(t);
+  else if(stepIdx===6)drawBondEnergyScene();
+  else if(stepIdx===7)drawStableScene(t);
+  else if(stepIdx===8)drawEleFormulaScene(t);
+  else if(stepIdx===9)drawSummaryScene();
 }
 
-let animId;
-function loop(ts){
-  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;draw();
-  animId=requestAnimationFrame(loop);
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
 }
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
-  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
-};
-document.getElementById('resetBtn').onclick=function(){t=0;draw();};
-document.getElementById('ionicBtn').onclick=function(){mode='ionic';t=0;draw();};
-document.getElementById('covalentBtn').onclick=function(){mode='covalent';t=0;draw();};
-document.getElementById('metallicBtn').onclick=function(){mode='metallic';t=0;draw();};
-draw();
-</script></body></html>
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -3,110 +3,554 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>实验室制取二氧化碳（微观）</title>
+<title>实验室制取二氧化碳 · 装置 · 验满 · 检验 · 微观</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1f1a;--panel:#0f2a23;--card:#143a30;--ink:#e8f8f0;--muted:#9bd4c0;--accent:#34d399;--accent2:#fbbf24;--line:#1f5240;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(251,191,36,.06)}
+.back:hover{background:rgba(251,191,36,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(52,211,153,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#051410;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#0a1f1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(52,211,153,.2);color:#a7f3d0;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1c4a3c;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a1f1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1c4a3c}button.primary{background:var(--accent);border-color:var(--accent);color:#0a1f1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">实验室制取二氧化碳（微观）</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">实验室制取二氧化碳</span><span class="subtitle">固液常温反应 · 向上排空气法 · 验满与检验</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>反应原理</h4><div class="v">CaCO₃ + 2HCl →<br>CaCl₂ + H₂O + CO₂↑</div></div>
+  <div class="card s2"><div class="num">2</div><h4>发生装置</h4><div class="v">固液常温反应<br>锥形瓶 + 长颈漏斗</div></div>
+  <div class="card s3"><div class="num">3</div><h4>收集方法</h4><div class="v">向上排空气法<br>CO₂ 密度大于空气</div></div>
+  <div class="card s4"><div class="num">4</div><h4>验满与检验</h4><div class="v">燃着木条熄灭验满<br>石灰水变浑浊检验</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>实验室制取CO₂：CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑。用大理石（CaCO₃）与稀盐酸反应，不用浓盐酸（挥发HCl气体）也不用稀硫酸（生成CaSO₄覆盖层阻止反应）。收集用向上排空气法。</p>
-    <div class="legend"><span class="li"><b style="color:#dfe6e9">■</b> CaCO₃（大理石）</span><span class="li"><b style="color:#0984e3">●</b> HCl分子</span><span class="li"><b style="color:#636e72">●</b> CO₂分子</span><span class="li"><b style="color:#00b894">●</b> H₂O分子</span></div>
-  <div class="key-points"><h3>实验要点</h3><ul><li>药品：大理石（CaCO₃）+ 稀盐酸（HCl）</li><li>方程式：CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑</li><li>不用稀H₂SO₄：生成CaSO₄微溶覆盖阻止反应</li><li>不用浓HCl：挥发使CO₂不纯</li><li>收集：向上排空气法（CO₂密度>空气）</li><li>检验：通入澄清石灰水→变浑浊</li></ul></div>
-    </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">装置</span><span id="stepTitle">反应装置</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9bd4c0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-const C={t:0,p:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){C.t=0;C.p=0;}
-function sceneUpdate(dt){if(C.p<1)C.p=Math.min(1,C.p+dt*0.25);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const cx=cv.width/2,cy=cv.height/2;
-  // CaCO3 solid (left) shrinking
-  const solidR=40*(1-C.p*0.6);
-  ctx.fillStyle='#cbd5e1';ctx.beginPath();ctx.arc(cx-180,cy,solidR,0,7);ctx.fill();
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='center';
-  ctx.fillText('CaCO₃ 大理石',cx-180,cy+solidR+18);
-  // acid
-  ctx.fillStyle='rgba(59,130,246,0.2)';ctx.fillRect(cx-260,cy+60,260,40);
-  ctx.fillStyle='#cdd7ea';ctx.fillText('稀盐酸 HCl',cx-130,cy+85);
-  // flying CO2 molecules
-  const n=Math.floor(C.p*14);
-  for(let i=0;i<n;i++){
-    const a=i/n*6.28;const rr=60+ (i*17)%120;
-    const x=cx+Math.cos(a+ C.t)*rr, y=cy+Math.sin(a*1.3+C.t)*rr*0.6;
-    ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fill();
-    ctx.fillStyle='#06281c';ctx.font='10px sans-serif';ctx.fillText('CO₂',x,y+3);
+// 原子颜色
+const COL={Ca:'#fb923c',C:'#1a1a1a',O:'#ef4444',H:'#ffffff',Cl:'#22c55e'};
+
+const STEPS=[
+  {tag:'装置',name:'反应装置（固液常温）',body:'<strong>实验室制 CO₂</strong> 采用<strong>固液常温反应装置</strong>：由<strong>锥形瓶</strong>（反应容器）、<strong>长颈漏斗</strong>（加液体，下端伸入液面以下防漏气）、<strong>导气管</strong>（引出 CO₂）组成。大理石（CaCO₃）装在锥形瓶中，稀盐酸由长颈漏斗加入。',points:{title:'装置三件套',items:['<strong>锥形瓶</strong>：盛放固体大理石','<strong>长颈漏斗</strong>：加稀盐酸（液封防漏气）','<strong>导气管</strong>：引出 CO₂ 到集气瓶','<strong>固液常温</strong>：不需加热，安全简便']}},
+  {tag:'装置',name:'药品选择',body:'<strong>大理石（或石灰石）+ 稀盐酸</strong>。大理石主要成分 CaCO₃，稀盐酸提供 H⁺。这套药品组合<strong>反应速率适中、CO₂ 纯度高、价格便宜</strong>，是实验室首选。',points:{title:'为什么是它们',items:['<strong>大理石</strong>：CaCO₃ 含量高，块状便于反应控制','<strong>稀盐酸</strong>：溶质质量分数约 5%~10%','<strong>反应速率适中</strong>：便于收集','<strong>固体颗粒</strong>：增大接触面积但不过快']}},
+  {tag:'装置',name:'药品禁忌',body:'<strong>三个不用</strong>，每个都有讲究：',points:{title:'三不选解析',items:['<strong>不用 H₂SO₄</strong>：生成微溶 CaSO₄ 覆盖大理石阻止反应','<strong>不用浓 HCl</strong>：易挥发 HCl 气体使 CO₂ 不纯','<strong>不用 Na₂CO₃ 粉末</strong>：反应过快不易收集','<strong>不用 HNO₃</strong>：易挥发、易分解，同 HCl 问题']}},
+  {tag:'装置',name:'反应原理',body:'<strong>化学方程式（复分解反应）</strong>：<code>CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑</code>。本质是<strong>强酸制弱酸</strong>：盐酸（强酸）置换出碳酸（弱酸），碳酸不稳定分解为 H₂O 和 CO₂↑。',points:{title:'反应本质',items:['<strong>类型</strong>：复分解反应（有气体生成）','<strong>配平</strong>：2 个 HCl 才能配平 H','<strong>强酸制弱酸</strong>：HCl 制 H₂CO₃','<strong>H₂CO₃ 分解</strong>：H₂CO₃ → H₂O + CO₂↑']}},
+  {tag:'收集',name:'收集方法',body:'CO₂ <strong>密度大于空气</strong>（44 vs 29），且<strong>能溶于水并与水反应</strong>（生成 H₂CO₃），所以采用<strong>向上排空气法</strong>收集。导气管要伸入集气瓶底部，让 CO₂ 自下而上充满。',points:{title:'向上排空气法',items:['<strong>密度大</strong>：CO₂ 沉于空气下方','<strong>不用排水法</strong>：CO₂ 溶于水','<strong>瓶口向上</strong>：CO₂ 从底部充满','<strong>导管伸到底部</strong>：减少空气残留']}},
+  {tag:'收集',name:'验满操作',body:'<strong>验满</strong>：将<strong>燃着的木条</strong>放在<strong>集气瓶口</strong>处。若木条<strong>立即熄灭</strong>，说明瓶内已充满 CO₂（CO₂ 既不燃烧也不支持燃烧）。',points:{title:'验满三要点',items:['<strong>位置</strong>：放瓶口，不是瓶内','<strong>现象</strong>：木条立即熄灭','<strong>原理</strong>：CO₂ 不燃烧不支持燃烧','<strong>注意</strong>：燃着木条，不是带火星木条']}},
+  {tag:'检验',name:'气体检验',body:'<strong>检验 CO₂</strong>：将气体通入<strong>澄清石灰水</strong>中，石灰水<strong>变浑浊</strong>即可确认是 CO₂。原理：<code>CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O</code>，生成不溶于水的 CaCO₃ 沉淀。',points:{title:'检验特征反应',items:['<strong>试剂</strong>：澄清石灰水（Ca(OH)₂）','<strong>现象</strong>：澄清 → 浑浊','<strong>原理</strong>：生成 CaCO₃ 沉淀','<strong>专属性</strong>：CO₂ 特征反应']}},
+  {tag:'微观',name:'微观分子重组',body:'<strong>微观视角</strong>：HCl 分子撞击 CaCO₃ 晶体表面，打断 Ca²⁺ 与 CO₃²⁻ 的离子键。<strong>原子重新组合</strong>：Ca²⁺ 与 2 个 Cl⁻ 结合生成 CaCl₂；2 个 H 与 CO₃²⁻ 中的 O 重新排列生成 H₂O 和 CO₂。',points:{title:'原子重组过程',items:['<strong>Ca²⁺ + 2Cl⁻</strong>：→ CaCl₂（留在溶液中）','<strong>2H + O</strong>：→ H₂O','<strong>C + 2O</strong>：→ CO₂（气体逸出）','<strong>CO₃²⁻ 离子</strong>：被 H⁺ 攻击，分解为 CO₂ 和 H₂O']}},
+  {tag:'应用',name:'生活应用',body:'CO₂ 在生活生产中应用广泛：',points:{title:'四大用途',items:['<strong>灭火</strong>：CO₂ 不燃不支持燃，密度大覆盖火源','<strong>碳酸饮料</strong>：CO₂ 溶于水形成 H₂CO₃','<strong>温室肥料</strong>：植物光合作用原料','<strong>干冰人工降雨</strong>：固态 CO₂ 升华吸热']}},
+  {tag:'总结',name:'核心速记',body:'实验室制取 CO₂ 是初中化学<strong>气体制备的经典实验</strong>，涵盖<strong>药品选择、装置原理、收集验满检验</strong>完整流程，以及微观层面的<strong>分子重组</strong>理解。',points:{title:'五句话总结',items:['<strong>反应</strong>：CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑','<strong>装置</strong>：固液常温（锥形瓶+长颈漏斗）','<strong>收集</strong>：向上排空气法','<strong>验满</strong>：燃着木条瓶口熄灭','<strong>检验</strong>：澄清石灰水变浑浊']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景1：锥形瓶装置图 =====
+function drawDeviceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('反应装置 · 固液常温反应',W/2,30,'#34d399',16);
+  const cx=W/2,cy=H/2+20;
+  // 铁架台（简化立柱）
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-200,cy+120);ctx.lineTo(cx+200,cy+120);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-150,cy+120);ctx.lineTo(cx-150,cy-160);ctx.stroke();
+  // 铁夹
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-150,cy-90);ctx.lineTo(cx-50,cy-90);ctx.stroke();
+  // 锥形瓶
+  ctx.fillStyle='rgba(155,212,192,0.08)';ctx.strokeStyle='#9bd4c0';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-25,cy-100);
+  ctx.lineTo(cx-25,cy-70);
+  ctx.lineTo(cx-70,cy+80);
+  ctx.lineTo(cx+70,cy+80);
+  ctx.lineTo(cx+25,cy-70);
+  ctx.lineTo(cx+25,cy-100);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 锥形瓶口
+  ctx.strokeRect(cx-25,cy-110,50,12);
+  // 液体（稀盐酸，浅绿色）
+  ctx.fillStyle='rgba(251,191,36,0.18)';
+  ctx.beginPath();
+  ctx.moveTo(cx-60,cy+30);
+  ctx.lineTo(cx-70,cy+80);
+  ctx.lineTo(cx+70,cy+80);
+  ctx.lineTo(cx+60,cy+30);
+  ctx.closePath();ctx.fill();
+  // 大理石块
+  ctx.fillStyle='#cbd5e1';
+  for(let i=0;i<5;i++){
+    const ox=cx-30+(i%3)*30,oy=cy+60+Math.floor(i/3)*15;
+    ctx.beginPath();
+    ctx.moveTo(ox-10,oy);ctx.lineTo(ox-7,oy-8);ctx.lineTo(ox+5,oy-9);
+    ctx.lineTo(ox+11,oy-3);ctx.lineTo(ox+8,oy+5);ctx.lineTo(ox-5,oy+6);
+    ctx.closePath();ctx.fill();
   }
-  // equation
-  ctx.fillStyle='#e8edf6';ctx.font='15px sans-serif';ctx.textAlign='center';
-  ctx.fillText('CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑',cx,cy-120);
-  statusEl.textContent='反应进度 '+Math.round(C.p*100)+'% ｜ 微观：CaCO₃ 被酸溶解，CO₂ 分子不断逸出';
+  // 长颈漏斗（伸入液面以下）
+  ctx.fillStyle='rgba(155,212,192,0.05)';ctx.strokeStyle='#9bd4c0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(cx-90,cy-130,18,6,0,0,7);ctx.fill();ctx.stroke();
+  ctx.strokeRect(cx-93,cy-130,6,210);
+  // 漏斗球部
+  ctx.fillStyle='rgba(251,191,36,0.12)';
+  ctx.beginPath();ctx.moveTo(cx-93,cy-110);ctx.lineTo(cx-110,cy-80);ctx.lineTo(cx-75,cy-80);ctx.closePath();ctx.fill();ctx.stroke();
+  // 导气管（从瓶塞引出）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(cx+15,cy-100);ctx.lineTo(cx+15,cy-130);ctx.lineTo(cx+120,cy-130);ctx.lineTo(cx+120,cy-160);
+  ctx.stroke();
+  // 标注
+  drawText('长颈漏斗',cx-90,cy-150,'#9bd4c0',12);
+  drawText('锥形瓶',cx-120,cy+50,'#9bd4c0',12);
+  drawText('大理石',cx+5,cy+95,'#cbd5e1',11,'#fff');
+  drawText('稀盐酸',cx-40,cy+50,'#fbbf24',11,'#fde68a');
+  drawText('导气管',cx+60,cy-145,'#34d399',12);
+  // 提示
+  const pulse=0.5+0.5*Math.sin(time*2);
+  drawText('固液混合 → 反应开始',W/2,H-40,'rgba(52,211,153,'+pulse+')',13);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+// ===== 场景2：反应过程（气泡上升） =====
+function drawReactionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('反应过程 · 大理石与盐酸反应生成 CO₂',W/2,30,'#34d399',16);
+  const cx=W/2,cy=H/2+30;
+  // 锥形瓶
+  ctx.fillStyle='rgba(155,212,192,0.08)';ctx.strokeStyle='#9bd4c0';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-25,cy-80);
+  ctx.lineTo(cx-70,cy+100);
+  ctx.lineTo(cx+70,cy+100);
+  ctx.lineTo(cx+25,cy-80);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.strokeRect(cx-25,cy-92,50,12);
+  // 液体
+  ctx.fillStyle='rgba(251,191,36,0.15)';
+  ctx.beginPath();
+  ctx.moveTo(cx-55,cy+20);
+  ctx.lineTo(cx-70,cy+100);
+  ctx.lineTo(cx+70,cy+100);
+  ctx.lineTo(cx+55,cy+20);
+  ctx.closePath();ctx.fill();
+  // 大理石块（缩小，表示消耗）
+  const shrink=0.5+0.5*Math.sin(time*0.5);
+  ctx.fillStyle='#cbd5e1';
+  for(let i=0;i<3;i++){
+    const ox=cx-25+i*25,oy=cy+75;
+    ctx.beginPath();
+    ctx.moveTo(ox-8*shrink,oy);ctx.lineTo(ox-5*shrink,oy-6*shrink);ctx.lineTo(ox+4*shrink,oy-7*shrink);
+    ctx.lineTo(ox+9*shrink,oy-2*shrink);ctx.lineTo(ox+6*shrink,oy+4*shrink);ctx.lineTo(ox-4*shrink,oy+5*shrink);
+    ctx.closePath();ctx.fill();
+  }
+  // CO₂ 气泡上升
+  for(let i=0;i<10;i++){
+    const phase=(time*1.5+i*0.5)%3;
+    const bx=cx-30+(i*13)%60;
+    const by=cy+100-phase*100;
+    if(by>cy+15){
+      ctx.fillStyle='rgba(255,255,255,0.3)';
+      ctx.strokeStyle='rgba(255,255,255,0.8)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(bx,by,3+(i%3),0,7);ctx.fill();ctx.stroke();
+    }
+  }
+  // 上升的 CO₂ 分子
+  for(let i=0;i<8;i++){
+    const ph=(time*1+i*0.4)%2;
+    const mx=cx-50+(i*23)%100+Math.sin(time*2+i)*8;
+    const my=cy-80-ph*150;
+    if(my<cy-80&&my>cy-200){
+      drawCO2Molecule(mx,my,0.8);
+    }
+  }
+  // 方程式
+  ctx.fillStyle='#e8f8f0';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+  ctx.fillText('CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑',W/2,H-60);
+  drawText('气泡上升 → CO₂ 分子逸出',W/2,H-30,'#34d399',13);
+}
+
+// 绘制 CO₂ 分子（O=C=O）
+function drawCO2Molecule(x,y,s){
+  s=s||1;
+  // 中心 C
+  ctx.fillStyle=COL.C;ctx.beginPath();ctx.arc(x,y,7*s,0,7);ctx.fill();
+  ctx.strokeStyle='#444';ctx.lineWidth=1;ctx.stroke();
+  // 左右 O
+  ctx.fillStyle=COL.O;
+  ctx.beginPath();ctx.arc(x-14*s,y,6*s,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(x+14*s,y,6*s,0,7);ctx.fill();
+  // 双键
+  ctx.strokeStyle='#666';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(x-9*s,y-2*s);ctx.lineTo(x-9*s+(-3)*s,y-2*s);ctx.stroke();
+}
+
+// ===== 场景3：向上排空气法收集 =====
+function drawCollectScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('收集方法 · 向上排空气法',W/2,30,'#34d399',16);
+  const cx=W/2,cy=H/2+20;
+  // 集气瓶（瓶口向上）
+  ctx.fillStyle='rgba(155,212,192,0.05)';ctx.strokeStyle='#9bd4c0';ctx.lineWidth=2;
+  ctx.fillRect(cx-60,cy-100,120,200);ctx.fill();ctx.stroke();
+  // 瓶口
+  ctx.strokeStyle='#9bd4c0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-65,cy-100);ctx.lineTo(cx-55,cy-100);ctx.moveTo(cx+55,cy-100);ctx.lineTo(cx+65,cy-100);ctx.stroke();
+  // 瓶口盖（玻璃片）
+  ctx.fillStyle='rgba(155,212,192,0.3)';ctx.fillRect(cx-65,cy-108,130,6);
+  // CO₂ 充满程度（从底部上升）
+  const fill=0.3+0.7*(0.5+0.5*Math.sin(time*0.6));
+  const fillY=cy+100-fill*200;
+  ctx.fillStyle='rgba(52,211,153,0.3)';
+  ctx.fillRect(cx-59,fillY,118,cy+100-fillY);
+  // CO₂ 分子（充满区域）
+  for(let i=0;i<12;i++){
+    const mx=cx-50+(i*17)%100;
+    const my=fillY+10+(i*23)%Math.max(20,cy+90-fillY);
+    if(my<cy+95){
+      drawCO2Molecule(mx,my,0.6);
+    }
+  }
+  // 导气管（从瓶口伸入瓶底）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(cx+90,cy-130);ctx.lineTo(cx+90,cy-100);ctx.lineTo(cx+25,cy-100);ctx.lineTo(cx+25,cy+85);
+  ctx.stroke();
+  // 气泡从导管冒出
+  for(let i=0;i<5;i++){
+    const ph=(time*1.5+i*0.3)%1.2;
+    const by=cy+85-ph*60;
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.beginPath();ctx.arc(cx+25,by,2.5,0,7);ctx.fill();
+  }
+  // 空气箭头（从瓶口排出）
+  ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.lineWidth=1.5;
+  for(let i=0;i<3;i++){
+    const ax=cx-30+i*30;
+    ctx.beginPath();ctx.moveTo(ax,cy-100);ctx.lineTo(ax,cy-120);ctx.stroke();
+    ctx.fillStyle='rgba(251,191,36,0.6)';
+    ctx.beginPath();ctx.moveTo(ax,cy-120);ctx.lineTo(ax-3,cy-115);ctx.lineTo(ax+3,cy-115);ctx.fill();
+  }
+  // 标注
+  drawText('集气瓶',cx-90,cy,'#9bd4c0',12);
+  drawText('CO₂ 从底部进入',cx+25,cy+95,'#34d399',11);
+  drawText('空气↑',cx-30,cy-130,'#fbbf24',12);
+  drawText('CO₂ 密度大于空气 → 沉于瓶底',W/2,H-40,'#34d399',13);
+}
+
+// ===== 场景4：验满操作 =====
+function drawCheckFullScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('验满操作 · 燃着木条放瓶口',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 集气瓶（已充满 CO₂）
+  ctx.fillStyle='rgba(52,211,153,0.3)';ctx.strokeStyle='#9bd4c0';ctx.lineWidth=2;
+  ctx.fillRect(cx-60,cy-100,120,200);ctx.fill();ctx.stroke();
+  // 玻璃片
+  ctx.fillStyle='rgba(155,212,192,0.3)';ctx.fillRect(cx-65,cy-108,130,6);
+  // CO₂ 分子（充满）
+  for(let i=0;i<14;i++){
+    const mx=cx-50+(i*13)%100;
+    const my=cy-85+(i*29)%180;
+    drawCO2Molecule(mx,my,0.5);
+  }
+  // 燃着的木条（从上方靠近瓶口）
+  const woodX=cx,woodY=cy-130;
+  ctx.strokeStyle='#92400e';ctx.lineWidth=5;
+  ctx.beginPath();ctx.moveTo(woodX-80,woodY-60);ctx.lineTo(woodX,woodY);ctx.stroke();
+  // 火焰
+  const flame=0.7+0.3*Math.sin(time*5);
+  const isOut=(time%4)>2.5; // 火焰熄灭周期
+  if(!isOut){
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.moveTo(woodX,woodY);ctx.quadraticCurveTo(woodX-8*flame,woodY-12,woodX,woodY-25);ctx.quadraticCurveTo(woodX+8*flame,woodY-12,woodX,woodY);ctx.fill();
+    ctx.fillStyle='#f87171';
+    ctx.beginPath();ctx.moveTo(woodX,woodY);ctx.quadraticCurveTo(woodX-4*flame,woodY-8,woodX,woodY-16);ctx.quadraticCurveTo(woodX+4*flame,woodY-8,woodX,woodY);ctx.fill();
+  } else {
+    // 熄灭烟
+    ctx.fillStyle='rgba(150,150,150,0.6)';
+    for(let i=0;i<3;i++){
+      ctx.beginPath();ctx.arc(woodX+i*2-2,woodY-8-i*5,2+i,0,7);ctx.fill();
+    }
+  }
+  // 标注
+  drawText('燃着的木条',woodX-50,woodY-50,'#fbbf24',12,'left');
+  drawText('瓶口',cx+65,cy-100,'#9bd4c0',11,'left');
+  // 结论
+  if(isOut){
+    drawText('木条熄灭 → CO₂ 已满',W/2,H-50,'#34d399',14);
+  } else {
+    drawText('木条靠近瓶口...',W/2,H-50,'#fbbf24',14);
+  }
+  drawText('CO₂ 不燃烧、不支持燃烧',W/2,H-25,'#9bd4c0',12);
+}
+
+// ===== 场景5：检验（澄清石灰水变浑浊） =====
+function drawTestScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('气体检验 · CO₂ 通入澄清石灰水',W/2,30,'#34d399',16);
+  const cx=W/2,cy=H/2+20;
+  // 试管
+  ctx.fillStyle='rgba(155,212,192,0.05)';ctx.strokeStyle='#9bd4c0';ctx.lineWidth=2;
+  roundRect(cx-30,cy-120,60,220,8);ctx.fill();ctx.stroke();
+  // 试管口
+  ctx.strokeStyle='#9bd4c0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-30,cy-120);ctx.lineTo(cx+30,cy-120);ctx.stroke();
+  // 石灰水（逐渐变浑浊）
+  const turb=0.5+0.5*Math.sin(time*0.6); // 0~1 浑浊度
+  ctx.fillStyle='rgba('+(255-turb*150)+','+(255-turb*180)+','+(220-turb*180)+',0.7)';
+  ctx.fillRect(cx-28,cy-50,56,148);
+  // 沉淀颗粒（浑浊后）
+  if(turb>0.3){
+    for(let i=0;i<20;i++){
+      const px=cx-25+(i*7)%50;
+      const py=cy-40+(i*13)%130;
+      ctx.fillStyle='rgba(255,255,255,0.8)';
+      ctx.beginPath();ctx.arc(px,py,1.5,0,7);ctx.fill();
+    }
+  }
+  // 导气管（通入石灰水）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(cx+80,cy-160);ctx.lineTo(cx+10,cy-160);ctx.lineTo(cx+10,cy-30);
+  ctx.stroke();
+  // CO₂ 气泡（从导管冒出）
+  for(let i=0;i<5;i++){
+    const ph=(time*1.5+i*0.4)%1.5;
+    const by=cy-30-ph*70;
+    ctx.fillStyle='rgba(255,255,255,0.5)';
+    ctx.beginPath();ctx.arc(cx+10,by,3,0,7);ctx.fill();
+  }
+  // 标签
+  drawText('澄清石灰水',cx+50,cy,'#9bd4c0',12,'left');
+  drawText(turb>0.5?'变浑浊':'澄清',cx+50,cy+25,turb>0.5?'#fbbf24':'#9bd4c0',13,'left');
+  // 方程式
+  ctx.fillStyle='#e8f8f0';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  ctx.fillText('CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O',W/2,H-55);
+  drawText('沉淀 CaCO₃ 使石灰水变浑浊',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景6：微观分子重组 =====
+function drawMicroScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('微观视角 · 原子重组',W/2,30,'#34d399',16);
+  const cx=W/2,cy=H/2;
+  const phase=(time*0.4)%4; // 0~4 周期
+
+  // 左侧：CaCO₃ + HCl
+  drawText('反应前',120,cy-150,'#9bd4c0',13);
+  // CaCO₃ 离子组
+  const leftX=120,leftY=cy-50;
+  if(phase<2){
+    drawCaIon(leftX-20,leftY);
+    drawCO3Ion(leftX+20,leftY);
+    // 两个 HCl
+    drawHClMolecule(leftX-15,cy+30);
+    drawHClMolecule(leftX+15,cy+50);
+  }
+
+  // 中间：碰撞箭头
+  if(phase>=0.8&&phase<2){
+    const alpha=phase-0.8;
+    ctx.strokeStyle='rgba(251,191,36,'+(1-alpha)+')';ctx.lineWidth=2;
+    for(let i=0;i<3;i++){
+      const ax=180+i*30;
+      ctx.beginPath();ctx.moveTo(ax,cy);ctx.lineTo(ax+15,cy);ctx.stroke();
+      ctx.fillStyle='rgba(251,191,36,'+(1-alpha)+')';
+      ctx.beginPath();ctx.moveTo(ax+15,cy);ctx.lineTo(ax+10,cy-4);ctx.lineTo(ax+10,cy+4);ctx.fill();
+    }
+  }
+
+  // 中右：原子散开重组
+  if(phase>=1.5&&phase<3.5){
+    const p=(phase-1.5)/2; // 0~1
+    // Ca²⁺ 飞向 Cl
+    const cx2=cx+50,cy2=cy;
+    drawAtom(cx2-50+p*30,cy2-30,COL.Ca,'Ca',1);
+    drawAtom(cx2+50-p*30,cy2-30,COL.Cl,'Cl',1);
+    drawAtom(cx2+50-p*20,cy2+10,COL.Cl,'Cl',1);
+    // H 飞向 O
+    drawAtom(cx2-30+p*10,cy2+40,COL.H,'H',0.8);
+    drawAtom(cx2-10+p*10,cy2+50,COL.H,'H',0.8);
+    // C 和 2O 飞向右侧
+    drawAtom(cx2+20+p*30,cy2+60,COL.C,'C',1);
+    drawAtom(cx2-5+p*30,cy2+55,COL.O,'O',0.9);
+    drawAtom(cx2+35+p*30,cy2+70,COL.O,'O',0.9);
+  }
+
+  // 右侧：生成物
+  drawText('反应后',W-120,cy-150,'#9bd4c0',13);
+  if(phase>=2.5){
+    const rx=W-120;
+    // CaCl₂
+    drawAtom(rx-15,cy-80,COL.Ca,'Ca',1);
+    drawAtom(rx+15,cy-80,COL.Cl,'Cl',0.9);
+    drawAtom(rx+15,cy-50,COL.Cl,'Cl',0.9);
+    drawText('CaCl₂',rx,cy-25,'#9bd4c0',11);
+    // H₂O
+    drawAtom(rx-12,cy+10,COL.O,'O',1);
+    drawAtom(rx+8,cy+5,COL.H,'H',0.7);
+    drawAtom(rx+8,cy+15,COL.H,'H',0.7);
+    drawText('H₂O',rx,cy+35,'#9bd4c0',11);
+    // CO₂ 飞出
+    const flyPhase=(time*1)%2;
+    drawAtom(rx-15+flyPhase*5,cy+70,COL.C,'C',1);
+    drawAtom(rx-25+flyPhase*5,cy+70,COL.O,'O',0.8);
+    drawAtom(rx-5+flyPhase*5,cy+70,COL.O,'O',0.8);
+    drawText('CO₂↑',rx+flyPhase*5,cy+95,'#34d399',12);
+  }
+
+  // 方程式
+  ctx.fillStyle='#e8f8f0';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+  ctx.fillText('CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑',W/2,H-50);
+  drawText('原子重新组合，生成新分子',W/2,H-25,'#34d399',12);
+}
+
+function drawAtom(x,y,color,label,s){
+  ctx.fillStyle=color;ctx.strokeStyle='#222';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x,y,10*s,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle=color==='#ffffff'||color==='#fff'?'#000':'#fff';
+  ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(label,x,y);
+}
+function drawCaIon(x,y){drawAtom(x,y,COL.Ca,'Ca',1.2);ctx.fillStyle='#fbbf24';ctx.font='9px sans-serif';ctx.fillText('2+',x+12,y-8);}
+function drawCO3Ion(x,y){
+  drawAtom(x,y,COL.C,'C',1);
+  drawAtom(x-12,y+8,COL.O,'O',0.8);
+  drawAtom(x+12,y+8,COL.O,'O',0.8);
+  drawAtom(x,y-12,COL.O,'O',0.8);
+  ctx.fillStyle='#ef4444';ctx.font='9px sans-serif';ctx.fillText('2-',x+14,y+18);
+}
+function drawHClMolecule(x,y){
+  drawAtom(x-8,y,COL.H,'H',0.8);
+  drawAtom(x+8,y,COL.Cl,'Cl',1);
+}
+
+// ===== 场景7：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('实验室制 CO₂ 核心总结',W/2,40,'#34d399',18);
+  const items=[
+    {t:'反应原理',d:'CaCO₃+2HCl→CaCl₂+H₂O+CO₂↑',c:'#34d399'},
+    {t:'发生装置',d:'锥形瓶+长颈漏斗（固液常温）',c:'#fbbf24'},
+    {t:'收集方法',d:'向上排空气法',c:'#22c55e'},
+    {t:'验满操作',d:'燃着木条瓶口熄灭',c:'#fb923c'},
+    {t:'气体检验',d:'澄清石灰水变浑浊',c:'#ec4899'},
+    {t:'主要应用',d:'灭火/碳酸饮料/温室肥料',c:'#06b6d4'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawDeviceScene(t);
+  else if(stepIdx===1||stepIdx===2)drawDeviceScene(t);
+  else if(stepIdx===3)drawReactionScene(t);
+  else if(stepIdx===4)drawCollectScene(t);
+  else if(stepIdx===5)drawCheckFullScene(t);
+  else if(stepIdx===6)drawTestScene(t);
+  else if(stepIdx===7)drawMicroScene(t);
+  else if(stepIdx===8)drawCollectScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

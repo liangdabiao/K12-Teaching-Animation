@@ -3,111 +3,428 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>平面镜成像</title>
+<title>平面镜成像 · 虚像位置 · 光的实际路径</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#a78bfa;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(167,139,250,.06)}
+.back:hover{background:rgba(167,139,250,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a5f3fc;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">平面镜成像</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">平面镜成像</span><span class="subtitle">虚像位置 · 光的实际路径 · 反射定律</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>反射定律</h4><div class="v">入射角 = 反射角<br>三线共面，法线居中</div></div>
+  <div class="card s2"><div class="num">2</div><h4>像距=物距</h4><div class="v">物像关于镜面对称<br>连线垂直于镜面</div></div>
+  <div class="card s3"><div class="num">3</div><h4>虚像概念</h4><div class="v">反射光反向延长线交点<br>不能用光屏承接</div></div>
+  <div class="card s4"><div class="num">4</div><h4>像的性质</h4><div class="v">正立、等大、虚像<br>左右相反</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>平面镜成像特点：像与物大小相等、像距等于物距、像与物的连线与镜面垂直、成虚像（光的反向延长线相交）。成像原理是光的反射定律。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">→</b> 入射光线</span><span class="li"><b style="color:#d63031">→</b> 反射光线</span><span class="li"><b style="color:#636e72">- -</b> 反向延长线</span><span class="li"><b style="color:#fdcb6e">◇</b> 虚像</span></div>
-  <div class="key-points"><h3>成像特点</h3><ul><li>像与物<b>大小相等</b>（等大）</li><li>像距 = 物距（等距）</li><li>像与物的连线⊥镜面（垂直）</li><li>成<b>虚像</b>（不能呈现在光屏上）</li><li>左右相反（镜像对称）</li><li>应用：潜望镜、穿衣镜</li></ul></div></aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">平面镜成像</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function drawArrow(x1,y1,x2,y2,color,w){ctx.strokeStyle=color;ctx.lineWidth=w||2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const ang=Math.atan2(y2-y1,x2-x1);ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-9*Math.cos(ang-0.4),y2-9*Math.sin(ang-0.4));ctx.lineTo(x2-9*Math.cos(ang+0.4),y2-9*Math.sin(ang+0.4));ctx.fill();}
 
-const M={t:0,step:1,showRays:false,showExt:false,showSym:false};
-function sceneInit(){M.step=1;applyStep();}
-function applyStep(){M.showRays=M.step>=3;M.showExt=M.step>=2;M.showSym=M.step>=2;}
-function sceneReset(){M.step=1;applyStep();}
-function sceneStep(d){M.step=Math.max(1,Math.min(4,M.step+d));applyStep();}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const mx=cv.width/2, top=60, bot=cv.height-60;
-  const ox=mx-150, oy=bot-160; // object
-  // mirror
-  ctx.strokeStyle='#7dd3fc';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(mx,top);ctx.lineTo(mx,bot);ctx.stroke();
-  ctx.fillStyle='rgba(125,211,252,0.12)';ctx.fillRect(mx,top,40,bot-top);
-  // object (candle)
-  ctx.fillStyle='#f59e0b';ctx.fillRect(ox-8,oy,16,120);
-  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(ox,oy-6,12,0,7);ctx.fill();
-  // virtual image (symmetric)
-  const ix=mx+(mx-ox), iy=oy;
-  if(M.showSym){ctx.setLineDash([6,6]);ctx.strokeStyle='#a78bfa';ctx.beginPath();ctx.moveTo(ox,oy+60);ctx.lineTo(ix,iy+60);ctx.stroke();ctx.setLineDash([]);}
-  if(M.step>=2){ctx.fillStyle='rgba(167,139,250,0.65)';ctx.fillRect(ix-8,iy,16,120);ctx.fillStyle='rgba(251,191,36,0.6)';ctx.beginPath();ctx.arc(ix,iy-6,12,0,7);ctx.fill();}
-  // light rays from tip to eye
-  if(M.showRays){const ex=mx+170,ey=bot-120;ctx.strokeStyle='#f87171';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(ox,oy-6);ctx.lineTo(mx,top+30);ctx.lineTo(ex,ey);ctx.stroke();
-    ctx.setLineDash([4,4]);ctx.strokeStyle='#f87171';ctx.beginPath();ctx.moveTo(ix,iy-6);ctx.lineTo(mx,top+30);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#cdd7ea';ctx.fillText('眼看到镜后虚像（反向延长线相交）',ex-60,ey-20);
-  }
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='left';
-  ctx.fillText('物体',ox-12,oy+140);ctx.fillText('虚像',ix-12,iy+140);
-  const tips={1:'① 现象：镜中出现像',2:'② 对称：物像等大、等距、关于镜面对称',3:'③ 原理：反射光进入人眼',4:'④ 虚像：反向延长线相交，无实际光线'};
-  statusEl.textContent=tips[M.step];
+const STEPS=[
+  {tag:'基础',name:'成像原理',body:'<strong>平面镜成像</strong>的物理本质是<strong>光的反射</strong>。物体发出的光经镜面反射后进入人眼，人眼根据<strong>光沿直线传播</strong>的经验，沿反射光方向反向延长，便在镜后看到物体的像。',points:{title:'成像三要素',items:['<strong>光源</strong>：物体发出（或反射）的光','<strong>镜面</strong>：平滑反射面','<strong>观察者</strong>：接收反射光','<strong>成像</strong>：大脑反向延长形成像']}},
+  {tag:'定律',name:'光的反射定律',body:'<strong>反射定律</strong>：<strong>入射角 = 反射角</strong>。入射光线、反射光线、法线<strong>三线共面</strong>，反射光线与入射光线分居法线<strong>两侧</strong>。注意：角是光线与法线的夹角（不是与镜面的夹角）。',points:{title:'反射四要点',items:['<strong>入射角 = 反射角</strong>：i = r','<strong>三线共面</strong>：入射、反射、法线','<strong>法线居中</strong>：分居法线两侧','<strong>光路可逆</strong>：原路返回']}},
+  {tag:'特点',name:'像距等于物距',body:'<strong>像距 = 物距</strong>：物体到镜面的距离与像到镜面的距离<strong>相等</strong>。物与像的<strong>连线垂直于镜面</strong>，物与像关于镜面<strong>对称</strong>。',points:{title:'对称关系',items:['<strong>像距 v = 物距 u</strong>','<strong>物像连线 ⊥ 镜面</strong>','<strong>关于镜面对称</strong>','<strong>测量法</strong>：用刻度尺量取']}},
+  {tag:'概念',name:'虚像概念',body:'<strong>虚像</strong>：反射光线的<strong>反向延长线</strong>的交点形成的像。镜后<strong>并没有实际光线会聚</strong>，所以<strong>不能用光屏承接</strong>。人眼沿着反射方向看过去，感觉光是从虚像处发出的。',points:{title:'虚像 vs 实像',items:['<strong>虚像</strong>：反向延长线交点','<strong>实像</strong>：实际光线会聚点','<strong>光屏</strong>：实像能承，虚像不能','<strong>平面镜</strong>：只能成虚像']}},
+  {tag:'性质',name:'像的性质',body:'平面镜成的像是<strong>正立、等大、虚像</strong>。像与物<strong>大小完全相等</strong>，<strong>左右相反</strong>（镜像对称），上下不变。这就是为什么镜子里的字看起来是反的。',points:{title:'像的性质四要素',items:['<strong>正立</strong>：像不倒立','<strong>等大</strong>：像与物大小相同','<strong>虚像</strong>：不能呈现在光屏上','<strong>左右相反</strong>：镜像对称']}},
+  {tag:'作图',name:'光路图四步法',body:'<strong>作图四步法</strong>：①从物点任选两条入射光线射向镜面；②过入射点作法线（⊥镜面）；③根据<strong>入射角=反射角</strong>作反射光线；④将反射光线<strong>反向延长</strong>，交点即像点。',points:{title:'作图步骤',items:['<strong>①</strong>：选两条入射光线','<strong>②</strong>：作法线（⊥镜面）','<strong>③</strong>：按 i=r 作反射光','<strong>④</strong>：反向延长得像点']}},
+  {tag:'对比',name:'漫反射vs镜面反射',body:'<strong>镜面反射</strong>：平滑表面（镜面、静水），平行入射光<strong>平行反射</strong>，方向集中。<strong>漫反射</strong>：粗糙表面（墙、纸），平行入射光<strong>向各方向反射</strong>，每条光线仍遵循反射定律。',points:{title:'两种反射对比',items:['<strong>镜面反射</strong>：表面平滑，定向反射','<strong>漫反射</strong>：表面粗糙，四散反射','<strong>共同点</strong>：都遵循反射定律','<strong>作用</strong>：漫反射使我们能从各方向看到物体']}},
+  {tag:'应用',name:'应用：潜望镜与万花筒',body:'<strong>潜望镜</strong>：用两面<strong>45°角</strong>放置的平面镜，使光路<strong>两次反射</strong>改变 90° 方向，能在隐蔽处观察外界。<strong>万花筒</strong>：多条镜面组成对称结构，物体经多次反射形成绚丽对称图案。',points:{title:'常见应用',items:['<strong>潜望镜</strong>：两面 45° 镜，两段 90° 拐弯','<strong>万花筒</strong>：多次反射形成对称像','<strong>穿衣镜</strong>：至少身高一半即可看到全身','<strong>汽车后视镜</strong>：扩大视野']}},
+  {tag:'问题',name:'典型问题分析',body:'<strong>例题</strong>：人站在镜前 2 m 处，像在镜后多远？人后退 1 m，像距如何变化？像与人之间距离是多少？答：像在镜后 2 m；人后退 1 m 后像也后退 1 m；像与人的距离 = 2 × 物距。',points:{title:'典型考点',items:['<strong>物像距离 = 2 × 物距</strong>','<strong>人移动多少，像移动多少</strong>','<strong>像大小始终等于物</strong>：与距离无关','<strong>镜面最小尺寸 = 身高一半</strong>']}},
+  {tag:'总结',name:'核心速记',body:'平面镜成像基于<strong>反射定律</strong>，成<strong>正立等大虚像</strong>，<strong>像距等于物距</strong>，物像关于镜面<strong>对称</strong>。是潜望镜、万花筒、穿衣镜的物理基础。',points:{title:'三句话总结',items:['<strong>原理</strong>：光的反射定律（i=r）','<strong>特点</strong>：正立、等大、虚像、对称','<strong>距离</strong>：像距=物距，物像距离=2物距','<strong>应用</strong>：潜望镜、万花筒、后视镜']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景1：物点成像（多光线反射+反向延长交于像点） =====
+function drawImageFormationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平面镜成像 · 物点 S 与像点 S',W/2,28,'#06b6d4',16);
+  drawText("'",W/2+150,33,'#06b6d4',12);
+  const cx=W/2;
+  const mirrorTop=70, mirrorBot=H-80;
+  // 镜面（带斜线表示背面）
+  ctx.strokeStyle='#7dd3fc';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(cx,mirrorTop);ctx.lineTo(cx,mirrorBot);ctx.stroke();
+  ctx.strokeStyle='rgba(125,211,252,0.4)';ctx.lineWidth=1.5;
+  for(let y=mirrorTop;y<mirrorBot;y+=12){ctx.beginPath();ctx.moveTo(cx,y);ctx.lineTo(cx-10,y+10);ctx.stroke();}
+  drawText('平面镜',cx,mirrorTop-15,'#7dd3fc',12);
+  // 物点 S 与像点 S'
+  const sx=cx-180, sy=H/2;
+  const sxp=cx+180, syp=H/2;
+  // 物点
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(sx,sy,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('S（物）',sx,sy+25,'#06b6d4',13);
+  // 等距标注
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(sx,sy-15);ctx.lineTo(cx,sy-15);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,sy-15);ctx.lineTo(sxp,sy-15);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('物距 u',sx+(cx-sx)/2,sy-25,'#a78bfa',11);
+  drawText('像距 v',cx+(sxp-cx)/2,sy-25,'#a78bfa',11);
+  // 三条入射光线，动态入射角
+  const angles=[-40+10*Math.sin(time*0.8),0,40-10*Math.cos(time*0.7)];
+  const mirrorPts=[];
+  angles.forEach(a=>{
+    const rad=a*Math.PI/180;
+    const dx=sx+1000*Math.cos(rad);
+    const dy=sy+1000*Math.sin(rad);
+    // 与镜面 x=cx 的交点
+    const k=(cx-sx)/(dx-sx);
+    const hitX=cx, hitY=sy+k*(dy-sy);
+    if(hitY<mirrorTop||hitY>mirrorBot)return;
+    mirrorPts.push({hitX,hitY,angle:a});
+  });
+  mirrorPts.forEach(p=>{
+    // 法线
+    ctx.strokeStyle='rgba(255,255,255,0.35)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(p.hitX-50,p.hitY);ctx.lineTo(p.hitX+50,p.hitY);ctx.stroke();
+    ctx.setLineDash([]);
+    drawText('法线',p.hitX+55,p.hitY,'#9ab0d0',10,'left');
+    // 入射光线
+    drawArrow(sx,sy,p.hitX,p.hitY,'#06b6d4',2);
+    // 反射光线（对称）
+    const rad=p.angle*Math.PI/180;
+    const refDx=p.hitX-1000*Math.cos(rad);
+    const refDy=p.hitY-1000*Math.sin(rad);
+    const refLen=180;
+    const refEndX=p.hitX-refLen*Math.cos(rad);
+    const refEndY=p.hitY-refLen*Math.sin(rad);
+    drawArrow(p.hitX,p.hitY,refEndX,refEndY,'#fbbf24',2);
+    // 反向延长线
+    ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(p.hitX,p.hitY);ctx.lineTo(sxp,syp);ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  // 像点 S'
+  ctx.fillStyle='rgba(251,191,36,0.85)';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(sxp,syp,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText("S'（像）",sxp,syp+25,'#fbbf24',13);
+  drawText('反射光反向延长线交于像点 S',W/2,H-45,'#34d399',12);
+  drawText("'",W/2+135,H-45,'#34d399',12);
+  drawText('物距 u = 像距 v（关于镜面对称）',W/2,H-22,'#9ab0d0',12);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+// ===== 场景2：入射角=反射角（动态演示） =====
+function drawReflectionLawScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('反射定律 · 入射角 = 反射角',W/2,28,'#06b6d4',16);
+  const cx=W/2, cy=H/2+30;
+  // 镜面（水平）
+  ctx.strokeStyle='#7dd3fc';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(80,cy);ctx.lineTo(W-80,cy);ctx.stroke();
+  ctx.strokeStyle='rgba(125,211,252,0.4)';ctx.lineWidth=1.5;
+  for(let x=80;x<W-80;x+=14){ctx.beginPath();ctx.moveTo(x,cy);ctx.lineTo(x-10,cy+10);ctx.stroke();}
+  drawText('平面镜',W-90,cy-15,'#7dd3fc',11,'right');
+  // 法线
+  ctx.strokeStyle='rgba(255,255,255,0.45)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(cx,cy-180);ctx.lineTo(cx,cy+50);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('法线 N',cx,cy-190,'#fff',12);
+  // 动态入射角
+  const theta=(40+30*Math.sin(time*0.6))*Math.PI/180;
+  const len=160;
+  const inX=cx-len*Math.sin(theta), inY=cy-len*Math.cos(theta);
+  const refX=cx+len*Math.sin(theta), refY=cy-len*Math.cos(theta);
+  // 入射光线
+  drawArrow(inX,inY,cx,cy,'#06b6d4',3);
+  drawText('入射光',inX-25,inY+15,'#06b6d4',12,'right');
+  // 反射光线
+  drawArrow(cx,cy,refX,refY,'#fbbf24',3);
+  drawText('反射光',refX+25,refY+15,'#fbbf24',12,'left');
+  // 入射点
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(cx,cy,5,0,7);ctx.fill();
+  // 角度弧线（入射角）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,40,-Math.PI/2-theta,-Math.PI/2);ctx.stroke();
+  drawText('i = '+(theta*180/Math.PI).toFixed(0)+'°',cx-50-Math.sin(theta)*25,cy-30-Math.cos(theta)*20,'#06b6d4',12);
+  // 反射角弧线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,40,-Math.PI/2,-Math.PI/2+theta);ctx.stroke();
+  drawText('r = '+(theta*180/Math.PI).toFixed(0)+'°',cx+50+Math.sin(theta)*25,cy-30-Math.cos(theta)*20,'#fbbf24',12);
+  // 镜面夹角（与表面）提示
+  drawText('三线共面 · 法线居中 · i = r',W/2,H-45,'#34d399',13);
+  drawText('入射角和反射角都是与法线的夹角',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景3：潜望镜光路 =====
+function drawPeriscopeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('潜望镜 · 两面 45° 镜两次反射',W/2,28,'#06b6d4',16);
+  const left=120, right=W-120, top=80, bot=H-80;
+  // 外壳（筒身）
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.strokeRect(left,top,right-left,bot-top);
+  // 上方窗口（物进入）
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.fillRect(left,top-5,40,10);
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.fillRect(right-40,bot-5,40,10);
+  // 上镜（45°）
+  const m1x=left+30, m1y=top+40;
+  ctx.save();ctx.translate(m1x,m1y);ctx.rotate(Math.PI/4);
+  ctx.fillStyle='#7dd3fc';ctx.fillRect(-30,-3,60,6);
+  ctx.restore();
+  drawText('镜1（45°）',m1x-10,m1y-25,'#7dd3fc',11,'right');
+  // 下镜（45°）
+  const m2x=right-30, m2y=bot-40;
+  ctx.save();ctx.translate(m2x,m2y);ctx.rotate(Math.PI/4);
+  ctx.fillStyle='#7dd3fc';ctx.fillRect(-30,-3,60,6);
+  ctx.restore();
+  drawText('镜2（45°）',m2x+10,m2y+25,'#7dd3fc',11,'left');
+  // 物体（远处目标）
+  drawText('目标物体',left-30,m1y,'#06b6d4',11,'right');
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(left-10,m1y,6,0,7);ctx.fill();
+  // 光路：水平进入 → 反射向下 → 再反射水平出
+  // 1) 入射光（水平）
+  drawArrow(left-15,m1y,m1x-3,m1y-3,'#06b6d4',2.5);
+  // 2) 第一面镜反射（向下）
+  drawArrow(m1x+3,m1y+3,m2x-3,m2y-3,'#fbbf24',2.5);
+  drawText('反射1（向下）',(m1x+m2x)/2,(m1y+m2y)/2-10,'#fbbf24',11);
+  // 3) 第二面镜反射（水平向外）
+  drawArrow(m2x+3,m2y-3,right+15,m2y,'#34d399',2.5);
+  // 眼睛
+  ctx.fillStyle='#a78bfa';
+  ctx.beginPath();ctx.arc(right+25,m2y,8,0,7);ctx.fill();
+  ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.arc(right+27,m2y,3,0,7);ctx.fill();
+  drawText('观察者',right+25,m2y+20,'#a78bfa',11);
+  // 动态光点沿光路移动
+  const phase=(time*0.8)%1;
+  let px,py;
+  if(phase<0.33){const k=phase/0.33;px=left-15+k*(m1x-left+12);py=m1y-(k*3);}
+  else if(phase<0.66){const k=(phase-0.33)/0.33;px=m1x+k*(m2x-m1x);py=m1y+k*(m2y-m1y);}
+  else{const k=(phase-0.66)/0.34;px=m2x+k*(right+15-m2x);py=m2y-k*3;}
+  ctx.fillStyle='#fff';ctx.shadowColor='#fff';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('两面 45° 镜：光路两次 90° 拐弯',W/2,H-45,'#34d399',12);
+  drawText('应用：潜艇、战壕、隐藏观察',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景4：漫反射 vs 镜面反射 =====
+function drawDiffuseVsSpecularScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('漫反射 vs 镜面反射',W/2,28,'#06b6d4',16);
+  // 左：镜面反射
+  const left1=120, top1=H/2-20, surfY1=H/2+80;
+  drawText('镜面反射（平滑表面）',left1+150,top1-100,'#06b6d4',13);
+  // 表面（平滑直线）
+  ctx.strokeStyle='#7dd3fc';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(left1,surfY1);ctx.lineTo(left1+300,surfY1);ctx.stroke();
+  // 平行入射光
+  const inAng=30*Math.PI/180;
+  for(let i=0;i<3;i++){
+    const x0=left1+60+i*80, y0=top1-50;
+    const x1=x0+80*Math.sin(inAng), y1=y0+80*Math.cos(inAng);
+    // 入射到表面
+    const hitX=left1+60+i*80+60;
+    const hitY=surfY1;
+    drawArrow(x0,y0,hitX,hitY,'#06b6d4',2);
+    // 反射（平行）
+    const refX=hitX+60*Math.sin(inAng);
+    const refY=hitY-60*Math.cos(inAng);
+    drawArrow(hitX,hitY,refX,refY,'#fbbf24',2);
+  }
+  drawText('平行入射 → 平行反射',left1+150,surfY1+30,'#fbbf24',12);
+
+  // 右：漫反射
+  const left2=W-420;
+  drawText('漫反射（粗糙表面）',left2+150,top1-100,'#a78bfa',13);
+  // 表面（粗糙锯齿线）
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;
+  ctx.beginPath();
+  for(let x=left2;x<=left2+300;x+=15){
+    const yy=surfY1+(x%30===0?-6:6);
+    if(x===left2)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);
+  }
+  ctx.stroke();
+  // 平行入射光，反射方向随机
+  const seed=[0.2,0.7,0.45];
+  for(let i=0;i<3;i++){
+    const x0=left2+60+i*80, y0=top1-50;
+    const hitX=left2+60+i*80+60;
+    const hitY=surfY1;
+    drawArrow(x0,y0,hitX,hitY,'#06b6d4',2);
+    // 反射方向不同（漫反射）
+    const ang=(-60+seed[i]*120)*Math.PI/180;
+    const refX=hitX+60*Math.sin(ang);
+    const refY=hitY-60*Math.cos(ang);
+    drawArrow(hitX,hitY,refX,refY,'#fbbf24',2);
+  }
+  drawText('平行入射 → 四散反射',left2+150,surfY1+30,'#fbbf24',12);
+  drawText('两者都遵循反射定律，但表面粗糙度不同',W/2,H-50,'#34d399',13);
+  drawText('漫反射让我们能从各方向看到物体',W/2,H-27,'#9ab0d0',12);
+}
+
+// ===== 场景5：虚像 vs 实像 对比表 =====
+function drawComparisonScene(){
+  const W=cv.width,H=cv.height;
+  drawText('成像对比 · 虚像 vs 实像',W/2,30,'#06b6d4',16);
+  const cols=['特征','虚像','实像'];
+  const rows=[
+    {'k':'形成方式','v1':'反射/折射光反向延长线交点','v2':'实际光线会聚点'},
+    {'k':'光屏承接','v1':'不能','v2':'能'},
+    {'k':'正倒','v1':'正立（平面镜）','v2':'常倒立'},
+    {'k':'大小','v1':'等大（平面镜）','v2':'可放大或缩小'},
+    {'k':'典型例子','v1':'平面镜、放大镜看远处','v2':'小孔成像、凸透镜投影'},
+  ];
+  const x0=80, y0=90, colW=(W-160)/3, rowH=52;
+  // 表头
+  cols.forEach((c,i)=>{
+    ctx.fillStyle=i===0?'rgba(167,139,250,0.25)':(i===1?'rgba(6,182,212,0.25)':'rgba(52,211,153,0.25)');
+    ctx.strokeStyle=i===0?'#a78bfa':(i===1?'#06b6d4':'#34d399');ctx.lineWidth=1.5;
+    roundRect(x0+i*colW,y0,colW,rowH,6);ctx.fill();ctx.stroke();
+    drawText(c,x0+i*colW+colW/2,y0+rowH/2,'#fff',14);
+  });
+  // 行
+  rows.forEach((r,i)=>{
+    const y=y0+(i+1)*rowH;
+    ['k','v1','v2'].forEach((key,j)=>{
+      ctx.fillStyle='rgba(255,255,255,0.04)';
+      ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+      roundRect(x0+j*colW,y,colW,rowH,6);ctx.fill();ctx.stroke();
+      const text=r[key];
+      drawText(text,x0+j*colW+colW/2,y+rowH/2,j===0?'#a78bfa':(j===1?'#06b6d4':'#34d399'),12);
+    });
+  });
+  drawText('平面镜只能成虚像',W/2,H-40,'#fbbf24',13);
+}
+
+// ===== 场景6：总结卡片 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('平面镜成像核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'成像原理',d:'光的反射定律',c:'#06b6d4'},
+    {t:'角度关系',d:'入射角 = 反射角',c:'#fbbf24'},
+    {t:'距离关系',d:'像距 = 物距',c:'#a78bfa'},
+    {t:'像的性质',d:'正立 等大 虚像',c:'#34d399'},
+    {t:'对称性',d:'物像关于镜面对称',c:'#fb923c'},
+    {t:'典型应用',d:'潜望镜 万花筒',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+  drawText('物像距离 = 2 × 物距',W/2,H-30,'#fbbf24',13);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawImageFormationScene(t);
+  else if(stepIdx===1)drawReflectionLawScene(t);
+  else if(stepIdx===2)drawImageFormationScene(t);
+  else if(stepIdx===3)drawImageFormationScene(t);
+  else if(stepIdx===4)drawImageFormationScene(t);
+  else if(stepIdx===5)drawReflectionLawScene(t);
+  else if(stepIdx===6)drawDiffuseVsSpecularScene(t);
+  else if(stepIdx===7)drawPeriscopeScene(t);
+  else if(stepIdx===8)drawComparisonScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

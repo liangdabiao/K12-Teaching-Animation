@@ -3,103 +3,520 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>牛顿第三定律</title>
+<title>牛顿第三定律 · 作用力与反作用力</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#3b82f6;--accent2:#a78bfa;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(167,139,250,.06)}
+.back:hover{background:rgba(167,139,250,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(59,130,246,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}
+.card.s3::before{background:var(--good)}
+.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(59,130,246,.2);color:#93c5fd;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
+  <a class="back" href="../index.html">← 返回物理目录</a>
   <span class="title">牛顿第三定律</span>
+  <span class="subtitle">作用力与反作用力 · 大小相等方向相反 · 作用在不同物体</span>
 </header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>定律内容</h4><div class="v">作用力反作用力<br>大小相等方向相反</div></div>
+  <div class="card s2"><div class="num">2</div><h4>作用对象</h4><div class="v">作用在两个物体上<br>不是一对平衡力</div></div>
+  <div class="card s3"><div class="num">3</div><h4>瞬时性</h4><div class="v">同时产生消失<br>同性质同直线</div></div>
+  <div class="card s4"><div class="num">4</div><h4>典型应用</h4><div class="v">滑板互推 · 火箭喷气<br>走路游泳 · 弹簧秤</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>牛顿第三定律：两个物体之间的作用力与反作用力总是大小相等、方向相反、作用在同一直线上。即 F₁₂ = −F₂₁。注意：作用力与反作用力分别作用在两个不同物体上，不能互相抵消（不是平衡力）。</p>
-    <div class="legend"><span class="li"><b style="color:#0984e3">→</b> 作用力 F</span><span class="li"><b style="color:#d63031">←</b> 反作用力 F'</span><span class="li"><b style="color:#fdcb6e">●</b> 人物/物体</span></div>
-  <div class="key-points"><h3>核心要点</h3><ul><li>作用力与反作用力<b>同时产生、同时消失</b></li><li>大小相等、方向相反、作用在同一直线上</li><li>分别作用在<b>两个不同物体</b>上，不能抵消</li><li>与平衡力的区别：平衡力作用在同一物体上</li><li>实例：火箭喷气→气体推火箭反方向</li></ul></div></aside>
+  <aside class="panel" id="panel">
+    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">作用力与反作用力</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+  </aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button>
   <button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择左侧步骤开始</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const Nw={t:0,slide:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){Nw.t=0;Nw.slide=0;}
-function sceneUpdate(dt){Nw.t+=dt;if(Nw.slide<1)Nw.slide=Math.min(1,Nw.slide+dt*0.3);}
-function person(x,col,dir){ctx.fillStyle=col;ctx.fillRect(x,360,26,60);ctx.fillStyle='#cdd7ea';ctx.beginPath();ctx.arc(x+13,345,12,0,7);ctx.fill();
-  ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x+13,420);ctx.lineTo(x+13+dir*30,450);ctx.stroke();}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  ctx.strokeStyle='#7f93b5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(40,470);ctx.lineTo(cv.width-40,470);ctx.stroke();
-  const off=Nw.slide*120;
-  person(cv.width/2-200+off,'#34d399',1);
-  person(cv.width/2+120-off,'#f87171',-1);
-  ctx.fillStyle='#cdd7ea';ctx.font='14px sans-serif';ctx.textAlign='center';
-  ctx.fillText('F₁₂ (人推人)',cv.width/2-200+off,335);
-  ctx.fillText('F₂₁ = −F₁₂ (反作用)',cv.width/2+120-off,335);
-  // rocket
-  const rx=cv.width/2-30, ry=120 - Nw.slide*0 ;
-  ctx.fillStyle='#7dd3fc';ctx.fillRect(rx,160,60,90);
-  for(let i=0;i<10;i++){ctx.fillStyle='rgba(245,158,11,'+(0.7-i*0.06)+')';ctx.beginPath();ctx.arc(rx+30,250+i*6+Nw.slide*40,5+i,0,7);ctx.fill();}
-  ctx.fillStyle='#cdd7ea';ctx.fillText('火箭喷气：气体向后，火箭向前',rx-60,140);
-  statusEl.textContent='作用力与反作用力：大小相等、方向相反、同线、异物、共存';
+const STEPS=[
+  {tag:'基础',name:'定律内容',body:'<strong>牛顿第三定律</strong>：两个物体之间的<strong>作用力和反作用力</strong>，总是<strong>大小相等、方向相反</strong>，作用在<strong>两个不同的物体</strong>上。表达式为 <code>F = -F反</code>。',points:{title:'核心要点',items:['<strong>大小相等</strong>：作用力等于反作用力','<strong>方向相反</strong>：沿同一直线','<strong>同时产生</strong>、同时消失','<strong>同性质</strong>：同为引力、弹力或摩擦力']}},
+  {tag:'特征',name:'作用在不同物体',body:'作用力与反作用力分别作用在<strong>两个不同物体</strong>上，不能相互抵消。这是它与<strong>平衡力</strong>最根本的区别。',points:{title:'区分关键',items:['<strong>作用力 F</strong>：施于物体 A','<strong>反作用力 F\'</strong>：施于物体 B','<strong>不能求合力</strong>（不在同一物体）','<strong>不抵消</strong>，分别产生效果']}},
+  {tag:'特征',name:'与平衡力的区别',body:'<strong>平衡力</strong>作用在<strong>同一物体</strong>上，合力为零，物体保持静止或匀速。<strong>作用力反作用力</strong>作用在<strong>不同物体</strong>上，不能平衡。',points:{title:'四大区别',items:['<strong>受力物体</strong>：平衡力同物，作用反作用异物','<strong>共存关系</strong>：作用反作用同时消失','<strong>性质</strong>：作用反作用必同性质','<strong>效果</strong>：平衡力使物体不动，作用反作用各自有效果']}},
+  {tag:'动画',name:'滑板上两人互推',body:'质量不同的两人站在<strong>光滑滑板</strong>上互推。<strong>作用力等于反作用力</strong>，但<strong>质量大的人加速度小、位移小</strong>，质量小的人加速度大、位移大。',points:{title:'定量分析',items:['<strong>互推力</strong>：F = F\'（大小相等）','<strong>加速度</strong>：a = F/m，m 大则 a 小','<strong>位移比</strong>：x₁/x₂ = m₂/m₁','<strong>动量守恒</strong>：m₁v₁ = m₂v₂']}},
+  {tag:'动画',name:'火箭喷气推进',body:'<strong>火箭</strong>向后<strong>高速喷出燃气</strong>，燃气对火箭施加<strong>向前的反作用力</strong>，推动火箭前进。不需要空气，<strong>可在真空中工作</strong>。',points:{title:'火箭原理',items:['<strong>作用力</strong>：火箭把燃气向后推','<strong>反作用力</strong>：燃气把火箭向前推','<strong>无需介质</strong>：真空中同样有效','<strong>动量守恒</strong>：m·v = Δm·u']}},
+  {tag:'计算',name:'火箭推力 F=ma',body:'火箭喷出燃气质量 Δm、喷气速度 u，则火箭获得推力 <code>F = (Δm/Δt)·u</code>。由牛顿第二定律，火箭加速度 <code>a = F/M</code>，M 为火箭总质量。',points:{title:'推力公式',items:['<strong>喷气速率</strong>：u ≈ 2500~4500 m/s','<strong>质量流率</strong>：Δm/Δt（kg/s）','<strong>推力</strong>：F = (Δm/Δt)·u','<strong>加速度</strong>：a = F/M，M 随燃料消耗减小']}},
+  {tag:'应用',name:'走路与游泳的推力',body:'<strong>走路</strong>：脚向后蹬地（作用力），地对脚向前推（反作用力）推动人前进。<strong>游泳</strong>：手向后推水，水把人向前推。',points:{title:'生活中的实例',items:['<strong>走路</strong>：脚蹬地，地推人','<strong>游泳</strong>：手推水，水推人','<strong>划船</strong>：桨推水，水推船','<strong>汽车</strong>：轮推地，地推轮']}},
+  {tag:'应用',name:'弹簧秤与悬挂物',body:'<strong>弹簧秤</strong>读数等于物体对秤的<strong>拉力</strong>，与秤对物体的拉力是作用反作用力。<strong>悬挂物</strong>：绳拉物体的力等于物体拉绳的力。',points:{title:'常见情境',items:['<strong>弹簧秤</strong>：读数 = 物体拉秤的力','<strong>悬挂重物</strong>：绳拉物 = 物拉绳','<strong>重力</strong>：物对地球的引力 = 地球对物的引力','<strong>支持力</strong>：不是重力的反作用力（性质不同）']}},
+  {tag:'辨析',name:'典型错误辨析',body:'<strong>常见错误</strong>：① 认为作用反作用力相互抵消；② 把支持力当作重力的反作用力；③ 认为力大的物体受力大。正确：<strong>任何情况下两者大小都相等</strong>。',points:{title:'易错点',items:['<strong>错误</strong>：作用反作用力可抵消（×，作用在不同物）','<strong>错误</strong>：支持力是重力的反作用力（×）','<strong>错误</strong>：力大者受力大（×，恒相等）','<strong>正确</strong>：与运动状态无关，永远等大反向']}},
+  {tag:'总结',name:'核心总结',body:'牛顿第三定律揭示了<strong>力的相互作用本质</strong>：力<strong>总是成对出现</strong>，分别作用在两个物体上，等大、反向、共线、同时。它是分析<strong>多体问题</strong>和<strong>动量守恒</strong>的基础。',points:{title:'速记口诀',items:['<strong>等大</strong>：|F| = |F\'|','<strong>反向</strong>：方向相反','<strong>异物</strong>：分别作用于两物','<strong>同时</strong>：同时产生同时消失']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.8;
+
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
+function arrow(x1,y1,x2,y2,color,w){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=w||3;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const ang=Math.atan2(y2-y1,x2-x1);const s=10;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-s*Math.cos(ang-0.4),y2-s*Math.sin(ang-0.4));ctx.lineTo(x2-s*Math.cos(ang+0.4),y2-s*Math.sin(ang+0.4));ctx.fill();}
+
+// ===== 场景：作用力反作用力示意 =====
+function drawForcePairScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('作用力与反作用力 · 大小相等方向相反',W/2,30,'#3b82f6',16);
+  const cy=H/2;
+  const ax=W/2-150,bx=W/2+150;
+  const pulse=0.5+0.5*Math.abs(Math.sin(time*1.5));
+  // 物体 A
+  ctx.fillStyle='#3b82f622';ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;
+  roundRect(ax-40,cy-40,80,80,8);ctx.fill();ctx.stroke();
+  drawText('物体 A',ax,cy+5,'#93c5fd',14);
+  drawText('m₁',ax,cy+25,'#9ab0d0',11);
+  // 物体 B
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(bx-40,cy-40,80,80,8);ctx.fill();ctx.stroke();
+  drawText('物体 B',bx,cy+5,'#c4b5fd',14);
+  drawText('m₂',bx,cy+25,'#9ab0d0',11);
+  // 力 F：A 推 B（向右）
+  const L=80+pulse*40;
+  arrow(ax+45,cy-10,bx-50-L+80,cy-10,'#3b82f6',3);
+  drawText('F (A→B)',ax+L/2+50,cy-25,'#3b82f6',13);
+  // 力 F'：B 推 A（向左）
+  arrow(bx-45,cy+25,ax+50-L+80,cy+25,'#a78bfa',3);
+  drawText('F\' (B→A)',bx-L/2-50,cy+45,'#a78bfa',13);
+  // 公式
+  drawText('F = -F\'  (大小相等 · 方向相反)',W/2,H-40,'#fbbf24',14);
+  // 标注作用线
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(ax,cy-60);ctx.lineTo(bx,cy-60);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('作用在两个不同物体上',W/2,cy-75,'#9ab0d0',11);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+// ===== 场景：滑板互推 =====
+function drawSkateboardScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('滑板上两人互推 · 力相等但位移不同',W/2,30,'#3b82f6',16);
+  // 地面
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,H-80);ctx.lineTo(W-40,H-80);ctx.stroke();
+  for(let i=40;i<W-40;i+=20){ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(i,H-80);ctx.lineTo(i-8,H-70);ctx.stroke();}
+  // 两人初始位置
+  const startX=W/2;
+  const m1=60,m2=100; // 质量，m2 更大
+  const F=30; // 互推力
+  // 运动相位（推一段时间后分离）
+  const phase=Math.min(1,time/2);
+  const pushTime=Math.min(0.8,time);
+  const a1=F/m1,a2=F/m2;
+  // 位移（积分）
+  const x1=startX-(0.5*a1*pushTime*pushTime+(time>0.8?a1*0.8*(time-0.8):0))*15;
+  const x2=startX+(0.5*a2*pushTime*pushTime+(time>0.8?a2*0.8*(time-0.8):0))*15;
+  // 人 A（左，质量小）
+  drawPerson(x1,H-80,'#3b82f6',m1);
+  drawPerson(x2,H-80,'#a78bfa',m2);
+  // 推力箭头（仅在推时显示）
+  if(time<0.9){
+    const fade=Math.sin(time*5)>0?1:0.6;
+    arrow(x1-25,H-110,x1-65,H-110,'rgba(167,139,250,'+fade+')',3);
+    arrow(x2+25,H-110,x2+65,H-110,'rgba(59,130,246,'+fade+')',3);
+    drawText('F\'',x1-50,H-125,'#a78bfa',12);
+    drawText('F',x2+50,H-125,'#3b82f6',12);
+  }
+  // 位移标尺
+  drawText('m₁='+m1+' kg · 位移大',x1,H-150,'#3b82f6',12);
+  drawText('m₂='+m2+' kg · 位移小',x2,H-150,'#a78bfa',12);
+  // 说明
+  drawText('F = F\'（力相等），但 a = F/m，质量大者加速度小',W/2,H-30,'#fbbf24',13);
+  // 数据
+  drawText('|a₁|='+a1.toFixed(2)+' m/s²',x1,H-175,'#93c5fd',11);
+  drawText('|a₂|='+a2.toFixed(2)+' m/s²',x2,H-175,'#c4b5fd',11);
+}
+
+function drawPerson(x,y,color,mass){
+  const r=10+mass/15;
+  // 头
+  ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(x,y-40-r,r,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 身体
+  ctx.strokeStyle=color;ctx.lineWidth=r*0.8;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x,y-30);ctx.lineTo(x,y-15);ctx.stroke();
+  // 滑板
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(x-r*1.5,y-12);ctx.lineTo(x+r*1.5,y-12);ctx.stroke();
+  // 轮子
+  ctx.fillStyle='#9ab0d0';
+  ctx.beginPath();ctx.arc(x-r,y-6,4,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(x+r,y-6,4,0,7);ctx.fill();
+}
+
+// ===== 场景：火箭喷气 =====
+function drawRocketScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('火箭喷气推进 · 反作用力推动前进',W/2,30,'#3b82f6',16);
+  const startX=120;
+  const x=startX+Math.min(time*40,W-260);
+  const cy=H/2-20;
+  // 火箭主体
+  ctx.fillStyle='#3b82f622';ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(x-30,cy-15);
+  ctx.lineTo(x+25,cy-15);
+  ctx.lineTo(x+40,cy);
+  ctx.lineTo(x+25,cy+15);
+  ctx.lineTo(x-30,cy+15);
+  ctx.lineTo(x-40,cy);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 窗户
+  ctx.fillStyle='#93c5fd';
+  ctx.beginPath();ctx.arc(x+5,cy,5,0,7);ctx.fill();
+  // 火焰
+  for(let i=0;i<6;i++){
+    const fl=20+Math.random()*30+Math.sin(time*15+i)*8;
+    const fy=cy-12+i*5;
+    const alpha=0.4+Math.random()*0.4;
+    ctx.fillStyle='rgba(251,191,36,'+alpha+')';
+    ctx.beginPath();
+    ctx.moveTo(x-40,fy-3);
+    ctx.lineTo(x-40-fl,fy);
+    ctx.lineTo(x-40,fy+3);
+    ctx.fill();
+  }
+  // 喷出粒子（燃气）
+  if(!drawRocketScene.particles)drawRocketScene.particles=[];
+  drawRocketScene.particles.push({x:x-45,y:cy+(Math.random()-0.5)*16,vx:-2-Math.random()*3,life:1});
+  drawRocketScene.particles.forEach(p=>{
+    p.x+=p.vx;p.life-=0.02;
+    ctx.fillStyle='rgba(248,113,113,'+p.life+')';
+    ctx.beginPath();ctx.arc(p.x,p.y,3*p.life,0,7);ctx.fill();
+  });
+  drawRocketScene.particles=drawRocketScene.particles.filter(p=>p.life>0&&p.x>20);
+  if(drawRocketScene.particles.length>200)drawRocketScene.particles=drawRocketScene.particles.slice(-200);
+  // 推力箭头（反作用力，向前）
+  arrow(x+45,cy,x+95,cy,'#34d399',4);
+  drawText('推力 F\'',x+75,cy-20,'#34d399',13);
+  // 燃气推力箭头（向后）
+  arrow(x-80,cy,x-130,cy,'#f87171',3);
+  drawText('燃气 F',x-105,cy-20,'#f87171',13);
+  // 速度
+  drawText('v = '+Math.min(time*30,80).toFixed(1)+' m/s →',x,cy-50,'#fbbf24',12);
+  // 星空背景
+  if(!drawRocketScene.stars){
+    drawRocketScene.stars=[];
+    for(let i=0;i<40;i++)drawRocketScene.stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5});
+  }
+  drawRocketScene.stars.forEach(s=>{
+    ctx.fillStyle='rgba(255,255,255,0.3)';
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill();
+  });
+  drawText('燃气向后喷 → 火箭受反作用力向前加速（无需空气）',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：F=ma 推力计算 =====
+function drawThrustScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('火箭推力计算 · F = (Δm/Δt)·u',W/2,30,'#a78bfa',16);
+  // 公式
+  ctx.fillStyle='#fff';ctx.font='bold 20px serif';ctx.textAlign='center';
+  ctx.fillText('F = (Δm/Δt) × u',W/2,75);
+  ctx.font='13px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('Δm/Δt：质量流率（kg/s），u：喷气速度（m/s）',W/2,100);
+  // 参数表
+  const params=[
+    {p:'Δm/Δt',v:'500 kg/s',c:'#3b82f6'},
+    {p:'u',v:'3000 m/s',c:'#a78bfa'},
+    {p:'F',v:'1.5×10⁶ N',c:'#34d399'},
+    {p:'M (火箭)',v:'3×10⁵ kg',c:'#fbbf24'},
+  ];
+  params.forEach((p,i)=>{
+    const y=140+i*48;
+    ctx.fillStyle=p.c+'22';ctx.strokeStyle=p.c;ctx.lineWidth=2;
+    roundRect(W/2-180,y,360,38,6);ctx.fill();ctx.stroke();
+    drawText(p.p,W/2-100,y+19,p.c,14);
+    drawText('= '+p.v,W/2+60,y+19,'#fff',14);
+  });
+  // 加速度计算
+  const F=1.5e6,M=3e5;
+  const a=F/M;
+  ctx.fillStyle='#34d399';ctx.font='bold 16px serif';ctx.textAlign='center';
+  ctx.fillText('a = F/M = '+(F/M).toFixed(1)+' m/s²',W/2,H-90);
+  ctx.font='12px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('（燃料消耗后 M 减小，加速度会越来越大）',W/2,H-65);
+  drawText('典型液体火箭：起飞推力数百万牛顿，加速度数倍 g',W/2,H-35,'#fbbf24',12);
+}
+
+// ===== 场景：与平衡力对比 =====
+function drawBalanceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('作用反作用力 vs 平衡力',W/2,30,'#3b82f6',16);
+  // 左：平衡力（同一物体）
+  const lx=W/4;
+  drawText('平衡力（作用在同一物体）',lx,70,'#34d399',14);
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(lx-40,H/2-40,80,80,8);ctx.fill();ctx.stroke();
+  drawText('物体',lx,H/2,'#fff',14);
+  // 重力向下
+  arrow(lx,H/2+45,lx,H/2+105,'#f87171',3);
+  drawText('G',lx,H/2+115,'#f87171',13);
+  // 支持力向上
+  arrow(lx,H/2-45,lx,H/2-105,'#67e8f9',3);
+  drawText('N',lx,H/2-115,'#67e8f9',13);
+  drawText('G 与 N 作用在同一物，合力 = 0',lx,H-80,'#9ab0d0',11);
+  drawText('物体保持静止',lx,H-60,'#fbbf24',12);
+  // 右：作用反作用力
+  const rx=3*W/4;
+  drawText('作用反作用力（不同物体）',rx,70,'#a78bfa',14);
+  // 物体 + 地球
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(rx-40,H/2-40,80,80,8);ctx.fill();ctx.stroke();
+  drawText('物体',rx,H/2,'#fff',14);
+  // 物体拉地球（向上）
+  arrow(rx,H/2-45,rx,H/2-105,'#a78bfa',3);
+  drawText('F\'(物→地)',rx,H/2-115,'#a78bfa',12);
+  // 地球拉物体（向下）
+  arrow(rx,H/2+45,rx,H/2+105,'#f87171',3);
+  drawText('F(地→物)',rx,H/2+115,'#f87171',12);
+  drawText('分别作用于物体和地球',rx,H-80,'#9ab0d0',11);
+  drawText('不能抵消，各自有效果',rx,H-60,'#fbbf24',12);
+  // 中间分隔
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;ctx.setLineDash([8,8]);
+  ctx.beginPath();ctx.moveTo(W/2,90);ctx.lineTo(W/2,H-30);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('关键：作用力反作用力分别作用在两个不同物体上',W/2,H-25,'#fbbf24',13);
+}
+
+// ===== 场景：走路游泳 =====
+function drawWalkSwimScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('生活中的反作用力 · 走路与游泳',W/2,30,'#3b82f6',16);
+  // 左：走路
+  const lx=W/4;
+  drawText('走路 · 脚蹬地',lx,70,'#3b82f6',14);
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(lx-100,H/2+50);ctx.lineTo(lx+100,H/2+50);ctx.stroke();
+  // 人
+  const bob=Math.sin(time*4)*3;
+  drawPerson(lx,H/2+50+bob,'#3b82f6',60);
+  // 脚蹬地（向后）
+  arrow(lx-15,H/2+50,lx-55,H/2+50,'#f87171',3);
+  drawText('脚蹬地 F',lx-50,H/2+30,'#f87171',11);
+  // 地推人（向前）
+  arrow(lx+15,H/2+30,lx+55,H/2+30,'#34d399',3);
+  drawText('地推人 F\'',lx+55,H/2+15,'#34d399',11);
+  // 右：游泳
+  const rx=3*W/4;
+  drawText('游泳 · 手推水',rx,70,'#a78bfa',14);
+  // 水
+  ctx.fillStyle='rgba(103,232,249,0.08)';ctx.strokeStyle='#243a5e';ctx.lineWidth=2;
+  roundRect(rx-110,H/2-10,220,80,8);ctx.fill();ctx.stroke();
+  drawText('水',rx,H/2+30,'#67e8f9',12);
+  // 人
+  drawPerson(rx,H/2+70,'#a78bfa',60);
+  // 手推水（向后）
+  arrow(rx-15,H/2+40,rx-55,H/2+40,'#f87171',3);
+  drawText('手推水 F',rx-55,H/2+25,'#f87171',11);
+  // 水推人（向前）
+  arrow(rx+15,H/2+30,rx+55,H/2+30,'#34d399',3);
+  drawText('水推人 F\'',rx+55,H/2+15,'#34d399',11);
+  // 总结
+  drawText('主动施力 → 同时获得等大反向的反作用力 → 推动前进',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景：应用案例 =====
+function drawApplicationScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型应用 · 弹簧秤与悬挂物',W/2,30,'#3b82f6',16);
+  // 左：弹簧秤
+  const lx=W/4;
+  drawText('弹簧秤',lx,65,'#3b82f6',14);
+  // 弹簧
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  const springTop=85;
+  for(let i=0;i<6;i++){
+    ctx.beginPath();
+    ctx.moveTo(lx-10,springTop+i*10);
+    ctx.lineTo(lx+10,springTop+i*10+5);
+    ctx.lineTo(lx-10,springTop+i*10+10);
+    ctx.stroke();
+  }
+  // 秤盘
+  ctx.fillStyle='#3b82f622';ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;
+  roundRect(lx-30,springTop+70,60,12,4);ctx.fill();ctx.stroke();
+  // 重物
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(lx-25,springTop+85,50,50,6);ctx.fill();ctx.stroke();
+  drawText('G',lx,springTop+110,'#a78bfa',13);
+  // 物体拉绳（向下）
+  arrow(lx+40,springTop+100,lx+75,springTop+100,'#f87171',3);
+  drawText('物拉绳',lx+95,springTop+100,'#f87171',11,'left');
+  // 绳拉物（向上）
+  arrow(lx-40,springTop+100,lx-75,springTop+100,'#34d399',3);
+  drawText('绳拉物',lx-95,springTop+100,'#34d399',11,'right');
+  drawText('读数 = 物体对秤的拉力',lx,H-50,'#9ab0d0',11);
+  // 右：悬挂
+  const rx=3*W/4;
+  drawText('天花板悬挂物',rx,65,'#a78bfa',14);
+  // 天花板
+  ctx.fillStyle='#243a5e';
+  ctx.fillRect(rx-60,75,120,10);
+  for(let i=-50;i<60;i+=15){ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(rx+i,85);ctx.lineTo(rx+i-8,93);ctx.stroke();}
+  // 绳
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(rx,85);ctx.lineTo(rx,160);ctx.stroke();
+  // 重物
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(rx-25,160,50,50,6);ctx.fill();ctx.stroke();
+  drawText('G',rx,185,'#a78bfa',13);
+  // 地球对物的引力（向下）
+  arrow(rx+40,185,rx+75,185,'#f87171',3);
+  drawText('地拉物',rx+95,185,'#f87171',11,'left');
+  // 物对地球的引力（向上，作用于地球）
+  arrow(rx-40,185,rx-75,185,'#34d399',3);
+  drawText('物拉地',rx-95,185,'#34d399',11,'right');
+  drawText('地球与物体相互吸引',rx,H-50,'#9ab0d0',11);
+  // 中分线
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.setLineDash([6,6]);
+  ctx.beginPath();ctx.moveTo(W/2,90);ctx.lineTo(W/2,H-60);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('每一对力都是作用反作用力 · 等大反向 · 分别作用',W/2,H-25,'#fbbf24',13);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('牛顿第三定律 · 核心总结',W/2,40,'#3b82f6',18);
+  const items=[
+    {t:'大小相等',d:'|F| = |F\'|',c:'#3b82f6'},
+    {t:'方向相反',d:'沿同一直线，方向相反',c:'#a78bfa'},
+    {t:'不同物体',d:'分别作用于两个物体',c:'#34d399'},
+    {t:'同时性',d:'同时产生、同时消失',c:'#fbbf24'},
+    {t:'同性质',d:'同为引力、弹力或摩擦力',c:'#fb923c'},
+    {t:'应用',d:'火箭、走路、游泳、弹簧秤',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+  drawText('力的本质是物体间的相互作用',W/2,H-40,'#fbbf24',14);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const p=Math.min(1.5,stepTime/STEP_DURATION);
+  if(stepIdx===0)drawForcePairScene(t);
+  else if(stepIdx===1)drawForcePairScene(t);
+  else if(stepIdx===2)drawBalanceScene(t);
+  else if(stepIdx===3)drawSkateboardScene(p);
+  else if(stepIdx===4)drawRocketScene(t);
+  else if(stepIdx===5)drawThrustScene(t);
+  else if(stepIdx===6)drawWalkSwimScene(t);
+  else if(stepIdx===7)drawApplicationScene();
+  else if(stepIdx===8)drawBalanceScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;t=0;drawRocketScene.particles=null;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();
+syncStep();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

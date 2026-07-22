@@ -1,215 +1,447 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>元素周期律与周期表</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>元素周期律与周期表 · 原子半径 · 电负性 · 金属性</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#e84393;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a5f3fc;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
-.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回化学目录</a>
-  <span class="title">元素周期律与周期表</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">元素周期律与周期表</span><span class="subtitle">原子半径 · 电负性 · 金属性递变规律</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>周期表结构</h4><div class="v">7 周期 16 族<br>短周期 1-3，长周期 4-7</div></div>
+  <div class="card s2"><div class="num">2</div><h4>原子半径</h4><div class="v">同周期递减、同族递增<br>电子层与核电荷决定</div></div>
+  <div class="card s3"><div class="num">3</div><h4>电负性</h4><div class="v">F 最大 4.0<br>同周期递增、同族递减</div></div>
+  <div class="card s4"><div class="num">4</div><h4>金属性递变</h4><div class="v">同周期减弱、同族增强<br>Cs 最强金属，F 最强非金属</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>元素周期律：元素性质随原子序数递增呈周期性变化。同周期（从左→右）：原子半径减小、电负性增大、金属性减弱、非金属性增强。同族（从上→下）：原子半径增大、电负性减小、金属性增强、非金属性减弱。</p>
-    <div class="legend"><span><b style="color:#e84393">●</b> 碱金属</span><span><b style="color:#0984e3">●</b> 卤素</span><span><b style="color:#00b894">●</b> 稀有气体</span><span><b style="color:#fdcb6e">●</b> 过渡金属</span></div>
-    <div class="key-points"><h3>核心规律</h3><ul>
-      <li><b>原子半径</b>：同周期递减（核电荷增大吸引电子更紧）；同族递增（电子层增多）</li>
-      <li><b>电负性</b>：F最大(4.0)，同周期递增、同族递减</li>
-      <li><b>第一电离能</b>：同周期总体递增（有反常如Be>B, N>O）</li>
-      <li><b>金属性</b>：同周期递减、同族递增；Cs最强（放射性Fr除外）</li>
-      <li><b>非金属性</b>：同周期递增、同族递减；F最强</li>
-      <li>周期表共7周期16族；短周期(1-3)、长周期(4-7)</li>
-    </ul></div>
-  </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">周期表结构</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="prevBtn">◀ 上一族</button>
-  <button id="nextBtn">下一族 ▶</button>
-  <label>周期 <input id="period" type="range" min="1" max="4" step="1" value="1"></label>
-  <span id="status" class="status"></span>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(500,Math.min(980,r.width-8));cv.height=Math.max(400,Math.min(600,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function drawArrow(x1,y1,x2,y2,color,w){ctx.strokeStyle=color;ctx.lineWidth=w||2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const a=Math.atan2(y2-y1,x2-x1);ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-10*Math.cos(a-0.4),y2-10*Math.sin(a-0.4));ctx.lineTo(x2-10*Math.cos(a+0.4),y2-10*Math.sin(a+0.4));ctx.fill();}
 
-// 前20号元素数据
+// 前 20 号元素数据：sym 符号、name 中文名、r 半径(pm)、eneg 电负性、cat 类别、pos 周期表坐标[col,row]
 const ELEMENTS=[
-  {z:1,sym:'H',name:'氢',r:25,eneg:2.1,cat:'nonmetal'},
-  {z:2,sym:'He',name:'氦',r:31,eneg:0,cat:'noble'},
-  {z:3,sym:'Li',name:'锂',r:152,eneg:1.0,cat:'alkali'},
-  {z:4,sym:'Be',name:'铍',r:112,eneg:1.5,cat:'alkaline'},
-  {z:5,sym:'B',name:'硼',r:85,eneg:2.0,cat:'metalloid'},
-  {z:6,sym:'C',name:'碳',r:77,eneg:2.5,cat:'nonmetal'},
-  {z:7,sym:'N',name:'氮',r:75,eneg:3.0,cat:'nonmetal'},
-  {z:8,sym:'O',name:'氧',r:73,eneg:3.5,cat:'nonmetal'},
-  {z:9,sym:'F',name:'氟',r:72,eneg:4.0,cat:'halogen'},
-  {z:10,sym:'Ne',name:'氖',r:38,eneg:0,cat:'noble'},
-  {z:11,sym:'Na',name:'钠',r:186,eneg:0.9,cat:'alkali'},
-  {z:12,sym:'Mg',name:'镁',r:160,eneg:1.2,cat:'alkaline'},
-  {z:13,sym:'Al',name:'铝',r:143,eneg:1.5,cat:'metal'},
-  {z:14,sym:'Si',name:'硅',r:117,eneg:1.8,cat:'metalloid'},
-  {z:15,sym:'P',name:'磷',r:110,eneg:2.1,cat:'nonmetal'},
-  {z:16,sym:'S',name:'硫',r:103,eneg:2.5,cat:'nonmetal'},
-  {z:17,sym:'Cl',name:'氯',r:99,eneg:3.0,cat:'halogen'},
-  {z:18,sym:'Ar',name:'氩',r:71,eneg:0,cat:'noble'},
-  {z:19,sym:'K',name:'钾',r:227,eneg:0.8,cat:'alkali'},
-  {z:20,sym:'Ca',name:'钙',r:197,eneg:1.0,cat:'alkaline'}
+  {z:1,sym:'H',name:'氢',r:25,eneg:2.1,cat:'nonmetal',pos:[0,0]},
+  {z:2,sym:'He',name:'氦',r:31,eneg:0,cat:'noble',pos:[17,0]},
+  {z:3,sym:'Li',name:'锂',r:152,eneg:1.0,cat:'alkali',pos:[0,1]},
+  {z:4,sym:'Be',name:'铍',r:112,eneg:1.5,cat:'alkaline',pos:[1,1]},
+  {z:5,sym:'B',name:'硼',r:85,eneg:2.0,cat:'metalloid',pos:[12,1]},
+  {z:6,sym:'C',name:'碳',r:77,eneg:2.5,cat:'nonmetal',pos:[13,1]},
+  {z:7,sym:'N',name:'氮',r:75,eneg:3.0,cat:'nonmetal',pos:[14,1]},
+  {z:8,sym:'O',name:'氧',r:73,eneg:3.5,cat:'nonmetal',pos:[15,1]},
+  {z:9,sym:'F',name:'氟',r:72,eneg:4.0,cat:'halogen',pos:[16,1]},
+  {z:10,sym:'Ne',name:'氖',r:38,eneg:0,cat:'noble',pos:[17,1]},
+  {z:11,sym:'Na',name:'钠',r:186,eneg:0.9,cat:'alkali',pos:[0,2]},
+  {z:12,sym:'Mg',name:'镁',r:160,eneg:1.2,cat:'alkaline',pos:[1,2]},
+  {z:13,sym:'Al',name:'铝',r:143,eneg:1.5,cat:'metal',pos:[12,2]},
+  {z:14,sym:'Si',name:'硅',r:117,eneg:1.8,cat:'metalloid',pos:[13,2]},
+  {z:15,sym:'P',name:'磷',r:110,eneg:2.1,cat:'nonmetal',pos:[14,2]},
+  {z:16,sym:'S',name:'硫',r:103,eneg:2.5,cat:'nonmetal',pos:[15,2]},
+  {z:17,sym:'Cl',name:'氯',r:99,eneg:3.0,cat:'halogen',pos:[16,2]},
+  {z:18,sym:'Ar',name:'氩',r:71,eneg:0,cat:'noble',pos:[17,2]},
+  {z:19,sym:'K',name:'钾',r:227,eneg:0.8,cat:'alkali',pos:[0,3]},
+  {z:20,sym:'Ca',name:'钙',r:197,eneg:1.0,cat:'alkaline',pos:[1,3]}
+];
+const CAT_COLORS={alkali:'#f87171',alkaline:'#fb923c',metal:'#fbbf24',metalloid:'#a78bfa',nonmetal:'#06b6d4',halogen:'#34d399',noble:'#67e8f9'};
+function getCatColor(cat){return CAT_COLORS[cat]||'#636e72';}
+
+const STEPS=[
+  {tag:'基础',name:'周期表结构',body:'<strong>元素周期表</strong>共 <strong>7 个周期</strong>（横行）和 <strong>16 个族</strong>（纵列，含 7 主族 + 7 副族 + 第 VIII 族 + 0 族）。短周期是第 1-3 周期，长周期是第 4-7 周期。元素按<strong>原子序数</strong>递增排列。',points:{title:'结构要点',items:['<strong>周期数</strong>：等于电子层数','<strong>主族序数</strong>：等于最外层电子数','<strong>0 族</strong>：稀有气体，化学性质稳定','<strong>过渡金属</strong>：位于第 3-12 族']}},
+  {tag:'基础',name:'周期律定义',body:'<strong>元素周期律</strong>：元素性质随原子序数递增呈<strong>周期性变化</strong>。根本原因是<strong>核外电子排布的周期性</strong>。同周期（左→右）：原子半径减小、金属性减弱、非金属性增强；同族（上→下）：原子半径增大、金属性增强。',points:{title:'同周期递变（左→右）',items:['<strong>原子半径</strong>：递减','<strong>金属性</strong>：减弱','<strong>非金属性</strong>：增强','<strong>电负性</strong>：递增']}},
+  {tag:'基础',name:'同族规律',body:'<strong>同主族元素</strong>最外层电子数相同，化学性质相似。从上到下：<strong>电子层数增多</strong>导致原子半径增大，<strong>原子核对最外层电子的吸引力减弱</strong>，失去电子更容易，因此金属性增强、非金属性减弱。',points:{title:'同族递变（上→下）',items:['<strong>原子半径</strong>：递增（电子层增多）','<strong>金属性</strong>：增强','<strong>非金属性</strong>：减弱','<strong>电负性</strong>：递减']}},
+  {tag:'递变',name:'原子半径',body:'<strong>原子半径</strong>由电子层数和核电荷共同决定。同周期从左到右，<strong>核电荷增大</strong>对电子的吸引更强，半径递减；同族从上到下，<strong>电子层数增多</strong>占主导，半径递增。',points:{title:'半径规律',items:['<strong>同周期</strong>：Li 152 → Be 112 → B 85 → ... → F 72 pm','<strong>同族碱金属</strong>：Li 152 < Na 186 < K 227 pm','<strong>同族卤素</strong>：F 72 < Cl 99 < Br 114 < I 133 pm','<strong>稀有气体</strong>：范德华半径较大']}},
+  {tag:'递变',name:'电负性',body:'<strong>电负性</strong>表示原子在化合物中<strong>吸引电子的能力</strong>（鲍林标度）。F 最大（4.0），Cs 最小（0.7）。同周期递增、同族递减。电负性差越大，键的极性越强。',points:{title:'电负性要点',items:['<strong>F = 4.0</strong>（最强非金属）','<strong>Cs = 0.7</strong>（最强金属之一）','<strong>同周期递增</strong>：Li 1.0 → F 4.0','<strong>电负性差 >1.7</strong>：通常为离子键']}},
+  {tag:'递变',name:'化合价',body:'<strong>化合价</strong>与族序数相关。主族元素最高正价 = 族序数（F、O 除外）；第 IV-VII 族非金属最低负价 = 族序数 - 8。同族元素化合价规律相同。',points:{title:'化合价规律',items:['<strong>第 IA 族</strong>：+1 价（碱金属）','<strong>第 VIIA 族</strong>：+7 或 -1 价（卤素）','<strong>第 IVA 族</strong>：+4 或 -4 价（碳族）','<strong>0 族</strong>：通常 0 价（稳定）']}},
+  {tag:'递变',name:'核外电子排布',body:'<strong>核外电子排布</strong>决定元素性质。各层最多容纳 <code>2n²</code> 个电子，最外层不超过 8 个。最外层电子数决定主族化学性质，电子层数决定周期数。',points:{title:'排布规律',items:['<strong>K 层</strong>：最多 2 个','<strong>L 层</strong>：最多 8 个','<strong>M 层</strong>：最多 18 个','<strong>最外层 8 电子</strong>：稳定结构（稀有气体）']}},
+  {tag:'应用',name:'碱金属对比',body:'<strong>碱金属</strong>（Li-Na-K-Rb-Cs）从上到下金属性增强，与水反应越来越剧烈：<strong>Li 平缓、Na 剧烈、K 燃烧紫色火焰、Rb 爆炸、Cs 剧烈爆炸</strong>。这是周期律的典型应用。',points:{title:'碱金属与水反应',items:['<strong>Li</strong>：缓慢反应，生成 H₂','<strong>Na</strong>：剧烈，熔成小球，发出嘶嘶声','<strong>K</strong>：燃烧紫色火焰，爆炸','<strong>Cs</strong>：剧烈爆炸']}},
+  {tag:'应用',name:'卤素置换',body:'<strong>卤素</strong>（F-Cl-Br-I）从上到下非金属性减弱，活泼性减弱。活泼卤素能把<strong>较不活泼的卤素</strong>从其盐溶液中置换出来：<code>Cl₂ + 2NaBr → 2NaCl + Br₂</code>。颜色 F₂ 淡黄、Cl₂ 黄绿、Br₂ 红棕、I₂ 紫黑。',points:{title:'卤素活泼性',items:['<strong>F₂</strong>：淡黄色，最活泼','<strong>Cl₂</strong>：黄绿色，可置换 Br⁻、I⁻','<strong>Br₂</strong>：红棕色，可置换 I⁻','<strong>I₂</strong>：紫黑色，最不活泼']}},
+  {tag:'应用',name:'元素之最',body:'<strong>元素之最</strong>：最轻 <strong>H</strong>（1 号，密度最小）、最重 <strong>Og</strong>（118 号，合成元素）、最强金属 <strong>Cs</strong>（铯，金属性最强）、最强非金属 <strong>F</strong>（氟，电负性 4.0）。',points:{title:'元素之最',items:['<strong>最轻元素</strong>：氢 H（原子质量最小）','<strong>最重元素</strong>：氡 Og（118 号）','<strong>最强金属</strong>：铯 Cs（Fr 有放射性除外）','<strong>最强非金属</strong>：氟 F（电负性 4.0）']}},
+  {tag:'总结',name:'应用与总结',body:'<strong>元素周期律与周期表</strong>是化学的<strong>核心工具</strong>，可以预测元素性质、指导新元素合成、解释反应规律。门捷列夫 1869 年首次提出周期表，预言了镓、锗等元素的性质。',points:{title:'核心速记',items:['<strong>周期数</strong>=电子层数，<strong>族数</strong>=最外层电子数','<strong>同周期左→右</strong>：半径减、非金属强','<strong>同族上→下</strong>：半径增、金属强','<strong>F 最强非金属，Cs 最强金属</strong>']}},
 ];
 
-const COLORS={alkali:'#e84393',alkaline:'#fd79a8',metal:'#fdcb6e',metalloid:'#a29bfe',nonmetal:'#0984e3',halogen:'#00cec9',noble:'#00b894'};
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
 
-let state={mode:'table',t:0,highlight:-1,period:1,animP:0};
-
-function getCatColor(cat){return COLORS[cat]||'#636e72';}
-
-function drawTable(){
+// ===== 场景 1：周期表局部可视化（前 20 号元素网格）=====
+function drawTableScene(time){
   const W=cv.width,H=cv.height;
-  ctx.clearRect(0,0,W,H);
-  // 画周期表布局(前3周期+第4周期前2个)
-  const cellW=Math.min(56,W/19),cellH=Math.min(48,H/7);
-  const ox=(W-cellW*18)/2,oy=(H-cellH*5)/2;
-  ctx.font=`bold ${Math.max(10,cellW*0.28)}px sans-serif`;
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  
-  // 位置映射
-  const pos={1:[0,0],2:[17,0],3:[0,1],4:[1,1],5:[12,1],6:[13,1],7:[14,1],8:[15,1],9:[16,1],10:[17,1],
-    11:[0,2],12:[1,2],13:[12,2],14:[13,2],15:[14,2],16:[15,2],17:[16,2],18:[17,2],
-    19:[0,3],20:[1,3]};
-  
+  drawText('元素周期表 · 前 20 号元素',W/2,28,'#06b6d4',16);
+  const cellW=Math.min(54,W/19),cellH=Math.min(46,(H-100)/5);
+  const ox=(W-cellW*18)/2,oy=(H-cellH*4)/2+10;
+  // 闪烁高亮（按 z 序号循环）
+  const hlZ=Math.floor((time*1.5)%20)+1;
   ELEMENTS.forEach(el=>{
-    const p=pos[el.z];if(!p)return;
-    const x=ox+p[0]*cellW,y=oy+p[1]*cellH;
-    const isHL=state.highlight===el.z-1;
-    ctx.fillStyle=isHL?getCatColor(el.cat):'rgba(255,255,255,0.06)';
+    const x=ox+el.pos[0]*cellW,y=oy+el.pos[1]*cellH;
+    const isHL=el.z===hlZ;
+    const c=getCatColor(el.cat);
+    ctx.fillStyle=isHL?c:'rgba(255,255,255,0.06)';
     ctx.globalAlpha=isHL?0.9:0.7;
-    ctx.fillRect(x+1,y+1,cellW-2,cellH-2);
+    roundRect(x+1,y+1,cellW-2,cellH-2,5);ctx.fill();
     ctx.globalAlpha=1;
-    ctx.strokeStyle=getCatColor(el.cat);ctx.lineWidth=isHL?2:1;
-    ctx.strokeRect(x+1,y+1,cellW-2,cellH-2);
-    ctx.fillStyle='#fff';
-    ctx.font=`bold ${Math.max(9,cellW*0.32)}px sans-serif`;
-    ctx.fillText(el.sym,x+cellW/2,y+cellH*0.35);
-    ctx.font=`${Math.max(7,cellW*0.2)}px sans-serif`;
-    ctx.fillStyle='#aab';
-    ctx.fillText(el.z,x+cellW/2,y+cellH*0.65);
-    ctx.fillText(el.name,x+cellW/2,y+cellH*0.85);
+    ctx.strokeStyle=c;ctx.lineWidth=isHL?2.5:1;
+    roundRect(x+1,y+1,cellW-2,cellH-2,5);ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold '+Math.max(11,cellW*0.32)+'px sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(el.sym,x+cellW/2,y+cellH*0.32);
+    ctx.font=Math.max(8,cellW*0.2)+'px sans-serif';ctx.fillStyle='#aab';
+    ctx.fillText(el.z,x+cellW/2,y+cellH*0.62);
+    ctx.fillText(el.name,x+cellW/2,y+cellH*0.83);
   });
-  
-  // 标注周期和族
-  ctx.fillStyle='#9fb0c8';ctx.font='11px sans-serif';
-  for(let i=0;i<4;i++){
-    ctx.fillText(`第${i+1}周期`,ox-30,oy+i*cellH+cellH/2);
-  }
+  // 周期、族标注
+  ctx.fillStyle='#9ab0d0';ctx.font='11px sans-serif';ctx.textAlign='right';
+  for(let i=0;i<4;i++)ctx.fillText('第'+(i+1)+'周期',ox-6,oy+i*cellH+cellH/2);
+  drawText('注：H、He 为第 1 周期；碱金属红色、卤素绿色、稀有气体青色',W/2,H-25,'#9ab0d0',11);
 }
 
-function drawTrend(){
+// ===== 场景 2：原子半径递变箭头 =====
+function drawRadiusScene(time){
   const W=cv.width,H=cv.height;
-  ctx.clearRect(0,0,W,H);
-  const modes=['原子半径','电负性','金属性'];
-  const modeIdx=state.period-1;
-  const title=modes[modeIdx%modes.length];
-  
-  ctx.fillStyle='#e8edf6';ctx.font='bold 18px sans-serif';ctx.textAlign='center';
-  ctx.fillText(`递变规律：${title}`,W/2,30);
-  
-  // 画箭头示意
-  const cy=H/2;
-  // 同周期箭头
-  ctx.fillStyle='#e84393';ctx.font='14px sans-serif';
-  ctx.fillText('同周期（左→右）',W/2,cy-80);
-  drawArrow(W*0.2,cy-55,W*0.8,cy-55,'#e84393');
-  if(modeIdx%3===0){ctx.fillText('原子半径递减 →',W/2,cy-35);}
-  else if(modeIdx%3===1){ctx.fillText('电负性递增 →',W/2,cy-35);}
-  else{ctx.fillText('金属性递减 →',W/2,cy-35);}
-  
-  // 同族箭头
-  ctx.fillStyle='#0984e3';
-  ctx.fillText('同族（上→下）',W/2,cy+20);
-  drawArrow(W*0.2,cy+45,W*0.8,cy+45,'#0984e3');
-  if(modeIdx%3===0){ctx.fillText('原子半径递增 →',W/2,cy+65);}
-  else if(modeIdx%3===1){ctx.fillText('电负性递减 →',W/2,cy+65);}
-  else{ctx.fillText('金属性递增 →',W/2,cy+65);}
-  
-  // 画几个元素对比
-  const examples=[[['Li','Be','B','C','N','O','F'],['原子半径: 152→112→85→77→75→73→72 pm']]];
-  ctx.font='12px sans-serif';ctx.fillStyle='#fdcb6e';
-  ctx.fillText('第2周期: Li Be B C N O F',W/2,cy+110);
-  ctx.fillStyle='#9fb0c8';
-  ctx.fillText('原子半径: 152→112→85→77→75→73→72 pm',W/2,cy+130);
-  ctx.fillText('电负性: 1.0→1.5→2.0→2.5→3.0→3.5→4.0',W/2,cy+150);
+  drawText('原子半径递变规律',W/2,28,'#fbbf24',16);
+  const cy=H/2-20;
+  // 同周期：Li→F 半径减小
+  const period=[['Li',152],['Be',112],['B',85],['C',77],['N',75],['O',73],['F',72]];
+  drawText('同周期（第 2 周期）：左→右 半径递减',W/2,cy-110,'#f87171',13);
+  const startX=W*0.1,endX=W*0.9,baseY=cy-40;
+  period.forEach((e,i)=>{
+    const x=startX+(endX-startX)*i/(period.length-1);
+    const r=e[1]/152*22+8;
+    const pulse=1+0.08*Math.sin(time*3+i*0.5);
+    ctx.fillStyle='rgba(248,113,113,0.3)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(x,baseY,r*pulse,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText(e[0],x,baseY-r*pulse-10);
+    ctx.fillStyle='#fbbf24';ctx.font='10px sans-serif';
+    ctx.fillText(e[1]+'pm',x,baseY+r*pulse+12);
+  });
+  drawArrow(startX-10,baseY-50,endX+10,baseY-50,'#f87171',2);
+  drawText('半径递减',W/2,baseY-65,'#f87171',11);
+  // 同族：Li→K 半径增大
+  drawText('同族（碱金属）：上→下 半径递增',W/2,cy+60,'#34d399',13);
+  const group=[['Li',152],['Na',186],['K',227]];
+  const startY=cy+100,endY=cy+220;
+  group.forEach((e,i)=>{
+    const y=startY+(endY-startY)*i/(group.length-1);
+    const r=e[1]/227*22+8;
+    const pulse=1+0.08*Math.sin(time*2+i*0.6);
+    ctx.fillStyle='rgba(52,211,153,0.3)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(W*0.35,y,r*pulse,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText(e[0],W*0.35,y);
+    ctx.fillStyle='#fbbf24';ctx.font='10px sans-serif';
+    ctx.fillText(e[1]+'pm',W*0.35+r*pulse+18,y);
+  });
+  drawArrow(W*0.35+50,startY-15,W*0.35+50,endY+15,'#34d399',2);
+  drawText('递增',W*0.35+50,cy+85,'#34d399',11,'left');
 }
 
-function drawArrow(x1,y1,x2,y2,color){
-  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-  const a=Math.atan2(y2-y1,x2-x1);
-  ctx.fillStyle=color;ctx.beginPath();
-  ctx.moveTo(x2,y2);ctx.lineTo(x2-10*Math.cos(a-0.4),y2-10*Math.sin(a-0.4));
-  ctx.lineTo(x2-10*Math.cos(a+0.4),y2-10*Math.sin(a+0.4));ctx.fill();
+// ===== 场景 3：电负性递变颜色梯度 =====
+function drawElectronegScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电负性递变 · 鲍林标度',W/2,28,'#06b6d4',16);
+  // 同周期电负性梯度
+  const period=[['Li',1.0],['Be',1.5],['B',2.0],['C',2.5],['N',3.0],['O',3.5],['F',4.0]];
+  const startX=W*0.1,endX=W*0.9,baseY=H/2-40;
+  drawText('第 2 周期：左→右 电负性递增',W/2,baseY-90,'#06b6d4',13);
+  period.forEach((e,i)=>{
+    const x=startX+(endX-startX)*i/(period.length-1);
+    const ratio=e[1]/4.0;
+    // 颜色从蓝到红
+    const r=Math.floor(6+246*ratio),g=Math.floor(182-90*ratio),b=Math.floor(212-180*ratio);
+    const col='rgb('+r+','+g+','+b+')';
+    const pulse=1+0.1*Math.sin(time*2+i*0.4);
+    ctx.fillStyle=col;ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+    roundRect(x-28,baseY-30,56,50*pulse,6);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText(e[0],x,baseY-15);
+    ctx.font='11px sans-serif';
+    ctx.fillText(e[1],x,baseY+10);
+  });
+  // 梯度条
+  const grad=ctx.createLinearGradient(startX,0,endX,0);
+  grad.addColorStop(0,'#06b6d4');grad.addColorStop(1,'#f87171');
+  ctx.fillStyle=grad;ctx.fillRect(startX,baseY+50,endX-startX,14);
+  ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.strokeRect(startX,baseY+50,endX-startX,14);
+  drawText('弱（0.7）',startX,baseY+78,'#06b6d4',11);
+  drawText('强（4.0）',endX,baseY+78,'#f87171',11);
+  drawText('F 最强非金属（电负性 4.0），Cs 最弱（0.7）',W/2,H-40,'#fbbf24',12);
+  drawText('电负性差越大，化学键极性越强',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景 4：碱金属与水反应剧烈程度对比 =====
+function drawAlkaliScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('碱金属与水反应剧烈程度对比',W/2,28,'#f87171',16);
+  const metals=[{s:'Li',lvl:1,c:'#fb923c'},{s:'Na',lvl:2,c:'#fbbf24'},{s:'K',lvl:3,c:'#a78bfa'},{s:'Rb',lvl:4,c:'#f87171'},{s:'Cs',lvl:5,c:'#ec4899'}];
+  const startX=60,step=(W-120)/5,glassY=H-100,glassH=120,glassW=step-30;
+  metals.forEach((m,i)=>{
+    const x=startX+i*step+glassW/2;
+    // 烧杯
+    ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x-glassW/2,glassY-glassH);ctx.lineTo(x-glassW/2,glassY);
+    ctx.lineTo(x+glassW/2,glassY);ctx.lineTo(x+glassW/2,glassY-glassH);ctx.stroke();
+    // 水面
+    ctx.fillStyle='rgba(6,182,212,0.3)';ctx.fillRect(x-glassW/2+2,glassY-glassH*0.4,glassW-4,glassH*0.4-2);
+    drawText('H₂O',x,glassY-glassH*0.2,'#67e8f9',11);
+    // 反应剧烈程度 = 气泡/火焰数量
+    const intensity=m.lvl;
+    const bubbleCount=intensity*3;
+    for(let b=0;b<bubbleCount;b++){
+      const bx=x+Math.sin(time*3+b+i)*15;
+      const by=glassY-glassH*0.4-((time*60*intensity+b*30)%120);
+      const size=2+intensity;
+      ctx.fillStyle='rgba(255,255,255,'+(0.4+0.3*Math.sin(time*5+b))+')';
+      ctx.beginPath();ctx.arc(bx,by,size,0,7);ctx.fill();
+    }
+    // 火焰（剧烈反应 K/Rb/Cs）
+    if(intensity>=3){
+      const fh=intensity*8+5*Math.sin(time*8+i);
+      ctx.fillStyle=m.c;ctx.globalAlpha=0.7;
+      ctx.beginPath();
+      ctx.moveTo(x,glassY-glassH-5);
+      ctx.lineTo(x-8,glassY-glassH-fh);
+      ctx.lineTo(x,glassY-glassH-fh-8);
+      ctx.lineTo(x+8,glassY-glassH-fh);
+      ctx.closePath();ctx.fill();
+      ctx.globalAlpha=1;
+    }
+    // 金属球
+    ctx.fillStyle=m.c;ctx.strokeStyle='#fff';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(x,glassY-glassH*0.4,7,0,7);ctx.fill();ctx.stroke();
+    // 标签
+    drawText(m.s,x,glassY+18,'#fff',14);
+    drawText(['平缓','剧烈','燃烧','爆炸','剧爆'][i],x,glassY+35,m.c,10);
+  });
+  drawText('从上到下（Li→Cs）：反应越来越剧烈 → 金属性增强',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景 5：卤素置换反应（颜色与活泼性）=====
+function drawHalogenScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('卤素活泼性递减 · F > Cl > Br > I',W/2,28,'#34d399',16);
+  const halogens=[{s:'F₂',c:'#fef9c3',lvl:4,desc:'淡黄'},{s:'Cl₂',c:'#bef264',lvl:3,desc:'黄绿'},{s:'Br₂',c:'#fb923c',lvl:2,desc:'红棕'},{s:'I₂',c:'#a78bfa',lvl:1,desc:'紫黑'}];
+  const startX=80,step=(W-160)/4,tubeY=H/2-20,tubeH=110,tubeW=step-30;
+  halogens.forEach((h,i)=>{
+    const x=startX+i*step+tubeW/2;
+    // 试管
+    ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x-tubeW/2,tubeY-tubeH);ctx.lineTo(x-tubeW/2,tubeY);
+    ctx.lineTo(x,tubeY+15);ctx.lineTo(x+tubeW/2,tubeY);ctx.lineTo(x+tubeW/2,tubeY-tubeH);ctx.stroke();
+    // 液体/气体颜色
+    ctx.fillStyle=h.c;ctx.globalAlpha=0.7;
+    ctx.beginPath();ctx.moveTo(x-tubeW/2+2,tubeY-tubeH*0.5);
+    ctx.lineTo(x-tubeW/2+2,tubeY-2);
+    ctx.lineTo(x,tubeY+13);ctx.lineTo(x+tubeW/2-2,tubeY-2);
+    ctx.lineTo(x+tubeW/2-2,tubeY-tubeH*0.5);ctx.closePath();ctx.fill();
+    ctx.globalAlpha=1;
+    // 活泼性指示（脉冲光晕）
+    const pulse=0.5+0.5*Math.sin(time*3+i*0.5);
+    ctx.strokeStyle=h.c;ctx.lineWidth=1.5;ctx.globalAlpha=pulse*h.lvl/4;
+    roundRect(x-tubeW/2-4,tubeY-tubeH-4,tubeW+8,tubeH+22,8);ctx.stroke();
+    ctx.globalAlpha=1;
+    // 标签
+    drawText(h.s,x,tubeY-tubeH-15,'#fff',14);
+    drawText(h.desc,x,tubeY+35,h.c,11);
+    // 活泼性星级
+    let stars='';for(let s=0;s<h.lvl;s++)stars+='★';
+    drawText('活泼性 '+stars,x,tubeY+55,h.c,12);
+  });
+  // 置换反应箭头
+  drawArrow(W*0.2,H-70,W*0.8,H-70,'#34d399',2);
+  drawText('活泼性强 → 可置换活泼性弱的卤素',W/2,H-85,'#34d399',12);
+  drawText('例：Cl₂ + 2NaBr → 2NaCl + Br₂',W/2,H-40,'#fbbf24',12);
+  drawText('从上到下：非金属性减弱，活泼性减弱',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景 6：核外电子排布（原子模型）=====
+function drawElectronScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('核外电子排布 · 电子层模型',W/2,28,'#a78bfa',16);
+  // 示例原子：Na（11 号）1s2 2s2 2p6 3s1 → 2-8-1
+  const layers=[2,8,1];
+  const cx=W/2,cy=H/2+10;
+  // 原子核
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fff';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,18,0,7);ctx.fill();ctx.stroke();
+  drawText('Na⁺',cx,cy,'#1a1a1a',12);
+  drawText('钠原子 (z=11)',cx,cy-30,'#fff',13);
+  // 电子层
+  layers.forEach((cnt,li)=>{
+    const r=50+li*45;
+    ctx.strokeStyle='rgba(167,139,250,0.4)';ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke();ctx.setLineDash([]);
+    // 电子
+    for(let e=0;e<cnt;e++){
+      const ang=time*(0.8-li*0.2)+e*(7/cnt);
+      const ex=cx+r*Math.cos(ang),ey=cy+r*Math.sin(ang);
+      ctx.fillStyle='#06b6d4';ctx.strokeStyle='#fff';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(ex,ey,5,0,7);ctx.fill();ctx.stroke();
+    }
+    drawText('第'+(li+1)+'层：'+cnt+'e⁻',cx+r*0.7,cy-r*0.7,'#a78bfa',10,'left');
+  });
+  drawText('排布规律：K层≤2，L层≤8，最外层≤8',W/2,H-60,'#9ab0d0',12);
+  drawText('最外层 1e⁻ → 易失电子 → 强金属性',W/2,H-38,'#fbbf24',12);
+  drawText('周期数 = 电子层数 = 3',W/2,H-18,'#34d399',11);
+}
+
+// ===== 场景 7：元素之最 =====
+function drawExtremesScene(){
+  const W=cv.width,H=cv.height;
+  drawText('元素之最',W/2,35,'#fbbf24',18);
+  const items=[
+    {t:'最轻元素',d:'氢 H (z=1)',sub:'原子质量最小，宇宙中最丰富',c:'#67e8f9'},
+    {t:'最重元素',d:'氡 Og (z=118)',sub:'人工合成，半衰期极短',c:'#a78bfa'},
+    {t:'最强金属',d:'铯 Cs (z=55)',sub:'电负性 0.7，极易失电子',c:'#f87171'},
+    {t:'最强非金属',d:'氟 F (z=9)',sub:'电负性 4.0，氧化性极强',c:'#34d399'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const x=80+col*(W-160)/2;
+    const y=90+row*200;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/2-20,170,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/4,y+35,m.c,15);
+    ctx.font='bold 20px sans-serif';drawText(m.d,x+(W-160)/4,y+80,'#fff',20);
+    ctx.font='12px sans-serif';drawText(m.sub,x+(W-160)/4,y+120,'#9ab0d0',12);
+  });
+}
+
+// ===== 场景 8：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('元素周期律核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'周期表结构',d:'7 周期 16 族',c:'#06b6d4'},
+    {t:'原子半径',d:'同周期减、同族增',c:'#fbbf24'},
+    {t:'电负性',d:'F=4.0 最大',c:'#34d399'},
+    {t:'金属性',d:'同周期弱、同族强',c:'#f87171'},
+    {t:'非金属性',d:'同周期强、同族弱',c:'#a78bfa'},
+    {t:'最强金属',d:'Cs（铯）',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',13);
+  });
 }
 
 function draw(){
-  if(state.mode==='table')drawTable();
-  else drawTrend();
-  statusEl.textContent=`模式: ${state.mode==='table'?'周期表':'递变规律'} | 点击元素查看详情`;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawTableScene(t);
+  else if(stepIdx===1||stepIdx===2)drawRadiusScene(t);
+  else if(stepIdx===3)drawRadiusScene(t);
+  else if(stepIdx===4)drawElectronegScene(t);
+  else if(stepIdx===5)drawElectronegScene(t);
+  else if(stepIdx===6)drawElectronScene(t);
+  else if(stepIdx===7)drawAlkaliScene(t);
+  else if(stepIdx===8)drawHalogenScene(t);
+  else if(stepIdx===9)drawExtremesScene();
+  else if(stepIdx===10)drawSummaryScene();
 }
 
-let playing=false,lastT=0;
-function loop(ts){
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
   if(!playing)return;
-  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;
-  state.t+=dt;state.animP+=dt*0.3;
-  if(state.animP>1)state.animP=0;
-  draw();requestAnimationFrame(loop);
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
 }
 
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
-  if(playing){lastT=performance.now();requestAnimationFrame(loop);}
-};
-document.getElementById('resetBtn').onclick=function(){state={mode:'table',t:0,highlight:-1,period:1,animP:0};draw();};
-document.getElementById('prevBtn').onclick=function(){state.mode=state.mode==='table'?'trend':'table';draw();};
-document.getElementById('nextBtn').onclick=function(){state.period=(state.period%4)+1;draw();};
-document.getElementById('period').oninput=function(){state.period=+this.value;draw();};
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
 
-cv.addEventListener('click',function(e){
-  const rect=cv.getBoundingClientRect();
-  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
-  const cellW=Math.min(56,cv.width/19),cellH=Math.min(48,cv.height/7);
-  const ox=(cv.width-cellW*18)/2,oy=(cv.height-cellH*5)/2;
-  const pos={1:[0,0],2:[17,0],3:[0,1],4:[1,1],5:[12,1],6:[13,1],7:[14,1],8:[15,1],9:[16,1],10:[17,1],
-    11:[0,2],12:[1,2],13:[12,2],14:[13,2],15:[14,2],16:[15,2],17:[16,2],18:[17,2],
-    19:[0,3],20:[1,3]};
-  for(const el of ELEMENTS){
-    const p=pos[el.z];if(!p)continue;
-    const x=ox+p[0]*cellW,y=oy+p[1]*cellH;
-    if(mx>x&&mx<x+cellW&&my>y&&my<y+cellH){state.highlight=el.z-1;draw();return;}
-  }
-});
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
 
-draw();
-</script></body></html>
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -1,172 +1,540 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>光电效应</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>光电效应 · E=hν · 截止频率 · 爱因斯坦方程</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#a78bfa;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(167,139,250,.06)}
+.back:hover{background:rgba(167,139,250,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
-.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回物理目录</a>
-  <span class="title">光电效应</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">光电效应</span><span class="subtitle">E=hν · 截止频率 · 爱因斯坦方程</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>光子能量</h4><div class="v">E = hν<br>h = 6.626×10⁻³⁴ J·s</div></div>
+  <div class="card s2"><div class="num">2</div><h4>爱因斯坦方程</h4><div class="v">Ek = hν − W<br>W 为逸出功</div></div>
+  <div class="card s3"><div class="num">3</div><h4>截止频率</h4><div class="v">ν₀ = W / h<br>ν &lt; ν₀ 无光电子</div></div>
+  <div class="card s4"><div class="num">4</div><h4>关键规律</h4><div class="v">光强↑ → 光电流↑<br>频率↑ → Ek↑</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>光电效应：光照射金属表面时，金属中的电子吸收光子能量逸出成为光电子。爱因斯坦方程：Ek = hν - W₀（光电子最大初动能 = 光子能量 - 逸出功）。只有当hν ≥ W₀即ν ≥ ν₀（截止频率）时才发生光电效应。证明光具有粒子性。</p>
-    <div class="legend"><span><b style="color:#fdcb6e">~</b> 入射光子</span><span><b style="color:#0984e3">●</b> 电子</span><span><b style="color:#d63031">●</b> 逸出电子</span></div>
-    <div class="key-points"><h3>核心要点</h3><ul>
-      <li><b>E<sub>k</sub> = hν - W₀</b>（爱因斯坦光电效应方程）</li>
-      <li>h = 6.63×10⁻³⁴ J·s（普朗克常量）</li>
-      <li><b>截止频率</b>ν₀ = W₀/h：低于此频率无论光多强都无效</li>
-      <li>光强→光电流大小（光子数目多）</li>
-      <li>频率→光电子最大初动能（单个光子能量大）</li>
-      <li>瞬时性：光照即刻逸出（无需积累能量）</li>
-    </ul></div>
-  </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">现象</span><span id="stepTitle">光电效应</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <label>频率ν <input id="freq" type="range" min="3" max="12" step="0.5" value="6"></label>
-  <label>光强 <input id="intensity" type="range" min="1" max="5" step="1" value="3"></label>
-  <span id="status" class="status"></span>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(320,Math.min(500,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-let t=0,freq=6,intensity=3,playing=false,lastT=0;
-let photons=[],electrons=[];
-const nu0=5; // 截止频率
-const h=6.63; // 简化
+const STEPS=[
+  {tag:'现象',name:'光电效应现象',body:'<strong>光电效应</strong>：在光（包括不可见光）的照射下，<strong>金属表面发射电子</strong>（光电子）的现象。发射出的电子叫<strong>光电子</strong>，形成的光电流叫<strong>光电流</strong>。1887 年由<strong>赫兹</strong>首先发现。',points:{title:'现象三要素',items:['<strong>金属表面</strong>：被光照射的阴极','<strong>光电子</strong>：从金属逸出的电子','<strong>光电流</strong>：光电子定向移动形成','<strong>瞬时性</strong>：光照即刻发射（&lt;10⁻⁹ s）']}},
+  {tag:'现象',name:'金属板电子逸出',body:'光照射金属板表面，当光的<strong>频率足够高</strong>时，金属内电子获得能量后克服束缚<strong>逸出表面</strong>成为光电子。频率不够时，无论光多强、照多久都不会逸出。',points:{title:'逸出条件',items:['<strong>频率够高</strong>：ν &gt; ν₀ 才逸出','<strong>光强大</strong>：单位时间逸出电子数多','<strong>瞬时响应</strong>：一照就出电子','<strong>无延迟</strong>：经典波动说无法解释']}},
+  {tag:'困难',name:'经典波动说的困难',body:'<strong>经典波动说</strong>无法解释光电效应的三大矛盾：① <strong>截止频率</strong>（为何红光再强也不行？）；② <strong>瞬时性</strong>（能量应慢慢积累）；③ <strong>Ek 只依赖频率</strong>（与光强无关）。',points:{title:'三大矛盾',items:['<strong>截止频率</strong>：波动说预言任何频率都行','<strong>瞬时性</strong>：波动说需要能量积累时间','<strong>Ek 公式</strong>：波动说预言 Ek 随光强增大','<strong>实验事实</strong>：Ek 只与频率有关']}},
+  {tag:'光子说',name:'光子说（爱因斯坦 1905）',body:'1905 年<strong>爱因斯坦</strong>提出<strong>光子说</strong>：光不是连续波，而是<strong>一份一份的光子流</strong>。每个光子能量为 <code>E = hν</code>。光子只能被电子<strong>整个吸收</strong>或<strong>完全不吸收</strong>，不能分割。',points:{title:'光子说核心',items:['<strong>光子</strong>：能量不连续，一份一份','<strong>能量</strong>：E = hν（h 为普朗克常量）','<strong>吸收</strong>：一个电子吸收一个光子','<strong>不可分割</strong>：不能积累半个光子']}},
+  {tag:'光子说',name:'光子能量 E=hν',body:'光子能量 <code>E = hν</code>，其中 <strong>h = 6.626×10⁻³⁴ J·s</strong>（普朗克常量），ν 为光的频率。频率越高，光子能量越大。可见光光子能量约 1.6~3.3 eV。',points:{title:'能量公式',items:['<strong>普朗克常量</strong>：h = 6.626×10⁻³⁴ J·s','<strong>红光</strong>：ν≈4.5×10¹⁴ Hz, E≈1.9 eV','<strong>紫光</strong>：ν≈7.5×10¹⁴ Hz, E≈3.1 eV','<strong>紫外</strong>：能量更高，易触发光电效应']}},
+  {tag:'方程',name:'爱因斯坦方程 Ek=hν−W',body:'<strong>爱因斯坦光电效应方程</strong>：<code>Ek = hν − W</code>。光子能量 hν 一部分用于克服金属束缚做<strong>逸出功 W</strong>，剩余部分转化为光电子的<strong>最大初动能 Ek</strong>。',points:{title:'方程详解',items:['<strong>hν</strong>：入射光子能量','<strong>W</strong>：逸出功（金属种类决定）','<strong>Ek</strong>：光电子最大初动能','<strong>能量守恒</strong>：光子能量 = W + Ek']}},
+  {tag:'方程',name:'截止频率 ν₀=W/h',body:'当 <code>hν = W</code> 时，电子刚能逸出且动能为零，此时频率称为<strong>截止频率</strong>（红限频率）<code>ν₀ = W/h</code>。ν &lt; ν₀ 时，无论光多强都不发生光电效应。',points:{title:'截止频率',items:['<strong>ν₀ = W/h</strong>：极限频率','<strong>ν &lt; ν₀</strong>：不逸出电子','<strong>ν = ν₀</strong>：刚能逸出，Ek=0','<strong>ν &gt; ν₀</strong>：逸出，Ek&gt;0']}},
+  {tag:'规律',name:'光强与频率对比实验',body:'关键规律对比：<strong>光强增大</strong>只增加单位时间到达金属的光子<strong>数目</strong>，所以<strong>光电流增大</strong>，但每个电子能量不变（Ek 不变）；<strong>频率增大</strong>使每个光子能量增大，所以<strong>Ek 增大</strong>。',points:{title:'强度 vs 频率',items:['<strong>光强↑</strong>：光子数↑ → 光电流↑','<strong>光强↑</strong>：Ek 不变','<strong>频率↑</strong>：单光子能量↑ → Ek↑','<strong>频率↑</strong>：光电流（饱和值）不变']}},
+  {tag:'规律',name:'能量条对比 hν 与 W',body:'用能量条直观理解：入射光子能量 hν（黄色条）与逸出功 W（紫色条）相减，差值就是光电子最大初动能 Ek（绿色条）。当 hν &lt; W 时无动能，无法逸出。',points:{title:'能量条图解',items:['<strong>黄条 hν</strong>：光子提供能量','<strong>紫条 W</strong>：克服束缚消耗','<strong>绿条 Ek</strong>：剩余动能 = hν−W','<strong>hν&lt;W</strong>：绿条不存在，无电子逸出']}},
+  {tag:'理论',name:'波动说 vs 光子说对比',body:'<strong>经典波动说</strong>认为光是连续电磁波，能量按波分布；<strong>光子说</strong>认为光是光子流，能量量子化。光子说完美解释截止频率、瞬时性、Ek 与频率关系，是<strong>波粒二象性</strong>的重要证据。',points:{title:'两种学说对比',items:['<strong>波动说</strong>：能量连续分布','<strong>光子说</strong>：能量量子化 E=hν','<strong>截止频率</strong>：只有光子说能解释','<strong>波粒二象性</strong>：光既是波又是粒子']}},
+  {tag:'应用',name:'光电管与实际应用',body:'<strong>光电管</strong>：利用光电效应把光信号变为电信号的器件。<strong>应用</strong>：自动门（人体挡光触发电流）、光控开关、太阳能电池（光伏效应）、电影声迹还原、紫外火焰报警等。',points:{title:'常见应用',items:['<strong>光电管</strong>：光信号→电信号','<strong>自动门</strong>：挡光触发开关','<strong>太阳能电池</strong>：光能→电能','<strong>光控路灯</strong>：天暗自动亮灯']}},
+  {tag:'总结',name:'核心速记',body:'光电效应是<strong>光子能量被电子吸收</strong>逸出金属的现象，遵循 <strong>Ek = hν − W</strong>，截止频率 <strong>ν₀ = W/h</strong>。光强只影响光电流大小，频率决定光电子动能，是光<strong>粒子性</strong>的关键证据。',points:{title:'三句话总结',items:['<strong>方程</strong>：Ek = hν − W','<strong>红限</strong>：ν₀ = W/h','<strong>规律</strong>：强度→电流，频率→动能','<strong>意义</strong>：证实光的粒子性']}},
+];
 
-function getFreqColor(f){
-  if(f<4)return'#d63031';if(f<5)return'#e17055';if(f<6)return'#fdcb6e';
-  if(f<7)return'#00b894';if(f<8)return'#0984e3';if(f<10)return'#6C5CE7';return'#a29bfe';
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+const HK=6.626e-34; // 普朗克常量 J·s（仅用于展示）
+
+// 颜色映射：频率（×10^14 Hz）→ 可见光近似颜色
+function freqColor(nu){
+  if(nu<4.2)return '#9b1c1c';
+  if(nu<4.8)return '#ef4444';
+  if(nu<5.2)return '#fb923c';
+  if(nu<5.8)return '#fbbf24';
+  if(nu<6.2)return '#22c55e';
+  if(nu<6.8)return '#06b6d4';
+  if(nu<7.2)return '#3b82f6';
+  if(nu<7.8)return '#a78bfa';
+  return '#d946ef';
+}
+function freqName(nu){
+  if(nu<4.2)return '红外';
+  if(nu<4.8)return '红光';
+  if(nu<5.2)return '橙光';
+  if(nu<5.8)return '黄光';
+  if(nu<6.2)return '绿光';
+  if(nu<6.8)return '青光';
+  if(nu<7.2)return '蓝光';
+  if(nu<7.8)return '紫光';
+  return '紫外';
 }
 
-function spawnPhoton(){
-  photons.push({x:30,y:cv.height*0.3+Math.random()*cv.height*0.4,vx:200+Math.random()*100,life:1});
+// ===== 场景1：金属板被光照射 → 电子逸出（频率够高时）=====
+function drawEmissionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('光电效应 · 光照射金属板逸出电子',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  const lightX=120;
+  const plateX=cx+40,plateY=cy-80,plateW=30,plateH=160;
+  // 金属板
+  ctx.fillStyle='#475569';ctx.strokeStyle='#94a3b8';ctx.lineWidth=2;
+  ctx.fillRect(plateX,plateY,plateW,plateH);ctx.strokeRect(plateX,plateY,plateW,plateH);
+  drawText('金属板 K',plateX+plateW/2,plateY-15,'#94a3b8',12);
+  drawText('（阴极）',plateX+plateW/2,plateY+plateH+18,'#94a3b8',11);
+  // 光子粒子（蓝光，频率足够）
+  const nu=6.5;
+  const col=freqColor(nu);
+  for(let i=0;i<5;i++){
+    const phase=(time*2+i*0.5)%1.5;
+    const sx=lightX+40+phase*(plateX-lightX-40);
+    const sy=cy-40+i*20+Math.sin(time*3+i)*4;
+    ctx.fillStyle=col;
+    ctx.shadowColor=col;ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(sx,sy,4,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+  }
+  drawText('光子 hν（ν='+nu.toFixed(1)+'×10¹⁴ Hz）',lightX,cy-90,col,12);
+  // 逸出的光电子
+  for(let i=0;i<6;i++){
+    const phase=(time*1.5+i*0.4)%2.5;
+    const ex=plateX-phase*55;
+    const ey=cy-60+i*25+Math.sin(time*2+i)*4;
+    if(ex<plateX+5 && ex>plateX-130){
+      ctx.fillStyle='#34d399';
+      ctx.shadowColor='#34d399';ctx.shadowBlur=12;
+      ctx.beginPath();ctx.arc(ex,ey,5,0,7);ctx.fill();
+      ctx.shadowBlur=0;
+      // 速度尾迹
+      ctx.strokeStyle='rgba(52,211,153,0.4)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex+25,ey);ctx.stroke();
+      drawText('e⁻',ex-15,ey,'#34d399',11);
+    }
+  }
+  drawText('光电子逸出（频率足够高）',W/2,H-55,'#34d399',13);
+  drawText('E=hν 提供能量克服逸出功 W',W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景2：调节光频率，观察是否逸出电子 =====
+function drawFrequencyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('调节光频率 · 截止频率 ν₀',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 频率动态变化：3.5 → 8.5 ×10^14 Hz
+  const nu=6+2.5*Math.sin(time*0.4);
+  const nu0=5.5; // 截止频率（示意）
+  const isEmit=nu>nu0;
+  const col=freqColor(nu);
+  // 频率显示条
+  ctx.fillStyle='rgba(255,255,255,0.04)';
+  roundRect(80,60,W-160,40,8);ctx.fill();
+  // 频率轴刻度
+  for(let f=4;f<=8;f+=0.5){
+    const x=100+(f-4)*(W-200)/4;
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,62);ctx.lineTo(x,98);ctx.stroke();
+    if(f%1===0)drawText(f,x,52,'#5a6a8a',10);
+  }
+  // 当前频率指示
+  const fx=100+(nu-4)*(W-200)/4;
+  ctx.strokeStyle=col;ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(fx,60);ctx.lineTo(fx,100);ctx.stroke();
+  drawText('ν='+nu.toFixed(2)+'×10¹⁴ Hz ('+freqName(nu)+')',W/2,118,col,13);
+  // 截止频率标记
+  const v0x=100+(nu0-4)*(W-200)/4;
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(v0x,60);ctx.lineTo(v0x,100);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('ν₀',v0x,52,'#f87171',12);
+  // 金属板
+  const plateX=cx-15,plateY=cy-50,plateW=30,plateH=100;
+  ctx.fillStyle='#475569';ctx.strokeStyle='#94a3b8';ctx.lineWidth=2;
+  ctx.fillRect(plateX,plateY,plateW,plateH);ctx.strokeRect(plateX,plateY,plateW,plateH);
+  // 入射光（粒子）
+  for(let i=0;i<8;i++){
+    const phase=(time*2+i*0.3)%2;
+    const lx=plateX-120+phase*120;
+    const ly=cy-40+i*11+Math.sin(time*3+i)*3;
+    ctx.fillStyle=col;ctx.globalAlpha=0.9;
+    ctx.shadowColor=col;ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(lx,ly,3,0,7);ctx.fill();
+    ctx.shadowBlur=0;ctx.globalAlpha=1;
+  }
+  // 是否逸出电子
+  if(isEmit){
+    const ek=nu-nu0;
+    for(let i=0;i<5;i++){
+      const phase=(time*1.5+i*0.4)%2;
+      const ex=plateX+plateW-phase*70*(1+ek*0.3);
+      const ey=cy-30+i*15;
+      if(ex<plateX+plateW+5 && ex>plateX+plateW-150){
+        ctx.fillStyle='#34d399';
+        ctx.shadowColor='#34d399';ctx.shadowBlur=12;
+        ctx.beginPath();ctx.arc(ex,ey,5,0,7);ctx.fill();
+        ctx.shadowBlur=0;
+        ctx.strokeStyle='rgba(52,211,153,0.4)';ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex+25,ey);ctx.stroke();
+      }
+    }
+    drawText('逸出光电子！Ek 随 ν 增大',cx,cy-70,'#34d399',13);
+    drawText('Ek ∝ (ν−ν₀) = '+ek.toFixed(2)+'（任意单位）',W/2,H-50,'#34d399',12);
+  }else{
+    ctx.fillStyle='rgba(248,113,113,0.2)';
+    ctx.beginPath();ctx.arc(plateX+plateW+30,cy,40,0,7);ctx.fill();
+    drawText('×',plateX+plateW+30,cy,'#f87171',28);
+    drawText('ν < ν₀：无光电子逸出',cx,cy-70,'#f87171',13);
+    drawText('光子能量 hν < 逸出功 W',W/2,H-50,'#f87171',12);
+  }
+  drawText('（光强无论多大，频率不够就不逸出）',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景3：调节光强，观察光电流大小 =====
+function drawIntensityScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('调节光强 · 光电流大小变化',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 固定频率（蓝紫），变化光强
+  const nu=7.0;
+  const intensity=0.3+0.6*(0.5+0.5*Math.sin(time*0.5)); // 0.3~0.9
+  const col=freqColor(nu);
+  drawText('光强 I = '+intensity.toFixed(2),W/2,60,'#fbbf24',14);
+  ctx.fillStyle='rgba(255,255,255,0.06)';roundRect(120,75,W-240,14,4);ctx.fill();
+  ctx.fillStyle=col;roundRect(120,75,(W-240)*intensity,14,4);ctx.fill();
+  // 真空光电管
+  ctx.fillStyle='rgba(167,139,250,0.08)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-100,cy-60,200,120,12);ctx.fill();ctx.stroke();
+  drawText('真空光电管',cx,cy-75,'#a78bfa',12);
+  // 阴极 K
+  ctx.fillStyle='#475569';ctx.fillRect(cx-90,cy-40,12,80);
+  drawText('K',cx-84,cy-55,'#94a3b8',12);
+  // 阳极 A
+  ctx.fillStyle='#67e8f9';ctx.fillRect(cx+78,cy-30,10,60);
+  drawText('A',cx+83,cy-45,'#67e8f9',12);
+  // 入射光粒子（密度随 intensity）
+  const photonCount=Math.round(8+intensity*15);
+  for(let i=0;i<photonCount;i++){
+    const phase=(time*2+i*0.15)%1;
+    const sx=90+phase*(cx-90-90);
+    const sy=cy-30+(i-7)*4;
+    if(sy<cy-45||sy>cy+45)continue;
+    ctx.fillStyle=col;ctx.globalAlpha=0.85;
+    ctx.shadowColor=col;ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(sx,sy,2.5,0,7);ctx.fill();
+    ctx.shadowBlur=0;ctx.globalAlpha=1;
+  }
+  // 光电子（从 K 飞向 A）
+  const ekCount=Math.round(intensity*6);
+  for(let i=0;i<ekCount;i++){
+    const phase=(time*2+i*0.2)%1;
+    const ex=cx-90+phase*168;
+    const ey=cy-30+(i-ekCount/2)*10;
+    if(ey<cy-42||ey>cy+42)continue;
+    ctx.fillStyle='#34d399';
+    ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(ex,ey,4,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+  }
+  // 外电路（连线 + 电流计 G）
+  ctx.strokeStyle='#94a3b8';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx+83,cy-30);ctx.lineTo(cx+150,cy-30);
+  ctx.lineTo(cx+150,cy+90);ctx.lineTo(cx-130,cy+90);
+  ctx.lineTo(cx-130,cy+40);ctx.lineTo(cx-90,cy+40);
+  ctx.stroke();
+  // 电流计
+  ctx.fillStyle='#06101f';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy+90,16,0,7);ctx.fill();ctx.stroke();
+  drawText('G',cx,cy+90,'#fbbf24',13);
+  // 指针偏转
+  const deflection=intensity*0.7;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy+90);ctx.lineTo(cx+15*deflection,cy+90-12*deflection);ctx.stroke();
+  drawText('光电流 = '+(intensity*10).toFixed(1)+' μA（随光强增大）',W/2,H-55,'#34d399',13);
+  drawText('注意：Ek 不变，只是电子数变多',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景4：hν 与 W 能量条对比 =====
+function drawEnergyBarScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('能量条对比 · Ek = hν − W',W/2,30,'#fbbf24',16);
+  const nu=5+2.5*Math.sin(time*0.3); // 4~7.5
+  const W0=5.5; // 逸出功（任意单位）
+  const hv=nu;
+  const ek=Math.max(0,hv-W0);
+  const isEmit=hv>W0;
+  const col=freqColor(nu);
+  const barW=140,barH=240,baseY=H-90;
+  const bars=[
+    {label:'hν (光子能量)',val:hv,max:8,col:col,x:W/2-barW*1.7},
+    {label:'W (逸出功)',val:W0,max:8,col:'#a78bfa',x:W/2-barW*0.5},
+    {label:'Ek (动能)',val:ek,max:8,col:isEmit?'#34d399':'#3a4a6a',x:W/2+barW*0.7},
+  ];
+  bars.forEach(b=>{
+    ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.strokeRect(b.x,baseY-barH,barW,barH);ctx.fillRect(b.x,baseY-barH,barW,barH);
+    const fillH=(b.val/b.max)*barH;
+    ctx.fillStyle=b.col+'cc';
+    ctx.fillRect(b.x+2,baseY-fillH,barW-4,fillH);
+    drawText(b.val.toFixed(2),b.x+barW/2,baseY-fillH-15,b.col,15);
+    drawText(b.label,b.x+barW/2,baseY+18,'#fff',12);
+  });
+  drawText('−',W/2-barW*0.5-30,baseY-barH/2,'#fbbf24',28);
+  drawText('=',W/2+barW*0.7-30,baseY-barH/2,'#fbbf24',28);
+  ctx.font='bold 18px serif';ctx.fillStyle='#fff';
+  drawText('Ek = hν − W',W/2,75,'#fbbf24',18);
+  if(isEmit){
+    drawText('hν > W：电子逸出，最大初动能 Ek = '+ek.toFixed(2),W/2,H-35,'#34d399',13);
+  }else{
+    drawText('hν ≤ W：电子无法逸出（Ek = 0）',W/2,H-35,'#f87171',13);
+  }
+}
+
+// ===== 场景5：经典波动说 vs 光子说对比 =====
+function drawComparisonScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('经典波动说 vs 光子说',W/2,30,'#fbbf24',16);
+  const half=W/2;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(half,60);ctx.lineTo(half,H-60);ctx.stroke();
+  // 左侧：波动说
+  drawText('经典波动说',half/2,75,'#f87171',15);
+  drawText('（能量连续分布）',half/2,95,'#9ab0d0',11);
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let x=40;x<half-30;x+=2){
+    const y=170+Math.sin((x-40)*0.1+time*3)*20;
+    if(x===40)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  const wrongItems=[
+    '✗ 任何频率都应有效',
+    '✗ 需要能量积累时间',
+    '✗ Ek 应随光强增大',
+    '✗ 无法解释截止频率',
+  ];
+  wrongItems.forEach((s,i)=>{
+    const y=230+i*42;
+    ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=1;
+    roundRect(40,y,half-80,32,6);ctx.fill();ctx.stroke();
+    drawText(s,half/2,y+16,'#fca5a5',12);
+  });
+  // 右侧：光子说
+  drawText('光子说（爱因斯坦）',half+half/2,75,'#34d399',15);
+  drawText('（能量量子化 E=hν）',half+half/2,95,'#9ab0d0',11);
+  for(let i=0;i<8;i++){
+    const px=half+40+i*((half-80)/8);
+    const py=170+Math.sin(time*4+i)*15;
+    ctx.fillStyle='#fbbf24';
+    ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('hν',px,py-15,'#fbbf24',10);
+  }
+  const rightItems=[
+    '✓ 存在截止频率 ν₀=W/h',
+    '✓ 瞬时发射（&lt;10⁻⁹ s）',
+    '✓ Ek 只随频率变化',
+    '✓ 光强只影响光电流',
+  ];
+  rightItems.forEach((s,i)=>{
+    const y=230+i*42;
+    ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1;
+    roundRect(half+40,y,half-80,32,6);ctx.fill();ctx.stroke();
+    drawText(s,half+half/2,y+16,'#86efac',12);
+  });
+  drawText('光子说完美解释光电效应，证实光具有粒子性',W/2,H-35,'#fbbf24',13);
+}
+
+// ===== 场景6：光电管装置示意图（应用）=====
+function drawTubeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('光电管 · 光信号变为电信号',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 玻璃管
+  ctx.fillStyle='rgba(167,139,250,0.06)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-160,cy-80,320,160,16);ctx.fill();ctx.stroke();
+  drawText('真空玻璃管',cx,cy-95,'#a78bfa',11);
+  // 入射光
+  const col='#fbbf24';
+  for(let i=0;i<6;i++){
+    const phase=(time*1.5+i*0.3)%1.5;
+    const lx=cx-220+phase*60;
+    const ly=cy-30+i*12;
+    ctx.fillStyle=col;ctx.globalAlpha=0.85;
+    ctx.shadowColor=col;ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(lx,ly,3,0,7);ctx.fill();
+    ctx.shadowBlur=0;ctx.globalAlpha=1;
+  }
+  drawText('入射光',cx-210,cy-60,'#fbbf24',12);
+  // 阴极 K（半圆板）
+  ctx.fillStyle='#475569';ctx.strokeStyle='#94a3b8';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx-130,cy,40,-Math.PI/2,Math.PI/2);ctx.fill();ctx.stroke();
+  drawText('K（阴极）',cx-130,cy+55,'#94a3b8',12);
+  // 阳极 A（金属棒）
+  ctx.fillStyle='#67e8f9';ctx.strokeStyle='#22d3ee';ctx.lineWidth=2;
+  ctx.fillRect(cx+120,cy-40,8,80);ctx.strokeRect(cx+120,cy-40,8,80);
+  drawText('A（阳极）',cx+124,cy+55,'#67e8f9',12);
+  // 光电子
+  for(let i=0;i<5;i++){
+    const phase=(time*1.8+i*0.3)%1;
+    const ex=cx-90+phase*210;
+    const ey=cy-30+i*15;
+    ctx.fillStyle='#34d399';
+    ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(ex,ey,4,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    ctx.strokeStyle='rgba(52,211,153,0.3)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex-15,ey);ctx.stroke();
+  }
+  // 外电路
+  ctx.strokeStyle='#94a3b8';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx+124,cy-40);ctx.lineTo(cx+200,cy-40);
+  ctx.lineTo(cx+200,cy+120);ctx.lineTo(cx-220,cy+120);
+  ctx.lineTo(cx-220,cy);ctx.lineTo(cx-170,cy);
+  ctx.stroke();
+  // 电池
+  ctx.fillStyle='#06101f';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.rect(cx-30,cy+110,60,20);ctx.fill();ctx.stroke();
+  drawText('电池 +',cx,cy+120,'#fbbf24',11);
+  // 电流计
+  ctx.fillStyle='#06101f';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx-100,cy+120,14,0,7);ctx.fill();ctx.stroke();
+  drawText('G',cx-100,cy+120,'#34d399',12);
+  // 应用列表
+  drawText('应用：自动门 · 光控路灯 · 太阳能电池 · 火焰报警 · 电影声迹',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景7：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('光电效应核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'光子能量',d:'E = hν\nh=6.626×10⁻³⁴ J·s',c:'#fbbf24'},
+    {t:'爱因斯坦方程',d:'Ek = hν − W\nW 为逸出功',c:'#a78bfa'},
+    {t:'截止频率',d:'ν₀ = W/h\nν<ν₀ 不逸出',c:'#34d399'},
+    {t:'强度规律',d:'光强↑→光电流↑\nEk 不变',c:'#06b6d4'},
+    {t:'频率规律',d:'频率↑→Ek↑\n光电流不变',c:'#fb923c'},
+    {t:'物理意义',d:'证实光的粒子性\n波粒二象性',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+40,m.c,15);
+    const lines=m.d.split('\n');
+    lines.forEach((ln,j)=>drawText(ln,x+(W-160)/6,y+75+j*22,'#fff',12));
+  });
 }
 
 function draw(){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  const aboveThreshold=freq>=nu0;
-  const Ek=aboveThreshold?(h*(freq-nu0)*0.1).toFixed(1):'0';
-  const color=getFreqColor(freq);
-  
-  ctx.fillStyle='#e8edf6';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-  ctx.fillText('Eₖ = hν - W₀ (爱因斯坦光电效应方程)',W/2,25);
-  ctx.fillStyle=color;ctx.font='13px sans-serif';
-  ctx.fillText(`ν = ${freq}×10¹⁴ Hz | ${aboveThreshold?'hν > W₀ ✓ 发生光电效应':'hν < W₀ ✗ 不发生'}`,W/2,48);
-  ctx.fillStyle='#fdcb6e';
-  ctx.fillText(`Eₖ = ${Ek} eV`,W/2,68);
-  
-  // 金属板
-  const mx=W*0.55,my=H*0.2,mw=20,mh=H*0.6;
-  ctx.fillStyle='rgba(99,110,130,0.6)';ctx.fillRect(mx,my,mw,mh);
-  ctx.strokeStyle='#636e72';ctx.lineWidth=2;ctx.strokeRect(mx,my,mw,mh);
-  ctx.fillStyle='#9fb0c8';ctx.font='11px sans-serif';ctx.textAlign='center';
-  ctx.fillText('金属',mx+mw/2,my+mh+15);
-  
-  // 金属内电子
-  for(let i=0;i<8;i++){
-    const ex=mx+5+Math.sin(t*2+i)*3;
-    const ey=my+20+i*(mh-40)/7;
-    ctx.beginPath();ctx.arc(ex,ey,4,0,Math.PI*2);
-    ctx.fillStyle='#0984e3';ctx.fill();
-  }
-  
-  // 入射光子
-  photons.forEach(p=>{
-    ctx.beginPath();
-    for(let x=0;x<20;x+=2){
-      const py=p.y+Math.sin(x*0.5+t*8)*4;
-      if(x===0)ctx.moveTo(p.x+x,py);else ctx.lineTo(p.x+x,py);
-    }
-    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
-  });
-  
-  // 逸出电子
-  if(aboveThreshold){
-    electrons.forEach(e=>{
-      ctx.beginPath();ctx.arc(e.x,e.y,4,0,Math.PI*2);
-      ctx.fillStyle='#d63031';ctx.fill();
-      ctx.strokeStyle='#d63031';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(e.x-e.vx*0.05,e.y-e.vy*0.05);ctx.stroke();
-    });
-  }
-  
-  // 收集板
-  if(aboveThreshold){
-    const cx=W*0.8,cy=H*0.2,cw=15,ch=H*0.6;
-    ctx.fillStyle='rgba(0,184,148,0.2)';ctx.fillRect(cx,cy,cw,ch);
-    ctx.strokeStyle='#00b894';ctx.strokeRect(cx,cy,cw,ch);
-    ctx.fillStyle='#00b894';ctx.font='11px sans-serif';
-    ctx.fillText('收集极',cx+cw/2,cy+ch+15);
-  }
-  
-  // 光源
-  ctx.beginPath();ctx.arc(30,H/2,15,0,Math.PI*2);
-  ctx.fillStyle=color+'44';ctx.fill();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle=color;ctx.font='10px sans-serif';ctx.textAlign='center';
-  ctx.fillText('光源',30,H/2+28);
-  
-  statusEl.textContent=`ν=${freq}×10¹⁴Hz | ${aboveThreshold?'光电效应':'无效应'} | Eₖ=${Ek}eV`;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawEmissionScene(t);
+  else if(stepIdx===1)drawEmissionScene(t);
+  else if(stepIdx===2)drawComparisonScene(t);
+  else if(stepIdx===3)drawComparisonScene(t);
+  else if(stepIdx===4)drawFrequencyScene(t);
+  else if(stepIdx===5)drawEnergyBarScene(t);
+  else if(stepIdx===6)drawFrequencyScene(t);
+  else if(stepIdx===7)drawIntensityScene(t);
+  else if(stepIdx===8)drawEnergyBarScene(t);
+  else if(stepIdx===9)drawTubeScene(t);
+  else if(stepIdx===10)drawSummaryScene();
 }
 
-let animId;
-function loop(ts){
-  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;t+=dt;
-  // 生成光子
-  if(Math.random()<intensity*dt*3)spawnPhoton();
-  // 更新光子
-  photons.forEach(p=>{p.x+=p.vx*dt;});
-  // 光子撞击金属
-  photons=photons.filter(p=>{
-    if(p.x>cv.width*0.55){
-      if(freq>=nu0){
-        // 逸出电子
-        electrons.push({x:cv.width*0.55+25,y:p.y,vx:80+Math.random()*60,vy:(Math.random()-0.5)*40,life:1});
-      }
-      return false;
-    }
-    return p.x<cv.width;
-  });
-  // 更新电子
-  electrons.forEach(e=>{e.x+=e.vx*dt;e.y+=e.vy*dt;e.life-=dt*0.5;});
-  electrons=electrons.filter(e=>e.life>0&&e.x<cv.width);
-  
-  draw();
-  if(playing)animId=requestAnimationFrame(loop);
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
 }
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
-  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
-};
-document.getElementById('resetBtn').onclick=function(){photons=[];electrons=[];t=0;draw();};
-document.getElementById('freq').oninput=function(){freq=+this.value;};
-document.getElementById('intensity').oninput=function(){intensity=+this.value;};
-draw();
-</script></body></html>
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

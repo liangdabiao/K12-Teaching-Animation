@@ -3,102 +3,445 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>电磁波的电场与磁场</title>
+<title>电磁波 · 电场与磁场垂直传播</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#3b82f6;--line:#26324a;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap}
-.back:hover{background:#1f2a40}
-.title{font-size:16px;font-weight:600}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#a78bfa;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(167,139,250,.06)}
+.back:hover{background:rgba(167,139,250,.14)}
+.title{font-size:15px;font-weight:600}
+.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}
+.card.s3::before{background:var(--good)}
+.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;min-width:0}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:330px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}input[type=range]{accent-color:var(--accent)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}
+.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#67e8f9;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
+.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
-<!--p3-showtip--><script>
-window.showTip=function(msg){
-  var d=document.createElement('div');
-  d.textContent=msg;
-  d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:rgba(18,22,34,.96);color:#e8edf6;padding:10px 16px;border-radius:10px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:82vw;text-align:center';
-  document.body.appendChild(d);
-  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2800);
-};
-</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="back" href="../index.html">← 返回学科目录</a>
-  <span class="title">电磁波的电场与磁场</span>
+  <a class="back" href="../index.html">← 返回物理目录</a>
+  <span class="title">电磁波</span>
+  <span class="subtitle">电场与磁场垂直 · 同相振荡 · 横波传播</span>
 </header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>电磁波本质</h4><div class="v">交变电磁场<br>在空间传播</div></div>
+  <div class="card s2"><div class="num">2</div><h4>相互垂直</h4><div class="v">E ⊥ B ⊥ v<br>右手螺旋定则</div></div>
+  <div class="card s3"><div class="num">3</div><h4>相位相同</h4><div class="v">E 与 B 同步<br>同时达最大值</div></div>
+  <div class="card s4"><div class="num">4</div><h4>真空中光速</h4><div class="v">c = 3×10⁸ m/s<br>由麦克斯韦方程导出</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>电磁波中<b>电场 E</b> 与 <b>磁场 B</b> 相互垂直，且都垂直于传播方向，三者构成右手系；E 与 B 同相振荡，以光速向前传播。</p>
-    <div class="legend"><span class='dot' style='background:#f87171'></span>E场&nbsp;<span class='dot' style='background:#7dd3fc'></span>B场&nbsp;<span class='dot' style='background:#fbbf24'></span>传播方向</div>
-  
-        <div class="key-points" style="margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7;"><h3>电磁波特性</h3><ul><li>E⊥B⊥传播方向（横波）</li><li>波速 c = λf = 3×10⁸ m/s</li><li>产生：加速运动电荷</li><li>电磁波谱：无线电→微波→红外→可见光→紫外→X→γ</li><li>赫兹实验证实电磁波存在</li></ul></div>
-    </aside>
+  <aside class="panel" id="panel">
+    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">电磁波</span></h2>
+    <p class="body" id="stepBody"></p>
+    <div class="points" id="stepPoints"></div>
+  </aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
   <button id="playBtn" class="primary">▶ 播放</button>
   <button id="resetBtn">↺ 重置</button>
   <button id="stepBackBtn">◀ 上一步</button>
   <button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择左侧步骤开始</span>
 </div>
 <script>
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(360,Math.min(980,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
 
-const W={t:0,p:0};
-function sceneInit(){sceneReset();}
-function sceneReset(){W.t=0;W.p=0;}
-function sceneUpdate(dt){W.t+=dt;if(W.p<1)W.p=Math.min(1,W.p+dt*0.2);}
-function sceneDraw(){
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const cy=cv.height/2;
-  // E field (vertical, red)
-  ctx.strokeStyle='#f87171';ctx.lineWidth=3;ctx.beginPath();
-  for(let x=0;x<=cv.width-80;x+=4){const y=cy-50*Math.sin((x/40)-W.t*3);x?ctx.lineTo(x+40,y):ctx.moveTo(x+40,y);}ctx.stroke();
-  // B field (horizontal, blue) phase shifted
-  ctx.strokeStyle='#7dd3fc';ctx.lineWidth=3;ctx.beginPath();
-  for(let x=0;x<=cv.width-80;x+=4){const y=cy+50*Math.sin((x/40)-W.t*3);x?ctx.lineTo(x+40,y):ctx.moveTo(x+40,y);}ctx.stroke();
-  // propagation arrow
-  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(40,cy);ctx.lineTo(cv.width-40,cy);ctx.stroke();
-  ctx.fillStyle='#cdd7ea';ctx.font='13px sans-serif';ctx.textAlign='left';
-  ctx.fillText('E（红，竖直）⊥ B（蓝，水平），沿黄箭头方向传播',40,cy+90);
-  statusEl.textContent='电磁波：电场与磁场相互垂直、同相振荡，向前传播';
+const STEPS=[
+  {tag:'基础',name:'什么是电磁波',body:'<strong>电磁波</strong>是<strong>交变电磁场</strong>在空间中的传播。变化的电场产生磁场，变化的磁场又产生电场，<strong>交替产生、由近及远传播</strong>，无需介质。',points:{title:'核心特征',items:['<strong>无需介质</strong>：可在真空中传播','<strong>横波</strong>：E、B、v 互相垂直','<strong>速度 c</strong>：真空中等于光速 3×10⁸ m/s','<strong>麦克斯韦预言</strong>（1865），赫兹实验证实（1887）']}},
+  {tag:'结构',name:'E、B、v 三垂直',body:'<strong>电场 E</strong>、<strong>磁场 B</strong>、<strong>波速 v</strong> 两两垂直，遵循<strong>右手螺旋定则</strong>：右手四指从 E 转向 B，大拇指指向传播方向 v。',points:{title:'三维正交关系',items:['<strong>E 矢量</strong>：垂直于传播方向','<strong>B 矢量</strong>：垂直于 E 和 v','<strong>v 方向</strong>：E × B（叉乘）','<strong>右手螺旋</strong>：判定传播方向']}},
+  {tag:'结构',name:'同相位振荡',body:'E 和 B<strong>同步振荡</strong>：同时达最大、同时为零、同时反向。<strong>相位完全相同</strong>，不是相互转化。',points:{title:'关键点',items:['<strong>E 最大时</strong>：B 也最大','<strong>E 为零时</strong>：B 也为零','<strong>能量密度</strong>：电场能 = 磁场能','<strong>振幅比</strong>：E₀/B₀ = c']}},
+  {tag:'频谱',name:'电磁波谱',body:'按频率（或波长）排列：<strong>无线电波 → 微波 → 红外线 → 可见光 → 紫外线 → X 射线 → γ 射线</strong>。本质相同，仅频率不同。',points:{title:'七段电磁波谱',items:['<strong>无线电波</strong>：&lt; 10⁹ Hz，通信广播','<strong>微波</strong>：~10¹⁰ Hz，雷达、Wi-Fi','<strong>红外线</strong>：热效应、夜视','<strong>可见光</strong>：4-7×10¹⁴ Hz，人眼可见','<strong>紫外线/X/γ</strong>：能量高，需防护']}},
+  {tag:'速度',name:'光速与介质',body:'真空中所有电磁波速度均为 <strong>c = 1/√(μ₀ε₀) ≈ 3×10⁸ m/s</strong>。在介质中变慢：v = c/n，n 为折射率。',points:{title:'速度公式',items:['<strong>真空光速</strong>：c = 299,792,458 m/s','<strong>介质中</strong>：v = c / n','<strong>水折射率</strong>：n ≈ 1.33','<strong>玻璃折射率</strong>：n ≈ 1.5']}},
+  {tag:'能量',name:'能量与动量',body:'电磁波携带<strong>能量和动量</strong>。能流密度（坡印廷矢量）<strong>S = E × B / μ₀</strong>，方向即传播方向。',points:{title:'能量传递',items:['<strong>能流密度 S</strong>：单位时间通过单位面积的能量','<strong>方向</strong>：与传播方向一致','<strong>辐射压</strong>：动量作用于物体','<strong>太阳常数</strong>：约 1361 W/m²']}},
+  {tag:'产生',name:'电磁波的产生',body:'<strong>电荷加速运动</strong>产生电磁波：天线中交流电使电子往复加速运动，向外辐射电磁波。<strong>振荡电偶极子</strong>是最简单的辐射源。',points:{title:'产生条件',items:['<strong>静止电荷</strong>：仅静电场，无辐射','<strong>匀速运动</strong>：磁场恒定，无辐射','<strong>加速运动</strong>：辐射电磁波','<strong>LC 振荡电路</strong> + 天线 = 发射器']}},
+  {tag:'总结',name:'核心要点',body:'电磁波 = <strong>交变 E、B 场在空间的传播</strong>。E ⊥ B ⊥ v，同相振荡，真空中以光速传播。整个电磁波谱本质相同。',points:{title:'核心速记',items:['<strong>横波</strong>：E、B、v 互相垂直','<strong>同相</strong>：E、B 同时达最大','<strong>无需介质</strong>：真空中可传播','<strong>麦克斯韦理论</strong>：c = 1/√(μ₀ε₀)']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
+
+// ===== 场景：3D 波动（E、B、v 三垂直） =====
+function drawEMWaveScene(time,phase){
+  const W=cv.width,H=cv.height;
+  drawText('电磁波 · E 与 B 垂直振荡传播',W/2,30,'#06b6d4',16);
+  // 坐标系原点：左侧中
+  const ox=80,oy=H/2;
+  const len=W-160;
+  // 传播方向：向右
+  // 画传播轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+len,oy);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(ox+len,oy);ctx.lineTo(ox+len-10,oy-5);ctx.lineTo(ox+len-10,oy+5);ctx.fill();
+  drawText('传播方向 v',ox+len+5,oy,'#9ab0d0',11,'left');
+  drawText('x',ox-15,oy+15,'#9ab0d0',11);
+  // 画 E 波（垂直平面，振幅 80）
+  const amp=70;
+  const wl=180; // 波长（像素）
+  const phase0=time*2;
+  // E 曲线（蓝色）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let x=0;x<=len;x+=2){
+    const ph=(x/wl)*Math.PI*2+phase0;
+    const e=Math.sin(ph)*amp;
+    if(x===0)ctx.moveTo(ox+x,oy-e);else ctx.lineTo(ox+x,oy-e);
+  }
+  ctx.stroke();
+  // E 矢量箭头（每隔一段）
+  for(let x=0;x<=len;x+=20){
+    const ph=(x/wl)*Math.PI*2+phase0;
+    const e=Math.sin(ph)*amp;
+    ctx.strokeStyle='#06b6d466';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ox+x,oy);ctx.lineTo(ox+x,oy-e);ctx.stroke();
+    // 端点
+    if(Math.abs(e)>10){
+      ctx.fillStyle='#06b6d4';
+      ctx.beginPath();ctx.arc(ox+x,oy-e,3,0,7);ctx.fill();
+    }
+  }
+  // B 曲线（紫色，z 方向投影到斜向以表示垂直）
+  // 用斜方向投影：B 沿 z 轴，画成 30° 角
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let x=0;x<=len;x+=2){
+    const ph=(x/wl)*Math.PI*2+phase0;
+    const b=Math.sin(ph)*amp;
+    // 投影：z 方向画成 -45° 斜向
+    const bx=ox+x-b*0.5;
+    const by=oy+b*0.5;
+    if(x===0)ctx.moveTo(bx,by);else ctx.lineTo(bx,by);
+  }
+  ctx.stroke();
+  // B 矢量箭头
+  for(let x=0;x<=len;x+=20){
+    const ph=(x/wl)*Math.PI*2+phase0;
+    const b=Math.sin(ph)*amp;
+    const bx=ox+x-b*0.5;
+    const by=oy+b*0.5;
+    ctx.strokeStyle='#a78bfa66';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ox+x,oy);ctx.lineTo(bx,by);ctx.stroke();
+    if(Math.abs(b)>10){
+      ctx.fillStyle='#a78bfa';
+      ctx.beginPath();ctx.arc(bx,by,3,0,7);ctx.fill();
+    }
+  }
+  // 图例
+  drawText('E (电场)',40,40,'#06b6d4',12,'left');
+  drawText('B (磁场)',40,60,'#a78bfa',12,'left');
+  drawText('B ⊥ E ⊥ v',W-100,40,'#fbbf24',12);
+  drawText('同相位振荡',W-100,60,'#34d399',12);
+  drawText('波长 λ',(ox+wl/2),oy+amp+30,'#9ab0d0',11);
+  // 波长标尺
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(ox,oy+amp+15);ctx.lineTo(ox+wl,oy+amp+15);ctx.stroke();
+  ctx.setLineDash([]);
 }
 
-let playing=false,lastT=0,speed=1,t=0;
+// ===== 场景：电磁波谱 =====
+function drawSpectrumScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('电磁波谱 · 频率由低到高',W/2,30,'#a78bfa',16);
+  const bands=[
+    {name:'无线电波',freq:'< 10⁹ Hz',color:'#f87171',use:'广播、电视、移动通信'},
+    {name:'微波',freq:'10⁹ ~ 10¹¹',color:'#fb923c',use:'雷达、Wi-Fi、微波炉'},
+    {name:'红外线',freq:'10¹² ~ 10¹⁴',color:'#fbbf24',use:'热成像、夜视、遥控'},
+    {name:'可见光',freq:'4~7×10¹⁴',color:'#34d399',use:'人眼视觉、摄影'},
+    {name:'紫外线',freq:'10¹⁵',color:'#06b6d4',use:'杀菌、荧光、验钞'},
+    {name:'X 射线',freq:'10¹⁶~10¹⁹',color:'#a78bfa',use:'医学影像、安检'},
+    {name:'γ 射线',freq:'> 10¹⁹',color:'#ec4899',use:'放射治疗、天文学'},
+  ];
+  const bandW=(W-160)/bands.length;
+  const idx=Math.min(bands.length,Math.floor(t*2)+1);
+  bands.forEach((b,i)=>{
+    const x=80+i*bandW;
+    const active=i<idx;
+    ctx.fillStyle=active?b.color+'aa':b.color+'22';
+    ctx.strokeStyle=b.color;ctx.lineWidth=2;
+    roundRect(x+5,80,bandW-10,H-160,8);ctx.fill();ctx.stroke();
+    drawText(b.name,x+bandW/2,110,active?'#fff':b.color,13);
+    drawText(b.freq,x+bandW/2,150,active?'#fff':'#9ab0d0',11);
+    // 可见光特殊：彩虹色
+    if(b.name==='可见光'){
+      const cols=['#ff0000','#ffa500','#ffff00','#00ff00','#00ffff','#0000ff','#800080'];
+      cols.forEach((c,ci)=>{
+        ctx.fillStyle=c;
+        ctx.fillRect(x+10+ci*((bandW-20)/7),180,(bandW-20)/7-1,30);
+      });
+    }
+    drawText(b.use,x+bandW/2,H-50,active?'#cbd5e1':'#5a6a8a',10);
+  });
+  // 频率/波长轴
+  drawText('频率 →',W-80,H-100,'#fbbf24',12);
+  drawText('← 波长',80,H-100,'#fbbf24',12);
+  drawText('本质相同 · 仅频率（或波长）不同',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：产生机制 =====
+function drawGenerationScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('电磁波的产生 · 加速电荷辐射',W/2,30,'#34d399',16);
+  // 左：LC 振荡电路 + 天线
+  const cx=200,cy=H/2;
+  // 天线（两根棒）
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx,cy-80);ctx.lineTo(cx,cy-30);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy+30);ctx.lineTo(cx,cy+80);ctx.stroke();
+  // 电流方向（根据 sin 变化）
+  const cur=Math.sin(t*3);
+  drawText('天线电流 I = '+cur.toFixed(2)+' A',cx,cy+110,'#fbbf24',12);
+  // 电子运动
+  for(let i=0;i<5;i++){
+    const py=cy-30+(cur>0?i*5:-i*5);
+    ctx.fillStyle='#06b6d4';
+    ctx.beginPath();ctx.arc(cx+Math.sin(t*5+i)*15,py-50*Math.cos(t*2+i),3,0,7);ctx.fill();
+  }
+  // 辐射波（同心圆扩散）
+  for(let i=0;i<4;i++){
+    const r=((t*60+i*40)%160)+30;
+    const alpha=1-r/200;
+    ctx.strokeStyle='rgba(167,139,250,'+alpha+')';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke();
+  }
+  // 右：电偶极子
+  const dx=W-300,dy=H/2;
+  drawText('振荡电偶极子',dx,dy-130,'#34d399',14);
+  const osc=Math.sin(t*3)*40;
+  // 正电荷
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(dx,dy-40-osc,10,0,7);ctx.fill();
+  drawText('+',dx,dy-40-osc,'#fff',13);
+  // 负电荷
+  ctx.fillStyle='#67e8f9';
+  ctx.beginPath();ctx.arc(dx,dy+40+osc,10,0,7);ctx.fill();
+  drawText('-',dx,dy+40+osc,'#fff',13);
+  ctx.shadowBlur=0;
+  // 连线
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(dx,dy-40-osc+10);ctx.lineTo(dx,dy+40+osc-10);ctx.stroke();
+  ctx.setLineDash([]);
+  // 辐射方向
+  drawText('辐射方向（垂直于偶极矩）',dx,dy+130,'#fbbf24',11);
+  // 应用
+  drawText('应用：手机天线、卫星通信、雷达',W/2,H-50,'#9ab0d0',13);
+}
+
+// ===== 场景：速度公式 =====
+function drawSpeedScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('电磁波速度 · 麦克斯韦方程导出',W/2,30,'#06b6d4',16);
+  // 公式
+  ctx.fillStyle='#fff';ctx.font='bold 22px serif';ctx.textAlign='center';
+  ctx.fillText('c = 1 / √(μ₀ · ε₀)',W/2,90);
+  ctx.font='13px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('μ₀ = 4π×10⁻⁷ T·m/A （真空磁导率）',W/2,120);
+  ctx.fillText('ε₀ ≈ 8.85×10⁻¹² F/m （真空电容率）',W/2,140);
+  // 计算
+  ctx.font='bold 18px serif';ctx.fillStyle='#34d399';
+  ctx.fillText('= 299,792,458 m/s ≈ 3×10⁸ m/s',W/2,180);
+  // 介质中
+  ctx.font='16px sans-serif';ctx.fillStyle='#a78bfa';
+  ctx.fillText('介质中：v = c / n',W/2,230);
+  // 介质表
+  const data=[
+    {n:'真空',v:'1.00',c:'299,792 km/s',col:'#34d399'},
+    {n:'空气',v:'1.0003',c:'≈ 300,000 km/s',col:'#67e8f9'},
+    {n:'水',v:'1.33',c:'225,408 km/s',col:'#06b6d4'},
+    {n:'玻璃',v:'1.5',c:'199,862 km/s',col:'#fbbf24'},
+    {n:'钻石',v:'2.42',c:'123,881 km/s',col:'#a78bfa'},
+  ];
+  data.forEach((d,i)=>{
+    const y=270+i*40;
+    ctx.fillStyle=d.col+'22';ctx.strokeStyle=d.col;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,32,6);ctx.fill();ctx.stroke();
+    drawText(d.n,160,y+16,d.col,12);
+    drawText('n='+d.v,W/2-60,y+16,'#fff',11);
+    drawText('v='+d.c,W/2+100,y+16,'#cbd5e1',11);
+  });
+  drawText('光在钻石中速度只有真空的 41%',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景：能量 =====
+function drawEnergyScene(t){
+  const W=cv.width,H=cv.height;
+  drawText('电磁波能量 · 坡印廷矢量',W/2,30,'#fbbf24',16);
+  // S = E × B / μ₀
+  ctx.fillStyle='#fff';ctx.font='bold 18px serif';ctx.textAlign='center';
+  ctx.fillText('S = E × B / μ₀',W/2,80);
+  ctx.font='12px sans-serif';ctx.fillStyle='#9ab0d0';
+  ctx.fillText('S 方向 = 电磁波传播方向',W/2,105);
+  // 简化波
+  const cx=W/2,cy=H/2+20;
+  const amp=50,wl=120,phase0=t*2;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,cy);ctx.lineTo(W-80,cy);ctx.stroke();
+  // E
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let x=-200;x<=200;x+=2){
+    const e=Math.sin((x/wl)*Math.PI*2+phase0)*amp;
+    ctx.lineTo(cx+x,cy-e);
+  }
+  ctx.stroke();
+  // B
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let x=-200;x<=200;x+=2){
+    const b=Math.sin((x/wl)*Math.PI*2+phase0)*amp*0.6;
+    ctx.lineTo(cx+x+b*0.5,cy+b*0.5);
+  }
+  ctx.stroke();
+  // S 矢量
+  for(let x=-180;x<=180;x+=40){
+    const ph=(x/wl)*Math.PI*2+phase0;
+    const e=Math.sin(ph)*amp;
+    const b=Math.sin(ph)*amp*0.6;
+    const s=Math.abs(e*b)/amp;
+    if(s>5){
+      ctx.fillStyle='#fbbf24'+Math.floor(s*3).toString(16).padStart(2,'0');
+      ctx.beginPath();
+      ctx.moveTo(cx+x,cy);
+      ctx.lineTo(cx+x+8,cy-s/3);
+      ctx.lineTo(cx+x+16,cy);
+      ctx.lineTo(cx+x+8,cy+s/3);
+      ctx.fill();
+    }
+  }
+  drawText('S（能流密度）',cx,cy+80,'#fbbf24',13);
+  drawText('太阳能：约 1361 W/m² 到达地表',W/2,H-40,'#34d399',12);
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('电磁波核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'横波特性',d:'E ⊥ B ⊥ v',c:'#06b6d4'},
+    {t:'同相振荡',d:'E、B 同时达最大值',c:'#a78bfa'},
+    {t:'真空光速',d:'c ≈ 3×10⁸ m/s',c:'#34d399'},
+    {t:'无需介质',d:'可在真空传播',c:'#fbbf24'},
+    {t:'麦克斯韦方程',d:'统一电、磁、光',c:'#fb923c'},
+    {t:'能量传递',d:'S = E × B / μ₀',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const p=Math.min(1.5,stepTime/STEP_DURATION);
+  if(stepIdx===0)drawEMWaveScene(t,p);
+  else if(stepIdx===1)drawEMWaveScene(t,p);
+  else if(stepIdx===2)drawEMWaveScene(t,p);
+  else if(stepIdx===3)drawSpectrumScene(p);
+  else if(stepIdx===4)drawSpeedScene(p);
+  else if(stepIdx===5)drawEnergyScene(t);
+  else if(stepIdx===6)drawGenerationScene(t);
+  else if(stepIdx===7)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
 const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
 const speedEl=document.getElementById('speed');
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing){t+=dt*speed;if(window.sceneUpdate)sceneUpdate(dt*speed);}draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
 playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{if(window.sceneReset)sceneReset();t=0;playing=false;playBtn.textContent='▶ 播放';draw();};
-stepFwdBtn.onclick=()=>{if(window.sceneStep)sceneStep(1);draw();};
-stepBackBtn.onclick=()=>{if(window.sceneStep)sceneStep(-1);draw();};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
 speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function draw(){if(window.sceneDraw)sceneDraw();}
-if(window.sceneInit)sceneInit();
-draw();
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();
+syncStep();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>

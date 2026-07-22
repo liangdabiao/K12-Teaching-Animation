@@ -3,200 +3,453 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>库仑定律</title>
+<title>库仑定律 · F=kq₁q₂/r² · 点电荷相互作用</title>
 <style>
-:root{--bg:#0a1628;--panel:#111d33;--ink:#e8edf6;--muted:#8b9dc3;--accent:#0984e3;--line:#1e3050;--good:#00b894;--warn:#fdcb6e;--bad:#d63031;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#060e1a;border:1px solid var(--line);border-radius:12px}
-.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin-bottom:10px;color:var(--accent)}
-.panel p{font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:12px}
-.key-points{margin-top:12px;padding:12px;background:rgba(9,132,227,0.08);border-radius:8px;font-size:13px;line-height:1.8}
-.key-points h3{font-size:14px;margin-bottom:8px;color:var(--warn)}
-.key-points ul{padding-left:18px}.key-points li{margin-bottom:4px}
-.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-.legend span{font-size:12px;display:flex;align-items:center;gap:5px;color:var(--muted)}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#1a2d4a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}
-input[type=range]{accent-color:var(--accent);width:100%}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#67e8f9;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.slider-group{display:flex;flex-direction:column;gap:10px;margin:10px 0}
-.slider-group label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
 </style>
 </head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回物理</a>
-  <span>库仑定律 F = kQ₁Q₂/r²</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">库仑定律</span><span class="subtitle">F = kq₁q₂/r² · 点电荷相互作用</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>库仑定律</h4><div class="v">F = kq₁q₂/r²<br>真空中两点电荷作用力</div></div>
+  <div class="card s2"><div class="num">2</div><h4>静电力常量</h4><div class="v">k = 9.0×10⁹<br>N·m²/C²</div></div>
+  <div class="card s3"><div class="num">3</div><h4>矢量性</h4><div class="v">同种电荷排斥<br>异种电荷吸引</div></div>
+  <div class="card s4"><div class="num">4</div><h4>类比引力</h4><div class="v">F∝q₁q₂/r²<br>类比 F∝m₁m₂/r²</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>库仑定律：真空中两个静止点电荷之间的作用力F与它们的电荷量Q₁、Q₂的乘积成正比，与它们距离r的平方成反比。公式：<b>F = kQ₁Q₂/r²</b>，其中k = 9×10⁹ N·m²/C²。同种电荷相斥，异种电荷相吸。</p>
-    <div class="legend">
-      <span><span class="dot" style="background:#d63031"></span>正电荷</span>
-      <span><span class="dot" style="background:#0984e3"></span>负电荷</span>
-      <span><span class="dot" style="background:#fdcb6e"></span>库仑力</span>
-    </div>
-    <div class="slider-group">
-      <label>Q₁ = <span id="q1Val">3</span> μC <input type="range" id="q1" min="-5" max="5" value="3"></label>
-      <label>Q₂ = <span id="q2Val">2</span> μC <input type="range" id="q2" min="-5" max="5" value="2"></label>
-      <label>距离 r = <span id="rVal">10</span> cm <input type="range" id="rSlider" min="3" max="20" value="10"></label>
-    </div>
-    <div class="key-points">
-      <h3>核心公式</h3>
-      <ul>
-        <li><b>F = kQ₁Q₂/r²</b></li>
-        <li>k = 9×10⁹ N·m²/C²（静电力常量）</li>
-        <li>适用条件：真空、点电荷</li>
-        <li>同种电荷→斥力；异种电荷→引力</li>
-        <li>库仑力是矢量，沿连线方向</li>
-        <li>满足牛顿第三定律（作用力=反作用力）</li>
-        <li>r加倍→F变为1/4（平方反比）</li>
-      </ul>
-    </div>
-  </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">库仑定律</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
-let playing=false,t=0,speed=1;
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(800,r.width-8));cv.height=Math.max(350,Math.min(550,r.height-8));}
-window.addEventListener('resize',()=>{fit();});fit();
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function drawArrow(x1,y1,x2,y2,color,w){ctx.strokeStyle=color;ctx.lineWidth=w||2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const ang=Math.atan2(y2-y1,x2-x1);const s=10;ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-s*Math.cos(ang-0.4),y2-s*Math.sin(ang-0.4));ctx.lineTo(x2-s*Math.cos(ang+0.4),y2-s*Math.sin(ang+0.4));ctx.closePath();ctx.fill();}
 
-const q1S=document.getElementById('q1'),q2S=document.getElementById('q2'),rS=document.getElementById('rSlider');
-const q1V=document.getElementById('q1Val'),q2V=document.getElementById('q2Val'),rV=document.getElementById('rVal');
-let Q1=3,Q2=2,R=10;
-q1S.oninput=()=>{Q1=+q1S.value;q1V.textContent=Q1;};
-q2S.oninput=()=>{Q2=+q2S.value;q2V.textContent=Q2;};
-rS.oninput=()=>{R=+rS.value;rV.textContent=R;};
+const STEPS=[
+  {tag:'实验',name:'库仑扭秤实验',body:'<strong>1785 年</strong>法国物理学家<strong>库仑</strong>设计扭秤实验，精确测量带电小球之间的作用力。实验发现：两带电小球间的作用力 <strong>沿连线方向</strong>，大小与<strong>电量乘积成正比</strong>，与<strong>距离平方成反比</strong>。',points:{title:'扭秤实验要点',items:['<strong>细丝</strong>：悬线产生回复力矩','<strong>带电小球</strong>：与参考小球作用','<strong>刻度</strong>：读取扭转角度','<strong>关键</strong>：力极微小时也能测量']}},
+  {tag:'基础',name:'库仑定律内容',body:'<strong>库仑定律</strong>：真空中两个<strong>静止点电荷</strong>之间的作用力，沿它们的连线方向，<strong>同种电荷相斥，异种电荷相吸</strong>。作用力大小与电量乘积成正比，与距离平方成反比。',points:{title:'定律三要素',items:['<strong>条件</strong>：真空 + 点电荷 + 静止','<strong>方向</strong>：沿两电荷连线','<strong>大小</strong>：F ∝ q₁q₂/r²','<strong>牛顿第三定律</strong>：F₁₂ = -F₂₁']}},
+  {tag:'条件',name:'点电荷条件',body:'<strong>点电荷</strong>是理想化模型：当带电体的<strong>形状和大小对相互作用力的影响可忽略不计时</strong>，可看作点电荷。类似质点概念。库仑定律严格适用于真空中静止的点电荷。',points:{title:'理想化模型',items:['<strong>点电荷</strong>：大小可忽略','<strong>电量</strong>：可正可负','<strong>条件</strong>：距离远大于线度','<strong>非点电荷</strong>：需积分计算']}},
+  {tag:'公式',name:'公式 F=kq₁q₂/r²',body:'<strong>库仑定律公式</strong>：<code>F = k·q₁q₂/r²</code>。其中 q₁、q₂ 为两点电荷电量（带正负号判断方向），r 为它们之间的距离，k 为静电力常量。',points:{title:'公式各量',items:['<strong>F</strong>：作用力（N）','<strong>q₁, q₂</strong>：电量（C，库仑）','<strong>r</strong>：两点电荷距离（m）','<strong>k</strong>：静电力常量']}},
+  {tag:'常量',name:'k 值与单位',body:'<strong>静电力常量</strong>：<code>k = 9.0×10⁹ N·m²/C²</code>。它表示真空中相距 1 m、各带 1 C 电量的两点电荷之间的作用力大小为 9×10⁹ N（巨大！）。电量单位 <strong>1 C = 1 A·s</strong>。',points:{title:'k 的物理意义',items:['<strong>k = 9.0×10⁹</strong> N·m²/C²','<strong>1 C</strong>：很大的电量单位','<strong>1 元电荷</strong>：e = 1.6×10⁻¹⁹ C','<strong>1 μC</strong>：10⁻⁶ C']}},
+  {tag:'方向',name:'矢量性与方向',body:'库仑力是<strong>矢量</strong>。<strong>同种电荷</strong>（q₁q₂&gt;0）相互<strong>排斥</strong>，力沿连线<strong>向外</strong>；<strong>异种电荷</strong>（q₁q₂&lt;0）相互<strong>吸引</strong>，力沿连线<strong>向内</strong>。两电荷受力大小相等、方向相反。',points:{title:'方向判断',items:['<strong>q₁q₂ &gt; 0</strong>：排斥（同种）','<strong>q₁q₂ &lt; 0</strong>：吸引（异种）','<strong>|F₁₂| = |F₂₁|</strong>','<strong>F 方向</strong>：沿连线']}},
+  {tag:'叠加',name:'力的叠加原理',body:'<strong>力的叠加原理</strong>：当存在<strong>多个电荷</strong>时，任一电荷所受合力等于<strong>其他各电荷单独对其作用力的矢量和</strong>。<code>F = F₁ + F₂ + ... + Fₙ</code>。这是库仑定律 + 矢量叠加的结果。',points:{title:'叠加要点',items:['<strong>独立作用</strong>：每对电荷独立','<strong>矢量求和</strong>：按平行四边形定则','<strong>连续带电体</strong>：需积分','<strong>不能直接代数相加</strong>']}},
+  {tag:'类比',name:'与万有引力类比',body:'库仑定律 <code>F = kq₁q₂/r²</code> 与万有引力 <code>F = Gm₁m₂/r²</code> 形式完全相似：都与<strong>两物体属性乘积成正比</strong>，与<strong>距离平方成反比</strong>。但电力可比引力大得多。',points:{title:'两种力对比',items:['<strong>共同点</strong>：都是平方反比','<strong>电力</strong>：k = 9×10⁹','<strong>引力</strong>：G = 6.67×10⁻¹¹','<strong>电力远大于引力</strong>']}},
+  {tag:'计算',name:'氢原子电力 vs 引力',body:'<strong>典型计算</strong>：氢原子中电子与质子距离 r ≈ 5.3×10⁻¹¹ m。静电力 Fₑ ≈ 8.2×10⁻⁸ N，万有引力 Fg ≈ 3.6×10⁻⁴⁷ N。<strong>Fₑ/Fg ≈ 2.3×10³⁹</strong>。故原子尺度下引力可忽略。',points:{title:'力的强度比较',items:['<strong>Fₑ</strong> ≈ 8.2×10⁻⁸ N','<strong>Fg</strong> ≈ 3.6×10⁻⁴⁷ N','<strong>Fₑ / Fg</strong> ≈ 10³⁹ 倍','<strong>结论</strong>：微观世界电力主导']}},
+  {tag:'总结',name:'应用与核心速记',body:'库仑定律是<strong>静电学的基础</strong>，揭示了电荷相互作用的规律。应用广泛：解释摩擦起电、电场概念、静电屏蔽、复印机原理等。核心：<strong>F = kq₁q₂/r²</strong>，方向沿连线，同斥异吸。',points:{title:'核心速记',items:['<strong>公式</strong>：F = kq₁q₂/r²','<strong>k = 9×10⁹</strong> N·m²/C²','<strong>方向</strong>：同斥异吸沿连线','<strong>应用</strong>：电场、静电现象、粒子物理']}},
+];
 
-function draw(){
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景1：库仑扭秤实验 =====
+function drawTorsionScene(time){
   const W=cv.width,H=cv.height;
-  ctx.clearRect(0,0,W,H);
-  const cy=H/2;
+  drawText('库仑扭秤实验 · 1785',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+20;
+  // 顶部支架
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-80,60);ctx.lineTo(cx+80,60);ctx.stroke();
+  drawText('支架',cx,50,'#9ab0d0',11);
+  // 细丝（悬线），随时间微扭转
+  const twist=Math.sin(time*1.2)*15;
+  ctx.strokeStyle='#cbd5e1';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx,60);ctx.lineTo(cx+twist*0.3,cy-40);ctx.stroke();
+  // 轻杆（横梁）
+  ctx.save();
+  ctx.translate(cx+twist*0.3,cy-40);
+  ctx.rotate(twist*0.012);
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(-80,0);ctx.lineTo(80,0);ctx.stroke();
+  // 带电小球（左端）
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fde68a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(-80,0,14,0,7);ctx.fill();ctx.stroke();
+  drawText('q₁',-80,0,'#1a1a1a',12);
+  ctx.restore();
+  // 参考带电小球（固定，右侧）
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fde68a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx+90,cy+10,14,0,7);ctx.fill();ctx.stroke();
+  drawText('q₂',cx+90,cy+10,'#1a1a1a',12);
+  // 参考刻度（弧形）
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(cx,cy-40,120,Math.PI*0.15,Math.PI*0.85);ctx.stroke();
+  for(let i=-4;i<=4;i++){
+    const a=Math.PI/2+i*0.1;
+    const x1=cx+Math.cos(a)*115,y1=cy-40+Math.sin(a)*115;
+    const x2=cx+Math.cos(a)*125,y2=cy-40+Math.sin(a)*125;
+    ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  }
+  drawText('θ = '+Math.abs(twist).toFixed(1)+'°',cx,cy+70,'#06b6d4',13);
+  // 力箭头（两球之间）
+  drawArrow(cx-66+twist*0.3,cy-40,cx+76,cy+10,'#f87171',2);
+  // 底座
+  ctx.fillStyle='#3a4a6a';
+  roundRect(cx-50,cy+110,100,16,4);ctx.fill();
+  drawText('悬丝扭转角 θ 反映力大小',W/2,H-50,'#34d399',12);
+  drawText('库仑由此测得 F ∝ q₁q₂ / r²',W/2,H-28,'#9ab0d0',11);
+}
+
+// ===== 场景2：两点电荷作用力（F∝1/r²） =====
+function drawTwoChargeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('两点电荷作用力 · F = kq₁q₂/r²',W/2,30,'#06b6d4',16);
+  const cy=H/2+10;
+  // 距离随时间变化（呼吸式）
+  const r=120+80*Math.sin(time*0.6);
+  const q1=2.0,q2=2.0;
+  const k=9e9;
+  // 归一化力（视觉化）
+  const Fnorm=(k*q1*q2)/(r*r)/1e6; // 缩放
   const cx=W/2;
-  const scale=R*8;
-  const x1=cx-scale/2,x2=cx+scale/2;
-  
-  // F = kQ1Q2/r^2 (简化计算)
-  const F=Math.abs(Q1*Q2)/(R*R)*9;
-  const isRepel=(Q1*Q2>0);
-  
+  const x1=cx-r/2,x2=cx+r/2;
+  // 电荷1（正）
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fde68a';ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(x1,cy,22,0,7);ctx.fill();ctx.stroke();
+  drawText('+',x1,cy,'#1a1a1a',20);
+  drawText('q₁',x1,cy-40,'#fbbf24',13);
+  // 电荷2（正）
+  ctx.beginPath();ctx.arc(x2,cy,22,0,7);ctx.fill();ctx.stroke();
+  drawText('+',x2,cy,'#1a1a1a',20);
+  drawText('q₂',x2,cy-40,'#fbbf24',13);
   // 距离标尺
-  ctx.strokeStyle='#1e3050';ctx.lineWidth=1;
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(x1,cy+50);ctx.lineTo(x2,cy+50);ctx.stroke();
   ctx.beginPath();ctx.moveTo(x1,cy+45);ctx.lineTo(x1,cy+55);ctx.stroke();
   ctx.beginPath();ctx.moveTo(x2,cy+45);ctx.lineTo(x2,cy+55);ctx.stroke();
-  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';ctx.textAlign='center';
-  ctx.fillText('r = '+R+' cm',cx,cy+68);
-  
-  // 电荷1
-  const c1Color=Q1>=0?'#d63031':'#0984e3';
-  const c1Size=14+Math.abs(Q1)*2;
-  ctx.fillStyle=c1Color;ctx.beginPath();ctx.arc(x1,cy,c1Size,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';
-  ctx.fillText(Q1>=0?'+':'−',x1,cy+5);
-  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';
-  ctx.fillText('Q₁='+Q1+'μC',x1,cy-c1Size-10);
-  
-  // 电荷2
-  const c2Color=Q2>=0?'#d63031':'#0984e3';
-  const c2Size=14+Math.abs(Q2)*2;
-  ctx.fillStyle=c2Color;ctx.beginPath();ctx.arc(x2,cy,c2Size,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';
-  ctx.fillText(Q2>=0?'+':'−',x2,cy+5);
-  ctx.fillStyle='#8b9dc3';ctx.font='12px sans-serif';
-  ctx.fillText('Q₂='+Q2+'μC',x2,cy-c2Size-10);
-  
-  // 库仑力箭头
-  if(Q1!==0&&Q2!==0){
-    const arrowLen=Math.min(F*5,80);
-    ctx.strokeStyle='#fdcb6e';ctx.lineWidth=3;ctx.fillStyle='#fdcb6e';
-    
-    // 力在Q1上
-    const dir1=isRepel?-1:1;
-    ctx.beginPath();ctx.moveTo(x1,cy);ctx.lineTo(x1+dir1*arrowLen,cy);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(x1+dir1*arrowLen,cy);
-    ctx.lineTo(x1+dir1*arrowLen-dir1*8,cy-5);ctx.lineTo(x1+dir1*arrowLen-dir1*8,cy+5);ctx.fill();
-    
-    // 力在Q2上
-    const dir2=isRepel?1:-1;
-    ctx.beginPath();ctx.moveTo(x2,cy);ctx.lineTo(x2+dir2*arrowLen,cy);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(x2+dir2*arrowLen,cy);
-    ctx.lineTo(x2+dir2*arrowLen-dir2*8,cy-5);ctx.lineTo(x2+dir2*arrowLen-dir2*8,cy+5);ctx.fill();
-    
-    ctx.fillStyle='#fdcb6e';ctx.font='bold 13px sans-serif';
-    ctx.fillText('F='+F.toFixed(1)+'N',x1+dir1*arrowLen/2,cy-15);
-    ctx.fillText('F='+F.toFixed(1)+'N',x2+dir2*arrowLen/2,cy-15);
-  }
-  
-  // 力的类型标注
-  ctx.fillStyle=isRepel?'#d63031':'#00b894';ctx.font='bold 14px sans-serif';
-  ctx.fillText(isRepel?'斥力 ←→':'引力 →←',cx,cy-60);
-  
-  // F-r关系图
-  const gx=W-180,gy=30,gw=160,gh=120;
-  ctx.fillStyle='rgba(17,29,51,0.9)';ctx.fillRect(gx,gy,gw,gh);
-  ctx.strokeStyle='#1e3050';ctx.strokeRect(gx,gy,gw,gh);
-  ctx.fillStyle='#e8edf6';ctx.font='bold 12px sans-serif';ctx.textAlign='left';
-  ctx.fillText('F ∝ 1/r² 关系',gx+10,gy+18);
-  
-  // 画曲线
-  ctx.strokeStyle='#fdcb6e';ctx.lineWidth=1.5;ctx.beginPath();
-  for(let i=0;i<gw-20;i++){
-    const rr=1+i/(gw-20)*4;
-    const ff=1/(rr*rr);
-    const px=gx+10+i;
-    const py=gy+gh-15-ff*(gh-40);
-    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
-  }
-  ctx.stroke();
-  
-  // 当前点
-  const curR=R/5;const curF=1/(curR*curR);
-  const cpx=gx+10+(curR-1)/4*(gw-20);
-  const cpy=gy+gh-15-Math.min(curF,1)*(gh-40);
-  ctx.fillStyle='#d63031';ctx.beginPath();ctx.arc(cpx,cpy,4,0,Math.PI*2);ctx.fill();
-  
-  ctx.fillStyle='#8b9dc3';ctx.font='10px sans-serif';
-  ctx.fillText('r →',gx+gw-25,gy+gh-5);
-  ctx.fillText('F ↑',gx+2,gy+28);
-  
-  statusEl.textContent='F = kQ₁Q₂/r² = '+F.toFixed(1)+'N | '+(isRepel?'斥力':'引力');
+  drawText('r = '+r.toFixed(0)+' px',cx,cy+70,'#9ab0d0',12);
+  // 排斥力箭头（同种，向外）
+  const flen=Math.min(80,Fnorm*0.5);
+  drawArrow(x1-22,cy,x1-22-flen,cy,'#f87171',3);
+  drawArrow(x2+22,cy,x2+22+flen,cy,'#f87171',3);
+  drawText('F',(x1+x2)/4,cy-15,'#f87171',13);
+  drawText('F',3*W/4-r/4,cy-15,'#f87171',13);
+  // 实时数值
+  drawText('F = k·q₁q₂ / r²',cx,90,'#fff',14);
+  drawText('距离 r 变化时 F 实时变化（F ∝ 1/r²）',cx,H-55,'#34d399',12);
+  drawText('r 减半 → F 变为 4 倍',cx,H-30,'#9ab0d0',11);
 }
 
-let lastTime=0;
+// ===== 场景3：同种电荷排斥轨迹 =====
+function drawRepelScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('同种电荷排斥 · 加速分开',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+10;
+  // 分离距离随时间增大（模拟加速）
+  const phase=(time*0.5)%4;
+  const d=30+phase*phase*30;
+  // 电荷1（左）
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fde68a';ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(cx-d,cy,18,0,7);ctx.fill();ctx.stroke();
+  drawText('+',cx-d,cy,'#1a1a1a',18);
+  // 电荷2（右）
+  ctx.beginPath();ctx.arc(cx+d,cy,18,0,7);ctx.fill();ctx.stroke();
+  drawText('+',cx+d,cy,'#1a1a1a',18);
+  // 排斥力箭头
+  drawArrow(cx-d-18,cy,cx-d-55,cy,'#f87171',3);
+  drawArrow(cx+d+18,cy,cx+d+55,cy,'#f87171',3);
+  // 运动轨迹（虚线）
+  ctx.strokeStyle='rgba(251,191,36,0.3)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(cx-d-18,cy);ctx.lineTo(cx-d-100,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+d+18,cy);ctx.lineTo(cx+d+100,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  // 速度矢量
+  drawText('v↑',cx-d-75,cy-25,'#34d399',12);
+  drawText('v↑',cx+d+75,cy-25,'#34d399',12);
+  drawText('同种电荷（+ +）→ 排斥，距离增大，力减小',cx,H-55,'#fbbf24',12);
+  drawText('电子间、质子间均如此',cx,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景4：异种电荷吸引轨迹 =====
+function drawAttractScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('异种电荷吸引 · 加速靠近',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+10;
+  // 距离随时间减小（模拟加速靠近，到达后重置）
+  const phase=(time*0.5)%3;
+  const dmax=180;
+  const d=Math.max(60,dmax-phase*phase*20);
+  // 电荷1（左，正）
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fde68a';ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(cx-d,cy,18,0,7);ctx.fill();ctx.stroke();
+  drawText('+',cx-d,cy,'#1a1a1a',18);
+  // 电荷2（右，负）
+  ctx.fillStyle='#67e8f9';
+  ctx.beginPath();ctx.arc(cx+d,cy,18,0,7);ctx.fill();ctx.stroke();
+  drawText('-',cx+d,cy,'#1a1a1a',18);
+  // 吸引力箭头（向内）
+  drawArrow(cx-d-18,cy,cx-d-18+50,cy,'#f87171',3);
+  drawArrow(cx+d+18,cy,cx+d+18-50,cy,'#f87171',3);
+  // 速度矢量（朝中心）
+  drawText('v→',cx-d-75,cy-25,'#34d399',12);
+  drawText('←v',cx+d+75,cy-25,'#34d399',12);
+  drawText('异种电荷（+ -）→ 吸引，距离减小，力增大',cx,H-55,'#06b6d4',12);
+  drawText('氢原子中电子与质子如此',cx,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景5：力的叠加（三角形配置三电荷） =====
+function drawSuperpositionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('力的叠加 · 三个点电荷',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+20;
+  const R=110;
+  // 三角形顶点（缓慢旋转）
+  const rot=time*0.2;
+  const pts=[];
+  for(let i=0;i<3;i++){
+    const a=rot-Math.PI/2+i*2*Math.PI/3;
+    pts.push({x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)});
+  }
+  // 三个电荷：q1正，q2正，q3负
+  const qs=[1,1,-1];
+  const colors=['#fbbf24','#fbbf24','#67e8f9'];
+  const labels=['+','+','-'];
+  // 画三角形连线
+  ctx.strokeStyle='rgba(154,176,208,0.3)';ctx.lineWidth=1;ctx.setLineDash([3,5]);
+  for(let i=0;i<3;i++){const j=(i+1)%3;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}
+  ctx.setLineDash([]);
+  // 计算第0号电荷受力（来自1和2）
+  const target=0;
+  let Fx=0,Fy=0;
+  for(let i=0;i<3;i++){
+    if(i===target)continue;
+    const dx=pts[target].x-pts[i].x;
+    const dy=pts[target].y-pts[i].y;
+    const d=Math.hypot(dx,dy);
+    const f=(qs[target]*qs[i])>0?-1:1; // 同种负（排斥，指向target自身即远离i），简化方向
+    // 同种(q同号)→远离i，即指向target；异种→朝向i
+    const dir=(qs[target]*qs[i])>0?1:-1;
+    Fx+=dir*dx/d;Fy+=dir*dy/d;
+  }
+  const Fmag=Math.hypot(Fx,Fy);
+  // 绘制三个电荷
+  for(let i=0;i<3;i++){
+    ctx.fillStyle=colors[i];ctx.strokeStyle='#fff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,18,0,7);ctx.fill();ctx.stroke();
+    drawText(labels[i],pts[i].x,pts[i].y,'#1a1a1a',18);
+    drawText('q'+(i+1),pts[i].x,pts[i].y-32,colors[i],12);
+  }
+  // 分力箭头（来自q2和q3对q1的作用）
+  for(let i=1;i<3;i++){
+    const dx=pts[0].x-pts[i].x;
+    const dy=pts[0].y-pts[i].y;
+    const d=Math.hypot(dx,dy);
+    const dir=(qs[0]*qs[i])>0?1:-1;
+    drawArrow(pts[0].x,pts[0].y,pts[0].x+dir*dx/d*40,pts[0].y+dir*dy/d*40,'#a78bfa',2);
+  }
+  // 合力箭头
+  if(Fmag>0.01){
+    drawArrow(pts[0].x,pts[0].y,pts[0].x+Fx/Fmag*70,pts[0].y+Fy/Fmag*70,'#f87171',4);
+    drawText('F合',pts[0].x+Fx/Fmag*85,pts[0].y+Fy/Fmag*85,'#f87171',13);
+  }
+  drawText('紫色：分力，红色：合力（矢量叠加）',cx,H-50,'#9ab0d0',12);
+  drawText('F = F₁ + F₂ + ... （矢量和）',cx,H-28,'#34d399',12);
+}
+
+// ===== 场景6：F-r 曲线（反比平方） =====
+function drawCurveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('F-r 曲线 · F ∝ 1/r²（反比平方）',W/2,30,'#06b6d4',16);
+  const ox=90,oy=H-80;
+  const plotW=W-180,plotH=H-180;
+  // 坐标轴
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,80);ctx.lineTo(ox,oy);ctx.lineTo(ox+plotW,oy);ctx.stroke();
+  drawText('F',ox-25,85,'#9ab0d0',12);
+  drawText('r',ox+plotW+10,oy,'#9ab0d0',12);
+  drawText('0',ox-12,oy+12,'#5a6a8a',10);
+  // 网格
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=0.5;
+  for(let i=1;i<=5;i++){
+    const y=oy-plotH*i/5;
+    ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+plotW,y);ctx.stroke();
+    const x=ox+plotW*i/5;
+    ctx.beginPath();ctx.moveTo(x,80);ctx.lineTo(x,oy);ctx.stroke();
+  }
+  // F = C/r² 曲线
+  const C=plotW*plotH*0.6;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let r=20;r<=plotW;r+=2){
+    const F=Math.min(plotH,C/(r*r)*plotW);
+    const x=ox+r,y=oy-F;
+    if(r===20)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('F = kq₁q₂ / r²',ox+plotW*0.6,140,'#06b6d4',13);
+  // 动点（沿曲线移动）
+  const r=80+((time*60)%Math.max(60,plotW-100));
+  const F=Math.min(plotH,C/(r*r)*plotW);
+  const px=ox+r,py=oy-F;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('r='+r.toFixed(0),px,py-22,'#fbbf24',11);
+  // 投影线
+  ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(ox,py);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('r 减半 → F 变为 4 倍',W/2,H-40,'#fbbf24',12);
+  drawText('曲线形状：双曲线一支（反比平方）',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景7：典型计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 氢原子中电力 vs 引力',W/2,30,'#06b6d4',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',90,80,'#67e8f9',13,'left');
+  drawText('氢原子：电子与质子距离 r = 5.3×10⁻¹¹ m',90,105,'#fff',13,'left');
+  drawText('比较它们之间的静电力 Fₑ 与万有引力 Fg。',90,130,'#fff',13,'left');
+  const steps=[
+    {t:'① 电力',d:'Fₑ = k·e²/r² = 9×10⁹ × (1.6×10⁻¹⁹)² / (5.3×10⁻¹¹)² ≈ 8.2×10⁻⁸ N',c:'#06b6d4'},
+    {t:'② 引力',d:'Fg = G·mₑ·mp/r² = 6.67×10⁻¹¹ × 9.1×10⁻³¹ × 1.67×10⁻²⁷ / r² ≈ 3.6×10⁻⁴⁷ N',c:'#fbbf24'},
+    {t:'③ 比较',d:'Fₑ / Fg ≈ 8.2×10⁻⁸ / 3.6×10⁻⁴⁷ ≈ 2.3×10³⁹ 倍',c:'#34d399'},
+    {t:'④ 结论',d:'静电力远大于万有引力，原子尺度下引力可忽略',c:'#f87171'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=170+i*55;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,46,6);ctx.fill();ctx.stroke();
+    drawText(s.t,110,y+23,s.c,13,'left');
+    drawText(s.d,180,y+15,'#fff',11,'left');
+    drawText('',180,y+33,'#fff',11,'left');
+  });
+}
+
+// ===== 场景8：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('库仑定律核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'核心公式',d:'F = kq₁q₂/r²',c:'#06b6d4'},
+    {t:'静电力常量',d:'k = 9.0×10⁹ N·m²/C²',c:'#fbbf24'},
+    {t:'方向规律',d:'同种相斥，异种相吸',c:'#34d399'},
+    {t:'适用条件',d:'真空 + 点电荷 + 静止',c:'#a78bfa'},
+    {t:'力叠加',d:'多电荷：矢量和',c:'#fb923c'},
+    {t:'类比引力',d:'同是平方反比律',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawTorsionScene(t);
+  else if(stepIdx===1||stepIdx===2)drawTwoChargeScene(t);
+  else if(stepIdx===3)drawTwoChargeScene(t);
+  else if(stepIdx===4)drawTwoChargeScene(t);
+  else if(stepIdx===5)drawRepelScene(t);
+  else if(stepIdx===6)drawSuperpositionScene(t);
+  else if(stepIdx===7)drawCurveScene(t);
+  else if(stepIdx===8)drawCalcScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
 function loop(ts){
-  if(!lastTime)lastTime=ts;
-  lastTime=ts;
-  if(playing){t+=0.016*speed;}
-  draw();
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
   requestAnimationFrame(loop);
 }
 
-document.getElementById('playBtn').onclick=function(){playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';};
-document.getElementById('resetBtn').onclick=function(){Q1=3;Q2=2;R=10;q1S.value=3;q2S.value=2;rS.value=10;q1V.textContent=3;q2V.textContent=2;rV.textContent=10;draw();};
-document.getElementById('speed').oninput=function(){speed=+this.value;};
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
 
-draw();
-requestAnimationFrame(loop);
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
 </script>
 </body>
 </html>

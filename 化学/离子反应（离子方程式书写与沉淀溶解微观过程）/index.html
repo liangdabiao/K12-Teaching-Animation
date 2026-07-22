@@ -1,154 +1,521 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>离子反应</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>离子反应 · 离子方程式书写 · 沉淀溶解微观过程</title>
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--ink:#e8edf6;--muted:#9fb0c8;--accent:#e84393;--line:#26324a;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.back{color:var(--accent);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px}
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#8b5cf6;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(139,92,246,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
 main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
-canvas{background:#0b0f18;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%}
-.panel{width:340px;flex:none;padding:16px;overflow:auto;border-left:1px solid var(--line);background:var(--panel)}
-.panel h2{font-size:15px;margin:0 0 10px}.panel p{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 12px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.legend span{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
-.controls{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:#22304a;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer}
-button:hover{background:#2c3c5a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.controls label{font-size:13px;color:var(--muted)}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(139,92,246,.2);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.key-points{margin-top:15px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:13px;line-height:1.7}
-.key-points h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
-.key-points ul{margin:0;padding-left:18px}
-@media(max-width:860px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line)}}
-</style></head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回化学目录</a>
-  <span class="title">离子反应</span>
-</header>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">离子反应</span><span class="subtitle">离子方程式书写 · 沉淀溶解微观过程</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>电解质分类</h4><div class="v">溶于水或熔融能导电<br>酸碱盐属电解质</div></div>
+  <div class="card s2"><div class="num">2</div><h4>电离方程式</h4><div class="v">NaCl → Na⁺ + Cl⁻<br>强电解质用等号</div></div>
+  <div class="card s3"><div class="num">3</div><h4>离子反应条件</h4><div class="v">生成沉淀 / 气体 / 水<br>复分解反应才发生</div></div>
+  <div class="card s4"><div class="num">4</div><h4>四步书写法</h4><div class="v">写 → 拆 → 删 → 查<br>删去未反应的旁观离子</div></div>
+</div>
 <main>
   <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2>原理说明</h2>
-    <p>离子反应：有离子参加或生成的反应。本质：溶液中某些离子浓度降低。条件：生成沉淀↓、气体↑或弱电解质（水）。离子方程式书写：写→拆→删→查，删去不参与反应的 spectator ions。</p>
-    <div class="legend"><span><b style="color:#0984e3">●</b> Ag⁺</span><span><b style="color:#e84393">●</b> Cl⁻</span><span><b style="color:#fdcb6e">●</b> AgCl↓</span><span><b style="color:#00b894">●</b> Na⁺(旁观离子)</span></div>
-    <div class="key-points"><h3>离子方程式书写规则</h3><ul>
-      <li><b>可拆</b>：强酸、强碱、可溶性盐 → 写成离子形式</li>
-      <li><b>不拆</b>：沉淀↓、气体↑、弱电解质(水)、氧化物</li>
-      <li>例：AgNO₃+NaCl→AgCl↓+NaNO₃</li>
-      <li>离子式：Ag⁺ + Cl⁻ → AgCl↓</li>
-      <li>Na⁺和NO₃⁻是旁观离子，不参与反应</li>
-      <li>复分解反应条件：生成沉淀/气体/水（三者之一）</li>
-    </ul></div>
-  </aside>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">离子反应</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
 </main>
+<div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
   <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status"></span>
+  <span id="status" class="status">点击播放或选择步骤</span>
 </div>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
-function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(400,Math.min(900,r.width-8));cv.height=Math.max(360,Math.min(560,r.height-8));}
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
 window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
 
-let t=0,playing=false,lastT=0,speed=1;
-let ions=[];let precipitates=[];
+const STEPS=[
+  {tag:'基础',name:'电解质与非电解质',body:'<strong>电解质</strong>是在水溶液中或熔融状态下<strong>能导电</strong>的化合物（酸、碱、盐）。<strong>非电解质</strong>则不能，如蔗糖、酒精。导电的本质是<strong>自由移动的离子</strong>。',points:{title:'核心分类',items:['<strong>电解质</strong>：NaCl、HCl、NaOH、HNO₃','<strong>非电解质</strong>：蔗糖、酒精、CO₂','<strong>导电条件</strong>：需有自由移动离子','<strong>本质区别</strong>：能否电离出离子']}},
+  {tag:'基础',name:'强电解质与弱电解质',body:'<strong>强电解质</strong>在水溶液中<strong>完全电离</strong>（强酸、强碱、大多数盐），电离方程式用 <code>=</code>。<strong>弱电解质</strong>只<strong>部分电离</strong>（弱酸、弱碱、水），用 <code>⇌</code>。',points:{title:'强弱对比',items:['<strong>强电解质</strong>：HCl、H₂SO₄、NaOH','<strong>弱电解质</strong>：CH₃COOH、NH₃·H₂O','<strong>完全电离</strong>：用等号 =','<strong>部分电离</strong>：用可逆号 ⇌']}},
+  {tag:'电离',name:'电离方程式',body:'<strong>电离方程式</strong>表示电解质在水溶液中离解成离子的过程。<code>NaCl = Na⁺ + Cl⁻</code>；<code>Ca(OH)₂ = Ca²⁺ + 2OH⁻</code>；<code>CH₃COOH ⇌ CH₃COO⁻ + H⁺</code>。',points:{title:'书写要点',items:['<strong>电荷守恒</strong>：左右电荷总数相等','<strong>原子守恒</strong>：左右原子种类数相等','<strong>强电解质</strong>：用 = 号','<strong>弱电解质</strong>：用 ⇌ 可逆号']}},
+  {tag:'反应',name:'复分解反应条件',body:'<strong>离子反应（复分解）</strong>发生的条件是生成<strong>沉淀、气体或水</strong>（或其他弱电解质）。若产物中没有这三者，反应不能发生。',points:{title:'三大条件',items:['<strong>生成沉淀</strong>：如 AgCl↓、BaSO₄↓','<strong>生成气体</strong>：如 CO₂↑、NH₃↑','<strong>生成水</strong>：H⁺ + OH⁻ → H₂O','<strong>三者满足任一</strong>：反应即发生']}},
+  {tag:'微观',name:'AgNO₃+NaCl 离子互换',body:'<strong>硝酸银与氯化钠反应</strong>：<code>AgNO₃ + NaCl → AgCl↓ + NaNO₃</code>。微观上 <strong>Ag⁺ 与 Cl⁻</strong> 碰撞结合成<strong>不溶性 AgCl</strong>，从溶液中析出，Na⁺ 与 NO₃⁻ 仍在溶液中未反应。',points:{title:'微观过程',items:['<strong>初态</strong>：4 种离子自由运动','<strong>碰撞</strong>：Ag⁺ 与 Cl⁻ 静电吸引','<strong>沉淀</strong>：生成 AgCl↓ 析出','<strong>旁观离子</strong>：Na⁺、NO₃⁻ 不参与']}},
+  {tag:'书写',name:'四步法之写',body:'<strong>第一步：写</strong>——先写出反应的<strong>化学方程式</strong>。以 AgNO₃ + NaCl 为例：<code>AgNO₃ + NaCl → AgCl↓ + NaNO₃</code>。需配平、标沉淀符号。',points:{title:'第一步',items:['<strong>反应物</strong>：AgNO₃ + NaCl','<strong>产物</strong>：AgCl↓ + NaNO₃','<strong>配平</strong>：原子与电荷守恒','<strong>符号</strong>：沉淀用 ↓，气体用 ↑']}},
+  {tag:'书写',name:'四步法之拆',body:'<strong>第二步：拆</strong>——把<strong>易溶强电解质</strong>拆成离子形式（沉淀、气体、水、弱电解质<strong>不拆</strong>）：<code>Ag⁺ + NO₃⁻ + Na⁺ + Cl⁻ → AgCl↓ + Na⁺ + NO₃⁻</code>。',points:{title:'第二步',items:['<strong>拆</strong>：AgNO₃ → Ag⁺ + NO₃⁻','<strong>拆</strong>：NaCl → Na⁺ + Cl⁻','<strong>不拆</strong>：AgCl↓、气体、水','<strong>不拆</strong>：弱电解质、氧化物']}},
+  {tag:'书写',name:'四步法之删与查',body:'<strong>第三步：删</strong>——删去两边<strong>相同</strong>的旁观离子（Na⁺、NO₃⁻）。<strong>第四步：查</strong>——检查<strong>质量守恒</strong>与<strong>电荷守恒</strong>，得 <code>Ag⁺ + Cl⁻ → AgCl↓</code>。',points:{title:'第三、四步',items:['<strong>删</strong>：删去两边相同的 Na⁺、NO₃⁻','<strong>查</strong>：原子守恒（Ag、Cl 各 1）','<strong>查</strong>：电荷守恒（左 +1+(-1)=0）','<strong>结果</strong>：Ag⁺ + Cl⁻ → AgCl↓']}},
+  {tag:'沉淀',name:'常见沉淀颜色与溶性',body:'<strong>溶解性口诀</strong>：钾钠铵硝皆可溶，盐酸盐不溶 AgCl，硫酸盐不溶 BaSO₄，碳酸盐只溶钾钠铵，碱只溶钾钠钡钙微。',points:{title:'沉淀颜色表',items:['<strong>白色</strong>：AgCl、BaSO₄、CaCO₃','<strong>红褐色</strong>：Fe(OH)₃','<strong>蓝色</strong>：Cu(OH)₂','<strong>口诀</strong>：钾钠铵硝溶，盐酸盐除银']}},
+  {tag:'总结',name:'应用与核心总结',body:'<strong>离子反应</strong>是水溶液中电解质之间通过<strong>离子互换</strong>发生的反应，广泛应用于<strong>除杂、鉴别、制备</strong>。书写口诀：<strong>写拆删查四步走</strong>，方向由<strong>沉淀、气体、水</strong>决定。',points:{title:'九宫格速记',items:['<strong>本质</strong>：离子间结合生成难电离物','<strong>条件</strong>：沉淀 / 气体 / 水','<strong>书写</strong>：写、拆、删、查','<strong>应用</strong>：除杂、鉴别、沉淀转化']}},
+];
 
-function init(){
-  ions=[];precipitates=[];t=0;
-  // Ag⁺ ions
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景1：电解质与非电解质 =====
+function drawElectrolyteScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电解质 vs 非电解质',W/2,30,'#8b5cf6',16);
+  const lx=W*0.28,rx=W*0.72,cy=H/2+10;
+  // 左烧杯 - NaCl 溶液（导电）
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=2;
+  roundRect(lx-70,cy-80,140,160,8);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(139,92,246,0.15)';
+  ctx.fillRect(lx-68,cy-50,136,128);
+  drawText('NaCl 溶液',lx,cy-95,'#8b5cf6',13);
+  // 离子（动态）
+  ctx.fillStyle='#8b5cf6';ctx.strokeStyle='#fff';ctx.lineWidth=1;
   for(let i=0;i<8;i++){
-    ions.push({type:'Ag',x:cv.width*0.15+Math.random()*cv.width*0.25,y:cv.height*0.2+Math.random()*cv.height*0.6,
-      vx:(Math.random()-0.5)*60,vy:(Math.random()-0.5)*60,r:10,color:'#0984e3',label:'Ag⁺',reacted:false});
+    const ang=time*1.5+i*0.8;
+    const px=lx-50+(i%4)*33+Math.sin(ang)*8;
+    const py=cy-30+Math.floor(i/4)*60+Math.cos(ang)*8;
+    ctx.beginPath();ctx.arc(px,py,8,0,7);ctx.fill();
+    drawText(i%2?'Cl⁻':'Na⁺',px,py,'#fff',9);
   }
-  // Cl⁻ ions
-  for(let i=0;i<8;i++){
-    ions.push({type:'Cl',x:cv.width*0.55+Math.random()*cv.width*0.25,y:cv.height*0.2+Math.random()*cv.height*0.6,
-      vx:(Math.random()-0.5)*60,vy:(Math.random()-0.5)*60,r:9,color:'#e84393',label:'Cl⁻',reacted:false});
-  }
-  // Na⁺ spectator ions
+  // 灯泡亮（电解质导电）
+  const glow=0.6+0.4*Math.sin(time*4);
+  ctx.fillStyle='rgba(251,191,36,'+glow+')';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=20;
+  ctx.beginPath();ctx.arc(lx,cy-130,14,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('导电（亮）',lx,cy+95,'#34d399',12);
+  // 右烧杯 - 蔗糖溶液（不导电）
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  roundRect(rx-70,cy-80,140,160,8);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(154,176,208,0.10)';
+  ctx.fillRect(rx-68,cy-50,136,128);
+  drawText('蔗糖溶液',rx,cy-95,'#9ab0d0',13);
+  // 蔗糖分子（中性）
+  ctx.fillStyle='#9ab0d0';
   for(let i=0;i<6;i++){
-    ions.push({type:'Na',x:cv.width*0.1+Math.random()*cv.width*0.8,y:cv.height*0.2+Math.random()*cv.height*0.6,
-      vx:(Math.random()-0.5)*50,vy:(Math.random()-0.5)*50,r:8,color:'#00b894',label:'Na⁺',reacted:false});
+    const ang=time*0.5+i*1.0;
+    const px=rx-45+(i%3)*45+Math.sin(ang)*5;
+    const py=cy-20+Math.floor(i/3)*50+Math.cos(ang)*5;
+    ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();
   }
+  // 灯泡暗
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.arc(rx,cy-130,14,0,7);ctx.fill();
+  drawText('不导电（暗）',rx,cy+95,'#f87171',12);
+  // 结论
+  drawText('电解质能电离出自由离子 → 导电；非电解质不能',W/2,H-30,'#34d399',12);
 }
 
-function update(dt){
-  t+=dt*speed;
-  const reactTime=2.0;
-  ions.forEach(ion=>{
-    if(ion.reacted)return;
-    ion.x+=ion.vx*dt*speed;ion.y+=ion.vy*dt*speed;
-    if(ion.x<20||ion.x>cv.width-20)ion.vx*=-1;
-    if(ion.y<20||ion.y>cv.height-20)ion.vy*=-1;
-    // 反应检测
-    if(t>reactTime&&ion.type==='Ag'){
-      ions.forEach(other=>{
-        if(!other.reacted&&other.type==='Cl'){
-          const dx=ion.x-other.x,dy=ion.y-other.y;
-          if(Math.sqrt(dx*dx+dy*dy)<25){
-            ion.reacted=true;other.reacted=true;
-            precipitates.push({x:(ion.x+other.x)/2,y:(ion.y+other.y)/2,r:14,grow:0});
-          }
-        }
-      });
+// ===== 场景2：强弱电解质 =====
+function drawStrongWeakScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('强电解质 vs 弱电解质',W/2,30,'#8b5cf6',16);
+  const lx=W*0.28,rx=W*0.72,cy=H/2+10;
+  // 强：HCl 完全电离
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=2;
+  roundRect(lx-75,cy-80,150,170,8);ctx.fill();ctx.stroke();
+  drawText('HCl（强酸）',lx,cy-95,'#8b5cf6',13);
+  drawText('完全电离',lx,cy+105,'#34d399',12);
+  // 全部离子
+  ctx.fillStyle='#8b5cf6';
+  for(let i=0;i<10;i++){
+    const ang=time+i*0.6;
+    const px=lx-55+(i%5)*27+Math.sin(ang)*5;
+    const py=cy-55+Math.floor(i/5)*70+Math.cos(ang)*5;
+    ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();
+    drawText(i%2?'Cl⁻':'H⁺',px,py,'#fff',8);
+  }
+  // 弱：CH3COOH 部分电离
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(rx-75,cy-80,150,170,8);ctx.fill();ctx.stroke();
+  drawText('CH₃COOH（弱酸）',rx,cy-95,'#06b6d4',13);
+  drawText('部分电离 ⇌',rx,cy+105,'#fbbf24',12);
+  // 少量离子 + 大量分子
+  ctx.fillStyle='#06b6d4';
+  for(let i=0;i<3;i++){
+    const px=rx-50+i*40;
+    ctx.beginPath();ctx.arc(px,cy-30,7,0,7);ctx.fill();
+    drawText(i%2?'H⁺':'Ac⁻',px,cy-30,'#fff',8);
+  }
+  // 大量未电离分子
+  ctx.fillStyle='rgba(154,176,208,0.5)';
+  for(let i=0;i<8;i++){
+    const px=rx-60+(i%4)*40;
+    const py=cy+20+Math.floor(i/4)*30;
+    ctx.beginPath();ctx.arc(px,py,9,0,7);ctx.fill();
+  }
+  drawText('HAc 分子',rx-60,cy+60,'#9ab0d0',10,'left');
+  drawText('HCl = H⁺ + Cl⁻',lx,cy-115,'#34d399',12);
+  drawText('HAc ⇌ H⁺ + Ac⁻',rx,cy-115,'#fbbf24',12);
+  drawText('强电解质用 = ，弱电解质用 ⇌',W/2,H-30,'#34d399',13);
+}
+
+// ===== 场景3：电离方程式 =====
+function drawDissociationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电离方程式 · 拆解示意',W/2,30,'#8b5cf6',16);
+  const cy=H/2;
+  // 左侧：NaCl 晶体
+  ctx.fillStyle='#8b5cf622';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=2;
+  roundRect(60,cy-50,140,100,10);ctx.fill();ctx.stroke();
+  drawText('NaCl（晶体）',130,cy-65,'#fff',13);
+  // 晶格
+  ctx.fillStyle='#8b5cf6';
+  for(let i=0;i<3;i++)for(let j=0;j<2;j++){
+    ctx.beginPath();ctx.arc(85+i*35,cy-20+j*35,7,0,7);ctx.fill();
+    drawText((i+j)%2?'Cl⁻':'Na⁺',85+i*35,cy-20+j*35,'#fff',8);
+  }
+  // 中间箭头（加水）
+  const arrowP=(Math.sin(time*2)+1)/2;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(210,cy);ctx.lineTo(W-260,cy);ctx.stroke();
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.moveTo(W-260,cy);ctx.lineTo(W-275,cy-8);ctx.lineTo(W-275,cy+8);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('溶于水（H₂O）',W/2,cy-25,'#06b6d4',13);
+  // 水分子动画
+  for(let i=0;i<5;i++){
+    const px=215+i*((W-475)/5)+arrowP*15;
+    ctx.fillStyle='rgba(6,182,212,0.6)';
+    ctx.beginPath();ctx.arc(px,cy+25,5,0,7);ctx.fill();
+  }
+  // 右侧：Na⁺ + Cl⁻
+  ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(W-250,cy-60,180,120,10);ctx.fill();ctx.stroke();
+  drawText('Na⁺ + Cl⁻',W-160,cy-75,'#fff',14);
+  // 自由离子
+  ctx.fillStyle='#8b5cf6';
+  for(let i=0;i<6;i++){
+    const ang=time*1.5+i;
+    const px=W-220+(i%3)*45+Math.sin(ang)*8;
+    const py=cy-20+Math.floor(i/3)*45+Math.cos(ang)*8;
+    ctx.beginPath();ctx.arc(px,py,9,0,7);ctx.fill();
+    drawText(i%2?'Cl⁻':'Na⁺',px,py,'#fff',9);
+  }
+  // 公式
+  ctx.font='bold 20px serif';ctx.fillStyle='#fbbf24';ctx.textAlign='center';
+  ctx.fillText('NaCl = Na⁺ + Cl⁻',W/2,H-50);
+  drawText('电荷守恒：左 0 = 右 (+1) + (-1) = 0',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景4：复分解条件 =====
+function drawConditionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('复分解反应发生三大条件',W/2,30,'#8b5cf6',16);
+  const items=[
+    {t:'生成沉淀',d:'AgCl↓ BaSO₄↓',c:'#8b5cf6',x:W*0.2},
+    {t:'生成气体',d:'CO₂↑ NH₃↑',c:'#06b6d4',x:W*0.5},
+    {t:'生成水',d:'H⁺+OH⁻→H₂O',c:'#34d399',x:W*0.8},
+  ];
+  items.forEach((m,i)=>{
+    const cy=H/2;
+    const wobble=Math.sin(time*2+i)*6;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(m.x-90,cy-70+wobble,180,140,12);ctx.fill();ctx.stroke();
+    drawText(m.t,m.x,cy-40+wobble,m.c,16);
+    drawText(m.d,m.x,cy+10+wobble,'#fff',13);
+    // 图标
+    ctx.fillStyle=m.c;
+    if(i===0){
+      for(let k=0;k<4;k++){
+        ctx.beginPath();ctx.arc(m.x-30+k*20,cy+50+wobble,4,0,7);ctx.fill();
+      }
+    }else if(i===1){
+      for(let k=0;k<3;k++){
+        ctx.beginPath();ctx.arc(m.x-20+k*20,cy+40+wobble-Math.sin(time*3+k)*8,5,0,7);ctx.fill();
+      }
+    }else{
+      ctx.beginPath();ctx.arc(m.x,cy+45+wobble,8,0,7);ctx.fill();
     }
   });
-  precipitates.forEach(p=>{if(p.grow<1)p.grow+=dt*2;});
+  drawText('满足任一条件 → 反应发生',W/2,H-40,'#fbbf24',14);
+  drawText('否则离子互换不能进行',W/2,H-20,'#9ab0d0',12);
+}
+
+// ===== 场景5：AgNO3 + NaCl 微观 =====
+function drawIonSwapScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('AgNO₃ + NaCl → AgCl↓ + NaNO₃ 微观过程',W/2,30,'#8b5cf6',16);
+  const cx=W/2,cy=H/2+20;
+  // 烧杯
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=2;
+  roundRect(cx-200,cy-90,400,180,10);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(139,92,246,0.10)';
+  ctx.fillRect(cx-198,cy-60,396,148);
+  // 4 种离子
+  const ions=[
+    {n:'Na⁺',c:'#fbbf24',ph:0},
+    {n:'Cl⁻',c:'#06b6d4',ph:1},
+    {n:'Ag⁺',c:'#e8eef8',ph:2},
+    {n:'NO₃⁻',c:'#34d399',ph:3},
+  ];
+  for(let i=0;i<12;i++){
+    const ang=time*1.2+i*0.5;
+    const r=70+Math.sin(i)*40;
+    const px=cx+Math.cos(ang+i)*r*1.4;
+    const py=cy+Math.sin(ang+i)*r*0.6;
+    const ph=i%4;
+    ctx.fillStyle=ions[ph].c+'cc';
+    ctx.beginPath();ctx.arc(px,py,10,0,7);ctx.fill();
+    drawText(ions[ph].n,px,py,'#1a1a1a',9);
+  }
+  // Ag+ 与 Cl- 碰撞结合
+  const bindT=(time%3)/3;
+  if(bindT<0.7){
+    const k=bindT/0.7;
+    const bx1=cx-30+k*30,by1=cy-20+k*20;
+    const bx2=cx+30-k*30,by2=cy+20-k*20;
+    ctx.fillStyle='#e8eef8';ctx.beginPath();ctx.arc(bx1,by1,11,0,7);ctx.fill();
+    drawText('Ag⁺',bx1,by1,'#1a1a1a',9);
+    ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(bx2,by2,11,0,7);ctx.fill();
+    drawText('Cl⁻',bx2,by2,'#1a1a1a',9);
+    ctx.strokeStyle='rgba(251,191,36,0.6)';ctx.lineWidth=2;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(bx1,by1);ctx.lineTo(bx2,by2);ctx.stroke();
+    ctx.setLineDash([]);
+  }else{
+    const fallY=(bindT-0.7)/0.3*100;
+    ctx.fillStyle='#e8eef8';ctx.shadowColor='#fff';ctx.shadowBlur=15;
+    ctx.beginPath();ctx.arc(cx,cy+fallY,12,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('AgCl↓',cx,cy+fallY,'#1a1a1a',9);
+    ctx.fillStyle='rgba(232,238,248,0.5)';
+    for(let k=0;k<6;k++){
+      ctx.beginPath();ctx.arc(cx-50+k*20,cy+78,5,0,7);ctx.fill();
+    }
+  }
+  drawText('Ag⁺ + Cl⁻ → AgCl↓（沉淀析出）',W/2,H-55,'#fbbf24',13);
+  drawText('Na⁺、NO₃⁻ 为旁观离子，未参与反应',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景6：四步法可视化 =====
+function drawFourStepScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('离子方程式书写四步法',W/2,30,'#8b5cf6',16);
+  const curStep=Math.floor(time/1.5)%4;
+  const steps=[
+    {t:'写',d:'AgNO₃ + NaCl → AgCl↓ + NaNO₃',c:'#8b5cf6'},
+    {t:'拆',d:'Ag⁺+NO₃⁻+Na⁺+Cl⁻ → AgCl↓+Na⁺+NO₃⁻',c:'#06b6d4'},
+    {t:'删',d:'删去两边相同的 Na⁺、NO₃⁻',c:'#fbbf24'},
+    {t:'查',d:'Ag⁺ + Cl⁻ → AgCl↓',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=80+i*90;
+    const active=i===curStep;
+    ctx.fillStyle=active?s.c+'44':s.c+'18';
+    ctx.strokeStyle=s.c;ctx.lineWidth=active?3:1.5;
+    roundRect(80,y,W-160,72,10);ctx.fill();ctx.stroke();
+    ctx.fillStyle=s.c;
+    ctx.beginPath();ctx.arc(115,y+36,18,0,7);ctx.fill();
+    drawText(['一','二','三','四'][i],115,y+36,'#1a1a1a',14);
+    drawText('第'+['一','二','三','四'][i]+'步：'+s.t,150,y+22,active?'#fff':'#9ab0d0',13,'left');
+    drawText(s.d,150,y+52,active?'#fff':'#9ab0d0',12,'left');
+    if(active){
+      drawText('● 当前',W-100,y+36,s.c,11);
+    }
+  });
+  drawText('口诀：写、拆、删、查',W/2,H-25,'#fbbf24',13);
+}
+
+// ===== 场景7：沉淀颜色色卡 =====
+function drawPrecipitateScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('常见沉淀颜色卡',W/2,30,'#8b5cf6',16);
+  const items=[
+    {n:'AgCl',c:'#f5f5f5',d:'白色',f:'盐酸盐不溶 AgCl'},
+    {n:'BaSO₄',c:'#fafafa',d:'白色',f:'硫酸盐不溶 BaSO₄'},
+    {n:'Fe(OH)₃',c:'#a0522d',d:'红褐色',f:'铁盐 + 强碱'},
+    {n:'Cu(OH)₂',c:'#1e90ff',d:'蓝色',f:'铜盐 + 强碱'},
+    {n:'CaCO₃',c:'#eeeeee',d:'白色',f:'碳酸盐多不溶'},
+    {n:'AgBr',c:'#fffacd',d:'淡黄',f:'浅黄色沉淀'},
+  ];
+  const cols=3,w=(W-160)/3;
+  items.forEach((m,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=80+col*w;
+    const y=80+row*180;
+    const pop=Math.sin(time*2+i)*3;
+    ctx.fillStyle=m.c;ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+    roundRect(x+15,y+30+pop,w-30,100,8);ctx.fill();ctx.stroke();
+    drawText(m.n,x+w/2,y+55+pop,'#1a1a1a',15);
+    drawText(m.d,x+w/2,y+85+pop,'#333',12);
+    ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle=m.c;ctx.lineWidth=1;
+    roundRect(x+15,y+140,w-30,28,6);ctx.fill();ctx.stroke();
+    drawText(m.f,x+w/2,y+154,'#9ab0d0',10);
+  });
+  drawText('口诀：钾钠铵硝皆可溶，盐酸盐除银，硫酸盐除钡',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景8：溶解性表筛选 =====
+function drawSolubilityScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('溶解性表筛选 · 谁溶谁不溶',W/2,30,'#8b5cf6',16);
+  const salts=[
+    {n:'NaCl',s:true},{n:'KNO₃',s:true},{n:'AgCl',s:false},
+    {n:'BaSO₄',s:false},{n:'CaCO₃',s:false},{n:'NaOH',s:true},
+    {n:'Cu(OH)₂',s:false},{n:'Fe(OH)₃',s:false},{n:'NH₄Cl',s:true},
+  ];
+  const cols=3,w=(W-160)/3;
+  const highlightT=Math.floor(time/1)%9;
+  salts.forEach((m,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=80+col*w;
+    const y=80+row*100;
+    const isHL=i===highlightT;
+    const c=m.s?'#34d399':'#f87171';
+    ctx.fillStyle=isHL?c+'44':c+'18';
+    ctx.strokeStyle=c;ctx.lineWidth=isHL?3:1.5;
+    roundRect(x+10,y,w-20,80,10);ctx.fill();ctx.stroke();
+    drawText(m.n,x+w/2,y+30,'#fff',16);
+    drawText(m.s?'易溶':'沉淀↓',x+w/2,y+58,c,12);
+  });
+  drawText('绿色：易溶可拆；红色：难溶不拆，作为沉淀保留',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景9：典型例题 =====
+function drawExampleScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 四步法实战',W/2,30,'#8b5cf6',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=1.5;
+  roundRect(80,65,W-160,60,8);ctx.fill();ctx.stroke();
+  drawText('【例】写出 AgNO₃ 与 NaCl 反应的离子方程式',W/2,95,'#fff',13);
+  const steps=[
+    {t:'① 写',d:'AgNO₃ + NaCl → AgCl↓ + NaNO₃',c:'#8b5cf6'},
+    {t:'② 拆',d:'Ag⁺ + NO₃⁻ + Na⁺ + Cl⁻ → AgCl↓ + Na⁺ + NO₃⁻',c:'#06b6d4'},
+    {t:'③ 删',d:'两边删去 Na⁺ 和 NO₃⁻（旁观离子）',c:'#fbbf24'},
+    {t:'④ 查',d:'Ag：1=1；Cl：1=1；电荷：左 0 = 右 0',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=150+i*72;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,60,8);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+30,s.c,13,'left');
+    drawText(s.d,260,y+30,'#fff',12,'left');
+  });
+  drawText('最终：Ag⁺ + Cl⁻ → AgCl↓',W/2,H-30,'#34d399',15);
+}
+
+// ===== 场景10：总结九宫格 =====
+function drawSummaryScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('离子反应核心总结',W/2,30,'#8b5cf6',18);
+  const items=[
+    {t:'反应本质',d:'离子间结合',c:'#8b5cf6'},
+    {t:'发生条件',d:'沉淀/气体/水',c:'#06b6d4'},
+    {t:'书写口诀',d:'写拆删查',c:'#34d399'},
+    {t:'强电解质',d:'完全电离 =',c:'#fbbf24'},
+    {t:'弱电解质',d:'部分电离 ⇌',c:'#ec4899'},
+    {t:'白色沉淀',d:'AgCl BaSO₄',c:'#e8eef8'},
+    {t:'红褐沉淀',d:'Fe(OH)₃',c:'#a0522d'},
+    {t:'蓝色沉淀',d:'Cu(OH)₂',c:'#1e90ff'},
+    {t:'实际应用',d:'除杂鉴别',c:'#fb923c'},
+  ];
+  const cols=3,w=(W-160)/3,h=120;
+  items.forEach((m,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=80+col*w;
+    const y=70+row*h;
+    const wob=Math.sin(time*1.5+i)*3;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+8,y+wob,w-16,h-15,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+w/2,y+35+wob,m.c,15);
+    drawText(m.d,x+w/2,y+70+wob,'#fff',12);
+  });
+  drawText('离子反应贯穿酸碱盐所有反应，掌握四步法即可解题',W/2,H-20,'#34d399',13);
 }
 
 function draw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  // 溶液背景
-  ctx.fillStyle='rgba(59,130,246,0.08)';ctx.fillRect(0,0,cv.width,cv.height);
-  // 分界线(t<1.5显示两种溶液分开)
-  if(t<1.5){
-    ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.setLineDash([5,5]);ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(cv.width/2,0);ctx.lineTo(cv.width/2,cv.height);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='#74b9ff';ctx.font='12px sans-serif';ctx.textAlign='center';
-    ctx.fillText('AgNO₃溶液',cv.width*0.25,25);
-    ctx.fillText('NaCl溶液',cv.width*0.75,25);
-  }
-  // 离子
-  ions.forEach(ion=>{
-    if(ion.reacted)return;
-    ctx.beginPath();ctx.arc(ion.x,ion.y,ion.r,0,Math.PI*2);
-    ctx.fillStyle=ion.color+'44';ctx.fill();
-    ctx.strokeStyle=ion.color;ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(ion.label,ion.x,ion.y);
-  });
-  // 沉淀
-  precipitates.forEach(p=>{
-    const r=p.r*Math.min(1,p.grow);
-    ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);
-    ctx.fillStyle='#fdcb6e';ctx.fill();ctx.strokeStyle='#e17055';ctx.lineWidth=2;ctx.stroke();
-  });
-  // 标题
-  ctx.fillStyle='#e8edf6';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
-  ctx.fillText('AgNO₃ + NaCl → AgCl↓ + NaNO₃',cv.width/2,cv.height-20);
-  ctx.font='12px sans-serif';ctx.fillStyle='#fdcb6e';
-  ctx.fillText(`沉淀: ${precipitates.length}个 AgCl`,cv.width/2,cv.height-42);
-  statusEl.textContent=`t=${t.toFixed(1)}s | 离子反应进行中`;
+  if(stepIdx===0)drawElectrolyteScene(t);
+  else if(stepIdx===1)drawStrongWeakScene(t);
+  else if(stepIdx===2)drawDissociationScene(t);
+  else if(stepIdx===3)drawConditionScene(t);
+  else if(stepIdx===4)drawIonSwapScene(t);
+  else if(stepIdx===5)drawFourStepScene(t);
+  else if(stepIdx===6)drawFourStepScene(t);
+  else if(stepIdx===7)drawFourStepScene(t);
+  else if(stepIdx===8)drawPrecipitateScene(t);
+  else if(stepIdx===9)drawSummaryScene(t);
 }
 
-init();
-let animId;
-function loop(ts){
-  const dt=Math.min(0.05,(ts-lastT)/1000);lastT=ts;
-  update(dt);draw();
-  if(playing)animId=requestAnimationFrame(loop);
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
 }
-document.getElementById('playBtn').onclick=function(){
-  playing=!playing;this.textContent=playing?'⏸ 暂停':'▶ 播放';
-  if(playing){lastT=performance.now();loop(lastT);}else cancelAnimationFrame(animId);
-};
-document.getElementById('resetBtn').onclick=function(){init();draw();};
-document.getElementById('speed').oninput=function(){speed=+this.value;};
-draw();
-</script></body></html>
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
