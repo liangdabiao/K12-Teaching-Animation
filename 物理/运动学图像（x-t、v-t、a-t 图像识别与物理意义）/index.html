@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>运动学图像 · x-t 图 · v-t 图 · a-t 图</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">运动学图像</span><span class="subtitle">x-t 图 · v-t 图 · a-t 图 · 斜率与面积</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>x-t 图</h4><div class="v">位移随时间变化<br>斜率 = 速度 v</div></div>
+  <div class="card s2"><div class="num">2</div><h4>v-t 图</h4><div class="v">速度随时间变化<br>斜率 = 加速度 a，面积 = 位移</div></div>
+  <div class="card s3"><div class="num">3</div><h4>a-t 图</h4><div class="v">加速度随时间变化<br>面积 = 速度变化量 Δv</div></div>
+  <div class="card s4"><div class="num">4</div><h4>识别要点</h4><div class="v">看轴、看线、看斜率<br>看面积、看截距</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">x-t 图像</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function drawArrow(x1,y1,x2,y2,c,w){ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=w||2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const a=Math.atan2(y2-y1,x2-x1);ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-8*Math.cos(a-0.4),y2-8*Math.sin(a-0.4));ctx.lineTo(x2-8*Math.cos(a+0.4),y2-8*Math.sin(a+0.4));ctx.fill();}
+function drawAxes(ox,oy,w,h,xlabel,ylabel){ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;drawArrow(ox,oy,ox+w,oy,'#5a6a8a',2);drawArrow(ox,oy,ox,oy-h,'#5a6a8a',2);drawText(xlabel,ox+w+5,oy,'#9ab0d0',12,'left');drawText(ylabel,ox-10,oy-h-5,'#9ab0d0',12,'right');drawText('O',ox-8,oy+10,'#5a6a8a',11,'right');}
+
+const STEPS=[
+  {tag:'x-t图',name:'位移随时间变化',body:'<strong>x-t 图像</strong>以<strong>时间 t 为横轴、位移 x 为纵轴</strong>，描述物体的<strong>位置随时间的变化</strong>。图像上每一点表示某一时刻物体所处的位置坐标。',points:{title:'基本认识',items:['<strong>横轴</strong>：时间 t（单位 s）','<strong>纵轴</strong>：位移 x（单位 m）','<strong>斜率</strong>：k = Δx/Δt = 速度 v','<strong>一个点</strong>：某时刻物体的位置']}},
+  {tag:'x-t图',name:'x-t 图类型识别',body:'<strong>x-t 图像形状反映运动性质</strong>：水平直线表示<strong>静止</strong>；倾斜直线表示<strong>匀速直线运动</strong>；曲线表示<strong>变速运动</strong>（上凸为减速，下凹为加速）。',points:{title:'三种典型线型',items:['<strong>水平线</strong>：v=0，物体静止','<strong>倾斜直线</strong>：v 恒定，匀速运动','<strong>向上曲线(凹)</strong>：加速运动','<strong>向下曲线(凸)</strong>：减速运动']}},
+  {tag:'v-t图',name:'速度随时间变化',body:'<strong>v-t 图像</strong>以<strong>时间为横轴、速度为纵轴</strong>。<strong>斜率表示加速度</strong> a = Δv/Δt；<strong>图线与时间轴围成的面积表示位移</strong>。',points:{title:'两大几何意义',items:['<strong>斜率</strong>：k = Δv/Δt = a','<strong>面积</strong>：S = ∫v dt = 位移 x','<strong>纵截距</strong>：初速度 v₀','<strong>横轴上方</strong>：正向运动']}},
+  {tag:'v-t图',name:'v-t 图类型识别',body:'<strong>v-t 图像形状反映运动性质</strong>：水平线表示<strong>匀速</strong>；倾斜直线表示<strong>匀变速</strong>；曲线表示<strong>变加速</strong>。在 t 轴下方表示<strong>反向运动</strong>。',points:{title:'四种典型线型',items:['<strong>水平线</strong>：a=0，匀速运动','<strong>倾斜直线</strong>：a 恒定，匀变速','<strong>曲线</strong>：a 变化，变加速','<strong>过 t 轴</strong>：速度反向时刻']}},
+  {tag:'a-t图',name:'加速度随时间变化',body:'<strong>a-t 图像</strong>以<strong>时间为横轴、加速度为纵轴</strong>。<strong>图线与时间轴围成的面积表示速度变化量</strong> Δv = ∫a dt。',points:{title:'核心意义',items:['<strong>斜率</strong>：da/dt（加加速度）','<strong>面积</strong>：Δv = 速度变化量','<strong>水平线</strong>：匀变速 a 恒定','<strong>a=0 时段</strong>：匀速段']}},
+  {tag:'综合',name:'斜率与面积的物理意义',body:'图像的<strong>斜率</strong>总是表示<strong>纵坐标对横坐标的变化率</strong>；<strong>面积</strong>总是表示<strong>纵坐标对横坐标的积分</strong>。这是运动学图像的<strong>核心几何意义</strong>。',points:{title:'对应关系',items:['<strong>x-t 斜率</strong>：v = Δx/Δt','<strong>v-t 斜率</strong>：a = Δv/Δt','<strong>v-t 面积</strong>：x = 位移','<strong>a-t 面积</strong>：Δv 速度变化']}},
+  {tag:'综合',name:'图像综合判断',body:'根据图像的<strong>斜率正负、零点、面积</strong>等信息可判断运动方向、加速度方向、位移大小和速度变化。<strong>斜率符号</strong>决定纵坐标增减，<strong>面积正负</strong>决定位移方向。',points:{title:'判断口诀',items:['<strong>看轴</strong>：先认横纵物理量','<strong>看线</strong>：直线匀变、曲线变速','<strong>看斜率</strong>：得新物理量','<strong>看面积</strong>：得积分量']}},
+  {tag:'对比',name:'四种运动对比',body:'将<strong>静止、匀速、匀加速、匀减速</strong>四种基本运动的 x-t 图与 v-t 图并排显示，可以直观看出图像差异，是识别运动类型的<strong>基本功</strong>。',points:{title:'四种运动特征',items:['<strong>静止</strong>：x-t 水平、v-t 在 t 轴上','<strong>匀速</strong>：x-t 斜线、v-t 水平','<strong>匀加速</strong>：x-t 抛物线、v-t 上升斜线','<strong>匀减速</strong>：x-t 抛物线、v-t 下降斜线']}},
+  {tag:'追及',name:'追及相遇问题',body:'<strong>追及相遇</strong>问题常通过<strong>两物体的 v-t 图比较</strong>分析：当二者速度相等时距离极值；图线<strong>面积差</strong>即相对位移；当位移相等时相遇。',points:{title:'解题要点',items:['<strong>共速时刻</strong>：距离最大或最小','<strong>面积差</strong>：相对位移','<strong>面积相等</strong>：位移相同，即相遇','<strong>A匀速 vs B匀加速</strong>：B先慢后快']},
+  {tag:'例题',name:'典型例题',body:'【例】一物体 v-t 图：0-2s 匀加速到 4 m/s，2-4s 匀速，4-6s 匀减速到 0。求总位移。<strong>解：用面积法</strong>。三角形+矩形+三角形。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：分段识别运动类型','<strong>步骤2</strong>：计算各段面积（位移）','<strong>步骤3</strong>：S₁=½×2×4=4 m','<strong>步骤4</strong>：S=4+8+4=16 m']}},
+  {tag:'总结',name:'核心速记',body:'运动学图像<strong>三兄弟</strong>：x-t、v-t、a-t。<strong>斜率=变化率</strong>（x-t得v，v-t得a），<strong>面积=积分量</strong>（v-t得x，a-t得Δv）。掌握口诀即可秒判。',points:{title:'三句话总结',items:['<strong>看轴</strong>：认清横纵坐标物理量','<strong>看斜率</strong>：得高一阶变化率','<strong>看面积</strong>：得积分结果量','<strong>口诀</strong>：斜率得率，面积得量']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景：x-t 图实时绘制 =====
+function drawXTScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('x-t 图实时绘制 · 小车同步运动',W/2,30,'#fbbf24',16);
+  const ox=80,oy=H-80,w=W-160,h=H-160;
+  drawAxes(ox,oy,w,h,'t / s','x / m');
+  for(let i=1;i<=5;i++){const x=ox+i*w/5;ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,oy-h);ctx.lineTo(x,oy);ctx.stroke();drawText(i,x,oy+14,'#5a6a8a',10);}
+  for(let i=1;i<=4;i++){const y=oy-i*h/4;ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+w,y);ctx.stroke();drawText(i,ox-12,y,'#5a6a8a',10,'right');}
+  // 抛物线 x = 0.2 t^2 (匀加速)
+  const prog=(time%5);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let tt=0;tt<=prog;tt+=0.05){
+    const x=ox+tt/5*w;const y=oy-(0.2*tt*tt)/4*h;
+    if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 当前点
+  const cx=ox+prog/5*w,cy=oy-(0.2*prog*prog)/4*h;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,7,0,7);ctx.fill();ctx.shadowBlur=0;
+  // 小车（按位移运动）
+  const carX=120+prog/5*(W-240);
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fde68a';ctx.lineWidth=2;
+  roundRect(carX-22,H/2-12,44,20,4);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.arc(carX-12,H/2+10,5,0,7);ctx.arc(carX+12,H/2+10,5,0,7);ctx.fill();
+  drawText('小车',carX,H/2-22,'#fbbf24',11);
+  drawText('x = ½ a t²  斜率=速度 v',W/2,55,'#9ab0d0',12);
+  drawText('t='+prog.toFixed(1)+'s  x='+(0.2*prog*prog).toFixed(2)+'m',W/2,H-25,'#34d399',13);
+}
+
+// ===== 场景：x-t 图类型 =====
+function drawXTTypesScene(){
+  const W=cv.width,H=cv.height;
+  drawText('x-t 图四种类型',W/2,30,'#fbbf24',16);
+  const types=[
+    {n:'静止',col:'#34d399',f:tt=>0},
+    {n:'匀速 x=vt',col:'#06b6d4',f:tt=>0.6*tt},
+    {n:'匀加速 x=½at²',col:'#fbbf24',f:tt=>0.25*tt*tt},
+    {n:'匀减速',col:'#f87171',f:tt=>1.2*tt-0.2*tt*tt},
+  ];
+  const cw=(W-120)/2,ch=(H-90)/2;
+  types.forEach((tp,i)=>{
+    const bx=60+(i%2)*cw,by=60+Math.floor(i/2)*ch;
+    const ox=bx+45,oy=by+ch-40,w=cw-80,h=ch-70;
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.2;
+    drawArrow(ox,oy,ox+w,oy,'#5a6a8a',1.5);drawArrow(ox,oy,ox,oy-h,'#5a6a8a',1.5);
+    drawText(tp.n,bx+cw/2,by+18,tp.col,13);
+    ctx.strokeStyle=tp.col;ctx.lineWidth=2.5;ctx.shadowColor=tp.col;ctx.shadowBlur=8;
+    ctx.beginPath();
+    for(let tt=0;tt<=4;tt+=0.05){
+      const v=tp.f(tt);if(v<0||v>4)continue;
+      const x=ox+tt/4*w,y=oy-v/4*h;
+      if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+  });
+}
+
+// ===== 场景：v-t 图实时绘制 =====
+function drawVTScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('v-t 图实时绘制 · 面积=位移',W/2,30,'#fbbf24',16);
+  const ox=80,oy=H-80,w=W-160,h=H-160;
+  drawAxes(ox,oy,w,h,'t / s','v / (m/s)');
+  for(let i=1;i<=5;i++){const x=ox+i*w/5;ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,oy-h);ctx.lineTo(x,oy);ctx.stroke();drawText(i,x,oy+14,'#5a6a8a',10);}
+  for(let i=1;i<=4;i++){const y=oy-i*h/4;ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+w,y);ctx.stroke();drawText(i,ox-12,y,'#5a6a8a',10,'right');}
+  const prog=(time%5);
+  // v = 0.8 t (匀加速)
+  ctx.fillStyle='rgba(251,191,36,0.18)';
+  ctx.beginPath();ctx.moveTo(ox,oy);
+  for(let tt=0;tt<=prog;tt+=0.05){const x=ox+tt/5*w;const y=oy-(0.8*tt)/4*h;ctx.lineTo(x,y);}
+  ctx.lineTo(ox+prog/5*w,oy);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let tt=0;tt<=prog;tt+=0.05){const x=ox+tt/5*w;const y=oy-(0.8*tt)/4*h;if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+  ctx.stroke();ctx.shadowBlur=0;
+  const cx=ox+prog/5*w,cy=oy-(0.8*prog)/4*h;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,7,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('v=at 斜率=a 面积=位移',W/2,55,'#9ab0d0',12);
+  const area=0.5*0.8*prog*prog;
+  drawText('t='+prog.toFixed(1)+'s  v='+(0.8*prog).toFixed(2)+'m/s  位移='+area.toFixed(2)+'m',W/2,H-25,'#34d399',13);
+}
+
+// ===== 场景：v-t 图类型 =====
+function drawVTTypesScene(){
+  const W=cv.width,H=cv.height;
+  drawText('v-t 图四种类型',W/2,30,'#fbbf24',16);
+  const types=[
+    {n:'匀速 a=0',col:'#34d399',f:tt=>1.6},
+    {n:'匀加速 a>0',col:'#06b6d4',f:tt=>0.5*tt+0.5},
+    {n:'匀减速 a<0',col:'#fbbf24',f:tt=>2.5-0.5*tt},
+    {n:'变加速',col:'#f87171',f:tt=>0.4*tt*tt},
+  ];
+  const cw=(W-120)/2,ch=(H-90)/2;
+  types.forEach((tp,i)=>{
+    const bx=60+(i%2)*cw,by=60+Math.floor(i/2)*ch;
+    const ox=bx+45,oy=by+ch-40,w=cw-80,h=ch-70;
+    const midY=oy-h/2;
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.2;
+    drawArrow(ox,oy,ox+w,oy,'#5a6a8a',1.5);drawArrow(ox,midY,ox,oy-h,'#5a6a8a',1.5);
+    drawText(tp.n,bx+cw/2,by+18,tp.col,13);
+    ctx.strokeStyle=tp.col;ctx.lineWidth=2.5;ctx.shadowColor=tp.col;ctx.shadowBlur=8;
+    ctx.beginPath();
+    for(let tt=0;tt<=4;tt+=0.05){const v=tp.f(tt);if(v<0||v>4)continue;const x=ox+tt/4*w,y=oy-v/4*h;if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();ctx.shadowBlur=0;
+  });
+}
+
+// ===== 场景：a-t 图实时绘制 =====
+function drawATScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('a-t 图实时绘制 · 面积=速度变化量',W/2,30,'#fbbf24',16);
+  const ox=80,oy=H-80,w=W-160,h=H-160,midY=oy-h/2;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  drawArrow(ox,oy,ox+w,oy,'#5a6a8a',2);drawArrow(ox,midY,ox,oy-h,'#5a6a8a',2);
+  drawText('t / s',ox+w+5,oy,'#9ab0d0',12,'left');drawText('a / (m/s²)',ox-10,oy-h-5,'#9ab0d0',12,'right');
+  drawText('O',ox-8,oy+10,'#5a6a8a',11,'right');drawText('0',ox-10,midY,'#5a6a8a',10,'right');
+  for(let i=1;i<=5;i++){const x=ox+i*w/5;ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,oy-h);ctx.lineTo(x,oy);ctx.stroke();drawText(i,x,oy+14,'#5a6a8a',10);}
+  const prog=(time%5);
+  // a = 1.0 m/s² 恒定
+  ctx.fillStyle='rgba(251,191,36,0.18)';
+  ctx.beginPath();ctx.moveTo(ox,midY);
+  for(let tt=0;tt<=prog;tt+=0.05){const x=ox+tt/5*w;const y=midY-1.0/2*(h/2);ctx.lineTo(x,y);}
+  ctx.lineTo(ox+prog/5*w,midY);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let tt=0;tt<=prog;tt+=0.05){const x=ox+tt/5*w;const y=midY-1.0/2*(h/2);if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+  ctx.stroke();ctx.shadowBlur=0;
+  const cx=ox+prog/5*w,cy=midY-1.0/2*(h/2);
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,7,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('a 恒定=匀变速',W/2,55,'#9ab0d0',12);
+  drawText('t='+prog.toFixed(1)+'s  a=1.0 m/s²  Δv='+(1.0*prog).toFixed(2)+'m/s',W/2,H-25,'#34d399',13);
+}
+
+// ===== 场景：斜率=变化率演示 =====
+function drawSlopeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('斜率 = 变化率（Δy/Δx）几何演示',W/2,30,'#fbbf24',16);
+  const ox=90,oy=H-90,w=W-180,h=H-180;
+  drawAxes(ox,oy,w,h,'t','y');
+  // 曲线
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  for(let i=1;i<=4;i++){const x=ox+i*w/4;ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(x,oy-h);ctx.lineTo(x,oy);ctx.stroke();}
+  // x-t 抛物线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let tt=0;tt<=4;tt+=0.05){const x=ox+tt/4*w;const y=oy-(0.25*tt*tt)/4*h;if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+  ctx.stroke();ctx.shadowBlur=0;
+  // 切点（动画移动）
+  const tt=0.5+(time%3);
+  const px=ox+tt/4*w,py=oy-(0.25*tt*tt)/4*h;
+  // 切线斜率 v = d/dt(0.25t²) = 0.5t
+  const slope=0.5*tt*(h/4)/(w/4);
+  const dx=w*0.18,dy=slope*dx;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  drawArrow(px-dx,py+dy,px+dx,py-dy,'#fbbf24',3);
+  ctx.shadowBlur=0;
+  // Δx Δy 直角三角形
+  const t1=tt-0.5,t2=tt+0.5;
+  const x1=ox+t1/4*w,y1=oy-(0.25*t1*t1)/4*h;
+  const x2=ox+t2/4*w,y2=oy-(0.25*t2*t2)/4*h;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+  drawText('Δt',x1+(x2-x1)/2,y1+15,'#34d399',12);
+  drawText('Δx',x2+15,(y1+y2)/2,'#34d399',12);
+  // 当前点
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('切点 t='+tt.toFixed(2),px,py-20,'#f87171',12);
+  // 说明
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;
+  roundRect(W-260,70,220,90,8);ctx.fill();ctx.stroke();
+  drawText('斜率 = Δy/Δx',W-150,90,'#fbbf24',13,'left');
+  drawText('x-t: 斜率 = v',W-150,115,'#06b6d4',12,'left');
+  drawText('v-t: 斜率 = a',W-150,140,'#34d399',12,'left');
+  drawText('此处 v = 0.5t = '+(0.5*tt).toFixed(2),W-150,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：面积=位移填充 =====
+function drawAreaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('v-t 图面积 = 位移',W/2,30,'#fbbf24',16);
+  const ox=80,oy=H-80,w=W-160,h=H-160;
+  drawAxes(ox,oy,w,h,'t / s','v / (m/s)');
+  for(let i=1;i<=5;i++){const x=ox+i*w/5;ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,oy-h);ctx.lineTo(x,oy);ctx.stroke();drawText(i,x,oy+14,'#5a6a8a',10);}
+  for(let i=1;i<=4;i++){const y=oy-i*h/4;ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+w,y);ctx.stroke();drawText(i,ox-12,y,'#5a6a8a',10,'right');}
+  const prog=(time%5);
+  // 填充矩形面积
+  const v=2.0;
+  ctx.fillStyle='rgba(251,191,36,0.28)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  ctx.fillRect(ox,oy-v/4*h,prog/5*w,v/4*h);ctx.strokeRect(ox,oy-v/4*h,prog/5*w,v/4*h);
+  // 顶线
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(ox,oy-v/4*h);ctx.lineTo(ox+prog/5*w,oy-v/4*h);ctx.stroke();ctx.shadowBlur=0;
+  // 标注
+  drawText('宽 Δt = '+(prog).toFixed(1)+'s',ox+prog/5*w/2,oy-v/4*h-15,'#06b6d4',12);
+  drawText('高 v = 2.0 m/s',ox+prog/5*w+8,oy-v/4*h/2,'#fbbf24',12,'left');
+  drawText('面积 S = v × t = 位移 x',W/2,55,'#9ab0d0',13);
+  drawText('位移 = 2.0 × '+prog.toFixed(1)+' = '+(2.0*prog).toFixed(2)+' m',W/2,H-25,'#34d399',14);
+}
+
+// ===== 场景：四种运动对比 =====
+function drawCompareScene(){
+  const W=cv.width,H=cv.height;
+  drawText('四种基本运动 · x-t 与 v-t 对比',W/2,30,'#fbbf24',16);
+  const cases=[
+    {n:'静止',col:'#34d399',xf:tt=>0,vf:tt=>0},
+    {n:'匀速',col:'#06b6d4',xf:tt=>0.7*tt,vf:tt=>1.4},
+    {n:'匀加速',col:'#fbbf24',xf:tt=>0.25*tt*tt,vf:tt=>0.7*tt},
+    {n:'匀减速',col:'#f87171',xf:tt=>2*tt-0.3*tt*tt,vf:tt=>2-0.6*tt},
+  ];
+  const colW=(W-120)/4;
+  cases.forEach((c,i)=>{
+    const bx=60+i*colW;
+    // 上：x-t
+    const ox1=bx+30,oy1=180,w1=colW-60,h1=120;
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.2;
+    drawArrow(ox1,oy1,ox1+w1,oy1,'#5a6a8a',1.5);drawArrow(ox1,oy1,ox1,oy1-h1,'#5a6a8a',1.5);
+    drawText('x-t',bx+colW/2,130,c.col,12);
+    ctx.strokeStyle=c.col;ctx.lineWidth=2.5;ctx.shadowColor=c.col;ctx.shadowBlur=6;
+    ctx.beginPath();
+    for(let tt=0;tt<=4;tt+=0.05){const v=c.xf(tt);if(v<0||v>4)continue;const x=ox1+tt/4*w1,y=oy1-v/4*h1;if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();ctx.shadowBlur=0;
+    // 下：v-t
+    const ox2=bx+30,oy2=H-60,w2=colW-60,h2=120;
+    const midY=oy2-h2/2;
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.2;
+    drawArrow(ox2,oy2,ox2+w2,oy2,'#5a6a8a',1.5);drawArrow(ox2,midY,ox2,oy2-h2,'#5a6a8a',1.5);
+    drawText('v-t',bx+colW/2,oy2-h2-15,c.col,12);
+    ctx.strokeStyle=c.col;ctx.lineWidth=2.5;ctx.shadowColor=c.col;ctx.shadowBlur=6;
+    ctx.beginPath();
+    for(let tt=0;tt<=4;tt+=0.05){const v=c.vf(tt);if(v<0||v>4)continue;const x=ox2+tt/4*w2,y=oy2-v/4*h2;if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+    ctx.stroke();ctx.shadowBlur=0;
+    drawText(c.n,bx+colW/2,75,c.col,14);
+  });
+}
+
+// ===== 场景：追及相遇 =====
+function drawPursuitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('追及相遇 · A匀速 vs B匀加速',W/2,30,'#fbbf24',16);
+  const ox=80,oy=H-100,w=W-160,h=H-200;
+  drawAxes(ox,oy,w,h,'t / s','v / (m/s)');
+  for(let i=1;i<=5;i++){const x=ox+i*w/5;ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,oy-h);ctx.lineTo(x,oy);ctx.stroke();drawText(i,x,oy+14,'#5a6a8a',10);}
+  for(let i=1;i<=4;i++){const y=oy-i*h/4;ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+w,y);ctx.stroke();drawText(i,ox-12,y,'#5a6a8a',10,'right');}
+  // A 匀速 v=2
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(ox,oy-2/4*h);ctx.lineTo(ox+w,oy-2/4*h);ctx.stroke();
+  // B 匀加速 v=0.8t
+  ctx.strokeStyle='#fbbf24';ctx.shadowColor='#fbbf24';
+  ctx.beginPath();
+  for(let tt=0;tt<=5;tt+=0.05){const v=0.8*tt;if(v>4)break;const x=ox+tt/5*w,y=oy-v/4*h;if(tt===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+  ctx.stroke();ctx.shadowBlur=0;
+  drawText('A：v=2 m/s（匀速）',ox+w-100,oy-2/4*h-15,'#06b6d4',12);
+  drawText('B：v=0.8t（匀加速）',ox+w-100,oy-0.8*5/4*h+15,'#fbbf24',12);
+  // 交点 t=2.5s
+  const meet=2.5;
+  const mx=ox+meet/5*w,my=oy-2/4*h;
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(mx,my,7,0,7);ctx.fill();ctx.shadowBlur=0;
+  ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx,oy);ctx.stroke();ctx.setLineDash([]);
+  drawText('共速 t='+meet+'s 距离极值',mx,my-20,'#f87171',12);
+  // 面积差动画
+  const prog=(time%5);
+  ctx.fillStyle='rgba(6,182,212,0.18)';
+  ctx.beginPath();ctx.moveTo(ox,oy-2/4*h);ctx.lineTo(ox+prog/5*w,oy-2/4*h);ctx.lineTo(ox+prog/5*w,oy);ctx.lineTo(ox,oy);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(251,191,36,0.18)';
+  ctx.beginPath();ctx.moveTo(ox,oy);
+  for(let tt=0;tt<=prog;tt+=0.05){const v=0.8*tt;if(v>4)break;const x=ox+tt/5*w,y=oy-v/4*h;ctx.lineTo(x,y);}
+  ctx.lineTo(ox+prog/5*w,oy);ctx.closePath();ctx.fill();
+  const sA=2*prog,sB=0.4*prog*prog;
+  drawText('A位移=' +sA.toFixed(2)+'   B位移='+sB.toFixed(2)+'   面积差=相对位移',W/2,H-30,'#34d399',13);
+  drawText('共速时距离极值 · 面积相等时相遇',W/2,55,'#9ab0d0',12);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · v-t 图面积法求位移',W/2,30,'#fbbf24',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,60,W-160,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,82,'#a78bfa',13,'left');
+  drawText('物体 v-t 图：0-2s 匀加速至 4 m/s；2-4s 匀速；4-6s 匀减速至 0。求总位移。',120,108,'#fff',13,'left');
+  drawText('（初速度为 0，全部位于 t 轴上方）',120,130,'#9ab0d0',12,'left');
+  // v-t 简图
+  const ox=120,oy=H-90,w=W-240,h=200;
+  drawAxes(ox,oy,w,h,'t/s','v/(m/s)');
+  for(let i=1;i<=6;i++){const x=ox+i*w/6;ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,oy-h);ctx.lineTo(x,oy);ctx.stroke();drawText(i,x,oy+14,'#5a6a8a',10);}
+  for(let i=1;i<=4;i++){const y=oy-i*h/4;ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+w,y);ctx.stroke();drawText(i,ox-12,y,'#5a6a8a',10,'right');}
+  // 三段填充
+  ctx.fillStyle='rgba(251,191,36,0.25)';
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+2/6*w,oy-h);ctx.lineTo(ox+2/6*w,oy);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(6,182,212,0.25)';
+  ctx.fillRect(ox+2/6*w,oy-h,2/6*w,h);
+  ctx.fillStyle='rgba(52,211,153,0.25)';
+  ctx.beginPath();ctx.moveTo(ox+4/6*w,oy-h);ctx.lineTo(ox+6/6*w,oy);ctx.lineTo(ox+4/6*w,oy);ctx.closePath();ctx.fill();
+  // 顶线
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;ctx.shadowColor='#fbbf24';ctx.shadowBlur=6;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+2/6*w,oy-h);ctx.lineTo(ox+4/6*w,oy-h);ctx.lineTo(ox+6/6*w,oy);ctx.stroke();ctx.shadowBlur=0;
+  // 三段计算
+  drawText('S₁=½×2×4=4 m',ox+1/6*w,oy+30,'#fbbf24',12);
+  drawText('S₂=2×4=8 m',ox+3/6*w,oy+30,'#06b6d4',12);
+  drawText('S₃=½×2×4=4 m',ox+5/6*w,oy+30,'#34d399',12);
+  drawText('总位移 S = S₁+S₂+S₃ = 4+8+4 = 16 m',W/2,H-15,'#34d399',15);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('运动学图像核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'x-t 图',d:'斜率=速度 v',c:'#fbbf24'},
+    {t:'v-t 图',d:'斜率=a，面积=x',c:'#06b6d4'},
+    {t:'a-t 图',d:'面积=Δv',c:'#a78bfa'},
+    {t:'斜率口诀',d:'斜率=变化率',c:'#34d399'},
+    {t:'面积口诀',d:'面积=积分量',c:'#fb923c'},
+    {t:'看图四步',d:'轴·线·斜率·面积',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+95,'#fff',13);
+  });
+  drawText('口诀：斜率得率，面积得量',W/2,H-30,'#fbbf24',14);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawXTScene(t);
+  else if(stepIdx===1)drawXTTypesScene();
+  else if(stepIdx===2)drawVTScene(t);
+  else if(stepIdx===3)drawVTTypesScene();
+  else if(stepIdx===4)drawATScene(t);
+  else if(stepIdx===5)drawSlopeScene(t);
+  else if(stepIdx===6)drawAreaScene(t);
+  else if(stepIdx===7)drawCompareScene();
+  else if(stepIdx===8)drawPursuitScene(t);
+  else if(stepIdx===9)drawCalcScene();
+  else if(stepIdx===10)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

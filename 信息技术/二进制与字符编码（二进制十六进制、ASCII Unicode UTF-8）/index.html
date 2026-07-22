@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>二进制与字符编码 · 二进制十六进制 · ASCII Unicode UTF-8</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(251,191,36,.06)}
+.back:hover{background:rgba(251,191,36,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a5f3fc;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">二进制与字符编码</span><span class="subtitle">二进制十六进制 · ASCII Unicode UTF-8</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>二进制</h4><div class="v">只有 0 和 1<br>逢二进一，计算机基础</div></div>
+  <div class="card s2"><div class="num">2</div><h4>十六进制</h4><div class="v">0-9, A-F<br>4 位二进制压缩表示</div></div>
+  <div class="card s3"><div class="num">3</div><h4>ASCII</h4><div class="v">7 位 · 128 字符<br>英文+数字+符号</div></div>
+  <div class="card s4"><div class="num">4</div><h4>Unicode+UTF-8</h4><div class="v">统一码 · 覆盖所有语言<br>变长 1-4 字节编码</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">二进制</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'计算机为何用二进制',body:'计算机由<strong>亿万个电子开关（晶体管）</strong>组成，每个开关只有<strong>两种状态</strong>：<strong>通电（1）</strong>和<strong>断电（0）</strong>。用二进制可以<strong>稳定可靠</strong>地表示和处理信息，抗干扰能力强。',points:{title:'核心要点',items:['<strong>电路状态</strong>：通 = 1，断 = 0','<strong>晶体管</strong>：每个开关两种状态','<strong>抗干扰</strong>：高低电平差异大','<strong>逻辑运算</strong>：与或非天然契合']}},
+  {tag:'基础',name:'二进制表示',body:'二进制只有两个数字 <code>0</code> 和 <code>1</code>，遵循<strong>逢二进一</strong>规则：0→1→10→11→100→101→110→111→1000。每一位称为一个 <strong>比特（bit）</strong>，8 位为一<strong>字节（Byte）</strong>。',points:{title:'二进制规则',items:['<strong>数字</strong>：仅 0、1','<strong>逢二进一</strong>：1+1=10','<strong>比特 bit</strong>：最小单位','<strong>1 Byte = 8 bit</strong>']}},
+  {tag:'转换',name:'二进制转十进制',body:'二进制转十进制：<strong>按权展开</strong>。每一位的<strong>权值</strong>从右到左是 2^0, 2^1, 2^2, ...。例：<code>1011₂ = 1×8 + 0×4 + 1×2 + 1×1 = 11₁₀</code>。',points:{title:'按权展开法',items:['<strong>权值</strong>：… 8 4 2 1（2 的幂）','<strong>每位 × 权</strong>：bit × 2^n','<strong>1011₂</strong>：8+0+2+1 = 11','<strong>11111111₂</strong>：255（8 位最大值）']}},
+  {tag:'转换',name:'二进制与十六进制',body:'十六进制用 <code>0-9, A-F</code> 表示 0-15。<strong>每 4 位二进制正好等于 1 位十六进制</strong>（2^4=16）。例：<code>1010 1111₂ = AF₁₆</code>。常用于颜色、内存地址简写。',points:{title:'对照关系',items:['<strong>0000~1001</strong>：0~9','<strong>1010~1111</strong>：A~F','<strong>1F₁₆</strong>：0001 1111 = 31','<strong>颜色 #FF0000</strong>：红绿蓝十六进制']}},
+  {tag:'转换',name:'八进制简介',body:'八进制用 <code>0-7</code>，<strong>每 3 位二进制 = 1 位八进制</strong>（2^3=8）。早期用于<strong>权限表示</strong>（如 Linux 文件权限 <code>chmod 755</code>）。',points:{title:'八进制要点',items:['<strong>0-7</strong>：8 个数字','<strong>3 位一组</strong>：111 = 7','<strong>chmod 755</strong>：rwx r-x r-x','<strong>应用减少</strong>：现多用十六进制']}},
+  {tag:'编码',name:'字符编码历史',body:'字符编码的发展：<strong>ASCII（1963）</strong>只能表示英文 → <strong>GB2312 / BIG5</strong> 等地区编码兼容中文 → 各国编码不互通 → <strong>Unicode（1991）</strong>统一所有语言 → <strong>UTF-8</strong>变长存储方案成为互联网主流。',points:{title:'编码发展史',items:['<strong>ASCII</strong>：7 位 128 字符','<strong>GB2312</strong>：1980 国标中文编码','<strong>Unicode</strong>：1991 统一所有文字','<strong>UTF-8</strong>：1992 变长存储方案']}},
+  {tag:'编码',name:'ASCII 编码',body:'ASCII（美国信息交换标准代码）：<strong>7 位编码 128 个字符</strong>。前 32 个（0-31）是<strong>控制符</strong>（回车、换行等），后 96 个（32-127）是<strong>可打印字符</strong>。关键码值：<code>A=65, a=97, 0=48</code>。',points:{title:'ASCII 码表',items:['<strong>0-31</strong>：控制符（不可打印）','<strong>32</strong>：空格','<strong>48-57</strong>：数字 0-9','<strong>65-90</strong>：A-Z；<strong>97-122</strong>：a-z']}},
+  {tag:'编码',name:'Unicode 统一码',body:'Unicode 为<strong>世界上所有文字</strong>分配唯一编号，范围 <code>U+0000 ~ U+10FFFF</code>（共 110 多万码位）。涵盖中文、日文、韩文、emoji、数学符号等。码点用 <code>U+</code> 加十六进制表示。',points:{title:'Unicode 范围',items:['<strong>U+0000 ~ U+007F</strong>：ASCII（兼容）','<strong>U+4E00 ~ U+9FFF</strong>：CJK 中日韩汉字','<strong>U+0001F300+</strong>：emoji 表情','<strong>码点</strong>：U+4E2D = "中"']}},
+  {tag:'编码',name:'UTF-8 变长编码',body:'UTF-8 是 Unicode 的<strong>变长存储方案</strong>，用 1-4 字节表示一个字符：<strong>英文 1 字节</strong>（兼容 ASCII）、<strong>拉丁/希腊文 2 字节</strong>、<strong>中文 3 字节</strong>、emoji 4 字节。例："中" 的 UTF-8 = <code>E4 B8 AD</code>（3 字节）。',points:{title:'UTF-8 字节数',items:['<strong>1 字节</strong>：ASCII（0-127）','<strong>2 字节</strong>：拉丁、希腊文','<strong>3 字节</strong>：中日韩汉字','<strong>4 字节</strong>：emoji、古符号']}},
+  {tag:'总结',name:'典型例题与总结',body:'例题："中" 字的 Unicode 码点是 <code>U+4E2D</code>，UTF-8 编码为 <code>E4 B8 AD</code>。计算过程：将 0x4E2D 转为二进制 <code>0100 1110 0010 1101</code>，按 UTF-8 三字节模板 <code>1110xxxx 10xxxxxx 10xxxxxx</code> 填入，得 <code>11100100 10111000 10101101</code> = E4 B8 AD。',points:{title:'三句话总结',items:['<strong>二进制</strong>：计算机唯一能识别的语言','<strong>ASCII</strong>：英文基础，128 字符','<strong>Unicode</strong>：统一所有语言的码点','<strong>UTF-8</strong>：变长存储，互联网标准']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：8 位灯泡表示二进制 =====
+function drawBinaryScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('8 位二进制 · 灯泡亮灭表示',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2-10;
+  // 动态变化的 8 位二进制（从 0 到 255 循环）
+  const val=Math.floor((Math.sin(time*0.5)*0.5+0.5)*255);
+  const bits=[];
+  for(let i=7;i>=0;i--)bits.push((val>>i)&1);
+  // 绘制 8 个灯泡
+  const bulbR=24,gap=70,startX=cx-3.5*gap;
+  for(let i=0;i<8;i++){
+    const x=startX+i*gap;
+    const on=bits[i]===1;
+    // 灯泡底座
+    ctx.fillStyle='#4a5568';ctx.strokeStyle='#2d3748';ctx.lineWidth=2;
+    roundRect(x-12,cy+bulbR,24,12,3);ctx.fill();ctx.stroke();
+    // 灯泡（圆）
+    if(on){
+      ctx.shadowColor='#fbbf24';ctx.shadowBlur=25;
+      ctx.fillStyle='#fde68a';
+    }else{
+      ctx.shadowBlur=0;
+      ctx.fillStyle='#2d3748';
+    }
+    ctx.beginPath();ctx.arc(x,cy,bulbR,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    ctx.strokeStyle=on?'#fbbf24':'#1a202c';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(x,cy,bulbR,0,7);ctx.stroke();
+    // 灯丝（亮时显示）
+    if(on){
+      ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(x-6,cy-3);ctx.bezierCurveTo(x-2,cy+4,x+2,cy-4,x+6,cy+3);ctx.stroke();
+    }
+    // bit 值
+    drawText(bits[i],x,cy+bulbR+38,on?'#fbbf24':'#9ab0d0',16);
+    // 权值
+    drawText('2^'+(7-i)+'='+String(Math.pow(2,7-i)),x,cy-bulbR-22,'#5a6a8a',10);
+  }
+  // 二进制字符串
+  const binStr=bits.join('');
+  drawText('二进制：'+binStr.slice(0,4)+' '+binStr.slice(4)+'₂',W/2,H-95,'#06b6d4',15);
+  drawText('十进制：'+val+'₁₀',W/2,H-70,'#34d399',15);
+  drawText('十六进制：0x'+val.toString(16).toUpperCase().padStart(2,'0'),W/2,H-45,'#fbbf24',15);
+  drawText('亮 = 1（通电），灭 = 0（断电）',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景：二进制转十进制按权展开 =====
+function drawConvertScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('二进制转十进制 · 按权展开',W/2,30,'#06b6d4',16);
+  const cx=W/2;
+  const bin='1011';
+  const weights=[8,4,2,1];
+  const vals=[1,0,1,1];
+  const stepPhase=Math.floor((time*0.8)%4);
+  // 二进制各位
+  const gap=110,startX=cx-1.5*gap,y0=120;
+  let sum=0,sumParts=[];
+  for(let i=0;i<4;i++){
+    const x=startX+i*gap;
+    const active=i<=stepPhase;
+    // 二进制位框
+    ctx.fillStyle=active?'rgba(6,182,212,0.2)':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?'#06b6d4':'#3a4a6a';ctx.lineWidth=2;
+    roundRect(x-40,y0-25,80,50,8);ctx.fill();ctx.stroke();
+    drawText(vals[i],x,y0,active?'#06b6d4':'#5a6a8a',28);
+    // 权值
+    drawText('× '+weights[i],x,y0+55,'#fbbf24',15);
+    // 乘号箭头
+    if(active){
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+      ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(x,y0+32);ctx.lineTo(x,y0+90);ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    // 乘积
+    if(active){
+      const prod=vals[i]*weights[i];
+      sumParts.push(prod);
+      ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';
+      roundRect(x-40,y0+95,80,36,6);ctx.fill();ctx.stroke();
+      drawText((vals[i]?'':'0')+prod,x,y0+113,'#34d399',16);
+      sum+=prod;
+    }
+  }
+  // 求和公式
+  const formulaY=y0+175;
+  drawText('= '+sumParts.map((p,i)=>(vals[i]?String(weights[i]):'0')).join(' + '),cx,formulaY,'#9ab0d0',14);
+  // 结果
+  ctx.font='bold 26px sans-serif';ctx.fillStyle='#fbbf24';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  drawText('1011₂ = '+sum+'₁₀',cx,formulaY+50,'#fbbf24',24);
+  ctx.shadowBlur=0;
+  drawText('每位 bit × 权值（2 的幂）后求和',cx,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：二进制转十六进制 =====
+function drawHexScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('二进制转十六进制 · 4 位一组',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2-20;
+  // 二进制 1010 1111
+  const groups=[['1','0','1','0'],['1','1','1','1']];
+  const hexVals=['A','F'];
+  const gap=40,groupGap=160;
+  for(let g=0;g<2;g++){
+    const gx=cx-groupGap+g*2*groupGap;
+    // 组背景
+    ctx.fillStyle='rgba(6,182,212,0.08)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    roundRect(gx-80,cy-60,160,120,8);ctx.fill();ctx.stroke();
+    // 4 个二进制位
+    for(let i=0;i<4;i++){
+      const x=gx-60+i*gap;
+      ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#3a4a6a';
+      roundRect(x-15,cy-30,30,30,4);ctx.fill();ctx.stroke();
+      drawText(groups[g][i],x,cy-15,'#67e8f9',16);
+      drawText('2^'+(3-i),x,cy+10,'#5a6a8a',9);
+      drawText(String(Math.pow(2,3-i)),x,cy+24,'#5a6a8a',9);
+    }
+    // 等号 + 十六进制结果
+    drawText('=',gx,cy+70,'#fbbf24',22);
+    ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+    roundRect(gx-25,cy+85,50,46,8);ctx.fill();ctx.stroke();
+    drawText(hexVals[g],gx,cy+108,'#fbbf24',28);
+  }
+  // 合并结果
+  drawText('1010 1111₂ = AF₁₆ = 175₁₀',cx,H-65,'#34d399',18);
+  drawText('4 位二进制（0-15）正好对应 1 位十六进制（0-F）',cx,H-40,'#9ab0d0',12);
+  drawText('十六进制用于：颜色、内存地址、文件哈希',cx,H-20,'#5a6a8a',11);
+}
+
+// ===== 场景：ASCII 码表 =====
+function drawASCIIScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('ASCII 码表 · 128 个字符',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2-10;
+  // 分区：控制符 / 数字 / 大写 / 小写 / 符号
+  const regions=[
+    {name:'控制符',range:'0-31',color:'#f87171',desc:'回车、换行等'},
+    {name:'符号',range:'32-47',color:'#9ab0d0',desc:'空格、标点'},
+    {name:'数字',range:'48-57',color:'#34d399',desc:'0-9'},
+    {name:'符号',range:'58-64',color:'#9ab0d0',desc:':;<=>?@'},
+    {name:'大写',range:'65-90',color:'#06b6d4',desc:'A-Z'},
+    {name:'符号',range:'91-96',color:'#9ab0d0',desc:'[\\]^_`'},
+    {name:'小写',range:'97-122',color:'#fbbf24',desc:'a-z'},
+    {name:'符号',range:'123-127',color:'#9ab0d0',desc:'{|}~'},
+  ];
+  const totalW=W-160,segW=totalW/regions.length;
+  // 顶部色条
+  regions.forEach((r,i)=>{
+    const x=80+i*segW;
+    ctx.fillStyle=r.color+'44';ctx.strokeStyle=r.color;ctx.lineWidth=2;
+    roundRect(x+5,cy-40,segW-10,40,4);ctx.fill();ctx.stroke();
+    drawText(r.name,x+segW/2,cy-28,r.color,11);
+    drawText(r.range,x+segW/2,cy-12,r.color,10);
+  });
+  // 关键码值动画高亮
+  const highlight=Math.floor((time*0.6)%3);
+  const keys=[
+    {code:65,char:'A',label:'65 = A',color:'#06b6d4'},
+    {code:97,char:'a',label:'97 = a',color:'#fbbf24'},
+    {code:48,char:'0',label:'48 = 0',color:'#34d399'},
+  ];
+  // 关键码值卡片
+  const ky=cy+40;
+  keys.forEach((k,i)=>{
+    const kx=cx+(i-1)*180;
+    const active=i===highlight;
+    ctx.fillStyle=active?k.color+'33':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?k.color:'#3a4a6a';ctx.lineWidth=active?3:1.5;
+    roundRect(kx-75,ky-40,150,90,8);ctx.fill();ctx.stroke();
+    if(active){ctx.shadowColor=k.color;ctx.shadowBlur=15;}
+    drawText("'"+k.char+"'",kx-35,ky+5,k.color,active?36:28);
+    ctx.shadowBlur=0;
+    drawText('= '+k.code,kx+25,ky-5,'#fff',active?18:14);
+    drawText('十进制',kx+25,ky+18,'#9ab0d0',10);
+  });
+  // 说明
+  drawText('ASCII = American Standard Code for Information Interchange',cx,H-55,'#9ab0d0',12);
+  drawText('7 位编码 → 2^7 = 128 个字符（含 33 个控制符 + 95 个可打印）',cx,H-32,'#67e8f9',12);
+  drawText('大写 A=65，小写 a=97，两者相差 32（第 6 位不同）',cx,H-12,'#fbbf24',11);
+}
+
+// ===== 场景：Unicode 范围 =====
+function drawUnicodeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('Unicode · 统一所有语言的编码',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2-20;
+  // 主范围条 U+0000 ~ U+10FFFF
+  const barX=80,barW=W-160,barY=cy-10,barH=50;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  roundRect(barX,barY,barW,barH,6);ctx.fill();ctx.stroke();
+  drawText('U+0000',barX,barY-15,'#9ab0d0',11,'left');
+  drawText('U+10FFFF',barX+barW,barY-15,'#9ab0d0',11,'right');
+  drawText('共 1,114,112 个码位（110+ 万）',cx,barY+barH/2,'#67e8f9',13);
+  // 各区间
+  const ranges=[
+    {start:0,end:0x007F,name:'ASCII',color:'#06b6d4',sample:'A B 1'},
+    {start:0x4E00,end:0x9FFF,name:'CJK 汉字',color:'#fbbf24',sample:'中 文 字'},
+    {start:0x3040,end:0x30FF,name:'日文假名',color:'#34d399',sample:'あ ア'},
+    {start:0xAC00,end:0xD7AF,name:'韩文',color:'#a78bfa',sample:'한 글'},
+    {start:0x1F300,end:0x1FAFF,name:'emoji',color:'#ec4899',sample:'☀ ★ ♡'},
+  ];
+  const ry=barY+barH+30;
+  ranges.forEach((r,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const rx=barX+col*(barW/3);
+    const y=ry+row*80;
+    ctx.fillStyle=r.color+'22';ctx.strokeStyle=r.color;ctx.lineWidth=2;
+    roundRect(rx+10,y,barW/3-20,65,6);ctx.fill();ctx.stroke();
+    drawText(r.name,rx+barW/6,y+15,r.color,13);
+    drawText('U+'+r.start.toString(16).toUpperCase().padStart(4,'0'),rx+barW/6,y+33,'#9ab0d0',10);
+    drawText(r.sample,rx+barW/6,y+52,'#fff',12);
+  });
+  // "中" 字示例（动画高亮）
+  const pulse=0.5+0.5*Math.sin(time*3);
+  ctx.fillStyle='rgba(251,191,36,'+(0.3+pulse*0.4)+')';
+  ctx.font='bold 40px serif';ctx.textAlign='center';
+  drawText('中',cx,cy-70,'#fbbf24',40);
+  ctx.font='12px sans-serif';
+  drawText('U+4E2D（CJK 汉字区）',cx,cy-45,'#fbbf24',12);
+  drawText('每个字符在 Unicode 中有唯一码点',cx,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：UTF-8 变长编码 =====
+function drawUTF8Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('UTF-8 · 变长编码（1-4 字节）',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2-30;
+  // 四种字节长度示例
+  const examples=[
+    {bytes:1,content:['0xxxxxxx'],char:'A',hex:'41',type:'英文',color:'#34d399'},
+    {bytes:2,content:['110xxxxx','10xxxxxx'],char:'é',hex:'C3 A9',type:'拉丁',color:'#06b6d4'},
+    {bytes:3,content:['1110xxxx','10xxxxxx','10xxxxxx'],char:'中',hex:'E4 B8 AD',type:'中文',color:'#fbbf24'},
+    {bytes:4,content:['11110xxx','10xxxxxx','10xxxxxx','10xxxxxx'],char:'★',hex:'E2 98 85',type:'符号',color:'#ec4899'},
+  ];
+  const startY=cy-30;
+  examples.forEach((e,i)=>{
+    const y=startY+i*55;
+    // 类型 + 字符
+    drawText(e.type,cx-W/2+50,y,e.color,12,'left');
+    ctx.font='bold 22px serif';
+    drawText(e.char,cx-W/2+110,y,'#fff',22);
+    ctx.font='12px sans-serif';
+    drawText(e.bytes+' 字节',cx-W/2+160,y,e.color,12,'left');
+    // 字节模板
+    const bStart=cx-W/2+230;
+    e.content.forEach((b,j)=>{
+      const bx=bStart+j*110;
+      ctx.fillStyle=e.color+'22';ctx.strokeStyle=e.color;ctx.lineWidth=1.5;
+      roundRect(bx,y-16,100,32,4);ctx.fill();ctx.stroke();
+      drawText(b,bx+50,y,e.color,11);
+    });
+    // 十六进制结果
+    drawText('= '+e.hex,bStart+e.content.length*110+10,y,'#34d399',12,'left');
+  });
+  // 高亮当前示例（动画）
+  const phase=Math.floor((time*0.5)%4);
+  const hy=startY+phase*55;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=20;
+  roundRect(cx-W/2+20,hy-25,W-40,50,8);ctx.stroke();
+  ctx.shadowBlur=0;
+  // 说明
+  drawText('UTF-8 完全兼容 ASCII（英文 1 字节，节省空间）',cx,H-55,'#67e8f9',12);
+  drawText('前缀位标识字节数：0=单字节，110=2字节，1110=3字节，11110=4字节',cx,H-35,'#9ab0d0',11);
+  drawText('后续字节都以 10 开头（10xxxxxx）作为续字节',cx,H-18,'#5a6a8a',11);
+}
+
+// ===== 场景：典型例题计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('例题 · "中" 字 UTF-8 编码计算',W/2,30,'#06b6d4',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,55,8);ctx.fill();ctx.stroke();
+  drawText('【例题】求汉字"中"的 UTF-8 编码字节序列',W/2,75,'#06b6d4',13);
+  drawText('已知："中"的 Unicode 码点为 U+4E2D',W/2,98,'#fff',12);
+  // 计算步骤
+  const steps=[
+    {t:'① 查码点',d:'"中" = U+4E2D',c:'#06b6d4'},
+    {t:'② 转二进制',d:'0x4E2D = 0100 1110 0010 1101（16 位）',c:'#a78bfa'},
+    {t:'③ 判断范围',d:'0x0800 ~ 0xFFFF → 需 3 字节 UTF-8',c:'#fbbf24'},
+    {t:'④ 套模板',d:'1110xxxx 10xxxxxx 10xxxxxx',c:'#67e8f9'},
+    {t:'⑤ 填入位',d:'11100100 10111000 10101101',c:'#34d399'},
+    {t:'⑥ 得结果',d:'E4 B8 AD（3 字节）',c:'#ec4899'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=140+i*48;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,40,6);ctx.fill();ctx.stroke();
+    drawText(s.t,110,y+20,s.c,12,'left');
+    drawText(s.d,260,y+20,'#fff',12,'left');
+  });
+  drawText('"中"的 UTF-8 编码 = E4 B8 AD（占用 3 字节存储空间）',W/2,H-25,'#fbbf24',13);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('二进制与字符编码 · 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'二进制',d:'0/1 · 计算机基础',c:'#06b6d4'},
+    {t:'十六进制',d:'0-F · 4位压缩',c:'#fbbf24'},
+    {t:'十进制转换',d:'按权展开求和',c:'#34d399'},
+    {t:'ASCII',d:'7位 · 128字符',c:'#67e8f9'},
+    {t:'Unicode',d:'统一所有语言码点',c:'#a78bfa'},
+    {t:'UTF-8',d:'变长 1-4 字节存储',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,16);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+  drawText('信息 → 二进制 → 字符编码 → 存储/传输',W/2,H-30,'#fbbf24',14);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawBinaryScene(t);
+  else if(stepIdx===1)drawBinaryScene(t);
+  else if(stepIdx===2)drawConvertScene(t);
+  else if(stepIdx===3)drawHexScene(t);
+  else if(stepIdx===4)drawHexScene(t);
+  else if(stepIdx===5)drawASCIIScene(t);
+  else if(stepIdx===6)drawASCIIScene(t);
+  else if(stepIdx===7)drawUnicodeScene(t);
+  else if(stepIdx===8)drawUTF8Scene(t);
+  else if(stepIdx===9){
+    // 最后一步：例题与总结交替展示（每 4 秒切换）
+    if(Math.floor(t/4)%2===0)drawCalcScene();
+    else drawSummaryScene();
+  }
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

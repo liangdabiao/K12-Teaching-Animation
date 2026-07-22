@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>摩擦力 · 静摩擦 · 滑动摩擦 · f=μN · 最大静摩擦</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#f59e0b;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(245,158,11,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(245,158,11,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">摩擦力</span><span class="subtitle">静摩擦 · 滑动摩擦 · f=μN · 最大静摩擦</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>静摩擦力</h4><div class="v">与外力平衡<br>0 ≤ f ≤ fmax</div></div>
+  <div class="card s2"><div class="num">2</div><h4>滑动摩擦力</h4><div class="v">阻碍相对滑动<br>f = μN</div></div>
+  <div class="card s3"><div class="num">3</div><h4>公式 f=μN</h4><div class="v">μ 为动摩擦因数<br>N 为正压力</div></div>
+  <div class="card s4"><div class="num">4</div><h4>最大静摩擦</h4><div class="v">fmax = μ₀N<br>μ₀ 略大于 μ</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">摩擦力定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'摩擦力定义',body:'<strong>摩擦力</strong>是两个相互接触且发生形变的物体之间，由于<strong>接触面粗糙</strong>而产生的阻碍<strong>相对运动或相对运动趋势</strong>的力。方向始终<strong>与相对运动方向相反</strong>。',points:{title:'核心要点',items:['<strong>产生条件</strong>：接触面粗糙、有弹力、有相对运动或趋势','<strong>方向</strong>：与相对运动（趋势）相反','<strong>分类</strong>：静摩擦、滑动摩擦、滚动摩擦','<strong>本质</strong>：电磁相互作用（分子间作用力）']}},
+  {tag:'静摩擦',name:'静摩擦力',body:'<strong>静摩擦力</strong>是物体间只有<strong>相对运动趋势</strong>而未发生相对运动时的摩擦力。大小由<strong>外力平衡</strong>决定（f = F外），方向与外力方向相反，<strong>有最大值</strong> fmax。',points:{title:'静摩擦特性',items:['<strong>大小</strong>：0 ≤ f ≤ fmax（随外力变化）','<strong>方向</strong>：与相对运动趋势相反','<strong>判断趋势</strong>：假设接触面光滑时物体运动方向','<strong>特点</strong>：被动平衡，无固定公式']}},
+  {tag:'静摩擦',name:'最大静摩擦力',body:'<strong>最大静摩擦力</strong>是使物体<strong>刚要开始滑动</strong>时的临界摩擦力，公式 <code>fmax = μ₀N</code>。μ₀ 为<strong>静摩擦因数</strong>，略大于动摩擦因数 μ。当外力超过 fmax，物体开始滑动。',points:{title:'最大静摩擦',items:['<strong>公式</strong>：fmax = μ₀N','<strong>μ₀ > μ</strong>：静摩擦因数略大','<strong>临界状态</strong>：F = fmax 时刚要滑动','<strong>实际</strong>：μ₀ ≈ 1.1~1.3 μ']}},
+  {tag:'滑动摩擦',name:'滑动摩擦力',body:'物体发生<strong>相对滑动</strong>时受到的摩擦力。<strong>公式</strong>：<code>f = μN</code>。其中 μ 为<strong>动摩擦因数</strong>，N 为<strong>正压力</strong>。方向与相对运动方向相反，大小在低速时近似与速度无关。',points:{title:'滑动摩擦公式',items:['<strong>公式</strong>：f = μN','<strong>μ</strong>：动摩擦因数，无单位','<strong>N</strong>：正压力（不等于重力）','<strong>方向</strong>：与相对运动方向相反']}},
+  {tag:'滑动摩擦',name:'动摩擦因数μ',body:'<strong>动摩擦因数 μ</strong>取决于<strong>接触面的材料</strong>和<strong>粗糙程度</strong>，与压力、接触面积、速度无关（理想情况）。常见材料组合的 μ 值差异很大。',points:{title:'常见材料 μ 值',items:['<strong>钢-钢</strong>：μ ≈ 0.25','<strong>木-木</strong>：μ ≈ 0.30','<strong>橡胶-路面</strong>：μ ≈ 0.7~0.8','<strong>冰-冰</strong>：μ ≈ 0.02（极小）']}},
+  {tag:'方向',name:'摩擦力方向判断',body:'摩擦力方向始终与物体<strong>相对接触面</strong>的运动方向（或趋势）相反。注意：摩擦力可以与物体<strong>绝对运动方向相同</strong>（如传送带带动物体加速时）。',points:{title:'方向判断',items:['<strong>关键词</strong>：相对（不是绝对）','<strong>静摩擦</strong>：与相对运动趋势相反','<strong>滑动摩擦</strong>：与相对滑动方向相反','<strong>可做动力</strong>：人走路、汽车驱动轮']}},
+  {tag:'影响因素',name:'摩擦力影响因素',body:'滑动摩擦力 <strong>f = μN</strong> 仅与<strong>动摩擦因数 μ</strong>（材料粗糙度）和<strong>正压力 N</strong> 有关。<strong>与接触面积无关</strong>，<strong>与速度无关</strong>（理想情况）。',points:{title:'影响因素表',items:['<strong>压力 N ↑</strong>：f 等比例增大','<strong>粗糙度 μ ↑</strong>：f 增大','<strong>接触面积</strong>：不影响 f','<strong>速度</strong>：低速下几乎不影响']}},
+  {tag:'应用',name:'增大摩擦',body:'增大摩擦的方法：增加<strong>粗糙程度</strong>（鞋底纹路、轮胎花纹、刹车片）、<strong>增大压力</strong>（夹紧、摩擦传动）。常见应用涉及安全与制动。',points:{title:'增大摩擦实例',items:['<strong>鞋底纹路</strong>：增大 μ','<strong>轮胎花纹</strong>：抓地防滑','<strong>刹车片</strong>：粗糙材料增大 μ','<strong>夹紧物体</strong>：增大 N 提升摩擦']}},
+  {tag:'应用',name:'减小摩擦',body:'减小摩擦的方法：使用<strong>滚动</strong>代替滑动（轴承）、加<strong>润滑油</strong>（减小 μ）、<strong>气垫</strong>或<strong>磁悬浮</strong>（脱离接触）。机械工程和交通运输广泛应用。',points:{title:'减小摩擦实例',items:['<strong>滚动轴承</strong>：滚动代替滑动','<strong>润滑油</strong>：μ 从 0.3 降至 0.05','<strong>气垫船</strong>：空气垫隔开接触','<strong>磁悬浮列车</strong>：磁场悬浮无接触']}},
+  {tag:'总结',name:'典型例题与总结',body:'例：质量 2 kg 木块在水平地面（μ=0.3）上被 8 N 水平力拉动（g=10）。μ₀=0.4。判断：fmax=μ₀mg=8 N，F=fmax 刚要滑动；滑动后 f=μmg=6 N。核心：先比较外力与 fmax，再决定用静摩擦或滑动摩擦。',points:{title:'核心速记',items:['<strong>静摩擦</strong>：0 ≤ f ≤ fmax = μ₀N','<strong>滑动摩擦</strong>：f = μN','<strong>μ₀ > μ</strong>：最大静摩擦略大','<strong>关键</strong>：先判状态（动或不动）再算力']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：静摩擦力演示 =====
+function drawStaticScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('静摩擦力 · 随外力增大至 fmax',W/2,30,'#f59e0b',16);
+  const groundY=H/2+60;
+  // 地面
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(60,groundY);ctx.lineTo(W-60,groundY);ctx.stroke();
+  // 斜纹（粗糙表面）
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  for(let x=70;x<W-60;x+=14){ctx.beginPath();ctx.moveTo(x,groundY);ctx.lineTo(x-8,groundY+12);ctx.stroke();}
+  // 木块
+  const blockX=W/2-50,blockW=100,blockH=70;
+  ctx.fillStyle='#a16207';ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  roundRect(blockX,groundY-blockH,blockW,blockH,6);ctx.fill();ctx.stroke();
+  drawText('m',blockX+blockW/2,groundY-blockH/2,'#fff',14);
+  // 外力 F（随时间增大）
+  const cyc=(time%6)/6; // 0-1
+  const F=cyc*12; // 0-12 N
+  const fmax=8;
+  const f=Math.min(F,fmax);
+  // 外力箭头 F
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=4;ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(blockX,groundY-blockH/2);ctx.lineTo(blockX-30-F*8,groundY-blockH/2);ctx.stroke();
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.moveTo(blockX-30-F*8,groundY-blockH/2);ctx.lineTo(blockX-20-F*8,groundY-blockH/2-7);ctx.lineTo(blockX-20-F*8,groundY-blockH/2+7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('F='+F.toFixed(1)+'N',blockX-40-F*8,groundY-blockH/2-22,'#06b6d4',13);
+  // 摩擦力 f
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=4;ctx.shadowColor='#f59e0b';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(blockX+blockW,groundY-blockH/2);ctx.lineTo(blockX+blockW+30+f*8,groundY-blockH/2);ctx.stroke();
+  ctx.fillStyle='#f59e0b';
+  ctx.beginPath();ctx.moveTo(blockX+blockW+30+f*8,groundY-blockH/2);ctx.lineTo(blockX+blockW+20+f*8,groundY-blockH/2-7);ctx.lineTo(blockX+blockW+20+f*8,groundY-blockH/2+7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('f='+f.toFixed(1)+'N',blockX+blockW+40+f*8,groundY-blockH/2-22,'#f59e0b',13);
+  // 状态
+  const state=F<fmax?'静止（静摩擦=外力）':(F>=fmax?'临界（将滑动）':'');
+  drawText(state,W/2,H-60,'#34d399',13);
+  drawText('fmax = μ₀N = 8 N',W/2,H-35,'#f87171',12);
+}
+
+// ===== 场景：滑动摩擦力 =====
+function drawSlidingScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('滑动摩擦力 · f = μN（恒定）',W/2,30,'#f59e0b',16);
+  const groundY=H/2+60;
+  // 地面
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(60,groundY);ctx.lineTo(W-60,groundY);ctx.stroke();
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  for(let x=70;x<W-60;x+=14){ctx.beginPath();ctx.moveTo(x,groundY);ctx.lineTo(x-8,groundY+12);ctx.stroke();}
+  // 木块滑动（循环）
+  const blockW=100,blockH=70;
+  const startX=120,endX=W-120-blockW;
+  const pos=(time*80)%(endX-startX);
+  const blockX=startX+pos;
+  ctx.fillStyle='#a16207';ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  roundRect(blockX,groundY-blockH,blockW,blockH,6);ctx.fill();ctx.stroke();
+  drawText('m',blockX+blockW/2,groundY-blockH/2,'#fff',14);
+  // 速度方向 v
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;ctx.shadowColor='#67e8f9';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(blockX+blockW/2,groundY-blockH-15);ctx.lineTo(blockX+blockW/2+60,groundY-blockH-15);ctx.stroke();
+  ctx.fillStyle='#67e8f9';
+  ctx.beginPath();ctx.moveTo(blockX+blockW/2+60,groundY-blockH-15);ctx.lineTo(blockX+blockW/2+50,groundY-blockH-22);ctx.lineTo(blockX+blockW/2+50,groundY-blockH-8);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('v',blockX+blockW/2+70,groundY-blockH-15,'#67e8f9',13);
+  // 滑动摩擦 f（反向）
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=4;ctx.shadowColor='#f59e0b';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(blockX,groundY-blockH/2);ctx.lineTo(blockX-60,groundY-blockH/2);ctx.stroke();
+  ctx.fillStyle='#f59e0b';
+  ctx.beginPath();ctx.moveTo(blockX-60,groundY-blockH/2);ctx.lineTo(blockX-50,groundY-blockH/2-7);ctx.lineTo(blockX-50,groundY-blockH/2+7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('f (反向)',blockX-30,groundY-blockH/2-22,'#f59e0b',13);
+  // 公式
+  ctx.font='bold 16px serif';ctx.fillStyle='#fff';
+  drawText('f = μN',W/2,groundY-blockH-70,'#fbbf24',16);
+  drawText('μ=0.3, N=mg → f 恒定与速度无关',W/2,H-50,'#9ab0d0',12);
+  drawText('方向：与相对运动方向相反',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：F-fr 曲线 =====
+function drawFricCurveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('外力 F - 摩擦力 f 关系图',W/2,30,'#f59e0b',16);
+  const ox=90,oy=H-80,plotW=W-180,plotH=H-200;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+plotW,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-plotH);ctx.stroke();
+  drawText('外力 F (N)',ox+plotW,oy+25,'#9ab0d0',12);
+  drawText('f (N)',ox-30,oy-plotH,'#9ab0d0',12);
+  const fmax=8,mu=0.3,N=20,fSlide=mu*N; // 6
+  const Fmax=12;
+  const sx=plotW/Fmax,sy=plotH/12;
+  // 网格
+  for(let i=0;i<=12;i+=2){
+    const x=ox+i*sx,y=oy-i*sy;
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,oy);ctx.lineTo(x,oy-plotH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ox,y);ctx.lineTo(ox+plotW,y);ctx.stroke();
+    drawText(i,x,oy+15,'#5a6a8a',10);
+    if(i>0)drawText(i,ox-18,y,'#5a6a8a',10);
+  }
+  // 静摩擦段（斜线 0→fmax）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=4;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+fmax*sx,oy-fmax*sy);ctx.stroke();
+  // 平台段（滑动摩擦 fSlide）
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=4;ctx.shadowColor='#f59e0b';
+  ctx.beginPath();ctx.moveTo(ox+fmax*sx,oy-fmax*sy);ctx.lineTo(ox+plotW,oy-fSlide*sy);ctx.stroke();
+  ctx.shadowBlur=0;
+  // 标注
+  drawText('fmax='+fmax,ox+fmax*sx-10,oy-fmax*sy-15,'#f87171',12);
+  drawText('静摩擦区（斜线）',ox+fmax*sx/2,oy-fmax*sy/2-15,'#06b6d4',12);
+  drawText('滑动摩擦区（平台 f=μN）',ox+fmax*sx+(plotW-fmax*sx)/2,oy-fSlide*sy-15,'#f59e0b',12);
+  // 动点
+  const cyc=(time%5)/5;
+  const curF=cyc*Fmax;
+  const curFric=curF<fmax?curF:fSlide;
+  const curX=ox+curF*sx,curY=oy-curFric*sy;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(curX,curY,8,0,7);ctx.fill();ctx.shadowBlur=0;
+  drawText('F='+curF.toFixed(1)+', f='+curFric.toFixed(1),curX,curY-22,'#fbbf24',12);
+  // 说明
+  drawText('F<fmax：f=F（静摩擦）   F≥fmax：f=μN（滑动摩擦，略减小）',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：方向判断（传送带）=====
+function drawDirScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('摩擦力方向 · 与相对运动相反',W/2,30,'#f59e0b',16);
+  const beltY=H/2+40;
+  // 传送带
+  ctx.fillStyle='#1e345a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(80,beltY,W-160,30,4);ctx.fill();ctx.stroke();
+  // 传送带运动方向（向右）
+  const offset=(time*40)%30;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  for(let x=100-offset;x<W-100;x+=30){
+    ctx.beginPath();ctx.moveTo(x,beltY+15);ctx.lineTo(x+15,beltY+8);ctx.lineTo(x+15,beltY+22);ctx.stroke();
+  }
+  // 轮子
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.arc(95,beltY+15,12,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(W-95,beltY+15,12,0,7);ctx.fill();
+  drawText('传送带 v→',W/2,beltY+55,'#06b6d4',12);
+  // 物体（刚放上时相对传送带向左，摩擦力向右=动力）
+  const phase=(time%4)/4;
+  const objX=120+phase*(W-240);
+  ctx.fillStyle='#a16207';ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  roundRect(objX-30,beltY-50,60,50,5);ctx.fill();ctx.stroke();
+  drawText('m',objX,beltY-25,'#fff',13);
+  // 速度方向（物体绝对速度，小）
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(objX,beltY-65);ctx.lineTo(objX+25,beltY-65);ctx.stroke();
+  drawText('v物',objX+35,beltY-65,'#67e8f9',11);
+  // 摩擦力方向（向右，带动物体加速）
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=4;ctx.shadowColor='#f59e0b';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(objX+30,beltY-25);ctx.lineTo(objX+30+50,beltY-25);ctx.stroke();
+  ctx.fillStyle='#f59e0b';
+  ctx.beginPath();ctx.moveTo(objX+30+50,beltY-25);ctx.lineTo(objX+30+40,beltY-32);ctx.lineTo(objX+30+40,beltY-18);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('f（与相对运动相反）',objX+100,beltY-25,'#f59e0b',12);
+  // 说明
+  drawText('物相对传送带向左运动 → 摩擦力向右（动力！）',W/2,H-55,'#34d399',13);
+  drawText('摩擦力可做动力：人走路、车驱动轮、传送带带物',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：斜面受力分析 =====
+function drawInclineScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('斜面受力 · 重力分量与摩擦力平衡',W/2,30,'#f59e0b',16);
+  const angle=30*Math.PI/180;
+  const baseX=150,baseY=H-80,len=W-300;
+  // 斜面
+  ctx.fillStyle='#1e345a';ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(baseX,baseY);
+  ctx.lineTo(baseX+len,baseY);
+  ctx.lineTo(baseX,baseY-len*Math.tan(angle));
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 粗糙斜面纹路
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  for(let s=0;s<1;s+=0.08){
+    const x1=baseX+s*len,y1=baseY-s*len*Math.tan(angle);
+    const nx=Math.cos(angle),ny=-Math.sin(angle);
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x1-nx*6-3,y1-ny*6-3);ctx.stroke();
+  }
+  // 角度标注
+  drawText('30°',baseX+30,baseY-18,'#06b6d4',13);
+  // 木块（在斜面上）
+  const sPos=0.5+0.1*Math.sin(time);
+  const bx=baseX+sPos*len,by=baseY-sPos*len*Math.tan(angle);
+  ctx.save();
+  ctx.translate(bx,by);
+  ctx.rotate(-angle);
+  ctx.fillStyle='#a16207';ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  roundRect(-30,-50,60,50,5);ctx.fill();ctx.stroke();
+  drawText('m',0,-25,'#fff',13);
+  ctx.restore();
+  // 重力 G
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(bx,by-30);ctx.lineTo(bx,by-30+60);ctx.stroke();
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.moveTo(bx,by-30+60);ctx.lineTo(bx-7,by-30+50);ctx.lineTo(bx+7,by-30+50);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('G=mg',bx+25,by+25,'#f87171',12);
+  // 重力沿斜面分量 Gx = mg sinθ
+  const Gx=Math.sin(angle),Gy=Math.cos(angle);
+  ctx.strokeStyle='#ec4899';ctx.lineWidth=3;ctx.shadowColor='#ec4899';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(bx,by-30);ctx.lineTo(bx+Gx*80,by-30+Gy*80);ctx.stroke();
+  ctx.fillStyle='#ec4899';
+  ctx.beginPath();ctx.moveTo(bx+Gx*80,by-30+Gy*80);ctx.lineTo(bx+Gx*80-7*Math.sin(angle),by-30+Gy*80-7*Math.cos(angle));ctx.lineTo(bx+Gx*80+7*Math.cos(angle),by-30+Gy*80-7*Math.sin(angle));ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('Gx=mgsinθ',bx+Gx*80+20,by-30+Gy*80,'#ec4899',11);
+  // 摩擦力 f（沿斜面向上，平衡 Gx）
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=4;ctx.shadowColor='#f59e0b';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(bx,by-30);ctx.lineTo(bx-Gx*70,by-30-Gy*70);ctx.stroke();
+  ctx.fillStyle='#f59e0b';
+  ctx.beginPath();ctx.moveTo(bx-Gx*70,by-30-Gy*70);ctx.lineTo(bx-Gx*70+7*Math.sin(angle),by-30-Gy*70+7*Math.cos(angle));ctx.lineTo(bx-Gx*70-7*Math.cos(angle),by-30-Gy*70+7*Math.sin(angle));ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('f',bx-Gx*70-15,by-30-Gy*70-10,'#f59e0b',13);
+  // 说明
+  drawText('静止：f = Gx = mg sinθ',W/2,H-55,'#34d399',13);
+  drawText('若 Gx > fmax，物体加速下滑',W/2,H-30,'#f87171',12);
+}
+
+// ===== 场景：三种材料对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('动摩擦因数对比 · 冰 / 木 / 橡胶',W/2,30,'#f59e0b',16);
+  const mats=[
+    {name:'冰面',mu:0.02,color:'#67e8f9'},
+    {name:'木-木',mu:0.3,color:'#a16207'},
+    {name:'橡胶-路',mu:0.8,color:'#f87171'},
+  ];
+  const trackY=H/2-30,trackW=W-160,trackStart=80;
+  mats.forEach((m,i)=>{
+    const y=trackY+i*70;
+    // 地面
+    ctx.strokeStyle=m.color;ctx.lineWidth=2;ctx.globalAlpha=0.5;
+    ctx.beginPath();ctx.moveTo(trackStart,y+25);ctx.lineTo(trackStart+trackW,y+25);ctx.stroke();
+    ctx.globalAlpha=1;
+    // 物体（速度由 μ 决定：μ 越大减速越快，运动距离越短）
+    const v0=200;
+    const decel=m.mu*100;
+    const cyc=((time+ i*0.5)%5)/5;
+    // 位移 x = v0*t - 0.5*decel*t^2（简化）
+    let pos;
+    if(decel===0)pos=v0*cyc*5;
+    else{
+      const tStop=v0/decel;
+      const tt=cyc*5;
+      pos=tt<tStop?v0*tt-0.5*decel*tt*tt:v0*tStop-0.5*decel*tStop*tStop;
+    }
+    pos=Math.max(0,Math.min(pos,trackW-50));
+    const objX=trackStart+pos;
+    ctx.fillStyle=m.color;ctx.strokeStyle=m.color;ctx.lineWidth=2;
+    roundRect(objX,y-15,50,40,5);ctx.fill();ctx.stroke();
+    drawText('m',objX+25,y+5,'#1a1a1a',13);
+    // 标签
+    drawText(m.name+'  μ='+m.mu,trackStart+trackW+10,y+5,m.color,13,'left');
+    // 摩擦力箭头
+    if(pos>5){
+      ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(objX,y+5);ctx.lineTo(objX-25,y+5);ctx.stroke();
+      drawText('f',objX-30,y+5,'#f59e0b',11);
+    }
+  });
+  // 说明
+  drawText('μ 越小 → 摩擦越小 → 滑得越远',W/2,H-55,'#34d399',13);
+  drawText('冰面 μ≈0.02（极滑）   橡胶 μ≈0.8（强摩擦）',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：增大/减小摩擦应用 =====
+function drawAppScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('摩擦力的应用 · 增大与减小',W/2,30,'#f59e0b',16);
+  // 左侧：增大摩擦
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(50,70,W/2-70,H-140,10);ctx.fill();ctx.stroke();
+  drawText('增大摩擦',W/4,95,'#f87171',16);
+  // 鞋底纹路
+  const vib=Math.sin(time*3)*2;
+  ctx.fillStyle='#a16207';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+  roundRect(W/4-60,120+vib,120,40,4);ctx.fill();ctx.stroke();
+  for(let i=-50;i<=50;i+=15){
+    ctx.beginPath();ctx.moveTo(W/4+i,160+vib);ctx.lineTo(W/4+i-8,170+vib);ctx.stroke();
+  }
+  drawText('鞋底纹路（增 μ）',W/4,185,'#9ab0d0',11);
+  // 刹车片
+  ctx.fillStyle='#f87171';
+  roundRect(W/4-70,230,30,40,3);ctx.fill();
+  roundRect(W/4+40,230,30,40,3);ctx.fill();
+  ctx.fillStyle='#67e8f9';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(W/4-40,235,80,30,3);ctx.fill();ctx.stroke();
+  drawText('刹车片夹盘（增 N）',W/4,290,'#9ab0d0',11);
+  // 轮胎花纹
+  ctx.fillStyle='#1a1a1a';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(W/4,340,25,0,7);ctx.fill();ctx.stroke();
+  for(let a=0;a<8;a++){
+    const ang=a*Math.PI/4;
+    ctx.beginPath();ctx.moveTo(W/4+Math.cos(ang)*10,340+Math.sin(ang)*10);ctx.lineTo(W/4+Math.cos(ang)*22,340+Math.sin(ang)*22);ctx.stroke();
+  }
+  drawText('轮胎花纹（增 μ）',W/4,385,'#9ab0d0',11);
+  // 右侧：减小摩擦
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W/2+20,70,W/2-70,H-140,10);ctx.fill();ctx.stroke();
+  drawText('减小摩擦',3*W/4,95,'#34d399',16);
+  // 润滑油
+  ctx.fillStyle='#67e8f9';ctx.globalAlpha=0.3;
+  roundRect(3*W/4-70,115,140,30,4);ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#a16207';ctx.strokeStyle='#f59e0b';
+  roundRect(3*W/4-30,120+vib,60,25,3);ctx.fill();ctx.stroke();
+  drawText('润滑油（μ↓）',3*W/4,165,'#9ab0d0',11);
+  // 滚动轴承
+  const ballR=8,cx0=3*W/4;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx0,235,30,0,7);ctx.stroke();
+  for(let i=0;i<6;i++){
+    const ang=i*Math.PI/3+time;
+    ctx.fillStyle='#06b6d4';
+    ctx.beginPath();ctx.arc(cx0+Math.cos(ang)*20,235+Math.sin(ang)*20,ballR,0,7);ctx.fill();
+  }
+  drawText('滚动轴承（滚动代滑动）',cx0,290,'#9ab0d0',11);
+  // 磁悬浮
+  const lift=Math.sin(time*4)*4+4;
+  ctx.fillStyle='#a78bfa';ctx.strokeStyle='#a78bfa';
+  ctx.beginPath();ctx.moveTo(cx0-50,360-lift);ctx.lineTo(cx0+50,360-lift);ctx.lineTo(cx0+40,340-lift);ctx.lineTo(cx0-40,340-lift);ctx.closePath();ctx.fill();ctx.stroke();
+  // 磁场线
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;ctx.globalAlpha=0.5;
+  for(let i=-30;i<=30;i+=15){
+    ctx.beginPath();ctx.moveTo(cx0+i,375);ctx.lineTo(cx0+i,365-lift);ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  drawText('磁悬浮（无接触）',cx0,395,'#9ab0d0',11);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 摩擦力计算',W/2,30,'#f59e0b',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,65,W-160,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,85,'#a78bfa',13,'left');
+  drawText('m=2kg 木块在水平地面（μ=0.3，μ₀=0.4），',120,110,'#fff',13,'left');
+  drawText('受水平外力 F=5N，求摩擦力（g=10）。',120,135,'#fff',13,'left');
+  drawText('若 F=9N 呢？',120,160,'#fff',13,'left');
+  // 解答步骤
+  const steps=[
+    {t:'① 比较',d:'fmax=μ₀mg=0.4×2×10=8N',c:'#06b6d4'},
+    {t:'② F=5N<fmax',d:'未滑动，静摩擦 f=F=5N',c:'#34d399'},
+    {t:'③ F=9N>fmax',d:'物体滑动，f=μmg=0.3×2×10=6N',c:'#fbbf24'},
+    {t:'④ 关键',d:'先判状态（动/不动），再选公式',c:'#f87171'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*55;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+21,s.c,13,'left');
+    drawText(s.d,280,y+21,'#fff',13,'left');
+  });
+  drawText('核心：fmax = μ₀N 是临界判据，f = μN 是滑动公式',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('摩擦力核心总结',W/2,40,'#f59e0b',18);
+  const items=[
+    {t:'静摩擦',d:'0 ≤ f ≤ fmax = μ₀N',c:'#06b6d4'},
+    {t:'滑动摩擦',d:'f = μN',c:'#f59e0b'},
+    {t:'最大静摩擦',d:'fmax = μ₀N （μ₀>μ）',c:'#f87171'},
+    {t:'方向判断',d:'与相对运动（趋势）相反',c:'#34d399'},
+    {t:'影响因素',d:'仅 μ 和 N（与面积无关）',c:'#a78bfa'},
+    {t:'应用',d:'增大（纹路、刹车）/减小（润滑、轴承）',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawStaticScene(t);
+  else if(stepIdx===1)drawStaticScene(t);
+  else if(stepIdx===2)drawStaticScene(t);
+  else if(stepIdx===3)drawSlidingScene(t);
+  else if(stepIdx===4)drawCompareScene(t);
+  else if(stepIdx===5)drawDirScene(t);
+  else if(stepIdx===6)drawFricCurveScene(t);
+  else if(stepIdx===7)drawAppScene(t);
+  else if(stepIdx===8)drawAppScene(t);
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

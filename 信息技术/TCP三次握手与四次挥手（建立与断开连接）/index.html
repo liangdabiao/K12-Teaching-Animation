@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TCP 三次握手与四次挥手 · 建立与断开连接</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a5f3fc;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">TCP 三次握手与四次挥手</span><span class="subtitle">建立连接 · 断开连接 · 状态转换</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>TCP vs UDP</h4><div class="v">TCP 可靠有序需连接<br>UDP 快速无连接</div></div>
+  <div class="card s2"><div class="num">2</div><h4>三次握手</h4><div class="v">SYN, SYN+ACK, ACK<br>建立可靠连接</div></div>
+  <div class="card s3"><div class="num">3</div><h4>四次挥手</h4><div class="v">FIN, ACK, FIN, ACK<br>双向独立关闭</div></div>
+  <div class="card s4"><div class="num">4</div><h4>状态转换</h4><div class="v">LISTEN/ESTABLISHED<br>TIME_WAIT 等 2MSL</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">协议</span><span id="stepTitle">TCP 协议特点</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function drawNode(x,y,w,h,label,color){ctx.fillStyle=color+'22';ctx.strokeStyle=color;ctx.lineWidth=2;roundRect(x,y,w,h,8);ctx.fill();ctx.stroke();drawText(label,x+w/2,y+h/2,'#fff',14);}
+function drawArrow(x1,y1,x2,y2,color,lab,dir){
+  ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.shadowColor=color;ctx.shadowBlur=6;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-12*Math.cos(ang-0.4),y2-12*Math.sin(ang-0.4));
+  ctx.lineTo(x2-12*Math.cos(ang+0.4),y2-12*Math.sin(ang+0.4));ctx.fill();
+  ctx.shadowBlur=0;
+  if(lab){const mx=(x1+x2)/2,my=(y1+y2)/2;drawText(lab,mx,my-(dir==='down'?-14:14),color,12);}
+}
+
+const STEPS=[
+  {tag:'协议',name:'TCP 协议特点',body:'<strong>TCP（传输控制协议）</strong>是<strong>面向连接、可靠、基于字节流</strong>的传输层协议。通信前需<strong>建立连接</strong>（三次握手），数据按<strong>序号</strong>到达且<strong>不丢失</strong>，结束后<strong>断开连接</strong>（四次挥手）。',points:{title:'四大特性',items:['<strong>面向连接</strong>：通信前需三次握手','<strong>可靠传输</strong>：确认重传保证不丢','<strong>有序到达</strong>：按 seq 序号重组','<strong>全双工</strong>：双向同时收发']}},
+  {tag:'对比',name:'TCP 与 UDP 对比',body:'<strong>TCP</strong> 强调<strong>可靠性</strong>（连接、确认、重传），适合网页、文件传输；<strong>UDP</strong> 强调<strong>速度</strong>（无连接、不确认），适合直播、DNS 查询。代价是 TCP 比 UDP 慢。',points:{title:'核心差异',items:['<strong>TCP</strong>：可靠但慢，需建连','<strong>UDP</strong>：快但不可靠，无需建连','<strong>TCP 头部</strong>：20 字节（最小）','<strong>UDP 头部</strong>：仅 8 字节']}},
+  {tag:'报文',name:'TCP 报文头部',body:'<strong>TCP 报文段</strong>头部含 <code>源端口/目的端口</code>、<code>序号 seq</code>、<code>确认号 ack</code>，以及关键标志位 <code>SYN</code>（建连）、<code>ACK</code>（确认）、<code>FIN</code>（结束）。',points:{title:'关键字段',items:['<strong>源/目的端口</strong>：各 16 位','<strong>seq 序号</strong>：本段数据第一个字节的编号','<strong>ack 确认号</strong>：期望收到的下一字节序号','<strong>SYN/ACK/FIN</strong>：建连 / 确认 / 断连标志']}},
+  {tag:'握手',name:'三次握手建立连接',body:'<strong>第一次</strong>：客户端发 <code>SYN=1, seq=x</code>，进入 SYN_SENT。<strong>第二次</strong>：服务器回 <code>SYN=1, ACK=1, seq=y, ack=x+1</code>，进入 SYN_RCVD。<strong>第三次</strong>：客户端发 <code>ACK=1, seq=x+1, ack=y+1</code>，双方 ESTABLISHED。',points:{title:'握手三步',items:['<strong>① 客户端</strong>：SYN seq=x，进 SYN_SENT','<strong>② 服务器</strong>：SYN+ACK seq=y ack=x+1','<strong>③ 客户端</strong>：ACK ack=y+1，建连成功','<strong>结果</strong>：双方进入 ESTABLISHED']}},
+  {tag:'握手',name:'为何三次而非两次',body:'若<strong>两次握手</strong>即可建连，则失效的旧 SYN 请求可能延迟到达服务器，服务器回 SYN+ACK 后直接建连，<strong>浪费资源</strong>。三次握手要求客户端用第三个 ACK 确认"我确实要连接"，<strong>防止历史失效连接</strong>误建立。',points:{title:'三次的意义',items:['<strong>两次的隐患</strong>：旧 SYN 延迟到达 → 误连','<strong>第三次 ACK</strong>：客户端确认当前有效','<strong>双向确认</strong>：双方都验证收发能力','<strong>历史 RFC 793</strong>：明确定义为三次']}},
+  {tag:'挥手',name:'四次挥手断开连接',body:'<strong>① 客户端</strong> 发 <code>FIN=1, seq=u</code>，进入 FIN_WAIT_1。<strong>② 服务器</strong> 回 <code>ACK=1, ack=u+1</code>，客户端进 FIN_WAIT_2（半关闭）。<strong>③ 服务器</strong> 发 <code>FIN=1, seq=v</code>，进入 LAST_ACK。<strong>④ 客户端</strong> 回 <code>ACK=1, ack=v+1</code>，进 TIME_WAIT。',points:{title:'挥手四步',items:['<strong>① 客户端 FIN</strong>：表示无数据要发','<strong>② 服务器 ACK</strong>：确认收到 FIN','<strong>③ 服务器 FIN</strong>：待自身数据发完后','<strong>④ 客户端 ACK</strong>：进入 TIME_WAIT']}},
+  {tag:'挥手',name:'为何四次而非三次',body:'TCP 是<strong>全双工</strong>，两个方向独立关闭。服务器收到客户端 FIN 后<strong>可能还有未发完的数据</strong>，需先 ACK 再单独发 FIN，所以比握手多一次。<strong>半关闭状态</strong>：客户端不再发但仍可收。',points:{title:'四次的原因',items:['<strong>全双工</strong>：双向通道独立','<strong>半关闭</strong>：一边停发，另一边可继续','<strong>FIN 与 ACK 分离</strong>：先确认后结束','<strong>若数据已无</strong>：FIN+ACK 可合并（延迟 ACK）']}},
+  {tag:'状态',name:'TIME_WAIT 与 2MSL',body:'主动关闭方最后发 ACK 后进入 <strong>TIME_WAIT</strong>，等待 <strong>2MSL</strong>（最大报文段寿命）后真正关闭。作用：① 确保最后一个 ACK 到达对端；② 让本次连接的旧报文在网络中失效。',points:{title:'TIME_WAIT 详解',items:['<strong>2MSL</strong>：约 60-120 秒','<strong>目的1</strong>：ACK 丢失则对端重发 FIN','<strong>目的2</strong>：防止旧报文影响新连接','<strong>注意</strong>：服务器主动关闭也会 TIME_WAIT']}},
+  {tag:'应用',name:'典型应用对比',body:'<strong>TCP</strong> 用于<strong>要求可靠</strong>的应用：HTTP/HTTPS、FTP 文件传输、SMTP 邮件、SSH 远程登录。<strong>UDP</strong> 用于<strong>要求实时</strong>的应用：DNS 查询、视频直播、在线游戏、VoIP 语音。',points:{title:'选 TCP 还是 UDP',items:['<strong>TCP</strong>：HTTP/HTTPS、FTP、SMTP','<strong>TCP</strong>：SSH、Telnet、POP3','<strong>UDP</strong>：DNS、DHCP、TFTP','<strong>UDP</strong>：视频/语音/游戏直播']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>例题</strong>：主机 A 发出 SYN seq=1000，服务器 B 回 ACK 时 ack 应为 <strong>1001</strong>，B 的 seq=5000，则 A 第三次握手 ack 应为 <strong>5001</strong>。规则：<code>ack = 对方 seq + 1</code>（不含数据时）。',points:{title:'考点速记',items:['<strong>seq</strong>：本段数据首字节编号','<strong>ack</strong>：期望下一字节序号','<strong>ack = 对方 seq + 1</strong>（SYN/FIN 算 1 字节）','<strong>三次握手</strong>：建连；四次挥手：断连']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景：三次握手时序图 =====
+function drawHandshakeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('三次握手 · 建立连接时序',W/2,30,'#06b6d4',16);
+  const cX=160,sX=W-160,mid=W/2;
+  const topY=70,botY=H-50;
+  // 两端节点
+  drawNode(cX-60,topY-10,120,36,'客户端','#06b6d4');
+  drawNode(sX-60,topY-10,120,36,'服务器','#fbbf24');
+  // 时间线
+  ctx.setLineDash([4,4]);ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cX,topY+30);ctx.lineTo(cX,botY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(sX,topY+30);ctx.lineTo(sX,botY);ctx.stroke();
+  ctx.setLineDash([]);
+  // 三次握手（按 time 推进）
+  const phase=(time*0.6)%4;
+  // ① 客户端 → 服务器 SYN seq=x
+  if(phase>0){
+    const p=Math.min(1,phase);
+    const y1=topY+80,y2=topY+140;
+    drawArrow(cX,y1+(y2-y1)*(1-p),sX,y2,'#06b6d4','SYN seq=x', 'right');
+    if(p>0.9)drawText('SYN_SENT',cX,topY+95,'#06b6d4',11);
+  }
+  // ② 服务器 → 客户端 SYN+ACK
+  if(phase>1){
+    const p=Math.min(1,phase-1);
+    const y1=topY+170,y2=topY+230;
+    drawArrow(sX,y1+(y2-y1)*(1-p),cX,y2,'#fbbf24','SYN+ACK seq=y ack=x+1','left');
+    if(p>0.9)drawText('SYN_RCVD',sX,topY+185,'#fbbf24',11);
+  }
+  // ③ 客户端 → 服务器 ACK
+  if(phase>2){
+    const p=Math.min(1,phase-2);
+    const y1=topY+260,y2=topY+320;
+    drawArrow(cX,y1+(y2-y1)*(1-p),sX,y2,'#34d399','ACK seq=x+1 ack=y+1','right');
+    if(p>0.9){
+      drawText('ESTABLISHED',cX,topY+275,'#34d399',11);
+      drawText('ESTABLISHED',sX,topY+275,'#34d399',11);
+    }
+  }
+  // 状态指示
+  if(phase>3){
+    drawText('连接建立成功，可双向传输数据',W/2,botY-25,'#34d399',13);
+  }
+  // 步骤标号
+  drawText('①',cX+30,topY+110,'#06b6d4',14);
+  drawText('②',sX-30,topY+200,'#fbbf24',14);
+  drawText('③',cX+30,topY+290,'#34d399',14);
+}
+
+// ===== 场景：四次挥手时序图 =====
+function drawWaveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('四次挥手 · 断开连接时序',W/2,30,'#fbbf24',16);
+  const cX=160,sX=W-160;
+  const topY=70,botY=H-50;
+  drawNode(cX-60,topY-10,120,36,'主动方','#f87171');
+  drawNode(sX-60,topY-10,120,36,'被动方','#a78bfa');
+  ctx.setLineDash([4,4]);ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cX,topY+30);ctx.lineTo(cX,botY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(sX,topY+30);ctx.lineTo(sX,botY);ctx.stroke();
+  ctx.setLineDash([]);
+  const phase=(time*0.5)%5;
+  if(phase>0){const p=Math.min(1,phase);
+    drawArrow(cX,topY+80+(topY+130-topY-80)*(1-p),sX,topY+130,'#f87171','FIN seq=u','right');
+    if(p>0.9)drawText('FIN_WAIT_1',cX,topY+95,'#f87171',11);
+  }
+  if(phase>1){const p=Math.min(1,phase-1);
+    drawArrow(sX,topY+160+(topY+200-topY-160)*(1-p),cX,topY+200,'#a78bfa','ACK ack=u+1','left');
+    if(p>0.9)drawText('FIN_WAIT_2',cX,topY+215,'#a78bfa',11);
+  }
+  if(phase>2){const p=Math.min(1,phase-2);
+    drawArrow(sX,topY+230+(topY+280-topY-230)*(1-p),cX,topY+280,'#a78bfa','FIN seq=v','left');
+    if(p>0.9)drawText('LAST_ACK',sX,topY+295,'#a78bfa',11);
+  }
+  if(phase>3){const p=Math.min(1,phase-3);
+    drawArrow(cX,topY+310+(topY+360-topY-310)*(1-p),sX,topY+360,'#34d399','ACK ack=v+1','right');
+    if(p>0.9){
+      drawText('TIME_WAIT',cX,topY+325,'#34d399',11);
+      drawText('CLOSED',sX,topY+375,'#9ab0d0',11);
+    }
+  }
+  if(phase>4){
+    drawText('等待 2MSL 后关闭 → CLOSED',cX,botY-20,'#34d399',11);
+  }
+  drawText('①',cX+30,topY+105,'#f87171',14);
+  drawText('②',sX-30,topY+180,'#a78bfa',14);
+  drawText('③',sX-30,topY+255,'#a78bfa',14);
+  drawText('④',cX+30,topY+335,'#34d399',14);
+}
+
+// ===== 场景：seq 与 ack 关系 =====
+function drawSeqAckScene(){
+  const W=cv.width,H=cv.height;
+  drawText('seq 与 ack 的关系演示',W/2,30,'#06b6d4',16);
+  const y1=120,y2=240,y3=360;
+  // 第一条报文
+  drawText('① 客户端 → 服务器',W/2,y1-25,'#06b6d4',13);
+  drawArrow(140,y1,W-140,y1,'#06b6d4','SYN seq = 1000','right');
+  // 第二条
+  drawText('② 服务器 → 客户端（确认收到 1000，期望下一个 1001）',W/2,y2-25,'#fbbf24',13);
+  drawArrow(W-140,y2,140,y2,'#fbbf24','SYN+ACK seq=2000, ack=1001','left');
+  // 第三条
+  drawText('③ 客户端 → 服务器（确认收到 2000，期望下一个 2001）',W/2,y3-25,'#34d399',13);
+  drawArrow(140,y3,W-140,y3,'#34d399','ACK seq=1001, ack=2001','right');
+  // 规则说明
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(80,H-80,W-160,50,8);ctx.fill();ctx.stroke();
+  drawText('核心规则：ack = 对方刚发来的 seq + 1（SYN/FIN 各算 1 字节）',W/2,H-65,'#34d399',13);
+  drawText('SYN/FIN 虽不携带用户数据，但仍消耗一个序号',W/2,H-45,'#9ab0d0',11);
+}
+
+// ===== 场景：为何三次而非两次 =====
+function drawWhy3Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('为何三次握手：防止失效连接',W/2,30,'#f87171',16);
+  const left=W/2-200;
+  // 左侧：两次握手的问题
+  drawText('两次握手（错误）',left,80,'#f87171',14);
+  const cX=left-90,sX=left+90;
+  drawNode(cX-40,100,80,30,'C','#f87171');
+  drawNode(sX-40,100,80,30,'S','#f87171');
+  drawArrow(cX,150,sX,170,'#f87171','旧 SYN（延迟）','right');
+  drawArrow(sX,200,cX,220,'#f87171','SYN+ACK','left');
+  drawArrow(sX,260,sX,260,'#34d399','连接已建（浪费）','down');
+  drawText('服务器白等 → 资源浪费',left,310,'#f87171',12);
+  // 右侧：三次握手的正确
+  const right=W/2+200;
+  drawText('三次握手（正确）',right,80,'#34d399',14);
+  const c2X=right-90,s2X=right+90;
+  drawNode(c2X-40,100,80,30,'C','#34d399');
+  drawNode(s2X-40,100,80,30,'S','#34d399');
+  drawArrow(c2X,150,s2X,170,'#34d399','旧 SYN','right');
+  drawArrow(s2X,200,c2X,220,'#34d399','SYN+ACK','left');
+  drawText('客户端发现已失效 → 不回 ACK',right,260,'#fbbf24',12);
+  drawText('→ 连接不建立',right,285,'#34d399',12);
+  // 中央分隔
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(W/2,60);ctx.lineTo(W/2,340);ctx.stroke();
+  ctx.setLineDash([]);
+  // 底部结论
+  ctx.fillStyle='rgba(251,191,36,0.08)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(80,H-80,W-160,50,8);ctx.fill();ctx.stroke();
+  drawText('第三次 ACK 让客户端确认"这是当前有效的请求"，避免历史 SYN 误建连',W/2,H-55,'#fbbf24',12);
+  drawText('双向确认：双方都验证了对方的收发能力',W/2,H-38,'#9ab0d0',11);
+}
+
+// ===== 场景：为何四次（半关闭状态）=====
+function drawWhy4Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('为何四次挥手：全双工半关闭',W/2,30,'#a78bfa',16);
+  const cX=W/2-180,sX=W/2+180;
+  drawNode(cX-60,70,120,36,'客户端','#f87171');
+  drawNode(sX-60,70,120,36,'服务器','#a78bfa');
+  // 双向通道
+  ctx.setLineDash([4,4]);ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cX,106);ctx.lineTo(cX,H-90);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(sX,106);ctx.lineTo(sX,H-90);ctx.stroke();
+  ctx.setLineDash([]);
+  // ① 客户端 FIN
+  drawArrow(cX,140,sX,170,'#f87171','①FIN','right');
+  drawText('无数据要发',cX,155,'#f87171',11);
+  // ② 服务器 ACK + 还有数据
+  drawArrow(sX,200,cX,230,'#a78bfa','②ACK','left');
+  drawText('客户端停止发送',cX,225,'#a78bfa',11);
+  // ③ 服务器继续发数据
+  drawArrow(sX,270,cX,300,'#67e8f9','（仍发剩余数据）','left');
+  drawText('服务器仍可发 → 半关闭',W/2,295,'#67e8f9',12);
+  // ④ 服务器 FIN
+  drawArrow(sX,330,cX,360,'#a78bfa','③FIN','left');
+  drawText('数据发完',sX,345,'#a78bfa',11);
+  // ⑤ 客户端 ACK
+  drawArrow(cX,390,sX,420,'#34d399','④ACK','right');
+  drawText('TIME_WAIT',cX,405,'#34d399',11);
+  // 底部说明
+  ctx.fillStyle='rgba(167,139,250,0.1)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,H-60,W-160,40,8);ctx.fill();ctx.stroke();
+  drawText('服务器收到 FIN 后可能还有数据未发完 → ACK 与 FIN 分开发送 → 多一次',W/2,H-40,'#a78bfa',12);
+}
+
+// ===== 场景：状态转换图 =====
+function drawStateScene(){
+  const W=cv.width,H=cv.height;
+  drawText('TCP 状态转换图（核心）',W/2,30,'#06b6d4',16);
+  // 客户端状态（左半）
+  const left=W*0.27;
+  drawText('主动方（客户端）',left,60,'#06b6d4',13);
+  const states1=[
+    {x:left-60,y:90,w:120,h:32,t:'CLOSED',c:'#9ab0d0'},
+    {x:left-60,y:150,w:120,h:32,t:'SYN_SENT',c:'#06b6d4'},
+    {x:left-60,y:220,w:120,h:32,t:'ESTABLISHED',c:'#34d399'},
+    {x:left-60,y:290,w:120,h:32,t:'FIN_WAIT_1',c:'#fbbf24'},
+    {x:left-60,y:360,w:120,h:32,t:'FIN_WAIT_2',c:'#fbbf24'},
+    {x:left-60,y:430,w:120,h:32,t:'TIME_WAIT',c:'#a78bfa'},
+  ];
+  states1.forEach(s=>{ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(s.x,s.y,s.w,s.h,6);ctx.fill();ctx.stroke();
+    drawText(s.t,s.x+s.w/2,s.y+s.h/2,'#fff',12);});
+  // 箭头
+  drawArrow(left,122,left,148,'#06b6d4','SYN','down');
+  drawArrow(left,182,left,218,'#34d399','SYN+ACK/ACK','down');
+  drawArrow(left,252,left,288,'#fbbf24','FIN','down');
+  drawArrow(left,322,left,358,'#9ab0d0','ACK','down');
+  drawArrow(left,392,left,428,'#a78bfa','FIN/ACK','down');
+  drawText('2MSL → CLOSED',left,478,'#9ab0d0',11);
+  // 服务器状态（右半）
+  const right=W*0.73;
+  drawText('被动方（服务器）',right,60,'#fbbf24',13);
+  const states2=[
+    {x:right-60,y:90,w:120,h:32,t:'CLOSED',c:'#9ab0d0'},
+    {x:right-60,y:150,w:120,h:32,t:'LISTEN',c:'#a78bfa'},
+    {x:right-60,y:220,w:120,h:32,t:'SYN_RCVD',c:'#06b6d4'},
+    {x:right-60,y:290,w:120,h:32,t:'ESTABLISHED',c:'#34d399'},
+    {x:right-60,y:360,w:120,h:32,t:'CLOSE_WAIT',c:'#fbbf24'},
+    {x:right-60,y:430,w:120,h:32,t:'LAST_ACK',c:'#f87171'},
+  ];
+  states2.forEach(s=>{ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(s.x,s.y,s.w,s.h,6);ctx.fill();ctx.stroke();
+    drawText(s.t,s.x+s.w/2,s.y+s.h/2,'#fff',12);});
+  drawArrow(right,122,right,148,'#a78bfa','listen','down');
+  drawArrow(right,182,right,218,'#06b6d4','SYN','down');
+  drawArrow(right,252,right,288,'#34d399','ACK','down');
+  drawArrow(right,322,right,358,'#fbbf24','FIN','down');
+  drawArrow(right,392,right,428,'#f87171','ACK','down');
+  drawText('→ CLOSED',right,478,'#9ab0d0',11);
+}
+
+// ===== 场景：TCP vs UDP =====
+function drawTCPUDPScene(){
+  const W=cv.width,H=cv.height;
+  drawText('TCP 与 UDP 对比',W/2,30,'#fbbf24',16);
+  // 左：TCP
+  const lx=W/4;
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(lx-140,70,280,H-160,12);ctx.fill();ctx.stroke();
+  drawText('TCP',lx,95,'#06b6d4',22);
+  drawText('传输控制协议',lx,120,'#9ab0d0',12);
+  const tcpItems=['面向连接','可靠（确认重传）','有序到达','全双工字节流','头部 ≥ 20 字节','流量/拥塞控制'];
+  tcpItems.forEach((s,i)=>{
+    drawText('●',lx-100,160+i*32,'#06b6d4',12,'left');
+    drawText(s,lx-80,160+i*32,'#fff',13,'left');
+  });
+  drawText('应用：HTTP/FTP/SMTP/SSH',lx,H-110,'#06b6d4',12);
+  // 右：UDP
+  const rx=W*3/4;
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(rx-140,70,280,H-160,12);ctx.fill();ctx.stroke();
+  drawText('UDP',rx,95,'#fbbf24',22);
+  drawText('用户数据报协议',rx,120,'#9ab0d0',12);
+  const udpItems=['无连接','不可靠（不确认）','可能乱序','一对一/多/广播','头部 8 字节','无拥塞控制'];
+  udpItems.forEach((s,i)=>{
+    drawText('●',rx-100,160+i*32,'#fbbf24',12,'left');
+    drawText(s,rx-80,160+i*32,'#fff',13,'left');
+  });
+  drawText('应用：DNS/视频/直播/游戏',rx,H-110,'#fbbf24',12);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · seq 与 ack 计算',W/2,30,'#fbbf24',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',90,80,'#a78bfa',13,'left');
+  drawText('主机 A 向 B 发起 TCP 连接，A 的 SYN 报文 seq=2000，',90,102,'#fff',13,'left');
+  drawText('B 的 SYN+ACK 报文 seq=5000。问：',90,124,'#fff',13,'left');
+  drawText('B 回复的 ack=?  A 第三次握手的 ack=?',90,144,'#fbbf24',13,'left');
+  const steps=[
+    {t:'① B 的 ack',d:'期望下一字节 = A 的 seq + 1 = 2000 + 1 = 2001',c:'#06b6d4'},
+    {t:'② A 的 ack',d:'期望下一字节 = B 的 seq + 1 = 5000 + 1 = 5001',c:'#fbbf24'},
+    {t:'③ 规则',d:'ack = 对方刚发 seq + 本段标志消耗的字节数',c:'#a78bfa'},
+    {t:'④ 说明',d:'SYN 与 FIN 各消耗 1 字节序号（即使无数据）',c:'#34d399'},
+    {t:'⑤ 结论',d:'ack_B = 2001，ack_A = 5001',c:'#f87171'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=180+i*55;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,120,y+21,s.c,13,'left');
+    drawText(s.d,240,y+21,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('TCP 三次握手与四次挥手 · 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'三次握手',d:'SYN → SYN+ACK → ACK',c:'#06b6d4'},
+    {t:'四次挥手',d:'FIN → ACK → FIN → ACK',c:'#fbbf24'},
+    {t:'seq/ack',d:'ack = 对方 seq + 1',c:'#a78bfa'},
+    {t:'为何三次',d:'防止历史失效连接',c:'#34d399'},
+    {t:'为何四次',d:'全双工半关闭独立',c:'#fb923c'},
+    {t:'TIME_WAIT',d:'2MSL 确保最后 ACK',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawTCPUDPScene();
+  else if(stepIdx===1)drawTCPUDPScene();
+  else if(stepIdx===2)drawSeqAckScene();
+  else if(stepIdx===3)drawHandshakeScene(t);
+  else if(stepIdx===4)drawWhy3Scene(t);
+  else if(stepIdx===5)drawWaveScene(t);
+  else if(stepIdx===6)drawWhy4Scene(t);
+  else if(stepIdx===7)drawStateScene();
+  else if(stepIdx===8)drawTCPUDPScene();
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;t=0;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

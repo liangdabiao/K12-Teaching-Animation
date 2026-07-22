@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>糖类与脂质 · 单糖二糖多糖 · 脂肪磷脂固醇</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#10b981;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(16,185,129,.06)}
+.back:hover{background:rgba(16,185,129,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">糖类与脂质</span><span class="subtitle">单糖二糖多糖 · 脂肪磷脂固醇功能</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>糖类</h4><div class="v">主要能源物质<br>C、H、O 组成</div></div>
+  <div class="card s2"><div class="num">2</div><h4>脂质</h4><div class="v">储能、构成膜<br>调节代谢</div></div>
+  <div class="card s3"><div class="num">3</div><h4>单糖二糖多糖</h4><div class="v">按聚合度分类<br>结构逐级递进</div></div>
+  <div class="card s4"><div class="num">4</div><h4>固醇类</h4><div class="v">胆固醇、性激素<br>维生素D</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">糖类</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'糖类是主要能源',body:'<strong>糖类</strong>是生物体<strong>主要的能源物质</strong>，也是<strong>结构成分</strong>和<strong>细胞识别</strong>的重要物质。组成元素为 <code>C、H、O</code>，多数符合 <code>(CH₂O)ₙ</code>。',points:{title:'核心要点',items:['<strong>元素</strong>：C、H、O','<strong>分类</strong>：单糖、二糖、多糖','<strong>功能</strong>：能源、结构、识别','<strong>俗称</strong>：碳水化合物']}},
+  {tag:'单糖',name:'单糖',body:'<strong>单糖</strong>是<strong>不能水解</strong>的最简单糖类。<strong>葡萄糖</strong> <code>C₆H₁₂O₆</code> 是细胞主要能源；<strong>果糖</strong>提供甜味；<strong>核糖</strong>、<strong>脱氧核糖</strong>是核酸组成成分。',points:{title:'常见单糖',items:['<strong>葡萄糖</strong>：C₆H₁₂O₆，主要能源','<strong>果糖</strong>：甜味最高的单糖','<strong>核糖</strong>：组成 RNA','<strong>脱氧核糖</strong>：组成 DNA']}},
+  {tag:'二糖',name:'二糖',body:'<strong>二糖</strong>由<strong>两分子单糖脱水缩合</strong>而成，水解后生成两分子单糖。常见有<strong>蔗糖、麦芽糖、乳糖</strong>。',points:{title:'常见二糖',items:['<strong>蔗糖</strong>：葡萄糖 + 果糖（植物）','<strong>麦芽糖</strong>：葡萄糖 + 葡萄糖（发芽种子）','<strong>乳糖</strong>：葡萄糖 + 半乳糖（乳汁）','<strong>水解</strong>：二糖 → 两分子单糖']}},
+  {tag:'多糖',name:'多糖',body:'<strong>多糖</strong>由<strong>许多单糖脱水缩合</strong>而成，是自然界含量最多的糖类。植物储能为<strong>淀粉</strong>，动物储能为<strong>糖原</strong>，<strong>纤维素</strong>构成植物细胞壁。',points:{title:'常见多糖',items:['<strong>淀粉</strong>：植物储能（粮食）','<strong>糖原</strong>：动物储能（肝、肌肉）','<strong>纤维素</strong>：植物细胞壁结构','<strong>基本单位</strong>：都是葡萄糖']}},
+  {tag:'功能',name:'糖类的功能',body:'糖类具有三大功能：<strong>主要能源物质</strong>（葡萄糖）、<strong>结构支持</strong>（纤维素、肽聚糖）、<strong>细胞识别</strong>（糖蛋白、糖脂的糖链）。',points:{title:'三大功能',items:['<strong>能源</strong>：1 g 葡萄糖释 17 kJ','<strong>结构</strong>：纤维素构成细胞壁','<strong>识别</strong>：糖蛋白识别血型','<strong>核酸组分</strong>：核糖/脱氧核糖']}},
+  {tag:'脂质',name:'脂质分类',body:'<strong>脂质</strong>由 <code>C、H、O</code> 组成（磷脂含 N、P），<strong>不溶于水</strong>而易溶于有机溶剂。分为<strong>脂肪、磷脂、固醇</strong>三类。',points:{title:'三大类脂质',items:['<strong>脂肪</strong>：储能、保温、缓冲','<strong>磷脂</strong>：构成生物膜','<strong>固醇</strong>：调节代谢','<strong>共性</strong>：难溶于水']}},
+  {tag:'脂肪',name:'脂肪的功能',body:'<strong>脂肪</strong>是生物体<strong>主要的储能物质</strong>，1 g 脂肪氧化释放 <code>39 kJ</code> 能量（约为糖的 2 倍）。还有<strong>保温</strong>和<strong>缓冲</strong>作用。',points:{title:'脂肪三大作用',items:['<strong>储能</strong>：单位能量最高','<strong>保温</strong>：皮下脂肪隔热','<strong>缓冲</strong>：保护内脏器官','<strong>分布</strong>：皮下、大网膜']}},
+  {tag:'磷脂',name:'磷脂与生物膜',body:'<strong>磷脂</strong>由<strong>甘油、脂肪酸、磷酸</strong>组成，亲水头部 + 疏水尾部。<strong>磷脂双分子层</strong>是<strong>生物膜的基本骨架</strong>。',points:{title:'磷脂双分子层',items:['<strong>亲水头</strong>：磷酸端朝两侧','<strong>疏水尾</strong>：脂肪酸端朝内','<strong>双层结构</strong>：生物膜基础','<strong>功能</strong>：控制物质进出']}},
+  {tag:'固醇',name:'固醇类物质',body:'<strong>固醇</strong>包括<strong>胆固醇、性激素、维生素D</strong>。胆固醇是<strong>膜结构组分</strong>并参与血液脂质运输；性激素调节生殖；维生素D 促进钙吸收。',points:{title:'三种固醇',items:['<strong>胆固醇</strong>：膜成分，运输脂质','<strong>性激素</strong>：促进生殖器官发育','<strong>维生素D</strong>：促进钙磷吸收','<strong>共性</strong>：调节代谢']}},
+  {tag:'总结',name:'典型例题与总结',body:'例：下列哪种物质是细胞主要能源？哪种是主要储能？答：<strong>糖类</strong>（葡萄糖）是<strong>主要能源物质</strong>；<strong>脂肪</strong>是<strong>主要储能物质</strong>。磷脂构成<strong>生物膜基本骨架</strong>。',points:{title:'核心速记',items:['<strong>主要能源</strong>：糖类（葡萄糖）','<strong>主要储能</strong>：脂肪','<strong>生物膜骨架</strong>：磷脂双分子层','<strong>调节代谢</strong>：固醇类']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：糖类分类 =====
+function drawSugarClassScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('糖类分类 · 单糖 / 二糖 / 多糖',W/2,30,'#fbbf24',16);
+  const cols=['单糖','二糖','多糖'];
+  const descs=['不能水解','2 单糖缩合','多单糖缩合'];
+  const exs=['葡萄糖 果糖 核糖','蔗糖 麦芽糖 乳糖','淀粉 糖原 纤维素'];
+  const colors=['#fbbf24','#10b981','#34d399'];
+  cols.forEach((c,i)=>{
+    const x=80+i*(W-160)/3;
+    const w=(W-160)/3-20;
+    const y=80;
+    const h=200;
+    const pulse=Math.sin(time*1.5+i)*4;
+    ctx.fillStyle=colors[i]+'22';ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+    roundRect(x,y,w,h,12);ctx.fill();ctx.stroke();
+    drawText(c,x+w/2,y+30,colors[i],18);
+    drawText(descs[i],x+w/2,y+70,'#fff',12);
+    // 聚合度可视化
+    const n=i===0?1:(i===1?2:6);
+    for(let k=0;k<n;k++){
+      const cx=x+w/2-(n-1)*15+k*30+pulse;
+      ctx.fillStyle=colors[i];
+      ctx.beginPath();ctx.arc(cx,y+120,8,0,7);ctx.fill();
+      if(k<n-1){
+        ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(cx+8,y+120);ctx.lineTo(cx+22,y+120);ctx.stroke();
+      }
+    }
+    drawText(exs[i],x+w/2,y+170,'#9ab0d0',11);
+  });
+  drawText('聚合度：1 → 2 → 多（结构逐级递进）',W/2,H-50,'#9ab0d0',13);
+  drawText('基本单位均为单糖（多为葡萄糖）',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：葡萄糖分子 =====
+function drawGlucoseScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('葡萄糖分子 · C₆H₁₂O₆',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  const r=70;
+  // 六元环（吡喃环）
+  ctx.strokeStyle='#10b981';ctx.lineWidth=3;
+  ctx.shadowColor='#10b981';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let i=0;i<6;i++){
+    const a=Math.PI/3*i-Math.PI/6+time*0.2;
+    const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.closePath();ctx.stroke();
+  ctx.shadowBlur=0;
+  // 环上原子
+  for(let i=0;i<6;i++){
+    const a=Math.PI/3*i-Math.PI/6+time*0.2;
+    const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);
+    const isO=i===0;
+    ctx.fillStyle=isO?'#f87171':'#9ab0d0';
+    ctx.beginPath();ctx.arc(x,y,isO?10:8,0,7);ctx.fill();
+    drawText(isO?'O':'C',x,y,'#1a1a1a',11);
+    // -OH / -H
+    const ox=x+25*Math.cos(a),oy=y+25*Math.sin(a);
+    ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ox,oy);ctx.stroke();
+    if(i!==0){
+      ctx.fillStyle='#67e8f9';
+      ctx.beginPath();ctx.arc(ox,oy,7,0,7);ctx.fill();
+      drawText('OH',ox,oy,'#1a1a1a',9);
+    }
+  }
+  // 化学式
+  ctx.font='bold 20px serif';ctx.fillStyle='#fbbf24';
+  drawText('C₆H₁₂O₆',W/2,H-80,'#fbbf24',20);
+  drawText('细胞主要能源物质 · 含 5 个 -OH',W/2,H-50,'#9ab0d0',12);
+  drawText('核糖组成 RNA，脱氧核糖组成 DNA',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：淀粉水解 =====
+function drawStarchScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('淀粉水解为葡萄糖',W/2,30,'#fbbf24',16);
+  // 左侧淀粉（多聚）
+  const lx=120;
+  drawText('淀粉（多糖）',lx,80,'#fbbf24',13);
+  ctx.fillStyle='#fbbf24';
+  for(let i=0;i<7;i++){
+    ctx.beginPath();ctx.arc(lx+10,110+i*16,6,0,7);ctx.fill();
+  }
+  // 右侧葡萄糖
+  const rx=W-120;
+  drawText('葡萄糖（单糖）',rx,80,'#34d399',13);
+  // 中间箭头
+  const ax=W/2;
+  ctx.strokeStyle='#10b981';ctx.lineWidth=3;
+  ctx.shadowColor='#10b981';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(ax-80,H/2);ctx.lineTo(ax+80,H/2);ctx.stroke();
+  ctx.fillStyle='#10b981';
+  ctx.beginPath();ctx.moveTo(ax+80,H/2);ctx.lineTo(ax+70,H/2-8);ctx.lineTo(ax+70,H/2+8);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('酶 + 水解',ax,H/2-30,'#10b981',13);
+  drawText('H₂O',ax,H/2+30,'#67e8f9',12);
+  // 右侧多个葡萄糖（动态出现）
+  const appear=Math.floor((time%4));
+  for(let i=0;i<4;i++){
+    const yy=H/2-60+i*40;
+    if(i<=appear){
+      ctx.fillStyle='#34d399';
+      ctx.beginPath();ctx.arc(rx-10,yy,8,0,7);ctx.fill();
+      drawText('G',rx-10,yy,'#1a1a1a',10);
+    }
+  }
+  drawText('(C₆H₁₀O₅)ₙ + nH₂O → n C₆H₁₂O₆',W/2,H-60,'#fff',14);
+  drawText('淀粉在淀粉酶作用下水解为葡萄糖',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：脂肪分子 =====
+function drawFatScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('脂肪分子 · 甘油 + 3 脂肪酸',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  // 甘油骨架（3 个碳）
+  ctx.fillStyle='#10b981';ctx.strokeStyle='#10b981';ctx.lineWidth=2;
+  for(let i=0;i<3;i++){
+    const x=cx-40+i*40;
+    ctx.beginPath();ctx.arc(x,cy,12,0,7);ctx.fill();
+    drawText('C',x,cy,'#1a1a1a',11);
+    if(i<2){ctx.beginPath();ctx.moveTo(x+12,cy);ctx.lineTo(x+28,cy);ctx.stroke();}
+  }
+  drawText('甘油',cx,cy+30,'#10b981',12);
+  // 三条脂肪酸链（向上）
+  const wave=Math.sin(time*2)*5;
+  for(let i=0;i<3;i++){
+    const x=cx-40+i*40;
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+    ctx.shadowColor='#fbbf24';ctx.shadowBlur=6;
+    ctx.beginPath();ctx.moveTo(x,cy-12);
+    for(let k=0;k<6;k++){
+      const yy=cy-12-k*20;
+      const xx=x+Math.sin(k+time+i)*3;
+      ctx.lineTo(xx,yy);
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;
+    // CH 标记
+    for(let k=1;k<=3;k++){
+      const yy=cy-12-k*30-wave*0.2;
+      drawText('CH₂',x,yy,'#fde68a',9);
+    }
+  }
+  drawText('脂肪酸链（疏水）',cx,cy-150,'#fbbf24',12);
+  drawText('脂肪 = 甘油 + 3 脂肪酸（三酰甘油酯）',W/2,H-60,'#fff',13);
+  drawText('1 g 脂肪储能 39 kJ，是高效的储能物质',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：磷脂双分子层 =====
+function drawPhosphoScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('磷脂双分子层 · 生物膜基本骨架',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 双层磷脂
+  for(let layer=0;layer<2;layer++){
+    const y0=layer===0?cy-30:cy+30;
+    const tailDir=layer===0?-1:1;
+    for(let i=0;i<9;i++){
+      const x=80+i*(W-160)/9;
+      const wobble=Math.sin(time*2+i*0.5)*3;
+      // 亲水头
+      ctx.fillStyle='#10b981';
+      ctx.beginPath();ctx.arc(x,y0,9,0,7);ctx.fill();
+      // 疏水尾（两条）
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+      for(let k=-1;k<=1;k+=2){
+        ctx.beginPath();
+        ctx.moveTo(x,y0);
+        ctx.lineTo(x+k*4,y0+tailDir*20+wobble);
+        ctx.lineTo(x+k*3,y0+tailDir*40);
+        ctx.stroke();
+      }
+    }
+  }
+  drawText('亲水头（绿）朝外侧 · 疏水尾（黄）朝内侧',W/2,H-70,'#9ab0d0',12);
+  drawText('两层磷脂尾尾相对 → 双分子层',W/2,H-50,'#34d399',12);
+  drawText('控制物质进出细胞，构成生物膜',W/2,H-30,'#fbbf24',12);
+  // 标注
+  drawText('细胞外',W/2,cy-70,'#67e8f9',11);
+  drawText('细胞内（细胞质）',W/2,cy+80,'#67e8f9',11);
+}
+
+// ===== 场景：固醇类 =====
+function drawSteroidScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('固醇类 · 胆固醇 / 性激素 / 维生素D',W/2,30,'#fbbf24',16);
+  const items=[
+    {t:'胆固醇',d:'膜结构组分\n运输脂质',c:'#fbbf24',y:H/2-30},
+    {t:'性激素',d:'促进生殖器官\n发育与代谢',c:'#ec4899',y:H/2+30},
+    {t:'维生素D',d:'促进 Ca、P\n吸收利用',c:'#67e8f9',y:H/2+90},
+  ];
+  items.forEach((m,i)=>{
+    const x=120+i*(W-240)/3;
+    const pulse=8+Math.sin(time*2+i)*4;
+    // 环状结构示意（4 个融合环）
+    ctx.fillStyle=m.c+'33';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    for(let k=0;k<3;k++){
+      ctx.beginPath();ctx.arc(x+k*22-22,m.y-10,pulse+4,0,7);ctx.fill();ctx.stroke();
+    }
+    ctx.beginPath();ctx.arc(x+22,m.y+12,pulse+4,0,7);ctx.fill();ctx.stroke();
+    drawText(m.t,x,m.y+50,m.c,14);
+    m.d.split('\n').forEach((line,j)=>{
+      drawText(line,x,m.y+75+j*16,'#fff',11);
+    });
+  });
+  drawText('固醇含四个碳环骨架，调节生物代谢',W/2,H-45,'#9ab0d0',12);
+  drawText('胆固醇过高易引发心血管疾病',W/2,H-25,'#f87171',12);
+}
+
+// ===== 场景：能量对比 =====
+function drawEnergyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('能量对比 · 1 g 糖 vs 1 g 脂肪',W/2,30,'#fbbf24',16);
+  const baseY=H-80,maxH=240;
+  // 糖柱
+  const x1=W/2-140,sugH=maxH*17/39;
+  const pulse1=Math.sin(time*2)*4;
+  ctx.fillStyle='rgba(251,191,36,0.4)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(x1,baseY-sugH,100,sugH,6);ctx.fill();ctx.stroke();
+  drawText('1 g 糖',x1+50,baseY+20,'#fbbf24',13);
+  drawText('17 kJ',x1+50,baseY-sugH-15,'#fbbf24',16);
+  // 脂肪柱
+  const x2=W/2+40,fatH=maxH+pulse1;
+  ctx.fillStyle='rgba(16,185,129,0.4)';ctx.strokeStyle='#10b981';ctx.lineWidth=2;
+  roundRect(x2,baseY-fatH,100,fatH,6);ctx.fill();ctx.stroke();
+  drawText('1 g 脂肪',x2+50,baseY+20,'#10b981',13);
+  drawText('39 kJ',x2+50,baseY-fatH-15,'#10b981',16);
+  // 比例提示
+  drawText('脂肪储能约为糖的 2 倍',W/2,90,'#34d399',14);
+  drawText('糖类：主要能源（易分解供能）',W/2,H-30,'#9ab0d0',12);
+  drawText('脂肪：主要储能（能量密度高）',W/2,H-50,'#10b981',12);
+  // 标注
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(x1+50,baseY-sugH);ctx.lineTo(x2-10,baseY-sugH);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('约 2 倍',(x1+x2)/2,baseY-sugH-12,'#a78bfa',11);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 易混点辨析',W/2,30,'#fbbf24',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#10b981';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,120,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#10b981',13,'left');
+  drawText('下列关于细胞中物质的叙述：',120,115,'#fff',13,'left');
+  drawText('① 细胞主要能源是糖类；',120,138,'#fff',13,'left');
+  drawText('② 主要储能物质是脂肪；③ 生物膜骨架是磷脂。',120,161,'#fff',13,'left');
+  const steps=[
+    {t:'①',d:'主要能源：葡萄糖（糖类）',c:'#fbbf24'},
+    {t:'②',d:'主要储能：脂肪（39 kJ/g）',c:'#10b981'},
+    {t:'③',d:'生物膜骨架：磷脂双分子层',c:'#34d399'},
+    {t:'④',d:'胆固醇可参与血液脂质运输',c:'#ec4899'},
+    {t:'⑤',d:'纤维素构成植物细胞壁',c:'#67e8f9'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=215+i*42;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,34,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+17,s.c,13,'left');
+    drawText(s.d,260,y+17,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('糖类与脂质 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'主要能源',d:'糖类（葡萄糖）',c:'#fbbf24'},
+    {t:'主要储能',d:'脂肪（39 kJ/g）',c:'#10b981'},
+    {t:'生物膜骨架',d:'磷脂双分子层',c:'#34d399'},
+    {t:'细胞识别',d:'糖蛋白糖链',c:'#67e8f9'},
+    {t:'代谢调节',d:'固醇类物质',c:'#ec4899'},
+    {t:'结构支持',d:'纤维素（细胞壁）',c:'#a78bfa'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawSugarClassScene(t);
+  else if(stepIdx===1)drawGlucoseScene(t);
+  else if(stepIdx===2)drawStarchScene(t);
+  else if(stepIdx===3)drawStarchScene(t);
+  else if(stepIdx===4)drawEnergyScene(t);
+  else if(stepIdx===5)drawFatScene(t);
+  else if(stepIdx===6)drawFatScene(t);
+  else if(stepIdx===7)drawPhosphoScene(t);
+  else if(stepIdx===8)drawSteroidScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

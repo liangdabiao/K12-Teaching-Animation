@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据库索引与B+树 · B+树结构 · 为什么用B+树</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#f59e0b;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(245,158,11,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(245,158,11,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">数据库索引与B+树</span><span class="subtitle">B+树结构 · 为什么数据库用B+树</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>索引意义</h4><div class="v">避免全表扫描<br>查找 O(log n) 极快</div></div>
+  <div class="card s2"><div class="num">2</div><h4>B 树</h4><div class="v">多路平衡查找树<br>节点存键值+数据</div></div>
+  <div class="card s3"><div class="num">3</div><h4>B+ 树</h4><div class="v">数据只在叶子<br>叶子链表相连</div></div>
+  <div class="card s4"><div class="num">4</div><h4>为何选B+树</h4><div class="v">矮胖3-4层存亿级<br>范围查询走链表</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">索引意义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'为什么需要索引',body:'<strong>没有索引</strong>时，数据库要<strong>全表扫描</strong>，逐行比对直到找到目标，数据量大时极慢。<strong>有索引</strong>后，数据库用 <strong>B+树</strong> 组织数据，查找复杂度从 O(n) 降到 <code>O(log n)</code>，亿级数据只需 3-4 次 IO。',points:{title:'索引核心价值',items:['<strong>无索引</strong>：全表扫描 O(n)','<strong>有索引</strong>：B+树查找 O(log n)','<strong>类比</strong>：字典目录 vs 逐页翻','<strong>1亿行</strong>：全表1亿次 vs B+树3-4次']}},
+  {tag:'基础',name:'索引的代价',body:'索引不是免费的。<strong>占额外空间</strong>（索引本身要存树结构）；<strong>增删改变慢</strong>（每次修改要同步维护树结构）。所以索引要建在高频查询列上，不能滥用。',points:{title:'索引三大代价',items:['<strong>空间代价</strong>：索引占额外磁盘','<strong>写入代价</strong>：INSERT/UPDATE/DELETE 要维护树','<strong>选择原则</strong>：建在 WHERE/JOIN/ORDER BY 列','<strong>不要滥用</strong>：低频列不建索引']}},
+  {tag:'基础',name:'索引类型',body:'<strong>主键索引</strong>（聚簇索引，数据按主键排列）；<strong>唯一索引</strong>（列值唯一，防重复）；<strong>普通索引</strong>（加速查询，无约束）；<strong>联合索引</strong>（多列组合，遵循最左前缀）。',points:{title:'四种常见索引',items:['<strong>主键索引</strong>：聚簇，数据存叶子','<strong>唯一索引</strong>：UNIQUE，防重复','<strong>普通索引</strong>：KEY，仅加速','<strong>联合索引</strong>：(a,b,c) 遵循最左前缀']}},
+  {tag:'B树',name:'二叉搜索树局限',body:'<strong>二叉搜索树（BST）</strong>每个节点最多 2 个子节点。当数据量大时<strong>树高太大</strong>（100万数据树高约20），每次比较可能要一次磁盘 IO，<strong>20 次 IO</strong> 太慢。磁盘 IO 是性能瓶颈。',points:{title:'BST 三大问题',items:['<strong>树高太大</strong>：100万数据高约20','<strong>IO 次数多</strong>：每层可能 1 次 IO','<strong>不平衡风险</strong>：退化为链表 O(n)','<strong>磁盘不友好</strong>：节点小，IO 利用率低']}},
+  {tag:'B树',name:'B 树结构',body:'<strong>B 树</strong>是<strong>多路平衡查找树</strong>，每个节点有多个键值和多个子节点指针。<strong>每个节点既存键值又存数据</strong>。一个节点对应一页磁盘（16KB），一次 IO 读入多个键值，大幅减少树高。',points:{title:'B 树特点',items:['<strong>多路</strong>：m 阶 B 树每节点最多 m 子','<strong>键值+数据</strong>：内部节点也存数据','<strong>平衡</strong>：所有叶子在同一层','<strong>树矮</strong>：100万数据约2-3层']}},
+  {tag:'B+树',name:'B+树与B树区别',body:'<strong>B+树</strong>是 B 树变种：<strong>数据只存在叶子节点</strong>，非叶子节点只存<strong>索引键</strong>用于路由；<strong>叶子节点用链表相连</strong>（双向链表），支持范围查询和顺序遍历。这是数据库选择 B+树的关键。',points:{title:'B+树三大改进',items:['<strong>数据只在叶子</strong>：非叶子纯索引','<strong>叶子链表</strong>：支持范围扫描','<strong>非叶子更紧凑</strong>：单页存更多键','<strong>查询稳定</strong>：都到叶子，时间一致']}},
+  {tag:'B+树',name:'B+树查找流程',body:'<strong>查找流程</strong>：从<strong>根节点</strong>开始 → 沿指针向下（键值比较决定走哪个子树）→ 到达<strong>叶子节点</strong> → 在叶子中找到目标数据。每次 IO 读入一页（含多个键值）。',points:{title:'查找四步',items:['<strong>① 从根开始</strong>：读根节点一页','<strong>② 键值路由</strong>：决定下一层走哪','<strong>③ 到达叶子</strong>：数据所在页','<strong>④ 范围查询</strong>：沿叶子链表扫描']}},
+  {tag:'原理',name:'为何B+树更适合磁盘',body:'<strong>B+树矮胖</strong>：非叶子不存数据，单页能存更多键，扇出更大，<strong>3-4 层可存亿级数据</strong>。<strong>范围查询</strong>（WHERE id BETWEEN 10 AND 50）直接走叶子链表，无需回根，极快。这是数据库选 B+树的核心理由。',points:{title:'磁盘友好四点',items:['<strong>矮胖</strong>：扇出大，树高 3-4 层','<strong>亿级数据</strong>：3-4 层即可覆盖','<strong>范围查询</strong>：叶子链表一次定位','<strong>页式IO</strong>：一次读一页 16KB']}},
+  {tag:'原理',name:'MySQL InnoDB 一页',body:'<strong>InnoDB 默认页大小 16KB</strong>。假设主键 8 字节、指针 6 字节，非叶子一页约存 1170 个键；叶子节点存完整行数据（假设 1KB），一页存 16 行。<strong>三层 B+树</strong>：1170 × 1170 × 16 ≈ <code>2189万行</code>。',points:{title:'三层 B+树容量',items:['<strong>非叶子页</strong>：16KB / (8+6)B ≈ 1170 键','<strong>叶子页</strong>：16KB / 1KB ≈ 16 行','<strong>三层容量</strong>：1170 × 1170 × 16 ≈ 2189万','<strong>四层</strong>：可达 250亿行']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>例题</strong>：表中 1 亿行数据，主键 BIGINT，InnoDB 默认页。问 B+树层数与查找 IO 次数。<strong>解</strong>：三层容量约 2189万，四层约 250亿，1亿行需要 <strong>3-4 层</strong>，查找仅需 <strong>3-4 次磁盘 IO</strong>。',points:{title:'核心速记',items:['<strong>层数</strong>：1亿行约3-4层','<strong>IO次数</strong>：等于层数 3-4次','<strong>B+树</strong>：数据在叶子+链表','<strong>本质</strong>：减少磁盘 IO 次数']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：全表扫描 =====
+function drawLinearScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('全表扫描 vs 索引查找',W/2,30,'#f59e0b',16);
+  const rows=12;
+  const startY=70;
+  const rowH=Math.min(28,(H-150)/rows);
+  // 当前扫描位置
+  const cur=(Math.floor(time*2))%rows;
+  // 表数据
+  drawText('users 表（无索引）',100,startY-20,'#9ab0d0',12,'left');
+  for(let i=0;i<rows;i++){
+    const y=startY+i*rowH;
+    const hit=(i===cur);
+    ctx.fillStyle=hit?'rgba(245,158,11,0.25)':'rgba(255,255,255,0.04)';
+    ctx.strokeStyle=hit?'#f59e0b':'#243a5e';ctx.lineWidth=1.5;
+    roundRect(40,y,200,rowH-4,4);ctx.fill();ctx.stroke();
+    drawText('id='+(i*13+7),140,y+rowH/2-2,hit?'#fde68a':'#9ab0d0',12);
+    drawText('name=user'+i,140,y+rowH/2+10,'#5a6a8a',10);
+    if(hit){
+      drawText('← 正在比对',250,y+rowH/2,'#f59e0b',11,'left');
+    }
+  }
+  // 右侧 B+树查找对比
+  const rx=W-260;
+  drawText('B+树查找（有索引）',rx,startY-20,'#06b6d4',12,'left');
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(rx,startY,220,H-150,8);ctx.fill();ctx.stroke();
+  // 三层节点示意
+  const levels=['根','中间','叶子'];
+  for(let i=0;i<3;i++){
+    const y=startY+60+i*((H-200)/3);
+    ctx.fillStyle='rgba(6,182,212,0.2)';ctx.strokeStyle='#06b6d4';
+    roundRect(rx+40,y,140,32,6);ctx.fill();ctx.stroke();
+    drawText('第'+(i+1)+'层 '+levels[i],rx+110,y+16,'#06b6d4',12);
+    // 高亮当前层
+    if(i===Math.floor((time*1.5)%3)){
+      ctx.strokeStyle='#f59e0b';ctx.lineWidth=3;
+      roundRect(rx+40,y,140,32,6);ctx.stroke();
+      drawText('IO '+(i+1),rx+200,y+16,'#f59e0b',12);
+    }
+  }
+  drawText('3-4次IO 定位',rx+110,H-70,'#34d399',13);
+  // 底部说明
+  drawText('全表扫描：O(n)，逐行比对，1亿行=1亿次',W/2,H-45,'#f87171',12);
+  drawText('B+树查找：O(log n)，3-4层即可覆盖亿级数据',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景：二叉搜索树 =====
+function drawBSTScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('二叉搜索树 · 树高太大',W/2,30,'#f59e0b',16);
+  drawText('100万数据 → 树高约20 → 20次磁盘IO（灾难）',W/2,55,'#f87171',12);
+  const cx=W/2;
+  // 画一棵高瘦的 BST
+  const levels=10;
+  const startY=85;
+  const levelH=Math.min(28,(H-180)/levels);
+  const highlightLevel=Math.floor((time*1.5)%levels);
+  let nodes=[];
+  // 生成一棵偏斜的 BST
+  for(let i=0;i<levels;i++){
+    const offset=(i%2===0?-1:1)*Math.min(i*8,60);
+    nodes.push({x:cx+offset,y:startY+i*levelH,lvl:i});
+  }
+  // 连线
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  for(let i=0;i<nodes.length-1;i++){
+    ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[i+1].x,nodes[i+1].y);ctx.stroke();
+  }
+  // 节点
+  nodes.forEach((n,i)=>{
+    const hit=(i===highlightLevel);
+    ctx.fillStyle=hit?'#f59e0b':'#172a4a';
+    ctx.strokeStyle=hit?'#fbbf24':'#06b6d4';ctx.lineWidth=hit?3:1.5;
+    ctx.beginPath();ctx.arc(n.x,n.y,hit?14:10,0,7);ctx.fill();ctx.stroke();
+    drawText((i*97+3)%100,n.x,n.y,hit?'#1a1a1a':'#9ab0d0',10);
+    if(hit){
+      drawText('第'+(i+1)+'层 · IO '+(i+1),n.x+90,n.y,'#f59e0b',11,'left');
+    }
+  });
+  // 标注树高
+  drawText('树高 H ≈ 20',40,startY+levels*levelH/2,'#f87171',14,'left');
+  drawText('（仅示意前10层）',40,startY+levels*levelH/2+22,'#5a6a8a',10,'left');
+  // 问题
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+  roundRect(W-260,H-90,240,50,8);ctx.fill();ctx.stroke();
+  drawText('问题：每层一次IO',W-140,H-75,'#f87171',12);
+  drawText('20层 = 20次磁盘IO',W-140,H-55,'#f87171',12);
+  drawText('二叉树 → 节点少 → 树高 → IO 多',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：B 树结构 =====
+function drawBTreeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('B 树 · 多路平衡查找树',W/2,30,'#f59e0b',16);
+  drawText('每个节点既存键值又存数据',W/2,55,'#9ab0d0',12);
+  const cx=W/2;
+  const highlight=Math.floor((time*1.2)%3);
+  // 根节点（3键）
+  const rootY=100;
+  drawBTreeNode(cx-90,rootY,[10,30,60],true,highlight===0,'#f59e0b');
+  // 中间层（4个节点）
+  const midY=210;
+  const mids=[[-80,[3,7]],[60,[18,25]],[200,[40,50]],[340,[70,85]]];
+  mids.forEach((m,i)=>{
+    drawBTreeNode(cx-200+m[0],midY,m[1],true,highlight===1&&i===1,'#06b6d4');
+    // 连线
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+    const rootCx=cx-90+60*(i);
+    ctx.beginPath();ctx.moveTo(cx-90+30,rootY+22);ctx.lineTo(cx-200+m[0]+30,midY);ctx.stroke();
+  });
+  // 叶子层（数据节点）
+  const leafY=330;
+  const leaves=[[-220,[1,2]],[-120,[4,6]],[20,[8,9]],[120,[16,17]],[220,[19,22]],[320,[43,48]]];
+  leaves.forEach((l,i)=>{
+    drawBTreeNode(cx-260+l[0],leafY,l[1],false,highlight===2&&i<3,'#34d399');
+  });
+  // 标注
+  drawText('内部节点 = 键值 + 数据',cx-150,rootY-20,'#fbbf24',12);
+  drawText('叶子节点 = 键值 + 数据',cx-150,leafY-20,'#34d399',12);
+  // 特点
+  ctx.fillStyle='rgba(245,158,11,0.08)';ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;
+  roundRect(40,H-95,200,65,8);ctx.fill();ctx.stroke();
+  drawText('B树特点',140,H-78,'#f59e0b',13);
+  drawText('每个节点存键值+数据',140,H-58,'#9ab0d0',11);
+  drawText('一次IO读一页多键值',140,H-42,'#9ab0d0',11);
+  // 问题
+  ctx.fillStyle='rgba(248,113,113,0.08)';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+  roundRect(W-240,H-95,200,65,8);ctx.fill();ctx.stroke();
+  drawText('B树局限',W-140,H-78,'#f87171',13);
+  drawText('范围查询要回根多次',W-140,H-58,'#9ab0d0',11);
+  drawText('非叶子存数据占空间',W-140,H-42,'#9ab0d0',11);
+}
+
+function drawBTreeNode(x,y,keys,isInternal,highlight,color){
+  const w=keys.length*32+10;
+  ctx.fillStyle=highlight?color+'55':'rgba(255,255,255,0.04)';
+  ctx.strokeStyle=highlight?color:'#3a4a6a';ctx.lineWidth=highlight?2.5:1.5;
+  if(highlight){ctx.shadowColor=color;ctx.shadowBlur=10;}
+  roundRect(x,y,w,24,4);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  keys.forEach((k,i)=>{
+    drawText(k,x+16+i*32,y+12,highlight?'#1a1a1a':'#e8eef8',11);
+    if(i<keys.length-1){
+      ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(x+16+i*32+16,y+2);ctx.lineTo(x+16+i*32+16,y+22);ctx.stroke();
+    }
+  });
+  if(isInternal){
+    drawText('K+D',x+w+8,y+12,color,9,'left');
+  }else{
+    drawText('D',x+w+8,y+12,color,9,'left');
+  }
+}
+
+// ===== 场景：B+ 树结构 =====
+function drawBPlusScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('B+ 树 · 数据只在叶子 · 叶子链表相连',W/2,30,'#06b6d4',16);
+  const cx=W/2;
+  const highlight=Math.floor((time*1.2)%3);
+  // 根节点（仅索引）
+  const rootY=100;
+  drawBPlusIndexNode(cx-60,rootY,[10,30,60],highlight===0,'#f59e0b');
+  // 中间层（仅索引）
+  const midY=200;
+  const mids=[[-180,[3,7]],[20,[18,25]],[200,[40,50]],[380,[70,85]]];
+  mids.forEach((m,i)=>{
+    drawBPlusIndexNode(cx-240+m[0],midY,m[1],highlight===1&&i===1,'#06b6d4');
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(cx-60+40,rootY+22);ctx.lineTo(cx-240+m[0]+30,midY);ctx.stroke();
+  });
+  // 叶子层（数据 + 链表）
+  const leafY=320;
+  const leaves=[[-260,[1,2,3]],[-140,[5,7]],[20,[10,12]],[140,[18,22]],[260,[40,45]],[380,[60,70]]];
+  const leafW=leaves.length;
+  leaves.forEach((l,i)=>{
+    drawBPlusLeafNode(cx-300+l[0],leafY,l[1],highlight===2&&i>=2&&i<=4,'#34d399');
+  });
+  // 叶子链表（关键特征）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.setLineDash([4,3]);
+  for(let i=0;i<leaves.length-1;i++){
+    const x1=cx-300+leaves[i][0]+leaves[i][1].length*30;
+    const x2=cx-300+leaves[i+1][0];
+    ctx.beginPath();ctx.moveTo(x1+5,leafY+12);ctx.lineTo(x2-5,leafY+12);ctx.stroke();
+    // 箭头
+    ctx.fillStyle='#34d399';
+    ctx.beginPath();ctx.moveTo(x2-5,leafY+12);ctx.lineTo(x2-10,leafY+8);ctx.lineTo(x2-10,leafY+16);ctx.fill();
+  }
+  ctx.setLineDash([]);
+  // 标注
+  drawText('非叶子 = 纯索引（路由）',cx-200,rootY-20,'#f59e0b',12);
+  drawText('叶子 = 数据 + 双向链表',cx-200,leafY-20,'#34d399',12);
+  drawText('←— 叶子链表支持范围扫描 —→',cx,leafY+55,'#34d399',12);
+  // 优势
+  ctx.fillStyle='rgba(52,211,153,0.08)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(40,H-80,200,50,8);ctx.fill();ctx.stroke();
+  drawText('B+树优势',140,H-62,'#34d399',13);
+  drawText('非叶子紧凑·扇出大',140,H-42,'#9ab0d0',11);
+  ctx.fillStyle='rgba(6,182,212,0.08)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(W-240,H-80,200,50,8);ctx.fill();ctx.stroke();
+  drawText('范围查询',W-140,H-62,'#06b6d4',13);
+  drawText('走链表一次到位',W-140,H-42,'#9ab0d0',11);
+}
+
+function drawBPlusIndexNode(x,y,keys,highlight,color){
+  const w=keys.length*30+10;
+  ctx.fillStyle=highlight?color+'55':'rgba(255,255,255,0.04)';
+  ctx.strokeStyle=highlight?color:'#3a4a6a';ctx.lineWidth=highlight?2.5:1.5;
+  if(highlight){ctx.shadowColor=color;ctx.shadowBlur=10;}
+  roundRect(x,y,w,24,4);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  keys.forEach((k,i)=>{
+    drawText(k,x+15+i*30,y+12,highlight?'#1a1a1a':'#e8eef8',11);
+  });
+  drawText('索引',x+w+6,y+12,color,9,'left');
+}
+
+function drawBPlusLeafNode(x,y,keys,highlight,color){
+  const w=keys.length*30+10;
+  ctx.fillStyle=highlight?color+'55':'rgba(52,211,153,0.1)';
+  ctx.strokeStyle=highlight?color:'#34d399';ctx.lineWidth=highlight?2.5:1.5;
+  if(highlight){ctx.shadowColor=color;ctx.shadowBlur=12;}
+  roundRect(x,y,w,24,4);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  keys.forEach((k,i)=>{
+    drawText(k+'D',x+15+i*30,y+12,highlight?'#1a1a1a':'#e8eef8',10);
+  });
+}
+
+// ===== 场景：B+树查找流程 =====
+function drawSearchScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('B+ 树查找流程 · 从根到叶子',W/2,30,'#f59e0b',16);
+  const target=42;
+  drawText('查找：SELECT * FROM t WHERE id = '+target,W/2,55,'#9ab0d0',13);
+  const cx=W/2;
+  // 三层结构
+  const phase=Math.floor((time*1.2)%4); // 0:根 1:中间 2:叶子 3:找到
+  // 根
+  const rootY=110;
+  const rootKeys=[10,30,60,90];
+  drawSearchNode(cx-80,rootY,rootKeys,phase>=0,'phase0',target,'#f59e0b');
+  if(phase===0){
+    drawText('① 读根节点（1次IO）',cx,rootY-25,'#f59e0b',13);
+    drawText(target+' > 30 → 走第3个指针',cx,rootY+45,'#fbbf24',12);
+  }
+  // 中间
+  const midY=220;
+  const midKeys=[35,45,55];
+  drawSearchNode(cx-50,midY,midKeys,phase>=1,'phase1',target,'#06b6d4');
+  ctx.strokeStyle=phase>=1?'#06b6d4':'#3a4a6a';ctx.lineWidth=phase>=1?2.5:1.5;
+  ctx.beginPath();ctx.moveTo(cx+15,rootY+24);ctx.lineTo(cx,midY);ctx.stroke();
+  if(phase===1){
+    drawText('② 读中间节点（1次IO）',cx,midY-25,'#06b6d4',13);
+    drawText(target+' > 35 且 '+target+' < 45 → 走第2指针',cx,midY+45,'#67e8f9',12);
+  }
+  // 叶子
+  const leafY=330;
+  const leafKeys=[40,41,42,43,44];
+  drawSearchNode(cx-80,leafY,leafKeys,phase>=2,'phase2',target,'#34d399',true);
+  ctx.strokeStyle=phase>=2?'#34d399':'#3a4a6a';ctx.lineWidth=phase>=2?2.5:1.5;
+  ctx.beginPath();ctx.moveTo(cx,midY+24);ctx.lineTo(cx,leafY);ctx.stroke();
+  if(phase===2){
+    drawText('③ 读叶子节点（1次IO）',cx,leafY-25,'#34d399',13);
+    drawText('在叶子中找到 '+target,target>0?cx+40:cx,leafY+45,'#34d399',12);
+  }
+  if(phase===3){
+    drawText('④ 找到！共 3 次磁盘IO',cx,H-80,'#34d399',15);
+    ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+    ctx.beginPath();ctx.arc(cx-80+15+2*30,leafY+12,18,0,7);ctx.stroke();
+    ctx.shadowBlur=0;
+  }
+  // 流程说明
+  ctx.fillStyle='rgba(245,158,11,0.08)';ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;
+  roundRect(40,H-55,180,30,6);ctx.fill();ctx.stroke();
+  drawText('每次IO读一页16KB',130,H-40,'#f59e0b',12);
+  ctx.fillStyle='rgba(52,211,153,0.08)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(W-220,H-55,180,30,6);ctx.fill();ctx.stroke();
+  drawText('总IO = 树高 = 3',W-130,H-40,'#34d399',12);
+}
+
+function drawSearchNode(x,y,keys,active,ph,target,color,isLeaf){
+  const w=keys.length*30+10;
+  ctx.fillStyle=active?color+'33':'rgba(255,255,255,0.04)';
+  ctx.strokeStyle=active?color:'#3a4a6a';ctx.lineWidth=active?2.5:1.5;
+  if(active){ctx.shadowColor=color;ctx.shadowBlur=12;}
+  roundRect(x,y,w,28,5);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  keys.forEach((k,i)=>{
+    const isHit=(k===target);
+    ctx.fillStyle=isHit?'#1a1a1a':(active?'#e8eef8':'#9ab0d0');
+    if(isHit){
+      ctx.fillStyle=color;
+      ctx.beginPath();ctx.arc(x+15+i*30,y+14,12,0,7);ctx.fill();
+      ctx.fillStyle='#1a1a1a';
+    }
+    drawText(k,x+15+i*30,y+14,null,11);
+  });
+}
+
+// ===== 场景：范围查询走叶子链表 =====
+function drawRangeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('范围查询 · 走叶子链表极快',W/2,30,'#06b6d4',16);
+  drawText('SELECT * FROM t WHERE id BETWEEN 10 AND 50',W/2,55,'#fbbf24',13);
+  const cx=W/2;
+  // 顶部 B+树索引结构（简化）
+  const idxY=100;
+  drawText('B+树索引',cx,idxY-15,'#f59e0b',12);
+  ctx.fillStyle='rgba(245,158,11,0.2)';ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;
+  roundRect(cx-60,idxY,120,24,4);ctx.fill();ctx.stroke();
+  drawText('根 → 叶子',cx,idxY+12,'#f59e0b',11);
+  // 连到叶子链表
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-100,idxY+24);ctx.lineTo(cx-100,170);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+100,idxY+24);ctx.lineTo(cx+100,170);ctx.stroke();
+  // 叶子链表（水平）
+  const leafY=200;
+  const data=[];
+  for(let v=5;v<=70;v+=5)data.push(v);
+  // 当前扫描进度
+  const progress=(Math.sin(time*1.5)*0.5+0.5);
+  const startIdx=data.indexOf(10);
+  const endIdx=data.indexOf(50);
+  // 扫描光标
+  const curIdx=startIdx+Math.floor(progress*(endIdx-startIdx));
+  // 画叶子节点（每个节点装一些数据）
+  const nodeSize=4;
+  const nodes=[];
+  for(let i=0;i<data.length;i+=nodeSize){
+    nodes.push(data.slice(i,i+nodeSize));
+  }
+  const totalW=W-160;
+  const nodeW=totalW/nodes.length;
+  nodes.forEach((n,i)=>{
+    const x=80+i*nodeW;
+    const inRange=n.some(v=>v>=10&&v<=50);
+    const isCur=n.includes(data[curIdx]);
+    ctx.fillStyle=isCur?'#06b6d4':(inRange?'rgba(52,211,153,0.25)':'rgba(255,255,255,0.04)');
+    ctx.strokeStyle=isCur?'#06b6d4':(inRange?'#34d399':'#3a4a6a');ctx.lineWidth=isCur?3:1.5;
+    if(isCur){ctx.shadowColor='#06b6d4';ctx.shadowBlur=12;}
+    roundRect(x+5,leafY,nodeW-10,40,5);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    n.forEach((v,j)=>{
+      const hit=(v>=10&&v<=50);
+      drawText(v,x+nodeW/2,leafY+12+(j%2===0?-4:8),hit?'#fff':'#5a6a8a',10);
+    });
+    // 链表箭头
+    if(i<nodes.length-1){
+      ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x+nodeW-5,leafY+20);ctx.lineTo(x+nodeW+5,leafY+20);ctx.stroke();
+    }
+  });
+  // 范围标注
+  drawText('起点 id=10',80+startIdx/nodeSize*nodeW+nodeW/2,leafY-20,'#34d399',12);
+  drawText('终点 id=50',80+endIdx/nodeSize*nodeW+nodeW/2,leafY-20,'#34d399',12);
+  // 范围框
+  const rx1=80+Math.floor(startIdx/nodeSize)*nodeW;
+  const rx2=80+(Math.floor(endIdx/nodeSize)+1)*nodeW;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.setLineDash([5,3]);
+  roundRect(rx1,leafY-5,rx2-rx1,50,6);ctx.stroke();
+  ctx.setLineDash([]);
+  // 结果统计
+  const collected=Math.max(0,curIdx-startIdx+1);
+  drawText('已扫描 '+collected+' 条（范围 10~50 共 '+(endIdx-startIdx+1)+' 条）',cx,H-70,'#06b6d4',13);
+  drawText('只需定位起点 → 沿链表向右扫描，无需回根',cx,H-45,'#34d399',12);
+  drawText('对比 B 树：范围查询要中序遍历回根多次',cx,H-25,'#f87171',11);
+}
+
+// ===== 场景：B树 vs B+树 对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('B 树 vs B+ 树 · 全面对比',W/2,30,'#f59e0b',16);
+  const cx=W/2;
+  // 左：B树
+  const lx=cx/2;
+  drawText('B 树',lx,65,'#f87171',15);
+  drawText('数据+索引混合',lx,85,'#9ab0d0',12);
+  // B树简化结构
+  drawCompareTree(lx,130,[true,true,true],0.7,'#f87171');
+  // 右：B+树
+  const rx=cx+cx/2;
+  drawText('B+ 树',rx,65,'#34d399',15);
+  drawText('数据只在叶子+链表',rx,85,'#9ab0d0',12);
+  drawCompareTree(rx,130,[false,false,true],0.7,'#34d399',true);
+  // 对比表
+  const tableY=H-180;
+  const rows=[
+    ['对比项','B 树','B+ 树'],
+    ['数据位置','所有节点','仅叶子'],
+    ['范围查询','中序遍历回根','叶子链表极快'],
+    ['非叶子扇出','较小','更大'],
+    ['查找稳定性','不一致','都到叶子一致'],
+  ];
+  const colW=(W-160)/3;
+  rows.forEach((r,i)=>{
+    const y=tableY+i*30;
+    r.forEach((c,j)=>{
+      const x=80+j*colW;
+      if(i===0){
+        ctx.fillStyle='rgba(245,158,11,0.2)';ctx.strokeStyle='#f59e0b';
+        roundRect(x+2,y,colW-4,26,4);ctx.fill();ctx.stroke();
+        drawText(c,x+colW/2,y+13,'#fbbf24',12);
+      }else if(j===0){
+        drawText(c,x+colW/2,y+13,'#9ab0d0',11);
+      }else{
+        const col=j===1?'#f87171':'#34d399';
+        drawText(c,x+colW/2,y+13,col,11);
+      }
+    });
+  });
+}
+
+function drawCompareTree(cx,startY,hasData,scale,color,isBPlus){
+  // 简化的三层树
+  const ys=[startY,startY+50,startY+100];
+  // 根
+  ctx.fillStyle=hasData[0]?color+'66':'rgba(255,255,255,0.04)';
+  ctx.strokeStyle=color;ctx.lineWidth=1.5;
+  roundRect(cx-40,ys[0],80,22,4);ctx.fill();ctx.stroke();
+  drawText(hasData[0]?'K+D':'K',cx,ys[0]+11,color,10);
+  // 中间
+  for(let i=-1;i<=1;i++){
+    ctx.fillStyle=hasData[1]?color+'44':'rgba(255,255,255,0.04)';
+    ctx.strokeStyle=color;
+    roundRect(cx+i*60-25,ys[1],50,20,4);ctx.fill();ctx.stroke();
+    drawText(hasData[1]?'K+D':'K',cx+i*60,ys[1]+10,color,9);
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx,ys[0]+22);ctx.lineTo(cx+i*60,ys[1]);ctx.stroke();
+  }
+  // 叶子
+  for(let i=-2;i<=2;i++){
+    ctx.fillStyle=hasData[2]?color+'55':'rgba(255,255,255,0.04)';
+    ctx.strokeStyle=color;
+    roundRect(cx+i*45-20,ys[2],40,20,4);ctx.fill();ctx.stroke();
+    drawText(hasData[2]?'K+D':'K',cx+i*45,ys[2]+10,color,9);
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx+(i>0?30:i<-1?-30:0),ys[1]+20);ctx.lineTo(cx+i*45,ys[2]);ctx.stroke();
+  }
+  // B+树叶子链表
+  if(isBPlus){
+    ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    ctx.setLineDash([3,2]);
+    for(let i=-2;i<2;i++){
+      ctx.beginPath();ctx.moveTo(cx+i*45+20,ys[2]+10);ctx.lineTo(cx+(i+1)*45-20,ys[2]+10);ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('数据库索引与 B+ 树 · 核心总结',W/2,40,'#f59e0b',18);
+  const items=[
+    {t:'索引本质',d:'排好序的数据结构',c:'#f59e0b'},
+    {t:'查找复杂度',d:'O(log n) 替代 O(n)',c:'#06b6d4'},
+    {t:'B+树结构',d:'数据只在叶子+链表',c:'#34d399'},
+    {t:'磁盘友好',d:'矮胖 3-4 层存亿级',c:'#a78bfa'},
+    {t:'范围查询',d:'走叶子链表极快',c:'#fb923c'},
+    {t:'InnoDB 一页',d:'16KB · 三层约2000万行',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+  drawText('核心：B+树用矮胖结构 + 叶子链表，最小化磁盘 IO 次数',W/2,H-40,'#34d399',13);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawLinearScene(t);
+  else if(stepIdx===1)drawLinearScene(t);
+  else if(stepIdx===2)drawLinearScene(t);
+  else if(stepIdx===3)drawBSTScene(t);
+  else if(stepIdx===4)drawBTreeScene(t);
+  else if(stepIdx===5)drawBPlusScene(t);
+  else if(stepIdx===6)drawSearchScene(t);
+  else if(stepIdx===7)drawRangeScene(t);
+  else if(stepIdx===8)drawCompareScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

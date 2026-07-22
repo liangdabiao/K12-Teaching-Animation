@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相对原子质量 · 相对分子质量 · 摩尔质量</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#f59e0b;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#f59e0b;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(245,158,11,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(245,158,11,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">相对原子质量与相对分子质量</span><span class="subtitle">计算技巧 · 摩尔质量联系 · 质量分数</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>相对原子质量 Ar</h4><div class="v">某原子质量 / (碳-12 质量 ×1/12)<br>标准：碳-12 原子质量的十二分之一</div></div>
+  <div class="card s2"><div class="num">2</div><h4>相对分子质量 Mr</h4><div class="v">各原子相对质量 × 个数之和<br>如 H₂O = 2×1 + 16 = 18</div></div>
+  <div class="card s3"><div class="num">3</div><h4>摩尔质量 M</h4><div class="v">数值上 = 相对分子质量<br>单位 g/mol，M = m / n</div></div>
+  <div class="card s4"><div class="num">4</div><h4>计算技巧</h4><div class="v">先写化学式 → 查表 → 乘个数<br>再求和，最后算质量分数</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">相对原子质量</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'相对原子质量定义',body:'<strong>相对原子质量</strong>（Ar）以<strong>碳-12 原子质量的 1/12</strong> 作为标准，把其他原子的<strong>实际质量</strong>与它比较得到的比值，<strong>单位为 1</strong>（无单位）。公式：<code>Ar = 某原子实际质量 / (碳-12 原子质量 × 1/12)</code>。',points:{title:'定义要点',items:['<strong>标准</strong>：碳-12 原子质量的十二分之一','<strong>公式</strong>：Ar = m(原子) / (m(C-12)/12)','<strong>性质</strong>：比值，无单位','<strong>例</strong>：氧原子 Ar ≈ 16']}},
+  {tag:'基础',name:'近似相对原子质量',body:'<strong>近似计算</strong>：相对原子质量 ≈ <strong>质子数 + 中子数</strong>（即质量数 A）。电子质量极小可忽略。例：钠 Na 质子数 11，中子数 12，近似 Ar ≈ 23。',points:{title:'近似算法',items:['<strong>质子数</strong>：= 核电荷数 = 原子序数','<strong>中子数</strong>：= 质量数 − 质子数','<strong>近似 Ar</strong>：质子数 + 中子数','<strong>误差</strong>：与精确值有少量偏差']}},
+  {tag:'查表',name:'查周期表得 Ar',body:'<strong>元素周期表</strong>每个元素格中，<strong>原子序数</strong>在上方，<strong>元素符号</strong>在中间，<strong>相对原子质量</strong>在下方。可直接查表得到精确 Ar 值。',points:{title:'查表技巧',items:['<strong>原子序数</strong>：左上角数字（= 质子数）','<strong>元素符号</strong>：中间大写字母','<strong>相对原子质量</strong>：下方数字','<strong>常见值</strong>：H=1, C=12, N=14, O=16, Na=23, S=32, Cl=35.5']}},
+  {tag:'计算',name:'相对分子质量 Mr',body:'<strong>相对分子质量</strong>（Mr）= 化学式中<strong>各元素相对原子质量 × 原子个数</strong>之和。单位为 1（无单位）。',points:{title:'Mr 计算步骤',items:['<strong>步骤1</strong>：写出正确化学式','<strong>步骤2</strong>：查各元素 Ar','<strong>步骤3</strong>：Ar × 原子个数','<strong>步骤4</strong>：求和得 Mr']}},
+  {tag:'计算',name:'计算示例 H₂O/CO₂/H₂SO₄',body:'<strong>H₂O</strong>：2×1 + 16 = <code>18</code>；<strong>CO₂</strong>：12 + 2×16 = <code>44</code>；<strong>H₂SO₄</strong>：2×1 + 32 + 4×16 = <code>98</code>。注意括号要展开：Ca(OH)₂ = 40 + 2×(16+1) = 74。',points:{title:'三个经典示例',items:['<strong>H₂O</strong>：2×1 + 16 = 18','<strong>CO₂</strong>：12 + 2×16 = 44','<strong>H₂SO₄</strong>：2×1 + 32 + 4×16 = 98','<strong>Ca(OH)₂</strong>：40 + 2×(16+1) = 74']}},
+  {tag:'摩尔',name:'摩尔质量 M',body:'<strong>摩尔质量</strong>（M）是<strong>1 mol 物质的质量</strong>，单位 <code>g/mol</code>。<strong>数值上等于</strong>相对原子质量或相对分子质量。例：H₂O 的 M = 18 g/mol。',points:{title:'M 与 Mr 的关系',items:['<strong>数值相等</strong>：M 的数 = Mr 的数','<strong>单位不同</strong>：M 单位 g/mol，Mr 无单位','<strong>意义</strong>：1 mol 物质的质量','<strong>例</strong>：1 mol H₂O 重 18 g']}},
+  {tag:'摩尔',name:'m = M · n 关系',body:'<strong>物质质量 m</strong>、<strong>摩尔质量 M</strong>、<strong>物质的量 n</strong> 三者关系：<code>m = M × n</code>，或 <code>n = m / M</code>。n 单位 mol，m 单位 g，M 单位 g/mol。',points:{title:'三角公式',items:['<strong>m = M × n</strong>：求质量','<strong>n = m / M</strong>：求物质的量','<strong>M = m / n</strong>：求摩尔质量','<strong>例</strong>：36 g H₂O 为 2 mol']}},
+  {tag:'计算',name:'元素质量分数',body:'<strong>元素质量分数</strong>=（某元素 Ar × 个数）/ Mr × 100%。例：H₂O 中氢元素质量分数 = <code>2×1/18 = 11.1%</code>，氧元素 = <code>16/18 = 88.9%</code>。',points:{title:'质量分数公式',items:['<strong>公式</strong>：w(元素) = (Ar × 个数) / Mr × 100%','<strong>H₂O 中 H</strong>：2/18 ≈ 11.1%','<strong>H₂O 中 O</strong>：16/18 ≈ 88.9%','<strong>验证</strong>：各元素质量分数之和 = 100%']}},
+  {tag:'例题',name:'典型例题 NaCl',body:'<strong>例题</strong>：求 500 g NaCl 中钠元素的质量。解：NaCl Mr = 23+35.5 = 58.5，钠质量分数 = 23/58.5 ≈ 39.3%，钠质量 = 500 × 39.3% = <code>196.6 g</code>。',points:{title:'解题三步',items:['<strong>步骤1</strong>：求 NaCl 的 Mr = 58.5','<strong>步骤2</strong>：钠质量分数 = 23/58.5','<strong>步骤3</strong>：m(Na) = 500 × 23/58.5 ≈ 196.6 g','<strong>结论</strong>：500 g NaCl 含 Na 约 196.6 g']}},
+  {tag:'总结',name:'核心速记',body:'相对原子质量 Ar 以<strong>碳-12 的 1/12</strong> 为标准；相对分子质量 Mr 是<strong>各 Ar × 个数之和</strong>；摩尔质量 M <strong>数值 = Mr</strong>，单位 g/mol；质量公式 <code>m = M·n</code>；元素质量分数 = <code>Ar×个数 / Mr</code>。',points:{title:'五句话总结',items:['<strong>Ar 定义</strong>：以碳-12 的 1/12 为标准','<strong>Mr 计算</strong>：Σ(Ar × 个数)','<strong>M 与 Mr</strong>：数值相等，单位不同','<strong>核心公式</strong>：m = M·n','<strong>质量分数</strong>：w = Ar×个数 / Mr ×100%']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景1：天平比喻（碳-12 标准）=====
+function drawScaleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('相对原子质量 · 碳-12 标准天平',W/2,30,'#f59e0b',16);
+  const cx=W/2,cy=H/2+30;
+  // 天平支架
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx,cy+90);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-60,cy+90);ctx.lineTo(cx+60,cy+90);ctx.stroke();
+  // 横梁（随时间摆动）
+  const ang=Math.sin(time*1.2)*0.08;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(ang);
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(-180,0);ctx.lineTo(180,0);ctx.stroke();
+  // 左盘：碳-12（标准）
+  ctx.fillStyle='rgba(6,182,212,0.25)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(-150,30,55,18,0,0,7);ctx.fill();ctx.stroke();
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(-150,0);ctx.lineTo(-150-25,30);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-150,0);ctx.lineTo(-150+25,30);ctx.stroke();
+  drawText('碳-12',-150,30,'#06b6d4',13);
+  drawText('标准 = 12',-150,52,'#67e8f9',11);
+  // 右盘：某原子（氧）
+  const wobble=Math.sin(time*1.2)*2;
+  ctx.fillStyle='rgba(245,158,11,0.25)';ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(150+wobble,32,50,16,0,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(150,0);ctx.lineTo(125,32);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(150,0);ctx.lineTo(175,32);ctx.stroke();
+  drawText('氧原子',150+wobble,32,'#f59e0b',13);
+  drawText('Ar ≈ 16',150+wobble,54,'#fde68a',11);
+  ctx.restore();
+  // 中央刻度
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(cx,cy,5,0,7);ctx.fill();
+  // 说明
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#f59e0b';ctx.lineWidth=1;
+  roundRect(80,H-110,W-160,75,8);ctx.fill();ctx.stroke();
+  drawText('标准：碳-12 原子质量的 1/12 作为单位',W/2,H-88,'#fff',13);
+  drawText('Ar = 某原子质量 ÷ (碳-12 质量 / 12)',W/2,H-65,'#f59e0b',13);
+  drawText('氧原子质量约为标准的 16 倍 → Ar(O) = 16',W/2,H-42,'#34d399',12);
+}
+
+// ===== 场景2：H₂O 分子质量计算 =====
+function drawCalcScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('相对分子质量计算 · H₂O = 18',W/2,30,'#f59e0b',16);
+  // 化学式
+  ctx.font='bold 32px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('H₂O',W/2,80);
+  // 分子结构（动画摆动）
+  const cx=W/2,cy=H/2-10;
+  const sway=Math.sin(time*2)*5;
+  // 氧原子
+  ctx.fillStyle='rgba(245,158,11,0.85)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,38,0,7);ctx.fill();ctx.stroke();
+  drawText('O',cx,cy,'#1a1a1a',22);
+  drawText('Ar=16',cx,cy+52,'#f59e0b',12);
+  // 两个氢原子
+  const hy1=cy+30+sway,hy2=cy+30-sway;
+  [-1,1].forEach((s,i)=>{
+    const hx=cx+s*70,hy=cy+25+i*0+sway*s;
+    ctx.fillStyle='rgba(6,182,212,0.85)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(hx,hy,20,0,7);ctx.fill();ctx.stroke();
+    drawText('H',hx,hy,'#1a1a1a',15);
+    drawText('Ar=1',hx,hy+32,'#06b6d4',11);
+    // 键
+    ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(hx,hy);ctx.stroke();
+  });
+  // 计算步骤
+  const steps=[
+    {t:'2 × H',d:'= 2 × 1 = 2',c:'#06b6d4'},
+    {t:'+ 1 × O',d:'= 1 × 16 = 16',c:'#f59e0b'},
+    {t:'= Mr(H₂O)',d:'= 2 + 16 = 18',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=H-150+i*40;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(W/2-180,y,360,32,6);ctx.fill();ctx.stroke();
+    drawText(s.t,W/2-130,y+16,s.c,13,'left');
+    drawText(s.d,W/2+80,y+16,'#fff',13,'left');
+  });
+}
+
+// ===== 场景3：元素周期表（前 20 号）=====
+function drawTableScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('前 20 号元素相对原子质量表',W/2,30,'#f59e0b',16);
+  const data=[
+    [1,'H','1.008'],[2,'He','4.003'],
+    [3,'Li','6.941'],[4,'Be','9.012'],[5,'B','10.811'],[6,'C','12.011'],[7,'N','14.007'],[8,'O','16.00'],[9,'F','19.00'],[10,'Ne','20.180'],
+    [11,'Na','22.990'],[12,'Mg','24.305'],[13,'Al','26.982'],[14,'Si','28.086'],[15,'P','30.974'],[16,'S','32.065'],[17,'Cl','35.45'],[18,'Ar','39.948'],
+    [19,'K','39.098'],[20,'Ca','40.078'],
+  ];
+  const rows=[2,8,8,2];
+  const cw=70,ch=58;
+  const startX=(W-rows.reduce((m,r)=>Math.max(m,r*cw),0))/2;
+  const startY=70;
+  let idx=0;
+  for(let r=0;r<rows.length;r++){
+    const rowW=rows[r]*cw;
+    const sx=(W-rowW)/2;
+    for(let c=0;c<rows[r];c++){
+      const e=data[idx];idx++;
+      const x=sx+c*cw,y=startY+r*(ch+6);
+      const isHi=(Math.floor(time*1.5))%20===e[0]-1;
+      ctx.fillStyle=isHi?'rgba(245,158,11,0.3)':'rgba(6,182,212,0.12)';
+      ctx.strokeStyle=isHi?'#f59e0b':'#06b6d4';ctx.lineWidth=isHi?2:1;
+      roundRect(x+2,y,cw-4,ch,6);ctx.fill();ctx.stroke();
+      drawText(e[0],x+12,y+10,'#9ab0d0',10,'left');
+      drawText(e[1],x+cw/2,y+24,'#fff',16);
+      drawText(e[2],x+cw/2,y+44,'#f59e0b',10);
+    }
+  }
+  drawText('红框为周期表中的相对原子质量数值（精确到小数）',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景4：摩尔质量 =====
+function drawMoleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('摩尔质量 M · 数值上等于相对分子质量',W/2,30,'#f59e0b',16);
+  const cx=W/2,cy=H/2;
+  // 左侧：Mr
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(60,cy-80,220,160,12);ctx.fill();ctx.stroke();
+  drawText('相对分子质量 Mr',170,cy-50,'#06b6d4',14);
+  drawText('Mr(H₂O) = 18',170,cy-15,'#fff',18);
+  drawText('单位：无（比值）',170,cy+25,'#9ab0d0',11);
+  drawText('一个分子的相对质量',170,cy+50,'#67e8f9',11);
+  // 等号
+  const pulse=Math.sin(time*3)*0.3+1;
+  ctx.fillStyle='#34d399';ctx.font='bold '+Math.floor(28*pulse)+'px sans-serif';
+  ctx.textAlign='center';ctx.fillText('=',cx,cy);
+  // 右侧：M
+  ctx.fillStyle='rgba(245,158,11,0.15)';ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  roundRect(cx+30,cy-80,220,160,12);ctx.fill();ctx.stroke();
+  drawText('摩尔质量 M',cx+140,cy-50,'#f59e0b',14);
+  drawText('M(H₂O) = 18',cx+140,cy-15,'#fff',18);
+  drawText('单位：g/mol',cx+140,cy+25,'#9ab0d0',11);
+  drawText('1 mol 物质的质量',cx+140,cy+50,'#fde68a',11);
+  // 底部说明
+  drawText('数值相等，单位不同 · M = m / n',W/2,H-55,'#34d399',14);
+  drawText('1 mol H₂O 含 6.02×10²³ 个分子，总质量为 18 g',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景5：质量比（CO₂）=====
+function drawMassRatioScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化合物中元素质量比 · CO₂',W/2,30,'#f59e0b',16);
+  const cx=W/2;
+  // 公式
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;
+  roundRect(60,60,W-120,80,8);ctx.fill();ctx.stroke();
+  drawText('CO₂ 中  C : O = 12 : (16×2) = 12 : 32 = 3 : 8',cx,90,'#fff',15);
+  drawText('Mr(CO₂) = 12 + 32 = 44',cx,118,'#34d399',13);
+  // CO₂ 分子结构
+  const sway=Math.sin(time*1.5)*3;
+  const cy=H/2+30;
+  ctx.fillStyle='rgba(245,158,11,0.85)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,30,0,7);ctx.fill();ctx.stroke();
+  drawText('C',cx,cy,'#1a1a1a',18);
+  [-1,1].forEach(s=>{
+    const ox=cx+s*70,oy=cy+sway;
+    ctx.strokeStyle='#9ab0d0';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ox,oy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+5,cy-3);ctx.lineTo(ox-5,oy-3);ctx.stroke();
+    ctx.fillStyle='rgba(248,113,113,0.85)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(ox,oy,24,0,7);ctx.fill();ctx.stroke();
+    drawText('O',ox,oy,'#1a1a1a',15);
+  });
+  // 比例条
+  const barY=H-80,barW=W-160,barX=80;
+  const total=44,carbonW=12/total*barW,oxygenW=32/total*barW;
+  ctx.fillStyle='#f59e0b';roundRect(barX,barY,carbonW,30,4);ctx.fill();
+  drawText('C 12',barX+carbonW/2,barY+15,'#1a1a1a',12);
+  ctx.fillStyle='#f87171';roundRect(barX+carbonW,barY,oxygenW,30,4);ctx.fill();
+  drawText('O 32',barX+carbonW+oxygenW/2,barY+15,'#1a1a1a',12);
+  drawText('质量比 C : O = 3 : 8',cx,barY-15,'#9ab0d0',12);
+}
+
+// ===== 场景6：质量分数饼图（H₂O）=====
+function drawFractionScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('元素质量分数 · H₂O',W/2,30,'#f59e0b',16);
+  const cx=W/2,cy=H/2+10;
+  const r=120;
+  // 动画进度
+  const prog=Math.min(1,time*0.5);
+  // 氧 88.9% (先画)
+  ctx.fillStyle='rgba(245,158,11,0.7)';ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+2*Math.PI*0.889*prog,false);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 氢 11.1%
+  ctx.fillStyle='rgba(6,182,212,0.7)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,r,-Math.PI/2+2*Math.PI*0.889*prog,-Math.PI/2+2*Math.PI*1*prog,false);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 标签
+  const oAng=-Math.PI/2+Math.PI*0.889;
+  const ox=cx+Math.cos(oAng)*60,oy=cy+Math.sin(oAng)*60;
+  drawText('O 88.9%',ox,oy,'#fff',14);
+  const hAng=-Math.PI/2+Math.PI*0.889+Math.PI*0.111;
+  const hx=cx+Math.cos(hAng)*70,hy=cy+Math.sin(hAng)*70;
+  drawText('H 11.1%',hx,hy,'#fff',12);
+  // 计算过程
+  drawText('w(H) = 2×1 / 18 = 11.1%',cx,H-70,'#06b6d4',14);
+  drawText('w(O) = 16 / 18 = 88.9%',cx,H-45,'#f59e0b',14);
+}
+
+// ===== 场景7：典型例题 NaCl =====
+function drawCalc2Scene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 500 g NaCl 中钠元素质量',W/2,30,'#f59e0b',16);
+  // 题目
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,50,8);ctx.fill();ctx.stroke();
+  drawText('例题：求 500 g 氯化钠 NaCl 中钠元素的质量。',W/2,85,'#fff',14);
+  // 解题步骤
+  const steps=[
+    {t:'① 求 Mr',d:'NaCl : Mr = 23 + 35.5 = 58.5',c:'#06b6d4'},
+    {t:'② 求质量分数',d:'w(Na) = 23 / 58.5 ≈ 39.3%',c:'#a78bfa'},
+    {t:'③ 求钠质量',d:'m(Na) = 500 × 39.3% = 196.6 g',c:'#f59e0b'},
+    {t:'④ 结论',d:'500 g NaCl 含 Na 约 196.6 g',c:'#34d399'},
+  ];
+  const focus=Math.floor(time*0.8)%steps.length;
+  steps.forEach((s,i)=>{
+    const y=130+i*75;
+    const hi=i===focus;
+    ctx.fillStyle=hi?s.c+'44':s.c+'15';ctx.strokeStyle=s.c;ctx.lineWidth=hi?2.5:1;
+    roundRect(80,y,W-160,60,8);ctx.fill();ctx.stroke();
+    drawText(s.t,120,y+22,s.c,14,'left');
+    drawText(s.d,260,y+22,'#fff',14,'left');
+  });
+}
+
+// ===== 场景8：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('相对原子质量 · 相对分子质量 核心总结',W/2,40,'#f59e0b',18);
+  const items=[
+    {t:'Ar 定义',d:'某原子质量 / (碳-12 ×1/12)',c:'#f59e0b'},
+    {t:'Mr 计算',d:'各 Ar × 个数 之和',c:'#06b6d4'},
+    {t:'M 与 Mr',d:'数值相等 · 单位 g/mol',c:'#a78bfa'},
+    {t:'质量公式',d:'m = M · n',c:'#34d399'},
+    {t:'质量分数',d:'w = Ar×个数 / Mr ×100%',c:'#fb923c'},
+    {t:'查表',d:'周期表下方数字',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawScaleScene(t);
+  else if(stepIdx===1||stepIdx===2)drawTableScene(t);
+  else if(stepIdx===3||stepIdx===4)drawCalcScene(t);
+  else if(stepIdx===5||stepIdx===6)drawMoleScene(t);
+  else if(stepIdx===7)drawFractionScene(t);
+  else if(stepIdx===8)drawCalc2Scene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>弹力与胡克定律 · F=kx · 形变 · 弹簧测力计</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#8b5cf6;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(139,92,246,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(139,92,246,.2);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">弹力与胡克定律</span><span class="subtitle">F=kx · 形变 · 弹簧测力计</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>弹性形变</h4><div class="v">物体受力发生形变<br>撤力后能恢复原状</div></div>
+  <div class="card s2"><div class="num">2</div><h4>胡克定律</h4><div class="v">F = kx<br>弹力与形变量成正比</div></div>
+  <div class="card s3"><div class="num">3</div><h4>劲度系数k</h4><div class="v">单位 N/m<br>与材料、长度、粗细有关</div></div>
+  <div class="card s4"><div class="num">4</div><h4>弹簧测力计</h4><div class="v">利用 F=kx<br>测量力的大小的工具</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">弹力产生</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'弹力的产生',body:'<strong>弹力</strong>是物体发生<strong>弹性形变</strong>时，对与它接触的物体产生的力。拉长的弹簧会收缩，压缩的弹簧会伸长，都是弹力的表现。',points:{title:'核心要点',items:['<strong>产生条件</strong>：物体发生弹性形变','<strong>方向</strong>：与形变方向相反（恢复方向）','<strong>施力物体</strong>：发生形变的物体','<strong>常见</strong>：弹簧、橡皮筋、支持的桌面']}},
+  {tag:'方向',name:'弹力方向',body:'弹力方向：<strong>支持力垂直于接触面</strong>（指向受力物体），<strong>绳的拉力沿绳</strong>指向绳收缩方向。弹簧的弹力沿弹簧轴线，指向恢复原长的方向。',points:{title:'方向判断',items:['<strong>支持力</strong>：⊥ 接触面，指向物体','<strong>绳拉力</strong>：沿绳，指向绳收缩方向','<strong>弹簧</strong>：沿轴线，恢复原长方向','<strong>核心</strong>：始终与形变方向相反']}},
+  {tag:'核心',name:'胡克定律 F=kx',body:'<strong>胡克定律</strong>：在弹性限度内，弹簧的弹力大小 F 与<strong>形变量 x</strong> 成正比，公式 <code>F = kx</code>。F 单位 N，x 单位 m，k 单位 N/m。',points:{title:'公式要点',items:['<strong>公式</strong>：F = kx','<strong>k</strong>：劲度系数（弹簧软硬程度）','<strong>x</strong>：形变量（伸长或压缩量）','<strong>适用</strong>：仅在弹性限度内成立']}},
+  {tag:'核心',name:'劲度系数k',body:'<strong>劲度系数 k</strong> 表示弹簧的<strong>软硬程度</strong>，单位 N/m。k 越大弹簧越硬（难拉伸），k 越小越软。k 与<strong>材料、原长、横截面积</strong>有关。',points:{title:'k 的影响因素',items:['<strong>单位</strong>：N/m','<strong>k 大</strong>：硬弹簧，难拉伸','<strong>k 小</strong>：软弹簧，易拉伸','<strong>影响因素</strong>：材料、长度、粗细']}},
+  {tag:'核心',name:'形变量x',body:'<strong>形变量 x</strong> 是弹簧相对<strong>原长</strong>的伸长量或压缩量（不是弹簧总长）。公式 <code>x = L - L₀</code>，L 为现长，L₀ 为原长。',points:{title:'x 的含义',items:['<strong>x = L - L₀</strong>：相对原长的变化','<strong>不是</strong>：弹簧当前总长','<strong>伸长</strong>：x 为正','<strong>压缩</strong>：x 为负（计算用绝对值）']}},
+  {tag:'应用',name:'弹簧测力计',body:'<strong>弹簧测力计</strong>利用胡克定律原理：拉力越大，弹簧伸长越长，刻度均匀。<strong>使用前</strong>要校零，<strong>测量时</strong>力沿弹簧轴线，<strong>读数</strong>视线垂直刻度。',points:{title:'使用步骤',items:['<strong>校零</strong>：竖直悬挂，调指针到 0','<strong>受力</strong>：力沿轴线方向','<strong>读数</strong>：视线垂直刻度面板','<strong>量程</strong>：不超过最大刻度']}},
+  {tag:'图像',name:'F-x 图像',body:'在<strong>弹性限度内</strong>，F-x 图像是一条<strong>过原点的直线</strong>。<strong>斜率 = k</strong>（劲度系数）。斜率越大，弹簧越硬；斜率越小，弹簧越软。',points:{title:'图像要点',items:['<strong>形状</strong>：过原点的直线','<strong>斜率</strong>：等于 k','<strong>斜率大</strong>：硬弹簧','<strong>斜率小</strong>：软弹簧']}},
+  {tag:'拓展',name:'弹性限度',body:'<strong>弹性限度</strong>：弹簧能恢复原长的<strong>最大形变量</strong>。超过后发生<strong>永久形变</strong>（塑性形变），撤力后不能恢复原长，胡克定律不再适用。',points:{title:'关键点',items:['<strong>弹性限度内</strong>：F=kx 成立','<strong>超过限度</strong>：永久形变','<strong>塑性形变</strong>：不可恢复','<strong>结论</strong>：胡克定律失效']}},
+  {tag:'拓展',name:'不同k的对比',body:'<strong>软弹簧</strong>（k 小）容易被拉伸，<strong>硬弹簧</strong>（k 大）难拉伸。在<strong>同样力 F</strong> 下，由 x = F/k 知：k 越小 x 越大；k 越大 x 越小。',points:{title:'对比要点',items:['<strong>软弹簧</strong>：k 小，伸长大','<strong>硬弹簧</strong>：k 大，伸长小','<strong>同 F 下</strong>：x = F/k 成反比','<strong>同 x 下</strong>：F = kx 成正比']}},
+  {tag:'计算',name:'典型例题与总结',body:'例：劲度系数 k=200 N/m 的弹簧，挂 10 N 的重物，伸长多少？解：x = F/k = 10/200 = 0.05 m = 5 cm。弹力与胡克定律是力学基础，弹簧测力计是核心测量工具。',points:{title:'解题与总结',items:['<strong>步骤1</strong>：识别 F、k、x','<strong>步骤2</strong>：选公式 F=kx / x=F/k / k=F/x','<strong>步骤3</strong>：代入计算（注意单位）','<strong>核心</strong>：弹力与形变成正比']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：弹簧挂重物 =====
+function drawSpringScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('弹簧挂重物 · 实时计算 F = kx',W/2,30,'#8b5cf6',16);
+  const cx=W/2;
+  const k=50+30*Math.sin(time*0.4);
+  const F=2+1.5*Math.abs(Math.sin(time*0.6));
+  const x=F/k;
+  const xPx=x*180;
+  const topY=80;
+  const massY=topY+50+xPx;
+  drawText('天花板',cx,topY-30,'#9ab0d0',12);
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-80,topY-15);ctx.lineTo(cx+80,topY-15);ctx.stroke();
+  for(let i=-7;i<=7;i++){ctx.beginPath();ctx.moveTo(cx+i*12,topY-15);ctx.lineTo(cx+i*12-8,topY-3);ctx.stroke();}
+  const coils=12,len=massY-topY;
+  ctx.strokeStyle='#8b5cf6';ctx.lineWidth=3;
+  ctx.shadowColor='#8b5cf6';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=coils;i++){
+    const yy=topY+i*len/coils;
+    const xx=cx+(i%2===0?-22:22);
+    if(i===0)ctx.moveTo(cx,topY);else if(i===1)ctx.lineTo(xx,yy);
+    else ctx.lineTo(xx,yy);
+  }
+  ctx.lineTo(cx,massY);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('k',cx-40,topY+25,'#a78bfa',13);
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx-40,massY,80,55,6);ctx.fill();ctx.stroke();
+  drawText('重物',cx,massY+18,'#fff',13);
+  drawText(F.toFixed(2)+' N',cx,massY+38,'#fff',12);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(cx-90,topY+50);ctx.lineTo(cx-90,massY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-85,massY);ctx.lineTo(cx-95,massY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-85,topY+50);ctx.lineTo(cx-95,topY+50);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('x',cx-105,(topY+50+massY)/2,'#fbbf24',14);
+  drawText('= '+x.toFixed(3)+' m',cx-105,(topY+50+massY)/2+18,'#fbbf24',12);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=1.5;
+  roundRect(W-260,H-130,230,90,8);ctx.fill();ctx.stroke();
+  drawText('实时计算',W-145,H-110,'#a78bfa',13);
+  drawText('F = k · x',W-145,H-85,'#fff',14);
+  drawText(F.toFixed(2)+' = '+k.toFixed(0)+' × '+x.toFixed(3),W-145,H-62,'#34d399',12);
+  drawText('k = '+k.toFixed(0)+' N/m',100,H-110,'#a78bfa',13);
+  drawText('F = '+F.toFixed(2)+' N',100,H-85,'#06b6d4',13);
+  drawText('x = '+x.toFixed(3)+' m',100,H-60,'#fbbf24',13);
+}
+
+// ===== 场景：F-x 图像 =====
+function drawFXScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('F-x 图像 · 斜率 = 劲度系数 k',W/2,30,'#8b5cf6',16);
+  const ox=100,oy=H-90;
+  const plotW=W-200,plotH=H-200;
+  const k=30+20*Math.sin(time*0.3);
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox,60);ctx.lineTo(ox,oy);ctx.lineTo(ox+plotW,oy);ctx.stroke();
+  drawText('F (N)',ox-30,70,'#9ab0d0',12);
+  drawText('x (m)',ox+plotW,oy+30,'#9ab0d0',12);
+  drawText('O',ox-15,oy+15,'#9ab0d0',11);
+  const Fmax=8;
+  for(let i=0;i<=4;i++){
+    const xx=ox+i*plotW/4;
+    drawText((i*0.05).toFixed(2),xx,oy+18,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(xx,oy-3);ctx.lineTo(xx,oy+3);ctx.stroke();
+  }
+  for(let i=0;i<=4;i++){
+    const yy=oy-i*plotH/4;
+    drawText((i*Fmax/4).toFixed(0),ox-25,yy,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ox-3,yy);ctx.lineTo(ox+3,yy);ctx.stroke();
+  }
+  const endX=ox+plotW*0.95,endF=Fmax*0.9,endY=oy-endF/Fmax*plotH;
+  ctx.strokeStyle='#8b5cf6';ctx.lineWidth=4;
+  ctx.shadowColor='#8b5cf6';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(endX,endY);ctx.stroke();
+  ctx.shadowBlur=0;
+  const curX=0.02+0.03*Math.abs(Math.sin(time));
+  const curF=k*curX;
+  const cx=ox+curX/0.2*plotW;
+  const cy=oy-curF/Fmax*plotH;
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(cx,cy,9,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(cx,oy);ctx.lineTo(cx,cy);ctx.lineTo(ox,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('('+curX.toFixed(3)+', '+curF.toFixed(2)+')',cx+15,cy-15,'#06b6d4',12);
+  drawText('斜率 = k = '+k.toFixed(0)+' N/m',ox+plotW*0.5,80,'#fbbf24',14);
+  drawText('过原点的直线：F 与 x 成正比',ox+plotW*0.5,105,'#34d399',12);
+  drawText('斜率越大，弹簧越硬',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：不同 k 对比 =====
+function drawKCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('不同劲度系数对比 · 同样力下伸长不同',W/2,30,'#8b5cf6',16);
+  const F=4;
+  const springs=[
+    {k:20,label:'软弹簧\nk=20',col:'#34d399'},
+    {k:50,label:'中弹簧\nk=50',col:'#06b6d4'},
+    {k:100,label:'硬弹簧\nk=100',col:'#f87171'},
+  ];
+  const topY=90;
+  const positions=[W*0.2,W*0.5,W*0.8];
+  springs.forEach((s,i)=>{
+    const cx=positions[i];
+    const x=F/s.k;
+    const xPx=x*60;
+    const massY=topY+80+xPx;
+    drawText('k='+s.k+' N/m',cx,topY-15,s.col,12);
+    ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx-40,topY);ctx.lineTo(cx+40,topY);ctx.stroke();
+    const coils=10,len=massY-topY;
+    ctx.strokeStyle=s.col;ctx.lineWidth=2.5;
+    ctx.beginPath();
+    for(let j=0;j<=coils;j++){
+      const yy=topY+j*len/coils;
+      const xx=cx+(j%2===0?-15:15);
+      if(j===0)ctx.moveTo(cx,topY);else if(j===1)ctx.lineTo(xx,yy);
+      else ctx.lineTo(xx,yy);
+    }
+    ctx.lineTo(cx,massY);
+    ctx.stroke();
+    ctx.fillStyle=s.col+'55';ctx.strokeStyle=s.col;ctx.lineWidth=2;
+    roundRect(cx-25,massY,50,40,5);ctx.fill();ctx.stroke();
+    drawText(F+'N',cx,massY+20,'#fff',12);
+    drawText('x='+(x*100).toFixed(1)+'cm',cx,massY+62,s.col,12);
+  });
+  drawText('结论：同样力 F='+F+'N 下，k 越小伸长越大',W/2,H-70,'#34d399',13);
+  drawText('x = F / k ：x 与 k 成反比',W/2,H-45,'#fbbf24',12);
+  drawText('软弹簧易拉伸，硬弹簧难拉伸',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：弹性限度 =====
+function drawLimitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('弹性限度演示 · 超过则永久形变',W/2,30,'#8b5cf6',16);
+  const phase=time*0.6;
+  const stretched=phase%6;
+  const cx=W/2;
+  const topY=90;
+  let xPx,comment,col;
+  if(stretched<2){
+    xPx=stretched*60;
+    comment='弹性限度内：可恢复';col='#34d399';
+  }else if(stretched<4){
+    xPx=120+(stretched-2)*40;
+    comment='超过限度：永久形变！';col='#f87171';
+  }else{
+    xPx=200-(stretched-4)*60;
+    if(xPx<40)xPx=40;
+    comment='撤力后：不能回到原长';col='#fbbf24';
+  }
+  const massY=topY+80+xPx;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-80,topY-15);ctx.lineTo(cx+80,topY-15);ctx.stroke();
+  for(let i=-7;i<=7;i++){ctx.beginPath();ctx.moveTo(cx+i*12,topY-15);ctx.lineTo(cx+i*12-8,topY-3);ctx.stroke();}
+  const coils=12,len=massY-topY;
+  ctx.strokeStyle='#8b5cf6';ctx.lineWidth=3;
+  ctx.shadowColor='#8b5cf6';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let j=0;j<=coils;j++){
+    const yy=topY+j*len/coils;
+    const xx=cx+(j%2===0?-22:22);
+    if(j===0)ctx.moveTo(cx,topY);else if(j===1)ctx.lineTo(xx,yy);
+    else ctx.lineTo(xx,yy);
+  }
+  ctx.lineTo(cx,massY);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx-35,massY,70,50,6);ctx.fill();ctx.stroke();
+  drawText('重物',cx,massY+25,'#fff',12);
+  ctx.fillStyle=col+'22';ctx.strokeStyle=col;ctx.lineWidth=2;
+  roundRect(W/2-180,H-90,360,55,8);ctx.fill();ctx.stroke();
+  drawText(comment,W/2,H-62,col,15);
+  if(stretched<2)drawText('F = kx 成立',W/2,H-42,'#34d399',12);
+  else if(stretched<4)drawText('胡克定律不再适用',W/2,H-42,'#f87171',12);
+  else drawText('弹簧已被损坏',W/2,H-42,'#fbbf24',12);
+  drawText('原长位置',cx+90,topY+80,'#9ab0d0',11);
+  ctx.strokeStyle='#9ab0d055';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(cx-70,topY+80);ctx.lineTo(cx-50,topY+80);ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// ===== 场景：弹力方向 =====
+function drawDirScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('弹力方向 · 支持力⊥面 · 绳拉力沿绳',W/2,30,'#8b5cf6',16);
+  const bookX=W*0.25,bookY=H/2+20;
+  ctx.fillStyle='#8b5cf633';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(bookX-50,bookY-30,100,40,4);ctx.fill();ctx.stroke();
+  drawText('书',bookX,bookY-10,'#fff',12);
+  ctx.fillStyle='#5a6a8a';ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(bookX-110,bookY+10);ctx.lineTo(bookX+110,bookY+10);ctx.lineTo(bookX+130,bookY+25);ctx.lineTo(bookX-90,bookY+25);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  drawText('桌面',bookX,bookY+22,'#9ab0d0',11);
+  const osc=Math.sin(time*2)*8;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=4;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(bookX,bookY-30);ctx.lineTo(bookX,bookY-30-50-osc);ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(bookX,bookY-30-50-osc);ctx.lineTo(bookX-8,bookY-30-40-osc);ctx.lineTo(bookX+8,bookY-30-40-osc);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('支持力 N',bookX+25,bookY-65,'#34d399',13);
+  drawText('⊥ 接触面（指向受力物体）',bookX,bookY+70,'#9ab0d0',11);
+  const ropeX=W*0.75,ropeTopY=90,ropeBotY=H/2+30;
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ropeX-50,ropeTopY-15);ctx.lineTo(ropeX+50,ropeTopY-15);ctx.stroke();
+  for(let i=-4;i<=4;i++){ctx.beginPath();ctx.moveTo(ropeX+i*12,ropeTopY-15);ctx.lineTo(ropeX+i*12-8,ropeTopY-3);ctx.stroke();}
+  const swing=Math.sin(time*1.5)*15;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(ropeX,ropeTopY);ctx.lineTo(ropeX+swing,ropeBotY-20);ctx.stroke();
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(ropeX+swing,ropeBotY,25,0,7);ctx.fill();ctx.stroke();
+  drawText('球',ropeX+swing,ropeBotY,'#fff',12);
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(ropeX+swing,ropeBotY);ctx.lineTo(ropeX+swing-Math.sin(time*1.5)*0.6*60,ropeBotY-Math.cos(time*1.5)*0.6*60);ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('绳拉力 T 沿绳',ropeX,ropeBotY+50,'#fbbf24',12);
+  drawText('（指向绳收缩方向）',ropeX,ropeBotY+70,'#9ab0d0',11);
+  drawText('弹力方向：始终与形变方向相反，指向恢复原长方向',W/2,H-35,'#34d399',13);
+}
+
+// ===== 场景：弹簧测力计 =====
+function drawScaleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('弹簧测力计 · 使用步骤演示',W/2,30,'#8b5cf6',16);
+  const cx=W/2,cy=H/2;
+  const topY=80,botY=H-100;
+  ctx.fillStyle='#a78bfa33';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx-40,topY-10,80,botY-topY+20,10);ctx.fill();ctx.stroke();
+  drawText('外壳',cx,topY-25,'#a78bfa',11);
+  const F=0.5+4*Math.abs(Math.sin(time*0.8));
+  const xPx=F*30;
+  const springTop=topY+10,springBot=topY+70+xPx;
+  ctx.strokeStyle='#8b5cf6';ctx.lineWidth=3;
+  ctx.beginPath();
+  for(let i=0;i<=10;i++){
+    const yy=springTop+i*(springBot-springTop)/10;
+    const xx=cx+(i%2===0?-15:15);
+    if(i===0)ctx.moveTo(cx,springTop);else if(i===1)ctx.lineTo(xx,yy);
+    else ctx.lineTo(xx,yy);
+  }
+  ctx.lineTo(cx,springBot);
+  ctx.stroke();
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx-5,springBot-5,10,30,2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.moveTo(cx-6,springBot+28);ctx.lineTo(cx+6,springBot+28);ctx.lineTo(cx+3,springBot+35);ctx.lineTo(cx-3,springBot+35);ctx.fill();
+  drawText(F.toFixed(1)+' N',cx+50,springBot+30,'#fbbf24',14);
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const yy=topY+70+i*30;
+    drawText(i+' N',cx-32,yy,'#9ab0d0',9,'right');
+    ctx.beginPath();ctx.moveTo(cx-15,yy);ctx.lineTo(cx+15,yy);ctx.stroke();
+    for(let j=1;j<5;j++){
+      ctx.beginPath();ctx.moveTo(cx-7,yy-j*6);ctx.lineTo(cx+7,yy-j*6);ctx.stroke();
+    }
+  }
+  const step=Math.floor((time*0.5)%4);
+  const steps=['1. 校零：竖直悬挂调指针到 0','2. 受力：力沿弹簧轴线方向','3. 读数：视线垂直刻度面板','4. 注意：不超过量程（最大刻度）'];
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=1.5;
+  roundRect(40,H-100,W-80,60,8);ctx.fill();ctx.stroke();
+  drawText(steps[step],W/2,H-70,step===step?'#8b5cf6':'#34d399',13);
+  drawText('原理：F=kx，拉力越大弹簧伸长越长，刻度均匀',W/2,H-40,'#34d399',11);
+}
+
+// ===== 场景：典型计算 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型计算 · 三步法',W/2,30,'#8b5cf6',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,140,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('劲度系数 k = 200 N/m 的弹簧，',120,115,'#fff',13,'left');
+  drawText('挂一个重 G = 10 N 的物体，',120,140,'#fff',13,'left');
+  drawText('弹簧伸长多少？（在弹性限度内）',120,165,'#fff',13,'left');
+  const steps=[
+    {t:'① 已知',d:'k = 200 N/m, F = G = 10 N',c:'#06b6d4'},
+    {t:'② 公式',d:'F = kx  →  x = F / k',c:'#a78bfa'},
+    {t:'③ 代入',d:'x = 10 / 200',c:'#67e8f9'},
+    {t:'④ 计算',d:'x = 0.05 m = 5 cm',c:'#34d399'},
+    {t:'⑤ 方向',d:'弹力竖直向上（恢复原长方向）',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=240+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,36,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,260,y+18,'#fff',13,'left');
+  });
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('弹力与胡克定律 · 核心总结',W/2,40,'#8b5cf6',18);
+  const items=[
+    {t:'核心公式',d:'F = kx',c:'#8b5cf6'},
+    {t:'劲度系数',d:'k（N/m），弹簧软硬',c:'#06b6d4'},
+    {t:'形变量',d:'x = L - L₀',c:'#a78bfa'},
+    {t:'适用条件',d:'弹性限度内',c:'#34d399'},
+    {t:'弹力方向',d:'与形变方向相反',c:'#fbbf24'},
+    {t:'应用',d:'弹簧测力计测力',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawSpringScene(t);
+  else if(stepIdx===1)drawDirScene(t);
+  else if(stepIdx===2)drawSpringScene(t);
+  else if(stepIdx===3)drawKCompareScene(t);
+  else if(stepIdx===4)drawSpringScene(t);
+  else if(stepIdx===5)drawScaleScene(t);
+  else if(stepIdx===6)drawFXScene(t);
+  else if(stepIdx===7)drawLimitScene(t);
+  else if(stepIdx===8)drawKCompareScene(t);
+  else if(stepIdx===9){
+    drawCalcScene();
+  }
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

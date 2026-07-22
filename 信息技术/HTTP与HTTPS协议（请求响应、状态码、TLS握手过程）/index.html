@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTTP 与 HTTPS 协议 · 请求响应 · 状态码 · TLS 握手</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a7f3d0;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">HTTP 与 HTTPS</span><span class="subtitle">请求响应 · 状态码 · TLS 握手过程</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>HTTP 请求</h4><div class="v">请求行 + 请求头 + 空行 + 请求体<br>GET / POST / PUT / DELETE</div></div>
+  <div class="card s2"><div class="num">2</div><h4>HTTP 响应</h4><div class="v">状态行 + 响应头 + 空行 + 响应体<br>状态码 + Headers + Body</div></div>
+  <div class="card s3"><div class="num">3</div><h4>状态码</h4><div class="v">1xx 信息 / 2xx 成功<br>3xx 重定向 / 4xx 客户端 / 5xx 服务器</div></div>
+  <div class="card s4"><div class="num">4</div><h4>HTTPS + TLS</h4><div class="v">HTTP + SSL/TLS · 443 端口<br>对称 + 非对称混合加密</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">HTTP 协议</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'HTTP 是什么',body:'<strong>HTTP</strong>（HyperText Transfer Protocol，<strong>超文本传输协议</strong>）是位于<strong>应用层</strong>的协议，基于 <strong>TCP</strong> 实现，默认端口 <code>80</code>。它是一种<strong>请求-响应</strong>模型：客户端发请求，服务器返响应。',points:{title:'协议定位',items:['<strong>层次</strong>：应用层（OSI 第 7 层）','<strong>底层</strong>：基于 TCP（可靠传输）','<strong>默认端口</strong>：80','<strong>模型</strong>：客户端请求 → 服务器响应']}},
+  {tag:'基础',name:'HTTP 请求方法',body:'<strong>请求方法</strong>表示对资源的操作意图：<code>GET</code> 查询、<code>POST</code> 提交新建、<code>PUT</code> 更新整体、<code>DELETE</code> 删除；另有 <code>HEAD</code> 只取响应头、<code>OPTIONS</code> 预检跨域。',points:{title:'常用方法',items:['<strong>GET</strong>：查询资源，幂等，参数在 URL','<strong>POST</strong>：提交数据，请求体携带','<strong>PUT</strong>：更新整体资源，幂等','<strong>DELETE</strong>：删除资源','<strong>HEAD / OPTIONS</strong>：取头 / 跨域预检']}},
+  {tag:'请求',name:'HTTP 请求结构',body:'一个 HTTP 请求由四部分组成：<strong>请求行</strong>（方法 URL 版本）+ <strong>请求头</strong>（Host、User-Agent、Content-Type 等）+ <strong>空行</strong>（CRLF）+ <strong>请求体</strong>（POST 才有数据）。',points:{title:'四段结构',items:['<strong>请求行</strong>：GET /api/user HTTP/1.1','<strong>请求头</strong>：键值对，每行一个','<strong>空行</strong>：CRLF 分隔头与体','<strong>请求体</strong>：POST/PUT 的数据']}},
+  {tag:'响应',name:'HTTP 响应结构',body:'响应同样四段：<strong>状态行</strong>（版本 状态码 短语）+ <strong>响应头</strong>（Content-Type、Content-Length、Set-Cookie 等）+ <strong>空行</strong> + <strong>响应体</strong>（HTML / JSON / 图片等）。',points:{title:'四段结构',items:['<strong>状态行</strong>：HTTP/1.1 200 OK','<strong>响应头</strong>：Content-Type、Set-Cookie','<strong>空行</strong>：分隔头与体','<strong>响应体</strong>：实际返回内容']}},
+  {tag:'状态码',name:'常见状态码',body:'<strong>状态码</strong>由三位数字组成：1xx 信息、2xx 成功、3xx 重定向、4xx 客户端错误、5xx 服务器错误。常见：<code>200</code> OK、<code>301</code> 永久重定向、<code>302</code> 临时、<code>304</code> 缓存、<code>404</code> 未找到、<code>403</code> 禁止、<code>500</code> 服务器错误、<code>502</code> 网关错。',points:{title:'五类速记',items:['<strong>1xx</strong>：信息（已收到，继续处理）','<strong>2xx</strong>：成功（200 OK）','<strong>3xx</strong>：重定向（301/302/304）','<strong>4xx</strong>：客户端错（404/403）','<strong>5xx</strong>：服务器错（500/502）']}},
+  {tag:'安全',name:'HTTP 明文不安全',body:'<strong>HTTP 明文传输</strong>，数据未加密：在<strong>公共 WiFi</strong>、路由器、运营商等中间环节，请求和响应可被<strong>嗅探</strong>（看到密码）、<strong>篡改</strong>（插入广告）、<strong>伪造</strong>（钓鱼页面）。',points:{title:'三大风险',items:['<strong>窃听</strong>：明文被抓包看到密码','<strong>篡改</strong>：运营商插广告','<strong>伪造</strong>：假冒服务器钓鱼','<strong>结论</strong>：HTTP 不能传敏感信息']}},
+  {tag:'安全',name:'HTTPS = HTTP + SSL/TLS',body:'<strong>HTTPS</strong> 在 HTTP 与 TCP 之间加入 <strong>SSL/TLS</strong> 加密层，默认端口 <code>443</code>。它提供<strong>加密</strong>（防窃听）、<strong>身份认证</strong>（防伪造，靠证书）、<strong>完整性校验</strong>（防篡改，MAC）。',points:{title:'HTTPS 三大保障',items:['<strong>端口</strong>：443（HTTP 是 80）','<strong>加密</strong>：传输内容全部密文','<strong>认证</strong>：CA 证书证明身份','<strong>完整性</strong>：MAC 防篡改']}},
+  {tag:'TLS',name:'TLS 握手四步',body:'<strong>TLS 握手</strong>协商出会话密钥：① <strong>Client Hello</strong> 客户端发随机数 + 支持的加密套件；② <strong>Server Hello</strong> 服务器返随机数 + 选定套件 + <strong>数字证书</strong>；③ 客户端<strong>验证证书</strong>（CA 签名链），用证书公钥加密<strong>预主密钥</strong>发送；④ 双方用三个随机数生成<strong>会话密钥</strong>，开始<strong>对称加密通信</strong>。',points:{title:'四步握手',items:['<strong>① Client Hello</strong>：客户端随机数+套件列表','<strong>② Server Hello</strong>：服务器随机数+证书','<strong>③ 验证+交换</strong>：验证书，传预主密钥','<strong>④ 对称通信</strong>：会话密钥加密数据']}},
+  {tag:'TLS',name:'对称+非对称混合加密',body:'TLS 用<strong>混合加密</strong>：<strong>非对称加密</strong>（如 RSA / ECDHE）安全性高但慢，用于<strong>交换会话密钥</strong>；<strong>对称加密</strong>（如 AES）速度快，用于<strong>批量业务数据</strong>加密。两者取长补短。',points:{title:'混合加密分工',items:['<strong>非对称</strong>（RSA/ECDHE）：换会话密钥','<strong>对称</strong>（AES-256）：加密实际数据','<strong>数字证书</strong>：CA 用私钥签名，客户端用公钥验真','<strong>会话密钥</strong>：每次握手临时生成']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>例</strong>：为什么 HTTPS 比 HTTP 安全？<strong>答</strong>：HTTPS 通过 TLS 握手协商会话密钥，用对称加密保护数据，用非对称加密安全交换密钥，用 CA 证书防伪造，用 MAC 校验防篡改。',points:{title:'核心速记',items:['<strong>HTTP</strong>：明文，端口 80，无加密','<strong>HTTPS</strong>：密文，端口 443，TLS 加密','<strong>握手</strong>：2 轮往返协商会话密钥','<strong>混合加密</strong>：非对称换密钥，对称传数据','<strong>证书</strong>：CA 签名，防中间人']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：HTTP 请求结构 =====
+function drawRequestScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('HTTP 请求结构',W/2,30,'#06b6d4',16);
+  const highlight=Math.floor((time/1.0)%4); // 0行 1头 2空行 3体
+  const cx=W/2;
+  const blocks=[
+    {label:'请求行 (Request Line)',text:'GET /api/user?id=1 HTTP/1.1',color:'#06b6d4'},
+    {label:'请求头 (Headers)',text:'Host: www.example.com',text2:'User-Agent: Mozilla/5.0',text3:'Accept: application/json',color:'#34d399'},
+    {label:'空行 (CRLF)',text:'\\r\\n  (空行分隔头与体)',color:'#9ab0d0'},
+    {label:'请求体 (Body)',text:'{ "name":"Tom", "age":18 }',color:'#fbbf24'},
+  ];
+  let y=70;
+  blocks.forEach((b,i)=>{
+    const h=(i===1)?95:(i===3?60:48);
+    const active=i===highlight;
+    ctx.fillStyle=active?b.color+'33':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?b.color:'#243a5e';ctx.lineWidth=active?2.5:1;
+    if(active){ctx.shadowColor=b.color;ctx.shadowBlur=15;}
+    roundRect(80,y,W-160,h,8);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(b.label,100,y+16,b.color,12,'left');
+    drawText(b.text,100,y+34,'#fff',13,'left');
+    if(b.text2)drawText(b.text2,100,y+52,'#cfe',12,'left');
+    if(b.text3)drawText(b.text3,100,y+70,'#cfe',12,'left');
+    y+=h+8;
+  });
+  drawText('客户端 → 服务器',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：HTTP 响应结构 =====
+function drawResponseScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('HTTP 响应结构',W/2,30,'#fbbf24',16);
+  const highlight=Math.floor((time/1.0)%4);
+  const blocks=[
+    {label:'状态行 (Status Line)',text:'HTTP/1.1 200 OK',color:'#34d399'},
+    {label:'响应头 (Headers)',text:'Content-Type: text/html',text2:'Content-Length: 1024',text3:'Set-Cookie: sid=abc',color:'#06b6d4'},
+    {label:'空行 (CRLF)',text:'\\r\\n  (空行分隔头与体)',color:'#9ab0d0'},
+    {label:'响应体 (Body)',text:'<html><body>Hello</body></html>',color:'#fbbf24'},
+  ];
+  let y=70;
+  blocks.forEach((b,i)=>{
+    const h=(i===1)?95:(i===3?60:48);
+    const active=i===highlight;
+    ctx.fillStyle=active?b.color+'33':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?b.color:'#243a5e';ctx.lineWidth=active?2.5:1;
+    if(active){ctx.shadowColor=b.color;ctx.shadowBlur=15;}
+    roundRect(80,y,W-160,h,8);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(b.label,100,y+16,b.color,12,'left');
+    drawText(b.text,100,y+34,'#fff',13,'left');
+    if(b.text2)drawText(b.text2,100,y+52,'#cfe',12,'left');
+    if(b.text3)drawText(b.text3,100,y+70,'#cfe',12,'left');
+    y+=h+8;
+  });
+  drawText('服务器 → 客户端',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：状态码分类 =====
+function drawStatusCodeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('HTTP 状态码分类',W/2,30,'#06b6d4',16);
+  const groups=[
+    {range:'1xx',name:'信息',desc:'已收到，继续处理',ex:'100 Continue',c:'#67e8f9'},
+    {range:'2xx',name:'成功',desc:'请求被成功处理',ex:'200 OK',c:'#34d399'},
+    {range:'3xx',name:'重定向',desc:'需进一步操作',ex:'301 / 302 / 304',c:'#fbbf24'},
+    {range:'4xx',name:'客户端错误',desc:'请求有误或无权限',ex:'404 / 403',c:'#f87171'},
+    {range:'5xx',name:'服务器错误',desc:'服务器处理失败',ex:'500 / 502 / 503',c:'#a78bfa'},
+  ];
+  const colW=(W-160)/3-10,rowH=120;
+  const pulse=Math.sin(time*2)*0.15+0.85;
+  groups.forEach((g,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(colW+15),y=80+row*(rowH+15);
+    ctx.fillStyle=g.c+'22';ctx.strokeStyle=g.c;ctx.lineWidth=2;
+    if(i===Math.floor(time*0.8)%5){ctx.shadowColor=g.c;ctx.shadowBlur=18*pulse;ctx.lineWidth=3;}
+    roundRect(x,y,colW,rowH,10);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(g.range,x+colW/2,y+30,g.c,22);
+    drawText(g.name,x+colW/2,y+60,'#fff',14);
+    drawText(g.desc,x+colW/2,y+82,'#cfe',11);
+    drawText(g.ex,x+colW/2,y+102,g.c,12);
+  });
+  // 第五个居中补一块提示
+  const x6=80+1*((colW)+15)+colW+15;
+  if(x6<W-80){
+    ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    roundRect(x6,80+(rowH+15),colW,rowH,10);ctx.fill();ctx.stroke();
+    drawText('记忆',x6+colW/2,80+rowH+40,'#9ab0d0',13);
+    drawText('"要(1)成功(2)',x6+colW/2,80+rowH+62,'#cfe',11);
+    drawText('跳(3)你错(4)',x6+colW/2,80+rowH+80,'#cfe',11);
+    drawText('我错(5)"',x6+colW/2,80+rowH+98,'#cfe',11);
+  }
+}
+
+// ===== 场景：HTTP 明文被嗅探 =====
+function drawSniffScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('HTTP 明文传输 · 中间人嗅探',W/2,30,'#f87171',16);
+  const cy=H/2;
+  // 客户端
+  ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(60,cy-40,110,80,10);ctx.fill();ctx.stroke();
+  drawText('客户端',115,cy,'#06b6d4',14);
+  drawText('Alice',115,cy+20,'#fff',12);
+  // 服务器
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W-170,cy-40,110,80,10);ctx.fill();ctx.stroke();
+  drawText('服务器',W-115,cy,'#34d399',14);
+  drawText('Bank.com',W-115,cy+20,'#fff',12);
+  // 中间人（红色，在中间下方）
+  const mX=W/2,mY=cy+110;
+  ctx.fillStyle='#f8717122';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=15;
+  roundRect(mX-70,mY-30,140,60,10);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('中间人 (MITM)',mX,mY-8,'#f87171',12);
+  drawText('嗅探 / 篡改',mX,mY+12,'#f87171',11);
+  // 传输的明文数据包（动画从左到右）
+  const phase=(time*0.6)%1;
+  const px=170+phase*(W-340);
+  // 上行（请求，明文）
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(px-80,cy-95,160,30,6);ctx.fill();ctx.stroke();
+  drawText('POST pwd=123456',px,cy-80,'#1a1a1a',11);
+  // 中间人看到的数据
+  ctx.strokeStyle='rgba(248,113,113,0.6)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(mX,mY-30);ctx.lineTo(mX,cy-65);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('看到明文密码！',mX,cy-50,'#f87171',11);
+  // 返回（响应，明文）
+  const phase2=(time*0.6+0.5)%1;
+  const px2=W-170-phase2*(W-340);
+  ctx.fillStyle='#67e8f9';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(px2-80,cy+50,160,28,6);ctx.fill();ctx.stroke();
+  drawText('Set-Cookie: sid=xxx',px2,cy+63,'#1a1a1a',11);
+  drawText('HTTP 不加密：密码、Cookie 全部明文可见',W/2,H-45,'#f87171',13);
+  drawText('解决方案：升级为 HTTPS',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景：TLS 握手四步 =====
+function drawTLSScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('TLS 握手 · 协商会话密钥',W/2,30,'#06b6d4',16);
+  const cy=H/2-20;
+  // 客户端 / 服务器
+  ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(70,cy-130,90,260,10);ctx.fill();ctx.stroke();
+  drawText('Client',115,cy-115,'#06b6d4',14);
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W-160,cy-130,90,260,10);ctx.fill();ctx.stroke();
+  drawText('Server',W-115,cy-115,'#34d399',14);
+  // 四步消息
+  const step=Math.floor(time*0.6)%4;
+  const msgs=[
+    {dir:1,label:'1 ClientHello',detail:'client_random + 加密套件列表',c:'#67e8f9'},
+    {dir:-1,label:'2 ServerHello + 证书',detail:'server_random + 选定套件 + 数字证书',c:'#fbbf24'},
+    {dir:1,label:'3 验证证书 + 预主密钥',detail:'验 CA 签名，公钥加密 pre_master',c:'#a78bfa'},
+    {dir:0,label:'4 生成会话密钥，对称加密通信',detail:'双方用 3 个随机数算出 session key',c:'#34d399'},
+  ];
+  msgs.forEach((m,i)=>{
+    const y=cy-70+i*65;
+    const active=i===step;
+    ctx.strokeStyle=m.c;ctx.lineWidth=active?3:1.2;
+    ctx.globalAlpha=active?1:0.4;
+    if(m.dir===0){
+      // 双向都画对称加密条
+      ctx.beginPath();ctx.moveTo(160,y);ctx.lineTo(W-160,y);ctx.stroke();
+      drawText(m.label+' (Encrypted)',W/2,y-12,m.c,active?13:11);
+      drawText(m.detail,W/2,y+10,'#cfe',active?11:10);
+    }else{
+      const sx=m.dir>0?160:W-160,ex=m.dir>0?W-160:160;
+      ctx.beginPath();ctx.moveTo(sx,y);ctx.lineTo(ex,y);ctx.stroke();
+      // 箭头
+      ctx.fillStyle=m.c;
+      ctx.beginPath();ctx.moveTo(ex,y);ctx.lineTo(ex-m.dir*10,y-6);ctx.lineTo(ex-m.dir*10,y+6);ctx.fill();
+      const mx=(sx+ex)/2;
+      drawText(m.label,mx,y-12,m.c,active?13:11);
+      drawText(m.detail,mx,y+10,'#cfe',active?11:10);
+    }
+    ctx.globalAlpha=1;
+  });
+  drawText('握手完成后用会话密钥对称加密通信',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：对称 + 非对称混合加密 =====
+function drawMixEncryptScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('混合加密：非对称换密钥 · 对称传数据',W/2,30,'#06b6d4',16);
+  // 上半：非对称（慢但安全，换密钥）
+  const topY=120;
+  drawText('阶段一：非对称加密（RSA / ECDHE）—— 安全但慢，用于换会话密钥',W/2,topY-30,'#fbbf24',13);
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(80,topY,120,90,10);ctx.fill();ctx.stroke();
+  drawText('服务器公钥',140,topY+30,'#a78bfa',13);
+  drawText('(证书内)',140,topY+55,'#cfe',11);
+  // 公钥加密
+  const pulse1=Math.sin(time*3)*0.3+0.7;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.globalAlpha=pulse1;
+  ctx.beginPath();ctx.moveTo(200,topY+45);ctx.lineTo(W/2-100,topY+45);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.moveTo(W/2-100,topY+45);ctx.lineTo(W/2-112,topY+39);ctx.lineTo(W/2-112,topY+51);ctx.fill();
+  ctx.globalAlpha=1;
+  drawText('公钥加密 pre_master',W/2-150,topY+30,'#fbbf24',11);
+  drawText('只有服务器私钥能解',W/2-150,topY+55,'#cfe',10);
+  // 密文
+  ctx.fillStyle='#fbbf2433';ctx.strokeStyle='#fbbf24';
+  roundRect(W/2-90,topY+20,160,50,8);ctx.fill();ctx.stroke();
+  drawText('密文 (会话密钥)',W/2-10,topY+45,'#fbbf24',12);
+  // 下半：对称（快，传数据）
+  const botY=H/2+80;
+  drawText('阶段二：对称加密（AES-256）—— 快，用于批量业务数据',W/2,botY-30,'#34d399',13);
+  ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(80,botY,120,90,10);ctx.fill();ctx.stroke();
+  drawText('会话密钥',140,botY+30,'#06b6d4',13);
+  drawText('(临时生成)',140,botY+55,'#cfe',11);
+  // 数据流
+  const pulse2=(time*2)%1;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=3;
+  for(let i=0;i<3;i++){
+    const p=(pulse2+i/3);
+    if(p<1){
+      const x=W/2-90+p*180;
+      ctx.globalAlpha=(1-p)*0.8;
+      ctx.fillStyle='#34d399';
+      roundRect(x-15,botY+35,30,30,5);ctx.fill();
+    }
+  }
+  ctx.globalAlpha=1;
+  drawText('加密数据包',W/2-10,botY+50,'#34d399',11);
+  drawText('AES 加密 HTML/JSON',W/2-10,botY+72,'#cfe',10);
+  drawText('取长补短：非对称解决密钥分发，对称解决速度问题',W/2,H-40,'#06b6d4',12);
+  drawText('TLS 1.3 进一步简化：1 轮往返即可完成握手',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景：数字证书链 =====
+function drawCertScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('数字证书 · CA 签名链',W/2,30,'#06b6d4',16);
+  const cy=H/2;
+  // CA 根（顶层）
+  const pulse=Math.sin(time*2)*0.2+0.8;
+  ctx.fillStyle='#a78bfa22';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.shadowColor='#a78bfa';ctx.shadowBlur=15*pulse;
+  roundRect(W/2-110,80,220,70,10);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('CA 根证书机构',W/2,105,'#a78bfa',14);
+  drawText('DigiCert / Let'+String.fromCharCode(39)+'s Encrypt',W/2,128,'#cfe',11);
+  // 签发箭头
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(W/2,150);ctx.lineTo(W/2,200);ctx.stroke();
+  ctx.fillStyle='#a78bfa';
+  ctx.beginPath();ctx.moveTo(W/2,200);ctx.lineTo(W/2-6,190);ctx.lineTo(W/2+6,190);ctx.fill();
+  drawText('用 CA 私钥签名',W/2+90,175,'#a78bfa',11);
+  // 网站证书
+  ctx.fillStyle='#34d39922';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W/2-160,200,320,130,10);ctx.fill();ctx.stroke();
+  drawText('网站证书 (www.bank.com)',W/2,225,'#34d399',14);
+  drawText('颁发者: DigiCert CA',W/2,250,'#cfe',11);
+  drawText('有效期: 2024-01-01 ~ 2025-01-01',W/2,270,'#cfe',11);
+  drawText('公钥: RSA-2048',W/2,290,'#cfe',11);
+  drawText('CA 签名: a3f8...',W/2,310,'#fbbf24',11);
+  // 验证（客户端）
+  ctx.fillStyle='#06b6d422';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(W/2-90,cy+90,180,70,10);ctx.fill();ctx.stroke();
+  drawText('客户端',W/2,cy+115,'#06b6d4',13);
+  drawText('用 CA 公钥验签名',W/2,cy+138,'#cfe',11);
+  // 验证箭头
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(W/2,330);ctx.lineTo(W/2,cy+90);ctx.stroke();
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.moveTo(W/2,cy+90);ctx.lineTo(W/2-6,cy+100);ctx.lineTo(W/2+6,cy+100);ctx.fill();
+  drawText('浏览器内置 CA 根证书 → 可验证任意网站证书真伪',W/2,H-35,'#34d399',12);
+  drawText('防止中间人伪造证书（伪造证书无合法 CA 签名）',W/2,H-18,'#f87171',11);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('HTTP / HTTPS 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'HTTP 协议',d:'应用层，TCP 80，请求-响应',c:'#06b6d4'},
+    {t:'请求方法',d:'GET/POST/PUT/DELETE',c:'#34d399'},
+    {t:'报文结构',d:'行 + 头 + 空行 + 体',c:'#67e8f9'},
+    {t:'状态码',d:'1/2/3/4/5 五大类',c:'#fbbf24'},
+    {t:'HTTP 不安全',d:'明文，易被嗅探篡改',c:'#f87171'},
+    {t:'HTTPS',d:'HTTP+TLS，端口 443',c:'#a78bfa'},
+    {t:'TLS 握手',d:'四步协商会话密钥',c:'#fb923c'},
+    {t:'混合加密',d:'非对称换密钥，对称传数据',c:'#ec4899'},
+    {t:'数字证书',d:'CA 签名防伪造',c:'#34d399'},
+  ];
+  const cols=3,colW=(W-160)/3,rowH=110;
+  items.forEach((m,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=80+col*(colW+10),y=90+row*(rowH+12);
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x,y,colW,rowH,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+colW/2,y+40,m.c,15);
+    drawText(m.d,x+colW/2,y+72,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawRequestScene(t);
+  else if(stepIdx===1)drawRequestScene(t);
+  else if(stepIdx===2)drawRequestScene(t);
+  else if(stepIdx===3)drawResponseScene(t);
+  else if(stepIdx===4)drawStatusCodeScene(t);
+  else if(stepIdx===5)drawSniffScene(t);
+  else if(stepIdx===6)drawTLSScene(t);
+  else if(stepIdx===7)drawTLSScene(t);
+  else if(stepIdx===8)drawMixEncryptScene(t);
+  else if(stepIdx===9)drawCertScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

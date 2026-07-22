@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>打点计时器 · 纸带数据处理 · 逐差法求加速度</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a5f3fc;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">打点计时器实验</span><span class="subtitle">纸带数据处理 · 逐差法求加速度</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>电磁打点计时器</h4><div class="v">交流 50Hz / 0.02s<br>线圈驱动振片打点</div></div>
+  <div class="card s2"><div class="num">2</div><h4>电火花计时器</h4><div class="v">交流 50Hz / 0.02s<br>火花击穿复写纸</div></div>
+  <div class="card s3"><div class="num">3</div><h4>纸带处理步骤</h4><div class="v">选段→标点→量距→计算<br>四步法处理纸带</div></div>
+  <div class="card s4"><div class="num">4</div><h4>逐差法</h4><div class="v">a = Δx / T²<br>三段平均减小误差</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">打点计时器原理</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'打点计时器原理',body:'<strong>打点计时器</strong>是记录<strong>短时间内物体位置</strong>的仪器。<strong>电磁打点计时器</strong>用线圈通交流电使振片振动，每周期打一次点；<strong>电火花计时器</strong>利用高压火花击穿复写纸。我国交流电频率 <code>50Hz</code>，周期 <code>T=0.02s</code>。',points:{title:'核心要点',items:['<strong>电源</strong>：交流 50Hz，周期 0.02s','<strong>电磁式</strong>：线圈→振片→复写纸打点','<strong>电火花式</strong>：高压火花击穿复写纸','<strong>每两点间隔</strong>：0.02s']}},
+  {tag:'基础',name:'纸带分析四步法',body:'处理纸带的<strong>四步法</strong>：① <strong>选清晰段</strong>，舍去起止密集/稀疏部分；② <strong>标计数点</strong>，每 5 个点取一个（间隔 0.1s）；③ <strong>量位移</strong>，量出 x1~x6；④ <strong>计算</strong>速度与加速度。',points:{title:'四步流程',items:['<strong>① 选段</strong>：取点迹清晰的中间段','<strong>② 标点</strong>：每 5 个点取计数点 T=0.1s','<strong>③ 量距</strong>：测 x1、x2…x6（相邻段）','<strong>④ 计算</strong>：求 v、a']}},
+  {tag:'速度',name:'瞬时速度求解',body:'某计数点的<strong>瞬时速度</strong>等于其<strong>前后两段平均速度的平均</strong>（中间时刻瞬时速度 = 两端平均速度）。公式：<code>vn = (xn + xn+1) / 2T</code>。',points:{title:'速度公式',items:['<strong>核心</strong>：vn = (xn + xn+1) / 2T','<strong>原理</strong>：中间时刻瞬时速度=平均速度','<strong>T</strong>：相邻计数点间隔（0.1s）','<strong>例</strong>：v2 = (x2+x3)/2T']}},
+  {tag:'加速度',name:'逐差法求加速度',body:'<strong>逐差法</strong>利用<strong>对称段差值</strong>求 a：<code>a1=(x4-x1)/3T², a2=(x5-x2)/3T², a3=(x6-x3)/3T²</code>，再取平均 <code>ā=(a1+a2+a3)/3</code>，充分利用全部数据。',points:{title:'逐差法公式',items:['<strong>a1</strong>=(x4-x1)/3T²','<strong>a2</strong>=(x5-x2)/3T²','<strong>a3</strong>=(x6-x3)/3T²','<strong>ā</strong>=(a1+a2+a3)/3']}},
+  {tag:'加速度',name:'为何用逐差法',body:'若用 <code>a=(xn+1-xn)/T²</code> 逐段求再平均，<strong>中间数据两两抵消</strong>，只剩首尾两点；逐差法<strong>保留全部数据</strong>，<strong>减小偶然误差</strong>，结果更可靠。',points:{title:'逐差法优势',items:['<strong>普通法</strong>：只等效首末两段','<strong>逐差法</strong>：用尽每一段数据','<strong>误差</strong>：有效减小偶然误差','<strong>对称性</strong>：3T 时间跨度更稳健']}},
+  {tag:'对比',name:'逐差法 vs 图像法',body:'<strong>逐差法</strong>直接代公式，简洁快速；<strong>图像法（v-t 图）</strong>用<strong>斜率</strong>求 a，可直观剔除坏点，更精确。两者都利用全部数据，但图像法还能<strong>消除系统误差</strong>。',points:{title:'两种方法对比',items:['<strong>逐差法</strong>：代数计算，简便','<strong>图像法</strong>：v-t 图斜率 = a','<strong>逐差法</strong>：依赖测量精度','<strong>图像法</strong>：可拟合剔除坏点']}},
+  {tag:'实验',name:'实验注意事项',body:'<strong>关键操作</strong>：① <strong>先通电</strong>后释放小车；② 纸带与长轴<strong>平行</strong>，减小摩擦；③ 交流电压<strong>符合额定值</strong>（电磁式 4~6V，电火花式 220V）；④ 小车<strong>靠近打点器</strong>再释放。',points:{title:'操作要点',items:['<strong>① 先通电</strong>：保证起始点清晰','<strong>② 平行纸带</strong>：减小摩擦阻力','<strong>③ 释放位置</strong>：靠近打点计时器','<strong>④ 复写纸</strong>：正反面要正确']}},
+  {tag:'误差',name:'误差来源分析',body:'<strong>系统误差</strong>：电源频率偏差（频率↑则测得 a 偏小）、空气阻力与摩擦使 a 测量值<strong>偏小</strong>。<strong>偶然误差</strong>：位移测量读数、点迹不清晰、振片打点力度不均。',points:{title:'误差分类',items:['<strong>频率偏差</strong>：T 不准，影响所有结果','<strong>摩擦/阻力</strong>：a 测得偏小','<strong>测量读数</strong>：毫米刻度估读','<strong>振片打点</strong>：力度不均致点迹模糊']}},
+  {tag:'计算',name:'典型例题',body:'例：纸带 5 个计数点（每 5 个点取一点，T=0.1s），测得 x1=3.20cm, x2=4.70cm, x3=6.20cm。求 a。解：a=(x3-x1)/2T²=(6.20-3.20)×10⁻²/(2×0.01)=1.50 m/s²。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：确认 T=0.1s','<strong>步骤2</strong>：读 x1、x2、x3 (单位 m)','<strong>步骤3</strong>：代入 a=Δx/nT²','<strong>步骤4</strong>：结果保留两位有效数字']}},
+  {tag:'总结',name:'核心速记',body:'<strong>打点计时器</strong>是力学实验核心仪器，频率 <strong>50Hz</strong>、周期 <strong>0.02s</strong>；纸带处理遵循<strong>四步法</strong>；求加速度优先用<strong>逐差法</strong>，充分利用全部数据减小误差。',points:{title:'三句话总结',items:['<strong>基础</strong>：T=0.02s，计数点 T=0.1s','<strong>速度</strong>：vn=(xn+xn+1)/2T','<strong>加速度</strong>：逐差法 ā=(a1+a2+a3)/3','<strong>关键</strong>：先通电、平行纸带、减小摩擦']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：打点计时器结构 =====
+function drawTimerScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('打点计时器结构 · 50Hz / 0.02s',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2;
+  // 线圈（左侧长方体）
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx-120,cy-60,90,40,6);ctx.fill();ctx.stroke();
+  drawText('线圈',cx-75,cy-40,'#06b6d4',13);
+  // 振片（振动金属片）
+  const vib=Math.sin(time*8)*4;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-30,cy-40);ctx.lineTo(cx+30+vib,cy-30);ctx.stroke();
+  drawText('振片',cx-5,cy-55,'#fbbf24',12);
+  // 复写纸（圆形）
+  ctx.fillStyle='rgba(251,191,36,0.3)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx+45+vib,cy-15,12,0,7);ctx.fill();ctx.stroke();
+  drawText('复写纸',cx+45,cy+5,'#fbbf24',11);
+  // 纸带（横向）
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(cx-200,cy+10,400,30,4);ctx.fill();ctx.stroke();
+  drawText('纸带（向左运动）',cx,cy+55,'#67e8f9',12);
+  // 打点（红色，振片下端）
+  ctx.fillStyle='#f87171';ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.arc(cx+45+vib,cy+25,3,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 电源符号
+  ctx.fillStyle='#a78bfa';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(cx-200,cy-60,60,24,4);ctx.stroke();
+  drawText('~ 交流',cx-170,cy-48,'#a78bfa',11);
+  // 连线（电源→线圈）
+  ctx.beginPath();ctx.moveTo(cx-140,cy-40);ctx.lineTo(cx-120,cy-40);ctx.stroke();
+  // 频率说明
+  drawText('交流 50Hz → 振片每 0.02s 打一个点',W/2,H-50,'#34d399',13);
+  drawText('每 5 个点取一个计数点 → 计数点周期 T = 0.1s',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：纸带点迹动画 =====
+function drawPaperScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('纸带点迹 · 每 0.02s 打一点，5 点取一计数点',W/2,30,'#06b6d4',16);
+  // 纸带
+  const tapeY=H/2;
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(60,tapeY-30,W-120,60,6);ctx.fill();ctx.stroke();
+  drawText('纸带（小车拉动方向 →）',W/2,tapeY-50,'#67e8f9',12);
+  // 点迹（加速运动，间距递增）
+  const N=30;
+  const start=80,end=W-80;
+  // 显示动态打点过程
+  const showCount=Math.floor((time*5)%N)+1;
+  for(let i=0;i<showCount;i++){
+    const ratio=i/N;
+    const x=start+ratio*(end-start)+(ratio*ratio)*30; // 加速位移
+    const isCount=(i%5===0);
+    if(isCount){
+      // 计数点（大、彩色）
+      ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+      ctx.beginPath();ctx.arc(x,tapeY,5,0,7);ctx.fill();
+      ctx.shadowBlur=0;
+      const idx=Math.floor(i/5);
+      if(idx<=6)drawText(['0','1','2','3','4','5','6'][idx],x,tapeY+20,'#fbbf24',11);
+    }else{
+      ctx.fillStyle='rgba(248,113,113,0.7)';
+      ctx.beginPath();ctx.arc(x,tapeY,2,0,7);ctx.fill();
+    }
+  }
+  // 计数点说明
+  drawText('红点：每 0.02s 一个；黄点：计数点（间隔 0.1s）',W/2,H-60,'#9ab0d0',12);
+  drawText('小车做匀加速直线运动 → 间距越来越大',W/2,H-35,'#34d399',12);
+}
+
+// ===== 场景：测量纸带 =====
+function drawMeasureScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('纸带测量 · x1 x2 x3 x4 x5 x6',W/2,30,'#06b6d4',16);
+  const tapeY=H/2+10;
+  // 纸带
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(60,tapeY-25,W-120,50,6);ctx.fill();ctx.stroke();
+  // 计数点 0~6，位置等差递增模拟匀加速
+  const xs=[];
+  const base=90;
+  for(let i=0;i<7;i++){
+    xs.push(base+i*40+i*i*4);
+  }
+  const colors=['#06b6d4','#fbbf24','#34d399','#a78bfa','#fb923c','#ec4899','#67e8f9'];
+  for(let i=0;i<7;i++){
+    ctx.fillStyle=colors[i];ctx.shadowColor=colors[i];ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(xs[i],tapeY,5,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText(i===0?'0':i,xs[i],tapeY-15,colors[i],11);
+  }
+  // 高亮显示当前测量段
+  const seg=Math.floor((time*1.2)%6);
+  const xa=xs[seg],xb=xs[seg+1];
+  // 测量线（双向箭头）
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(xa,tapeY+25);ctx.lineTo(xb,tapeY+25);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(xa,tapeY+20);ctx.lineTo(xa,tapeY+30);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(xb,tapeY+20);ctx.lineTo(xb,tapeY+30);ctx.stroke();
+  // x 标签
+  const xm=(xa+xb)/2;
+  const dist=[3.20,4.70,6.20,7.71,9.20,10.71][seg];
+  drawText('x'+(seg+1)+' = '+dist.toFixed(2)+' cm',xm,tapeY+50,'#fbbf24',13);
+  // 列表
+  drawText('计数点间隔 T = 0.1s（5 个打点周期）',W/2,H-50,'#34d399',12);
+  drawText('依次测量相邻计数点距离 x1~x6',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：瞬时速度计算 =====
+function drawVelocityScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('瞬时速度 · vn = (xn + xn+1) / 2T',W/2,30,'#06b6d4',16);
+  const tapeY=H/2;
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(60,tapeY-25,W-120,50,6);ctx.fill();ctx.stroke();
+  // 计数点 n-1, n, n+1
+  const xnm1=W/2-120,xn=W/2,xnp1=W/2+120;
+  const seg=Math.floor((time*1.5)%4)+1; // 选 n=1..4
+  const pos=[W/2-180,W/2-60,W/2+60,W/2+180];
+  // 重新算位置：固定布局展示某一点 n
+  const a=pos[0],b=pos[1],c=pos[2],d=pos[3];
+  // 高亮 xn 段（seg+seg+1）
+  const left=pos[Math.max(0,seg-1)];
+  // 简化：固定展示点 n 及左右邻点
+  const pts=[a,b,c,d];
+  const labels=['n-1','n','n+1','n+2'];
+  pts.forEach((p,i)=>{
+    const isCenter=(i===1);
+    ctx.fillStyle=isCenter?'#fbbf24':'#06b6d4';
+    ctx.shadowColor=isCenter?'#fbbf24':'#06b6d4';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(p,tapeY,isCenter?7:5,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText(labels[i],p,tapeY-18,isCenter?'#fbbf24':'#67e8f9',12);
+  });
+  // xn（n-1→n）、xn+1（n→n+1）
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(a,tapeY+30);ctx.lineTo(b,tapeY+30);ctx.stroke();
+  drawText('xn',(a+b)/2,tapeY+50,'#34d399',13);
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(b,tapeY+30);ctx.lineTo(c,tapeY+30);ctx.stroke();
+  drawText('xn+1',(b+c)/2,tapeY+50,'#a78bfa',13);
+  // 公式框
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(W/2-180,H-110,360,60,8);ctx.fill();ctx.stroke();
+  drawText('vn = (xn + xn+1) / 2T',W/2,H-95,'#fff',15);
+  drawText('中间时刻瞬时速度 = 相邻段平均速度',W/2,H-70,'#9ab0d0',11);
+}
+
+// ===== 场景：逐差法公式动画 =====
+function drawDiffScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('逐差法 · 连线 x1-x4 / x2-x5 / x3-x6',W/2,30,'#06b6d4',16);
+  const tapeY=H/2-30;
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(60,tapeY-25,W-120,50,6);ctx.fill();ctx.stroke();
+  const pts=[];
+  const base=90;
+  for(let i=0;i<7;i++)pts.push(base+i*((W-180)/6));
+  // 绘制计数点
+  const colors=['#67e8f9','#fbbf24','#34d399','#a78bfa','#fb923c','#ec4899','#67e8f9'];
+  pts.forEach((p,i)=>{
+    ctx.fillStyle=colors[i];ctx.shadowColor=colors[i];ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(p,tapeY,5,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText(i,pts[i],tapeY-15,colors[i],11);
+  });
+  // 当前高亮对（循环）
+  const pair=Math.floor((time*1.0)%3); // 0:x1-x4, 1:x2-x5, 2:x3-x6
+  const pairs=[[1,4],[2,5],[3,6]];
+  const labels=['a1=(x4-x1)/3T²','a2=(x5-x2)/3T²','a3=(x6-x3)/3T²'];
+  const [p1,p2]=pairs[pair];
+  // 连线（弧形）
+  ctx.strokeStyle='#f87171';ctx.lineWidth=3;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=12;
+  ctx.beginPath();
+  const xa=pts[p1],xb=pts[p2];
+  const mx=(xa+xb)/2,my=tapeY-50-Math.abs(xb-xa)*0.15;
+  ctx.moveTo(xa,tapeY-10);
+  ctx.quadraticCurveTo(mx,my,xb,tapeY-10);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText(labels[pair],W/2,tapeY-80,'#f87171',14);
+  // 距离差 Δx 标注
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(xa,tapeY+40);ctx.lineTo(xb,tapeY+40);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(xa,tapeY+35);ctx.lineTo(xa,tapeY+45);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(xb,tapeY+35);ctx.lineTo(xb,tapeY+45);ctx.stroke();
+  drawText('Δx = x'+p2+' - x'+p1,(xa+xb)/2,tapeY+60,'#fbbf24',12);
+  // 平均公式
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(W/2-200,H-90,400,50,8);ctx.fill();ctx.stroke();
+  drawText('ā = (a1 + a2 + a3) / 3',W/2,H-65,'#fff',15);
+}
+
+// ===== 场景：逐差法 vs 两点法对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('逐差法 vs 两点法 · 误差对比',W/2,30,'#06b6d4',16);
+  // 左：两点法
+  const L=W/2-20,R=W/2+20;
+  ctx.fillStyle='rgba(248,113,113,0.1)';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+  roundRect(60,70,L-60,H-160,8);ctx.fill();ctx.stroke();
+  drawText('两点法（普通法）',60+(L-60)/2,95,'#f87171',15);
+  drawText('a = (x6 - x1) / 5T²',60+(L-60)/2,125,'#fff',13);
+  drawText('只用首末两点',60+(L-60)/2,160,'#9ab0d0',12);
+  drawText('中间数据全部抵消',60+(L-60)/2,185,'#f87171',12);
+  drawText('误差：较大',60+(L-60)/2,H-110,'#f87171',13);
+  // 右：逐差法
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(R,70,W-60-R,H-160,8);ctx.fill();ctx.stroke();
+  drawText('逐差法',R+(W-60-R)/2,95,'#34d399',15);
+  drawText('a1,a2,a3 分别求再平均',R+(W-60-R)/2,125,'#fff',13);
+  drawText('充分利用 x1~x6 所有数据',R+(W-60-R)/2,160,'#9ab0d0',12);
+  drawText('三次独立测量取平均',R+(W-60-R)/2,185,'#34d399',12);
+  drawText('误差：显著减小',R+(W-60-R)/2,H-110,'#34d399',13);
+  // 中间箭头
+  drawText('VS',W/2,H/2,'#fbbf24',20);
+  // 底部结论
+  drawText('同样数据，逐差法利用更充分，结果更可靠',W/2,H-40,'#fbbf24',13);
+}
+
+// ===== 场景：误差来源 =====
+function drawErrorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('误差来源分析',W/2,30,'#06b6d4',16);
+  const items=[
+    {t:'电源频率偏差',d:'T 不准确 → a 系统偏差',c:'#f87171',icon:'~'},
+    {t:'空气阻力',d:'小车实际 a < 理论 a',c:'#fbbf24',icon:'≈'},
+    {t:'纸带摩擦',d:'摩擦力使 a 测得偏小',c:'#fb923c',icon:'!'},
+    {t:'测量读数',d:'毫米估读偶然误差',c:'#a78bfa',icon:'↔'},
+    {t:'点迹模糊',d:'定位不精确',c:'#ec4899',icon:'?'},
+    {t:'振片力度',d:'打点力度不均匀',c:'#67e8f9',icon:'*'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=80+row*180;
+    const pulse=0.5+0.5*Math.sin(time*2+i);
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/3-20,140,10);ctx.fill();ctx.stroke();
+    // 图标圆
+    ctx.fillStyle=m.c;
+    ctx.globalAlpha=0.4+0.6*pulse;
+    ctx.beginPath();ctx.arc(x+(W-120)/6,y+40,18,0,7);ctx.fill();
+    ctx.globalAlpha=1;
+    drawText(m.icon,x+(W-120)/6,y+40,'#fff',18);
+    drawText(m.t,x+(W-120)/6,y+85,m.c,14);
+    drawText(m.d,x+(W-120)/6,y+110,'#9ab0d0',11);
+  });
+  drawText('系统误差：频率、阻力；偶然误差：测量、点迹',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 逐差法求加速度',W/2,30,'#06b6d4',16);
+  // 题目框
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,65,W-160,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',110,85,'#a78bfa',13,'left');
+  drawText('纸带每 5 个点取一计数点（T=0.1s），',110,110,'#fff',13,'left');
+  drawText('测得 x1=3.20cm, x2=4.70cm, x3=6.20cm。',110,135,'#fff',13,'left');
+  drawText('求加速度 a。',110,160,'#fff',13,'left');
+  // 解答步骤
+  const steps=[
+    {t:'① 已知',d:'T=0.1s, x1=3.20cm, x2=4.70cm, x3=6.20cm',c:'#06b6d4'},
+    {t:'② 公式',d:'a = (x3 - x1) / 2T²',c:'#a78bfa'},
+    {t:'③ 代入',d:'a = (6.20 - 3.20)×10⁻² / (2 × 0.1²)',c:'#67e8f9'},
+    {t:'④ 计算',d:'a = 0.0300 / 0.02 = 1.50 m/s²',c:'#34d399'},
+    {t:'⑤ 结论',d:'a = 1.50 m/s²，方向沿运动方向',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,36,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,260,y+18,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('打点计时器实验 · 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'计时频率',d:'50Hz / T=0.02s',c:'#06b6d4'},
+    {t:'计数周期',d:'T = 0.1s（5 个点）',c:'#67e8f9'},
+    {t:'瞬时速度',d:'vn = (xn+xn+1) / 2T',c:'#34d399'},
+    {t:'逐差法',d:'ā = (a1+a2+a3) / 3',c:'#fbbf24'},
+    {t:'减小误差',d:'充分利用全部数据',c:'#fb923c'},
+    {t:'操作关键',d:'先通电、平行、靠近',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=90+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-120)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawTimerScene(t);
+  else if(stepIdx===1)drawPaperScene(t);
+  else if(stepIdx===2)drawMeasureScene(t);
+  else if(stepIdx===3)drawVelocityScene(t);
+  else if(stepIdx===4)drawDiffScene(t);
+  else if(stepIdx===5)drawCompareScene(t);
+  else if(stepIdx===6)drawTimerScene(t);
+  else if(stepIdx===7)drawErrorScene(t);
+  else if(stepIdx===8)drawCalcScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

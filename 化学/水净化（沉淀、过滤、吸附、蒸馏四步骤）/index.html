@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>水净化 · 沉淀 · 过滤 · 吸附 · 蒸馏</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#10b981;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a5f3fc;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">水净化</span><span class="subtitle">沉淀 · 过滤 · 吸附 · 蒸馏 四步骤</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>沉淀</h4><div class="v">加明矾吸附<br>不溶性杂质沉降</div></div>
+  <div class="card s2"><div class="num">2</div><h4>过滤</h4><div class="v">一贴二低三靠<br>分离不溶性固体</div></div>
+  <div class="card s3"><div class="num">3</div><h4>吸附</h4><div class="v">活性炭多孔<br>除色除味除有机物</div></div>
+  <div class="card s4"><div class="num">4</div><h4>蒸馏</h4><div class="v">分离沸点不同液体<br>净化程度最高</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">天然水的杂质</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'天然水的杂质',body:'天然水中含有<strong>可溶性杂质</strong>（如矿物质离子 Ca²⁺、Mg²⁺）和<strong>不溶性杂质</strong>（如泥沙、悬浮物）。还可能含有<strong>有色物质和异味</strong>。净化目的就是<strong>逐级去除</strong>这些杂质。',points:{title:'杂质分类',items:['<strong>不溶性杂质</strong>：泥沙、悬浮颗粒','<strong>可溶性杂质</strong>：Ca²⁺、Mg²⁺ 等离子','<strong>颜色异味</strong>：有机物、色素','<strong>微生物</strong>：细菌、病毒']}},
+  {tag:'基础',name:'净化程度排序',body:'四种净化方法按<strong>净化程度</strong>由低到高：静置沉淀 < 过滤 < 吸附 < 蒸馏。<strong>蒸馏</strong>得到的几乎是<strong>纯水</strong>，净化程度最高。',points:{title:'净化程度',items:['<strong>静置沉淀</strong>：仅去不溶性大颗粒','<strong>过滤</strong>：去不溶性固体','<strong>吸附</strong>：去颜色、异味、有机物','<strong>蒸馏</strong>：去所有杂质，得到纯水']}},
+  {tag:'沉淀',name:'沉淀（明矾）',body:'<strong>沉淀</strong>法加入<strong>明矾（KAl(SO₄)₂·12H₂O）</strong>，明矾溶于水形成<strong>Al(OH)₃ 胶体</strong>，胶体颗粒表面积大，<strong>吸附</strong>水中悬浮杂质一起沉降。',points:{title:'明矾净水原理',items:['<strong>明矾</strong>：KAl(SO₄)₂·12H₂O','<strong>胶体</strong>：Al(OH)₃ 吸附杂质','<strong>适用</strong>：悬浮颗粒大的水','<strong>局限</strong>：不能去可溶性离子']}},
+  {tag:'过滤',name:'过滤（一贴二低三靠）',body:'<strong>过滤</strong>适用于分离<strong>液体和不溶性固体</strong>。操作要点：<strong>一贴</strong>滤纸紧贴漏斗内壁；<strong>二低</strong>滤纸边缘低于漏斗边缘、液面低于滤纸边缘；<strong>三靠</strong>烧杯口靠玻璃棒、玻璃棒靠三层滤纸、漏斗下端靠烧杯内壁。',points:{title:'操作六字诀',items:['<strong>一贴</strong>：滤纸紧贴漏斗（无气泡）','<strong>二低</strong>：滤纸低于边缘、液面低于滤纸','<strong>三靠-1</strong>：烧杯靠玻璃棒','<strong>三靠-2</strong>：玻璃棒靠三层滤纸','<strong>三靠-3</strong>：漏斗下端靠烧杯内壁']}},
+  {tag:'吸附',name:'吸附（活性炭）',body:'<strong>活性炭</strong>具有<strong>疏松多孔</strong>结构，表面积巨大，能<strong>吸附</strong>水中的有色物质、异味分子和部分有机物，使水变得<strong>无色无味</strong>。',points:{title:'活性炭吸附',items:['<strong>结构</strong>：疏松多孔、表面积大','<strong>吸附对象</strong>：色素、异味、有机物','<strong>物理变化</strong>：无新物质生成','<strong>不可逆</strong>：饱和后需更换']}},
+  {tag:'蒸馏',name:'蒸馏（净化最高）',body:'<strong>蒸馏</strong>利用混合物中各成分<strong>沸点不同</strong>进行分离。水在 100°C 汽化成水蒸气，再经<strong>冷凝</strong>液化收集，得到几乎不含任何杂质的<strong>纯水</strong>，净化程度最高。',points:{title:'蒸馏原理',items:['<strong>原理</strong>：沸点差异分离液体','<strong>步骤</strong>：加热→汽化→冷凝→收集','<strong>净化程度</strong>：最高','<strong>产物</strong>：蒸馏水（纯水）']}},
+  {tag:'硬软水',name:'硬水 vs 软水',body:'<strong>硬水</strong>含较多<strong>Ca²⁺、Mg²⁺</strong>离子，<strong>软水</strong>含较少或不含。用<strong>肥皂水</strong>检验：硬水泡沫少且有浮渣，软水泡沫多。',points:{title:'硬水与软水',items:['<strong>硬水</strong>：Ca²⁺、Mg²⁺ 含量多','<strong>软水</strong>：Ca²⁺、Mg²⁺ 含量少','<strong>检验</strong>：加肥皂水看泡沫','<strong>危害</strong>：硬水煮沸结垢']}},
+  {tag:'硬水软化',name:'硬水软化方法',body:'<strong>硬水软化</strong>即降低 Ca²⁺、Mg²⁺ 含量。生活中常用<strong>煮沸</strong>（仅降低暂时硬度）；实验室和工业用<strong>蒸馏</strong>得到纯水。',points:{title:'软化方法',items:['<strong>煮沸</strong>：生活常用，去暂时硬度','<strong>蒸馏</strong>：彻底软化，得纯水','<strong>离子交换</strong>：工业用树脂','<strong>区别</strong>：煮沸保留可溶性离子']}},
+  {tag:'操作',name:'过滤操作要点',body:'过滤是<strong>化学实验基本操作</strong>。重点掌握<strong>一贴二低三靠</strong>：保证滤液清澈、不溅出、过滤速度快。玻璃棒作用是<strong>引流</strong>，避免液体飞溅。',points:{title:'操作目的',items:['<strong>一贴</strong>：加快过滤速度','<strong>滤纸低于漏斗</strong>：便于操作','<strong>液面低于滤纸</strong>：防止未滤液混入','<strong>玻璃棒引流</strong>：防飞溅']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>例</strong>：欲得到不含任何杂质的纯水应选<strong>蒸馏</strong>；分离泥沙选<strong>过滤</strong>；去颜色异味选<strong>吸附</strong>；大量悬浮物先<strong>沉淀</strong>。综合流程：天然水 → 沉淀 → 过滤 → 吸附 → 蒸馏。',points:{title:'核心速记',items:['<strong>纯水</strong>：必须蒸馏','<strong>去泥沙</strong>：过滤','<strong>除色味</strong>：活性炭吸附','<strong>四步流程</strong>：沉→滤→吸→蒸']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+// ===== 场景1：流程图 =====
+function drawFlowChart(time){
+  const W=cv.width,H=cv.height;
+  drawText('四种净化方法 · 流程图',W/2,30,'#06b6d4',16);
+  const steps=['天然水','沉淀','过滤','吸附','蒸馏','纯水'];
+  const colors=['#9ab0d0','#06b6d4','#10b981','#34d399','#fbbf24','#fff'];
+  const n=steps.length;
+  const startX=80,endX=W-80;
+  const gap=(endX-startX)/(n-1);
+  const cy=H/2;
+  // 高亮当前激活节点
+  const active=Math.floor((time*0.6)%n);
+  steps.forEach((s,i)=>{
+    const x=startX+i*gap;
+    const isActive=i<=active;
+    ctx.fillStyle=isActive?colors[i]+'33':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=isActive?colors[i]:'#243a5e';
+    ctx.lineWidth=isActive?2.5:1.5;
+    roundRect(x-55,cy-30,110,60,10);ctx.fill();ctx.stroke();
+    drawText(s,x,cy-8,isActive?colors[i]:'#5a6a8a',13);
+    drawText('步骤'+(i+1),x,cy+12,isActive?'#9ab0d0':'#3a4a6a',10);
+    // 箭头
+    if(i<n-1){
+      const arrowFlow=i<active;
+      ctx.strokeStyle=arrowFlow?'#06b6d4':'#243a5e';
+      ctx.lineWidth=arrowFlow?2.5:1.5;
+      if(arrowFlow){ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;}
+      ctx.beginPath();ctx.moveTo(x+55,cy);ctx.lineTo(x+gap-55,cy);ctx.stroke();
+      // 箭头头
+      const ah=x+gap-55;
+      ctx.fillStyle=arrowFlow?'#06b6d4':'#243a5e';
+      ctx.beginPath();ctx.moveTo(ah,cy);ctx.lineTo(ah-10,cy-5);ctx.lineTo(ah-10,cy+5);ctx.fill();
+      ctx.shadowBlur=0;
+    }
+  });
+  drawText('净化程度递增 →',W/2,H-60,'#10b981',13);
+  drawText('每一步去除不同杂质，组合使用效果最佳',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景2：过滤装置（一贴二低三靠） =====
+function drawFilterScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('过滤装置 · 一贴二低三靠',W/2,30,'#06b6d4',16);
+  const cx=W/2-60,cy=H/2-20;
+  // 铁架台（简化）
+  ctx.strokeStyle='#5a6a8a';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-180,cy+220);ctx.lineTo(cx+80,cy+220);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-150,cy+220);ctx.lineTo(cx-150,cy-120);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-150,cy-50);ctx.lineTo(cx-30,cy-50);ctx.stroke();
+  // 漏斗
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-50,cy-60);ctx.lineTo(cx+50,cy-60);ctx.lineTo(cx+5,cy+30);ctx.lineTo(cx-5,cy+30);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // 漏斗下端管
+  ctx.beginPath();ctx.moveTo(cx-5,cy+30);ctx.lineTo(cx-5,cy+100);ctx.lineTo(cx+5,cy+100);ctx.lineTo(cx+5,cy+30);ctx.stroke();
+  // 滤纸（折叠状，三角形）
+  ctx.fillStyle='rgba(251,191,36,0.25)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx-45,cy-55);ctx.lineTo(cx+45,cy-55);ctx.lineTo(cx+3,cy+25);ctx.lineTo(cx-3,cy+25);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // 一贴：滤纸紧贴漏斗（高亮）
+  const pulse=0.5+0.5*Math.sin(time*3);
+  ctx.strokeStyle='rgba(251,191,36,'+(0.4+pulse*0.6)+')';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-45,cy-55);ctx.lineTo(cx+45,cy-55);ctx.stroke();
+  drawText('一贴：滤纸紧贴漏斗',cx+150,cy-55,'#fbbf24',12,'left');
+  // 二低：滤纸低于漏斗边缘
+  ctx.strokeStyle='rgba(52,211,153,'+(0.4+pulse*0.6)+')';ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(cx-50,cy-60);ctx.lineTo(cx+50,cy-60);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('二低：滤纸低于漏斗口',cx+150,cy-30,'#34d399',12,'left');
+  // 液面（低于滤纸）
+  ctx.fillStyle='rgba(6,182,212,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(cx-40,cy-40);ctx.lineTo(cx+40,cy-40);ctx.lineTo(cx+3,cy+20);ctx.lineTo(cx-3,cy+20);ctx.closePath();
+  ctx.fill();
+  drawText('液面低于滤纸',cx+150,cy-10,'#34d399',12,'left');
+  // 烧杯（接收滤液）
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#10b981';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-50,cy+130);ctx.lineTo(cx-60,cy+200);ctx.lineTo(cx+60,cy+200);ctx.lineTo(cx+50,cy+130);
+  ctx.stroke();
+  // 滤液
+  ctx.fillStyle='rgba(16,185,129,0.3)';
+  ctx.beginPath();ctx.moveTo(cx-57,cy+170);ctx.lineTo(cx+57,cy+170);ctx.lineTo(cx+60,cy+200);ctx.lineTo(cx-60,cy+200);ctx.closePath();ctx.fill();
+  drawText('烧杯接滤液',cx,cy+220,'#10b981',11);
+  // 玻璃棒（引流）
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(cx-180,cy-100);ctx.lineTo(cx-10,cy-30);ctx.stroke();
+  drawText('玻璃棒引流',cx-180,cy-120,'#a78bfa',11);
+  // 液滴动画
+  const dropY=cy+30+((time*120)%70);
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.arc(cx,dropY,3,0,7);ctx.fill();
+  // 三靠说明
+  drawText('三靠：',cx+150,cy+20,'#f87171',12,'left');
+  drawText('1.烧杯靠玻璃棒',cx+160,cy+42,'#f87171',11,'left');
+  drawText('2.玻璃棒靠三层滤纸',cx+160,cy+62,'#f87171',11,'left');
+  drawText('3.漏斗下端靠烧杯内壁',cx+160,cy+82,'#f87171',11,'left');
+  drawText('分离液体与不溶性固体',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景3：明矾沉降 =====
+function drawSettleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('明矾沉降 · 胶体吸附杂质下沉',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2;
+  // 烧杯
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-140,cy-120);ctx.lineTo(cx-160,cy+140);ctx.lineTo(cx+160,cy+140);ctx.lineTo(cx+140,cy-120);
+  ctx.stroke();
+  // 浑浊水（顶部变清，底部沉积）
+  const settle=Math.min(1,time*0.25);
+  // 上层清水
+  ctx.fillStyle='rgba(6,182,212,'+(0.2+settle*0.3)+')';
+  ctx.fillRect(cx-155,cy-110,310,(cy+120)*settle);
+  // 下层仍浑浊
+  ctx.fillStyle='rgba(148,163,184,0.4)';
+  ctx.fillRect(cx-155,cy-110+(cy+120)*settle,310,(cy+120)*(1-settle));
+  // 沉积层（底部）
+  ctx.fillStyle='rgba(120,80,40,'+(0.3+settle*0.5)+')';
+  ctx.fillRect(cx-155,cy+120,310,20*settle+5);
+  // 胶体颗粒（明矾形成的 Al(OH)₃）
+  for(let i=0;i<15;i++){
+    const sx=cx-130+((i*37)%260);
+    const speed=0.4+((i*7)%10)*0.1;
+    const sy=cy-100+(time*30*speed+i*20)%220;
+    ctx.fillStyle='rgba(251,191,36,0.7)';
+    ctx.beginPath();ctx.arc(sx,sy,4+Math.sin(time+i)*1,0,7);ctx.fill();
+    // 吸附的小颗粒
+    for(let j=0;j<3;j++){
+      ctx.fillStyle='rgba(120,80,40,0.6)';
+      ctx.beginPath();ctx.arc(sx+Math.cos(j*2+i)*10,sy+Math.sin(j*2+i)*8,1.5,0,7);ctx.fill();
+    }
+  }
+  drawText('明矾 KAl(SO₄)₂·12H₂O',cx,cy-140,'#fbbf24',13);
+  drawText('形成 Al(OH)₃ 胶体吸附杂质下沉',cx,cy+165,'#10b981',12);
+  // 进度
+  drawText('沉降进度：'+(settle*100).toFixed(0)+'%',cx,cy-115,'#34d399',11);
+}
+
+// ===== 场景4：活性炭吸附 =====
+function drawAdsorbScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('活性炭吸附 · 微孔吸附有色分子',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2;
+  // 活性炭颗粒（多孔大球）
+  ctx.fillStyle='rgba(40,40,40,0.9)';ctx.strokeStyle='#5a6a8a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,90,0,7);ctx.fill();ctx.stroke();
+  // 多孔结构
+  for(let i=0;i<14;i++){
+    const ang=i*0.45;
+    const r=30+(i%4)*15;
+    const px=cx+Math.cos(ang)*r;
+    const py=cy+Math.sin(ang)*r;
+    ctx.fillStyle='rgba(20,20,20,0.95)';
+    ctx.beginPath();ctx.arc(px,py,5+(i%3)*2,0,7);ctx.fill();
+    ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(px,py,5+(i%3)*2,0,7);ctx.stroke();
+  }
+  drawText('活性炭（多孔结构）',cx,cy-115,'#9ab0d0',12);
+  // 有色分子从两边流向活性炭，被吸附
+  const colors=['#f87171','#fbbf24','#a78bfa','#ec4899','#fb923c'];
+  for(let i=0;i<10;i++){
+    const c=colors[i%colors.length];
+    const phase=(time*0.5+i*0.2)%1;
+    const fromLeft=i<5;
+    const startX=fromLeft?40:W-40;
+    const dir=fromLeft?1:-1;
+    const x=startX+dir*(cx-startX-90)*phase;
+    const y=cy-60+i*15;
+    if(phase<0.85){
+      ctx.fillStyle=c;
+      ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();
+    }else{
+      // 被吸附到颗粒表面
+      const ang=i*0.7;
+      const ax=cx+Math.cos(ang)*85;
+      const ay=cy+Math.sin(ang)*85;
+      ctx.fillStyle=c;
+      ctx.globalAlpha=0.6;
+      ctx.beginPath();ctx.arc(ax,ay,3,0,7);ctx.fill();
+      ctx.globalAlpha=1;
+    }
+  }
+  // 进水/出水指示
+  drawText('有色有味的进水 →',60,cy-100,'#f87171',11,'left');
+  drawText('← 无色无味的出水',W-60,cy+100,'#34d399',11,'right');
+  drawText('吸附色素、异味、有机物（物理变化）',W/2,H-40,'#10b981',13);
+}
+
+// ===== 场景5：蒸馏装置 =====
+function drawDistillScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('蒸馏装置 · 加热→汽化→冷凝→收集',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+20;
+  // 蒸馏烧瓶
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx-160,cy-20,50,0,7);ctx.fill();ctx.stroke();
+  // 烧瓶颈
+  ctx.beginPath();ctx.moveTo(cx-150,cy-60);ctx.lineTo(cx-130,cy-100);ctx.lineTo(cx-100,cy-100);ctx.lineTo(cx-110,cy-60);ctx.stroke();
+  // 温度计
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-160,cy-130);ctx.lineTo(cx-160,cy-30);ctx.stroke();
+  drawText('100°C',cx-160,cy-145,'#fbbf24',11);
+  // 加热（酒精灯）
+  ctx.fillStyle='#fbbf24';ctx.strokeStyle='#fb923c';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx-190,cy+50);ctx.lineTo(cx-130,cy+50);ctx.lineTo(cx-140,cy+70);ctx.lineTo(cx-180,cy+70);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // 火焰（动画）
+  const flameH=20+Math.sin(time*8)*5;
+  ctx.fillStyle='rgba(251,191,36,0.8)';
+  ctx.beginPath();
+  ctx.moveTo(cx-175,cy+50);ctx.quadraticCurveTo(cx-160,cy+50-flameH,cx-145,cy+50);ctx.fill();
+  ctx.fillStyle='rgba(248,113,113,0.6)';
+  ctx.beginPath();
+  ctx.moveTo(cx-170,cy+50);ctx.quadraticCurveTo(cx-160,cy+50-flameH*0.7,cx-150,cy+50);ctx.fill();
+  // 水沸腾气泡
+  for(let i=0;i<6;i++){
+    const bx=cx-180+(i*15);
+    const by=cy-20-((time*60+i*20)%40);
+    ctx.fillStyle='rgba(255,255,255,0.6)';
+    ctx.beginPath();ctx.arc(bx,by,2,0,7);ctx.fill();
+  }
+  drawText('加热',cx-160,cy+90,'#fb923c',12);
+  // 蒸气上升
+  for(let i=0;i<4;i++){
+    const vaporY=cy-100-((time*40+i*15)%60);
+    ctx.fillStyle='rgba(255,255,255,'+(0.5-i*0.1)+')';
+    ctx.beginPath();ctx.arc(cx-115+i*5,vaporY,3,0,7);ctx.fill();
+  }
+  // 冷凝管（斜向）
+  ctx.fillStyle='rgba(16,185,129,0.1)';ctx.strokeStyle='#10b981';ctx.lineWidth=2;
+  ctx.save();
+  ctx.translate(cx-100,cy-100);
+  ctx.rotate(0.3);
+  ctx.fillRect(0,-15,260,30);
+  ctx.strokeRect(0,-15,260,30);
+  ctx.restore();
+  // 冷凝管内的水蒸气→液态水
+  for(let i=0;i<8;i++){
+    const phase=(time*0.6+i*0.12)%1;
+    const dx=cx-100+phase*230;
+    const dy=cy-100+phase*70;
+    ctx.fillStyle=phase<0.5?'rgba(255,255,255,0.7)':'rgba(6,182,212,0.9)';
+    ctx.beginPath();ctx.arc(dx,dy,3,0,7);ctx.fill();
+  }
+  drawText('冷凝管（水冷）',cx+20,cy-130,'#10b981',11);
+  // 牛角管→锥形瓶
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx+165,cy-30);ctx.lineTo(cx+200,cy);ctx.stroke();
+  // 锥形瓶
+  ctx.fillStyle='rgba(6,182,212,0.2)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx+195,cy-5);ctx.lineTo(cx+190,cy+10);ctx.lineTo(cx+230,cy+70);ctx.lineTo(cx+270,cy+70);ctx.lineTo(cx+250,cy+10);ctx.lineTo(cx+245,cy-5);
+  ctx.stroke();
+  // 收集的蒸馏水
+  ctx.fillStyle='rgba(16,185,129,0.5)';
+  ctx.beginPath();ctx.moveTo(cx+210,cy+50);ctx.lineTo(cx+260,cy+50);ctx.lineTo(cx+270,cy+70);ctx.lineTo(cx+230,cy+70);ctx.closePath();ctx.fill();
+  // 液滴
+  const dropY=cy+5+((time*60)%30);
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.arc(cx+205,dropY,2,0,7);ctx.fill();
+  drawText('蒸馏水',cx+240,cy+90,'#10b981',12);
+  drawText('分离沸点不同的液体 · 净化程度最高',W/2,H-40,'#fbbf24',13);
+}
+
+// ===== 场景6：硬水 vs 软水（肥皂水对比） =====
+function drawHardWaterScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('硬水 vs 软水 · 肥皂水检验',W/2,30,'#06b6d4',16);
+  const cy=H/2;
+  // 左：硬水
+  const lx=W/2-150;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(lx-60,cy-80);ctx.lineTo(lx-70,cy+100);ctx.lineTo(lx+70,cy+100);ctx.lineTo(lx+60,cy-80);ctx.stroke();
+  // 硬水（少量泡沫，有浮渣）
+  ctx.fillStyle='rgba(248,113,113,0.2)';
+  ctx.fillRect(lx-67,cy-30,134,128);
+  // 浮渣
+  for(let i=0;i<6;i++){
+    ctx.fillStyle='rgba(148,163,184,0.7)';
+    ctx.beginPath();ctx.arc(lx-50+i*20,cy-25+Math.sin(time+i)*3,5,0,7);ctx.fill();
+  }
+  // 少量泡沫
+  for(let i=0;i<4;i++){
+    ctx.fillStyle='rgba(255,255,255,0.6)';
+    ctx.beginPath();ctx.arc(lx-40+i*25,cy-15,3,0,7);ctx.fill();
+  }
+  drawText('硬水',lx,cy-100,'#f87171',14);
+  drawText('Ca²⁺、Mg²⁺ 多',lx,cy+125,'#f87171',11);
+  drawText('泡沫少 · 有浮渣',lx,cy+145,'#9ab0d0',11);
+  // 右：软水
+  const rx=W/2+150;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(rx-60,cy-80);ctx.lineTo(rx-70,cy+100);ctx.lineTo(rx+70,cy+100);ctx.lineTo(rx+60,cy-80);ctx.stroke();
+  ctx.fillStyle='rgba(16,185,129,0.15)';
+  ctx.fillRect(rx-67,cy-30,134,128);
+  // 大量泡沫
+  const foamHeight=Math.min(80,40+time*15%40);
+  for(let i=0;i<12;i++){
+    ctx.fillStyle='rgba(255,255,255,'+(0.5+Math.sin(time*3+i)*0.3)+')';
+    const fx=rx-55+(i*10)%110;
+    const fy=cy-20-(i%4)*8+Math.sin(time*2+i)*4;
+    ctx.beginPath();ctx.arc(fx,fy,5+(i%2)*2,0,7);ctx.fill();
+  }
+  drawText('软水',rx,cy-100,'#34d399',14);
+  drawText('Ca²⁺、Mg²⁺ 少',rx,cy+125,'#34d399',11);
+  drawText('泡沫多 · 无浮渣',rx,cy+145,'#9ab0d0',11);
+  // 中间肥皂水滴
+  drawText('+ 肥皂水',W/2,cy-50,'#fbbf24',13);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(W/2,cy-30);ctx.lineTo(W/2,cy+50);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('检验方法：加肥皂水，观察泡沫量',W/2,H-45,'#fbbf24',12);
+}
+
+// ===== 场景7：四种净化方法效果对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('四种净化方法效果对比',W/2,30,'#06b6d4',16);
+  const methods=[
+    {n:'沉淀',c:'#06b6d4',eff:0.25,desc:'去大颗粒'},
+    {n:'过滤',c:'#10b981',eff:0.5,desc:'去不溶物'},
+    {n:'吸附',c:'#34d399',eff:0.75,desc:'去色味'},
+    {n:'蒸馏',c:'#fbbf24',eff:1.0,desc:'得纯水'},
+  ];
+  const barW=(W-200)/4-10;
+  methods.forEach((m,i)=>{
+    const x=100+i*((barW+10));
+    const cy=H/2+30;
+    // 烧杯
+    ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(x,cy-20);ctx.lineTo(x-5,cy+100);ctx.lineTo(x+barW-5,cy+100);ctx.lineTo(x+barW,cy-20);
+    ctx.stroke();
+    // 净化效果（液体颜色越来越浅）
+    const purity=m.eff;
+    const r=Math.round(148-(148-16)*purity);
+    const g=Math.round(163-(163-185)*purity);
+    const b=Math.round(184-(184-129)*purity);
+    ctx.fillStyle='rgba('+r+','+g+','+b+',0.7)';
+    ctx.fillRect(x-3,cy-10,barW-4,108);
+    // 标题
+    drawText(m.n,x+barW/2-3,cy-40,m.c,14);
+    drawText(m.desc,x+barW/2-3,cy+120,m.c,11);
+    // 纯度百分比
+    drawText('纯度 '+((time*0.5)%1*m.eff*100).toFixed(0)+'%',x+barW/2-3,cy-60,'#fff',12);
+  });
+  drawText('净化程度：沉淀 < 过滤 < 吸附 < 蒸馏',W/2,H-50,'#fbbf24',14);
+  drawText('蒸馏得到的几乎是纯水',W/2,H-30,'#10b981',12);
+}
+
+// ===== 场景8：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('水净化核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'沉淀',d:'明矾胶体吸附悬浮物',c:'#06b6d4'},
+    {t:'过滤',d:'一贴二低三靠分离',c:'#10b981'},
+    {t:'吸附',d:'活性炭除色除味',c:'#34d399'},
+    {t:'蒸馏',d:'分离沸点差异液体',c:'#fbbf24'},
+    {t:'硬水',d:'含 Ca²⁺/Mg²⁺ 较多',c:'#f87171'},
+    {t:'软化',d:'煮沸或蒸馏',c:'#a78bfa'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+  drawText('流程：天然水 → 沉淀 → 过滤 → 吸附 → 蒸馏 → 纯水',W/2,H-60,'#10b981',13);
+  drawText('蒸馏净化程度最高，可得到几乎纯净的水',W/2,H-35,'#fbbf24',12);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawFlowChart(t);
+  else if(stepIdx===1)drawCompareScene(t);
+  else if(stepIdx===2)drawSettleScene(t);
+  else if(stepIdx===3)drawFilterScene(t);
+  else if(stepIdx===4)drawAdsorbScene(t);
+  else if(stepIdx===5)drawDistillScene(t);
+  else if(stepIdx===6)drawHardWaterScene(t);
+  else if(stepIdx===7)drawDistillScene(t);
+  else if(stepIdx===8)drawFilterScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

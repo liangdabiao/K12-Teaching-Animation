@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>匀变速直线运动 · 三大基本公式推导与应用</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a7f3d0;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">匀变速直线运动</span><span class="subtitle">三大基本公式 · 推导与应用</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>速度公式</h4><div class="v">v = v₀ + at<br>速度随时间线性变化</div></div>
+  <div class="card s2"><div class="num">2</div><h4>位移公式</h4><div class="v">x = v₀t + ½at²<br>位移随时间二次函数变化</div></div>
+  <div class="card s3"><div class="num">3</div><h4>速度位移公式</h4><div class="v">v² - v₀² = 2ax<br>不含时间的导出公式</div></div>
+  <div class="card s4"><div class="num">4</div><h4>匀变速特例</h4><div class="v">v₀=0：x=½at²<br>自由落体：h=½gt²</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">匀变速定义</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'匀变速直线运动定义',body:'<strong>匀变速直线运动</strong>是<strong>加速度 a 恒定</strong>的直线运动：相等时间内<strong>速度变化量相等</strong>。速度随时间<strong>线性变化</strong>，v-t 图是一条斜直线，斜率就是加速度 a。',points:{title:'核心要点',items:['<strong>加速度恒定</strong>：a = 常量','<strong>速度</strong>：v = v₀ + at（线性）','<strong>位移</strong>：x = v₀t + ½at²（抛物线）','<strong>v-t 图</strong>：斜直线，斜率=a']}},
+  {tag:'公式',name:'速度时间公式',body:'<strong>速度公式</strong>：<code>v = v₀ + at</code>。初速度 v₀ 加上加速度 a 与时间 t 的乘积。当 a&gt;0 速度增大，a&lt;0 速度减小（匀减速），a=0 即匀速。',points:{title:'公式细节',items:['<strong>v₀</strong>：初速度（t=0 时刻）','<strong>a</strong>：加速度（m/s²）','<strong>v-t 图斜率</strong>：k = a','<strong>v-t 图截距</strong>：b = v₀']}},
+  {tag:'公式',name:'位移时间公式',body:'<strong>位移公式</strong>：<code>x = v₀t + ½at²</code>。位移由两部分组成：以 v₀ 匀速走的 v₀t，加上加速度带来的 ½at²。x-t 图是<strong>抛物线</strong>。',points:{title:'两项含义',items:['<strong>v₀t</strong>：匀速部分位移','<strong>½at²</strong>：加速部分附加位移','<strong>x-t 图</strong>：开口向上的抛物线','<strong>位移方向</strong>：与 v₀ 同向为正']}},
+  {tag:'公式',name:'速度位移公式',body:'<strong>速度位移公式</strong>：<code>v² - v₀² = 2ax</code>。消去时间 t，直接建立速度与位移的关系。刹车距离、求末速度等不含时间的问题首选此式。',points:{title:'消时公式',items:['<strong>由</strong>：v=v₀+at 与 x=v₀t+½at² 联立消去 t','<strong>用途</strong>：不涉及时间的问题','<strong>刹车距离</strong>：x = v²/(2a)','<strong>对称性</strong>：v₀=0 时 v²=2ax']}},
+  {tag:'推导',name:'公式推导（v-t 图面积法）',body:'<strong>梯形面积法</strong>：在 v-t 图中，速度直线与时间轴围成<strong>梯形</strong>，其<strong>面积等于位移</strong>。梯形面积 = （上底 v₀ + 下底 v）× 高 t / 2 = ½(v₀+v)t = v₀t + ½at²。',points:{title:'几何推导',items:['<strong>梯形上底</strong>：v₀','<strong>梯形下底</strong>：v = v₀+at','<strong>梯形面积</strong>：x = ½(v₀+v)t','<strong>代入 v</strong>：得 x = v₀t + ½at²']}},
+  {tag:'公式',name:'平均速度公式',body:'<strong>平均速度</strong>：<code>v̄ = (v₀ + v)/2 = x/t</strong>。匀变速运动中，平均速度等于<strong>初末速度的算术平均</strong>，也等于<strong>中间时刻瞬时速度</strong>。',points:{title:'平均速度',items:['<strong>定义式</strong>：v̄ = x/t','<strong>匀变速特例</strong>：v̄ = (v₀+v)/2','<strong>= 中间时刻速度</strong>：v̄ = v(t/2)','<strong>几何意义</strong>：梯形中线高']}},
+  {tag:'公式',name:'中间时刻速度',body:'<strong>中间时刻瞬时速度</strong>：<code>v(t/2) = (v₀ + v)/2</strong>。即<strong>等于全程平均速度</strong>。代入 t/2 即可由速度公式推出。这是匀变速运动的一个重要推论。',points:{title:'推论一',items:['<strong>位置</strong>：时间中点 t/2 处','<strong>等于</strong>：v(t/2) = (v₀+v)/2','<strong>等于</strong>：平均速度 v̄','<strong>不等于</strong>：中间位置速度']}},
+  {tag:'公式',name:'中间位置速度',body:'<strong>中间位置瞬时速度</strong>：<code>v(x/2) = √((v₀² + v²)/2)</strong>。即<strong>位移中点</strong>处的速度。由速度位移公式 v²-v₀²=2ax 在 x/2 处求得。',points:{title:'推论二',items:['<strong>位置</strong>：位移中点 x/2 处','<strong>公式</strong>：v²(x/2)=(v₀²+v²)/2','<strong>比较</strong>：v(x/2) ≥ v(t/2)','<strong>几何</strong>：平方平均 vs 算术平均']}},
+  {tag:'应用',name:'自由落体运动',body:'<strong>自由落体</strong>是初速度 v₀=0、加速度 a=g≈9.8 m/s² 的匀变速直线运动。三大公式简化为：<code>v=gt</code>、<code>h=½gt²</code>、<code>v²=2gh</code>。下落距离与时间平方成正比。',points:{title:'特例化简',items:['<strong>v₀=0, a=g</strong>：仅受重力','<strong>v = gt</strong>：速度线性增加','<strong>h = ½gt²</strong>：高度按 t² 增加','<strong>v² = 2gh</strong>：落地速度']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>刹车问题</strong>：汽车以 v₀=20 m/s 行驶，刹车加速度 a=5 m/s²，求刹车距离。解：v²-v₀²=2ax，得 x=v₀²/(2a)=400/10=40 m。三大公式+两个推论构成匀变速运动完整体系。',points:{title:'核心速记',items:['<strong>三公式</strong>：v=v₀+at, x=v₀t+½at², v²-v₀²=2ax','<strong>两推论</strong>：v(t/2)=(v₀+v)/2, v(x/2)=√((v₀²+v²)/2)','<strong>解题策略</strong>：含 t 用前两式，不含 t 用第三式','<strong>易错点</strong>：刹车问题注意停止时间']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：v-t 图（线性） =====
+function drawVTScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('v-t 图 · 速度随时间线性变化',W/2,30,'#06b6d4',16);
+  const v0=4,a=2;
+  const ox=90,oy=H-70,gw=W-150,gh=H-160;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-gh);ctx.lineTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  drawText('v (m/s)',ox-30,oy-gh+10,'#9ab0d0',11);
+  drawText('t (s)',ox+gw+10,oy+8,'#9ab0d0',11);
+  // 刻度
+  for(let i=0;i<=6;i++){
+    const x=ox+i*gw/6;
+    drawText(i,x,oy+15,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,oy-3);ctx.lineTo(x,oy+3);ctx.stroke();
+  }
+  for(let i=0;i<=6;i++){
+    const y=oy-i*gh/6;
+    drawText(i*4,ox-18,y,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ox-3,y);ctx.lineTo(ox+3,y);ctx.stroke();
+  }
+  // 当前时间（循环）
+  const curT=((time*0.8)%6);
+  // 完整直线（参考）
+  ctx.strokeStyle='rgba(6,182,212,0.25)';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=6;i++){
+    const x=ox+i*gw/6,y=oy-(v0+a*i)*gh/24;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // 实时绘制部分
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let i=0;i<=curT;i+=0.05){
+    const x=ox+i*gw/6,y=oy-(v0+a*i)*gh/24;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 当前点
+  const px=ox+curT*gw/6,py=oy-(v0+a*curT)*gh/24;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 投影线
+  ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,oy);ctx.moveTo(px,py);ctx.lineTo(ox,py);ctx.stroke();
+  ctx.setLineDash([]);
+  // 标注
+  const v=v0+a*curT;
+  drawText('v₀=4, a=2',W-180,60,'#9ab0d0',12);
+  drawText('斜率 = a = 2',W-180,85,'#34d399',12);
+  drawText('t='+curT.toFixed(1)+'s, v='+v.toFixed(1)+' m/s',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景：x-t 图（抛物线） =====
+function drawXTScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('x-t 图 · 位移随时间抛物线',W/2,30,'#06b6d4',16);
+  const v0=2,a=2;
+  const ox=90,oy=H-70,gw=W-150,gh=H-160;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-gh);ctx.lineTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  drawText('x (m)',ox-30,oy-gh+10,'#9ab0d0',11);
+  drawText('t (s)',ox+gw+10,oy+8,'#9ab0d0',11);
+  for(let i=0;i<=6;i++){
+    const x=ox+i*gw/6;
+    drawText(i,x,oy+15,'#5a6a8a',10);
+  }
+  for(let i=0;i<=5;i++){
+    const y=oy-i*gh/5;
+    drawText(i*12,ox-20,y,'#5a6a8a',10);
+  }
+  const curT=((time*0.8)%6);
+  // 参考抛物线
+  ctx.strokeStyle='rgba(6,182,212,0.25)';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=6;i+=0.1){
+    const x=ox+i*gw/6,y=oy-(v0*i+0.5*a*i*i)*gh/60;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // 实时绘制
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.shadowColor='#06b6d4';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let i=0;i<=curT;i+=0.05){
+    const x=ox+i*gw/6,y=oy-(v0*i+0.5*a*i*i)*gh/60;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 当前点
+  const px=ox+curT*gw/6,py=oy-(v0*curT+0.5*a*curT*curT)*gh/60;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  const x=v0*curT+0.5*a*curT*curT;
+  drawText('x = v₀t + ½at²',W-180,60,'#9ab0d0',12);
+  drawText('抛物线（开口向上）',W-180,85,'#34d399',12);
+  drawText('t='+curT.toFixed(1)+'s, x='+x.toFixed(1)+' m',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景：公式推导（梯形面积法） =====
+function drawDeriveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('公式推导 · v-t 图梯形面积 = 位移',W/2,30,'#06b6d4',16);
+  const v0=3,a=2,T=5;
+  const ox=120,oy=H-100,gw=W-260,gh=H-220;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-gh);ctx.lineTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  drawText('v',ox-20,oy-gh,'#9ab0d0',13);drawText('t',ox+gw+10,oy+8,'#9ab0d0',13);
+  // 梯形四点
+  const x1=ox,x2=ox+gw;
+  const y1=oy-v0*gh/15,y2=oy-(v0+a*T)*gh/15;
+  // 填充梯形
+  const pulse=0.3+0.2*Math.sin(time*2);
+  ctx.fillStyle='rgba(6,182,212,'+pulse+')';
+  ctx.beginPath();
+  ctx.moveTo(x1,oy);ctx.lineTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x2,oy);ctx.closePath();
+  ctx.fill();
+  // 梯形边
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // 标注上底 v₀
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x1-15,y1);ctx.lineTo(x1+15,y1);ctx.stroke();
+  drawText('v₀',x1-35,y1,'#fbbf24',13);
+  // 标注下底 v
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x2-15,y2);ctx.lineTo(x2+15,y2);ctx.stroke();
+  drawText('v',x2+30,y2,'#34d399',13);
+  // 标注高 t
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(x2,oy);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('t',x2+15,oy-15,'#a78bfa',13);
+  // 矩形区域 v₀t
+  ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.strokeRect(x1,y1,x2-x1,oy-y1);
+  ctx.setLineDash([]);
+  drawText('v₀t',x1+(x2-x1)/4,y1+(oy-y1)/2,'rgba(251,191,36,0.8)',11);
+  // 三角形区域 ½at²
+  drawText('½at²',(x1+x2)/2,(y1+y2)/2+10,'rgba(52,211,153,0.9)',11);
+  // 推导公式
+  drawText('面积 = ½(v₀+v)·t = ½(v₀+v₀+at)·t',W/2,H-55,'#fff',13);
+  drawText('= v₀t + ½at²',W/2,H-30,'#fbbf24',14);
+}
+
+// ===== 场景：平均速度几何证明 =====
+function drawAvgScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平均速度 = 中间时刻速度 · 几何证明',W/2,30,'#06b6d4',16);
+  const v0=3,a=2,T=5;
+  const ox=120,oy=H-100,gw=W-260,gh=H-220;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-gh);ctx.lineTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  drawText('v',ox-20,oy-gh,'#9ab0d0',13);drawText('t',ox+gw+10,oy+8,'#9ab0d0',13);
+  const x1=ox,x2=ox+gw;
+  const y1=oy-v0*gh/15,y2=oy-(v0+a*T)*gh/15;
+  // 梯形
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(x1,oy);ctx.lineTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x2,oy);ctx.stroke();
+  // 中线（平均速度）
+  const midX=(x1+x2)/2;
+  const midY=(y1+y2)/2;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(x1,midY);ctx.lineTo(x2,midY);ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText('中线 = v̄',x2+50,midY,'#fbbf24',12);
+  // 中间时刻竖线
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(midX,oy);ctx.lineTo(midX,y1+(y2-y1)/2);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('t/2',midX,oy+18,'#34d399',12);
+  // 中间时刻点
+  ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(midX,midY,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('v(t/2)',midX,midY-25,'#34d399',13);
+  // 矩形面积 = 梯形面积
+  ctx.fillStyle='rgba(251,191,36,0.15)';
+  ctx.fillRect(x1,oy,x2-x1,oy-midY);
+  drawText('矩形面积 v̄·t = 梯形面积',W/2,H-50,'#fbbf24',13);
+  drawText('v̄ = (v₀+v)/2 = v(t/2)',W/2,H-28,'#fff',14);
+}
+
+// ===== 场景：自由落体 =====
+function drawFreeFallScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('自由落体 · v₀=0, a=g',W/2,30,'#06b6d4',16);
+  const g=9.8;
+  const curT=((time*0.7)%3);
+  const h=0.5*g*curT*curT;
+  const maxH=0.5*g*9;
+  const startX=140,startY=80,maxDrop=H-200;
+  // 高度标尺
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(startX,startY);ctx.lineTo(startX,startY+maxDrop);ctx.stroke();
+  for(let i=0;i<=45;i+=5){
+    const y=startY+i*maxDrop/45;
+    drawText(i+'m',startX-35,y,'#5a6a8a',10);
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(startX-5,y);ctx.lineTo(startX,y);ctx.stroke();
+  }
+  // 地面
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(startX,startY+maxDrop);ctx.lineTo(W-80,startY+maxDrop);ctx.stroke();
+  drawText('地面',W-80,startY+maxDrop+15,'#a78bfa',11);
+  // 小球
+  const ballY=startY+h*maxDrop/45;
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=20;
+  ctx.beginPath();ctx.arc(startX+60,ballY,18,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 速度箭头
+  const v=g*curT;
+  const arrowLen=Math.min(120,v*8);
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(startX+60,ballY+18);ctx.lineTo(startX+60,ballY+18+arrowLen);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(startX+60,ballY+18+arrowLen);ctx.lineTo(startX+52,ballY+18+arrowLen-12);ctx.lineTo(startX+68,ballY+18+arrowLen-12);ctx.fill();
+  drawText('v',startX+80,ballY+18+arrowLen/2,'#fbbf24',14);
+  // 运动轨迹（残影）
+  for(let i=1;i<8;i++){
+    const pt=curT-i*0.15;
+    if(pt>0){
+      const ph=0.5*g*pt*pt;
+      const py=startY+ph*maxDrop/45;
+      ctx.fillStyle='rgba(6,182,212,'+(0.3-i*0.03)+')';
+      ctx.beginPath();ctx.arc(startX+60,py,18-i*1.5,0,7);ctx.fill();
+    }
+  }
+  // 数据面板
+  const px=W-260;
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(px,80,220,180,8);ctx.fill();ctx.stroke();
+  drawText('实时数据',px+110,100,'#06b6d4',14);
+  drawText('t = '+curT.toFixed(2)+' s',px+20,130,'#fff',13,'left');
+  drawText('v = gt = '+v.toFixed(1)+' m/s',px+20,155,'#fbbf24',13,'left');
+  drawText('h = ½gt² = '+h.toFixed(1)+' m',px+20,180,'#34d399',13,'left');
+  drawText('v² = 2gh = '+(v*v).toFixed(0),px+20,205,'#a78bfa',13,'left');
+  drawText('h ∝ t²，v ∝ t',px+20,235,'#9ab0d0',12,'left');
+}
+
+// ===== 场景：v₀=0 vs v₀≠0 对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('对比 · v₀=0 vs v₀≠0',W/2,30,'#06b6d4',16);
+  const ox=90,oy=H-80,gw=W-180,gh=H-180;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy-gh);ctx.lineTo(ox,oy);ctx.lineTo(ox+gw,oy);ctx.stroke();
+  drawText('x (m)',ox-30,oy-gh+10,'#9ab0d0',11);drawText('t (s)',ox+gw+8,oy+8,'#9ab0d0',11);
+  for(let i=0;i<=6;i++){const x=ox+i*gw/6;drawText(i,x,oy+15,'#5a6a8a',10);}
+  for(let i=0;i<=6;i++){const y=oy-i*gh/6;drawText(i*6,ox-20,y,'#5a6a8a',10);}
+  const a=2,T=6;
+  const curT=((time*0.7)%T);
+  // 球1：v₀=0
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=curT;i+=0.05){
+    const x=ox+i*gw/6,y=oy-(0.5*a*i*i)*gh/36;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  const p1x=ox+curT*gw/6,p1y=oy-(0.5*a*curT*curT)*gh/36;
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(p1x,p1y,8,0,7);ctx.fill();
+  // 球2：v₀=3
+  const v0b=3;
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=curT;i+=0.05){
+    const x=ox+i*gw/6,y=oy-(v0b*i+0.5*a*i*i)*gh/36;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  const p2x=ox+curT*gw/6,p2y=oy-(v0b*curT+0.5*a*curT*curT)*gh/36;
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(p2x,p2y,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  // 图例
+  drawText('● 青线：v₀=0，x=½at²',W/2-130,H-35,'#06b6d4',12);
+  drawText('● 琥珀线：v₀=3，x=v₀t+½at²',W/2+110,H-35,'#fbbf24',12);
+  const x1=0.5*a*curT*curT,x2=v0b*curT+0.5*a*curT*curT;
+  drawText('t='+curT.toFixed(1)+'s: x₁='+x1.toFixed(1)+'m, x₂='+x2.toFixed(1)+'m',W/2,H-55,'#fff',13);
+}
+
+// ===== 场景：刹车问题例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 刹车问题',W/2,30,'#06b6d4',16);
+  // 题目框
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(60,60,W-120,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',90,82,'#a78bfa',13,'left');
+  drawText('汽车以 v₀=20 m/s 行驶，紧急刹车加速度 a=5 m/s²',90,108,'#fff',13,'left');
+  drawText('求：（1）刹车距离 （2）刹车时间',90,135,'#fff',13,'left');
+  // 解答步骤
+  const steps=[
+    {t:'① 选公式',d:'不含时间求距离 → v²-v₀²=2ax',c:'#06b6d4'},
+    {t:'② 代入数据',d:'0 - 20² = 2×(-5)×x',c:'#a78bfa'},
+    {t:'③ 求距离',d:'x = 400/10 = 40 m',c:'#34d399'},
+    {t:'④ 求时间',d:'v=v₀+at → 0=20-5t → t=4 s',c:'#fbbf24'},
+    {t:'⑤ 验证',d:'x=v₀t+½at²=20×4-½×5×16=80-40=40 m ✓',c:'#fb923c'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=195+i*52;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,115,y+21,s.c,13,'left');
+    drawText(s.d,265,y+21,'#fff',12,'left');
+  });
+  // 底部提示
+  drawText('刹车问题关键：末速度 v=0，注意加速度 a 取负值',W/2,H-25,'#f87171',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('匀变速直线运动 · 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'速度公式',d:'v = v₀ + at',c:'#06b6d4'},
+    {t:'位移公式',d:'x = v₀t + ½at²',c:'#fbbf24'},
+    {t:'速度位移',d:'v² - v₀² = 2ax',c:'#34d399'},
+    {t:'平均速度',d:'v̄ = (v₀+v)/2',c:'#a78bfa'},
+    {t:'中间时刻',d:'v(t/2) = v̄',c:'#fb923c'},
+    {t:'中间位置',d:'v(x/2)=√((v₀²+v²)/2)',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=60+col*(W-120)/3;
+    const y=90+row*170;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-120)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/6,y+45,m.c,15);
+    drawText(m.d,x+(W-120)/6,y+90,'#fff',13);
+  });
+  drawText('三公式 + 两推论 = 匀变速运动完整体系',W/2,H-30,'#fbbf24',13);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawVTScene(t);
+  else if(stepIdx===1)drawVTScene(t);
+  else if(stepIdx===2)drawXTScene(t);
+  else if(stepIdx===3)drawVTScene(t);
+  else if(stepIdx===4)drawDeriveScene(t);
+  else if(stepIdx===5)drawAvgScene(t);
+  else if(stepIdx===6)drawAvgScene(t);
+  else if(stepIdx===7)drawAvgScene(t);
+  else if(stepIdx===8)drawFreeFallScene(t);
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

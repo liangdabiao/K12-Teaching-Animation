@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>核酸的结构 · DNA与RNA · 核苷酸 · 碱基互补配对</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#a78bfa;--accent2:#10b981;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(16,185,129,.06)}
+.back:hover{background:rgba(16,185,129,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(167,139,250,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(167,139,250,.2);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">核酸的结构</span><span class="subtitle">DNA与RNA对比 · 核苷酸三部分 · 碱基互补配对</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>核酸分类</h4><div class="v">DNA 脱氧核糖核酸<br>RNA 核糖核酸</div></div>
+  <div class="card s2"><div class="num">2</div><h4>核苷酸三部分</h4><div class="v">磷酸 + 五碳糖<br>+ 含氮碱基</div></div>
+  <div class="card s3"><div class="num">3</div><h4>DNA双螺旋</h4><div class="v">沃森-克里克 1953<br>两条反向平行链</div></div>
+  <div class="card s4"><div class="num">4</div><h4>碱基配对</h4><div class="v">A-T 两条氢键<br>G-C 三条氢键</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">核酸</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'总览',name:'核酸是信息分子',body:'<strong>核酸</strong>是生物体内主要的<strong>遗传信息载体</strong>，由 C、H、O、N、P 五种元素组成，基本单位是<strong>核苷酸</strong>。核酸分为 <strong>DNA</strong>（脱氧核糖核酸）和 <strong>RNA</strong>（核糖核酸）两大类。',points:{title:'核酸概览',items:['<strong>分类</strong>：DNA 与 RNA','<strong>元素</strong>：C、H、O、N、P','<strong>基本单位</strong>：核苷酸','<strong>功能</strong>：储存和传递遗传信息']}},
+  {tag:'组成',name:'元素组成',body:'核酸由 <strong>C（碳）、H（氢）、O（氧）、N（氮）、P（磷）</strong> 五种元素组成。注意：核酸<strong>不含 S（硫）</strong>，含 P 而蛋白质不含 P（蛋白质特有 S）。',points:{title:'元素记忆',items:['<strong>五种元素</strong>：C H O N P','<strong>特征元素</strong>：P（磷）','<strong>区别蛋白质</strong>：蛋白质含 S 不含 P','<strong>酸碱性</strong>：核酸显酸性（磷酸基）']}},
+  {tag:'组成',name:'基本单位 核苷酸',body:'<strong>核苷酸</strong>是核酸的基本组成单位。一个核苷酸由 <strong>一分子磷酸、一分子五碳糖、一分子含氮碱基</strong> 组成。许多核苷酸连接成多核苷酸链。',points:{title:'核苷酸要点',items:['<strong>磷酸</strong>：连接在 5 号碳','<strong>五碳糖</strong>：脱氧核糖或核糖','<strong>碱基</strong>：A/G/C/T/U 五种','<strong>连接方式</strong>：磷酸二酯键']}},
+  {tag:'结构',name:'核苷酸三部分',body:'核苷酸由<strong>磷酸基团 + 五碳糖 + 含氮碱基</strong>三部分组成。磷酸与五碳糖的 5 号碳相连，碱基连在 1 号碳上，糖与下一个核苷酸的磷酸形成 3,5-磷酸二酯键。',points:{title:'三部分细节',items:['<strong>磷酸</strong>：提供酸性','<strong>五碳糖</strong>：脱氧核糖/核糖','<strong>碱基</strong>：决定遗传信息','<strong>糖+碱基</strong>：称为核苷']}},
+  {tag:'对比',name:'DNA 与 RNA 区别',body:'DNA 与 RNA 的主要区别：① 五碳糖不同（DNA 含<strong>脱氧核糖</strong>，RNA 含<strong>核糖</strong>）；② 碱基不同（DNA 含 T 不含 U，RNA 含 U 不含 T）；③ 链数不同（DNA 多为<strong>双链</strong>，RNA 多为<strong>单链</strong>）。',points:{title:'三大区别',items:['<strong>糖不同</strong>：脱氧核糖 vs 核糖','<strong>碱基不同</strong>：T vs U','<strong>链数不同</strong>：双链 vs 单链','<strong>位置</strong>：DNA 主要在核，RNA 在核糖体']}},
+  {tag:'结构',name:'DNA双螺旋结构',body:'<strong>1953 年</strong>，沃森和克里克提出 DNA <strong>双螺旋结构</strong>模型。两条链<strong>反向平行</strong>（一条 5→3，另一条 3→5），糖-磷酸骨架在外侧，碱基在内侧通过氢键配对，每旋转一圈包含 10 个碱基对。',points:{title:'双螺旋要点',items:['<strong>发现者</strong>：沃森 + 克里克（1953）','<strong>反向平行</strong>：两链方向相反','<strong>骨架在外</strong>：磷酸-脱氧核糖','<strong>碱基在内</strong>：通过氢键配对']}},
+  {tag:'配对',name:'碱基互补配对',body:'碱基之间通过<strong>氢键</strong>互补配对：<strong>A（腺嘌呤）与 T（胸腺嘧啶）配对</strong>，形成 <strong>2 条氢键</strong>；<strong>G（鸟嘌呤）与 C（胞嘧啶）配对</strong>，形成 <strong>3 条氢键</strong>。在 RNA 中 A 与 U 配对。',points:{title:'配对规律',items:['<strong>A = T</strong>：2 条氢键','<strong>G ≡ C</strong>：3 条氢键','<strong>嘌呤-嘧啶</strong>：双环配单环','<strong>RNA 中</strong>：A 与 U 配对']}},
+  {tag:'种类',name:'五种含氮碱基',body:'核酸含 <strong>5 种碱基</strong>：A 腺嘌呤、G 鸟嘌呤、C 胞嘧啶（DNA、RNA 共有）；T 胸腺嘧啶（仅 DNA）；U 尿嘧啶（仅 RNA）。A、G 为<strong>嘌呤</strong>（双环），C、T、U 为<strong>嘧啶</strong>（单环）。',points:{title:'碱基速记',items:['<strong>嘌呤双环</strong>：A、G','<strong>嘧啶单环</strong>：C、T、U','<strong>DNA 独有</strong>：T','<strong>RNA 独有</strong>：U']}},
+  {tag:'功能',name:'核酸的功能与位置',body:'<strong>DNA</strong>是主要的遗传物质，主要分布在<strong>细胞核</strong>（少量在线粒体、叶绿体）；<strong>RNA</strong>主要参与蛋白质合成，分布在<strong>细胞质核糖体</strong>。遗传信息从 DNA 流向 RNA 再流向蛋白质（中心法则）。',points:{title:'功能与位置',items:['<strong>DNA</strong>：主要遗传物质，在细胞核','<strong>RNA</strong>：参与蛋白质合成','<strong>层次</strong>：染色质→染色体→DNA→基因','<strong>中心法则</strong>：DNA→RNA→蛋白质']}},
+  {tag:'计算',name:'典型例题与总结',body:'例：某 DNA 分子中 A 占全部碱基的 20%。由 A=T、G=C 知 T=20%，故 A+T=40%，G+C=60%，G=C=30%。所以 G 占 30%。',points:{title:'解题规律',items:['<strong>规律1</strong>：A=T，G=C（双链 DNA）','<strong>规律2</strong>：嘌呤=嘧啶（A+G=T+C）','<strong>例题</strong>：A=20% → G=30%','<strong>记忆</strong>：双链互补，比例相等']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：核苷酸三部分 =====
+function drawNucleotideScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('核苷酸三部分 · 磷酸 + 五碳糖 + 含氮碱基',W/2,30,'#a78bfa',16);
+  const cx=W/2,cy=H/2+20;
+  // 三部分位置
+  const pulse=0.5+0.5*Math.sin(time*2);
+  // 磷酸（左）
+  ctx.fillStyle='rgba(251,191,36,'+(0.3+pulse*0.3)+')';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx-160,cy,38,0,7);ctx.fill();ctx.stroke();
+  drawText('P',cx-160,cy,'#fde68a',22);
+  drawText('磷酸',cx-160,cy+60,'#fbbf24',13);
+  drawText('提供酸性',cx-160,cy+78,'#9ab0d0',10);
+  // 五碳糖（中）
+  ctx.fillStyle='rgba(16,185,129,0.3)';ctx.strokeStyle='#10b981';ctx.lineWidth=2;
+  ctx.save();
+  ctx.translate(cx,cy);
+  // 五边形示意五碳糖
+  ctx.beginPath();
+  for(let i=0;i<5;i++){
+    const a=-Math.PI/2+i*2*Math.PI/5;
+    const px=Math.cos(a)*42,py=Math.sin(a)*42;
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.restore();
+  drawText('五碳糖',cx,cy+60,'#10b981',13);
+  drawText('脱氧核糖/核糖',cx,cy+78,'#9ab0d0',10);
+  // 碱基（右）
+  ctx.fillStyle='rgba(167,139,250,0.3)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(cx+120,cy-35,80,70,8);ctx.fill();ctx.stroke();
+  drawText('碱基',cx+160,cy-10,'#a78bfa',14);
+  drawText('A/G/C/T/U',cx+160,cy+12,'#ddd6fe',11);
+  drawText('含氮碱基',cx+160,cy+60,'#a78bfa',13);
+  drawText('决定信息',cx+160,cy+78,'#9ab0d0',10);
+  // 连接键
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(cx-122,cy);ctx.lineTo(cx-42,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+42,cy);ctx.lineTo(cx+120,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('磷酸二酯键',cx-82,cy-15,'#67e8f9',10);
+  drawText('糖苷键',cx+82,cy-15,'#67e8f9',10);
+  // 整体标签
+  drawText('一个核苷酸 = 磷酸 + 五碳糖 + 含氮碱基',W/2,H-45,'#34d399',13);
+  drawText('许多核苷酸脱水缩合 → 多核苷酸链（核酸）',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：DNA双螺旋旋转 =====
+function drawDoubleHelixScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('DNA 双螺旋结构 · 反向平行双链',W/2,30,'#a78bfa',16);
+  const cx=W/2,topY=70,botY=H-70;
+  const turns=3,bpPerTurn=10;
+  const total=turns*bpPerTurn;
+  const angle=time*0.8;
+  // 绘制两条链
+  for(let strand=0;strand<2;strand++){
+    const phase=strand===0?0:Math.PI;
+    ctx.strokeStyle=strand===0?'#a78bfa':'#10b981';
+    ctx.lineWidth=3;
+    ctx.shadowColor=strand===0?'#a78bfa':'#10b981';
+    ctx.shadowBlur=8;
+    ctx.beginPath();
+    for(let i=0;i<=total;i++){
+      const tp=i/total;
+      const y=topY+tp*(botY-topY);
+      const a=tp*turns*Math.PI*2+angle+phase;
+      const x=cx+Math.sin(a)*70;
+      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;
+  }
+  // 碱基对（横向连线）
+  for(let i=0;i<=total;i+=2){
+    const tp=i/total;
+    const y=topY+tp*(botY-topY);
+    const a=tp*turns*Math.PI*2+angle;
+    const x1=cx+Math.sin(a)*70;
+    const x2=cx+Math.sin(a+Math.PI)*70;
+    // 仅在两条链不重合时绘制
+    const sep=Math.abs(x1-x2);
+    if(sep>10){
+      // 配对：A-T 或 G-C
+      const isAT=(i%4===0);
+      ctx.strokeStyle=isAT?'rgba(251,191,36,0.6)':'rgba(248,113,113,0.6)';
+      ctx.lineWidth=1.5;
+      ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();
+      ctx.setLineDash([]);
+      // 端点
+      ctx.fillStyle=isAT?'#fbbf24':'#f87171';
+      ctx.beginPath();ctx.arc(x1,y,3,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(x2,y,3,0,7);ctx.fill();
+    }
+  }
+  // 方向标记
+  drawText("5'",cx-90,topY-15,'#06b6d4',12);
+  drawText("3'",cx+90,topY-15,'#67e8f9',12);
+  drawText("3'",cx-90,botY+15,'#06b6d4',12);
+  drawText("5'",cx+90,botY+15,'#67e8f9',12);
+  drawText('紫色链 5→3，绿色链 3→5（反向平行）',W/2,H-50,'#34d399',12);
+  drawText('每旋转一圈含 10 个碱基对（沃森-克里克 1953）',W/2,H-28,'#9ab0d0',11);
+}
+
+// ===== 场景：碱基互补配对 =====
+function drawBasePairScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('碱基互补配对 · A-T (2氢键)  G-C (3氢键)',W/2,30,'#a78bfa',16);
+  // A-T 对
+  const pulse1=0.5+0.5*Math.sin(time*3);
+  ctx.fillStyle='rgba(251,191,36,0.25)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2-280,H/2-150,100,80,10);ctx.fill();ctx.stroke();
+  drawText('A',W/2-230,H/2-130,'#fde68a',22);
+  drawText('腺嘌呤',W/2-230,H/2-95,'#fbbf24',11);
+  ctx.fillStyle='rgba(248,113,113,0.25)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(W/2-130,H/2-150,100,80,10);ctx.fill();ctx.stroke();
+  drawText('T',W/2-80,H/2-130,'#fecaca',22);
+  drawText('胸腺嘧啶',W/2-80,H/2-95,'#f87171',11);
+  // 氢键 A-T（2条）
+  ctx.strokeStyle='#fde68a';ctx.lineWidth=2;
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=4+pulse1*6;
+  for(let i=0;i<2;i++){
+    const yy=H/2-130+i*20;
+    ctx.beginPath();ctx.moveTo(W/2-180,yy);ctx.lineTo(W/2-130,yy);ctx.stroke();
+  }
+  ctx.shadowBlur=0;
+  drawText('A = T   2 条氢键',W/2-205,H/2-175,'#fbbf24',12);
+  // G-C 对
+  const pulse2=0.5+0.5*Math.sin(time*3+1);
+  ctx.fillStyle='rgba(16,185,129,0.25)';ctx.strokeStyle='#10b981';ctx.lineWidth=2;
+  roundRect(W/2-280,H/2+30,100,80,10);ctx.fill();ctx.stroke();
+  drawText('G',W/2-230,H/2+50,'#a7f3d0',22);
+  drawText('鸟嘌呤',W/2-230,H/2+85,'#10b981',11);
+  ctx.fillStyle='rgba(6,182,212,0.25)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(W/2-130,H/2+30,100,80,10);ctx.fill();ctx.stroke();
+  drawText('C',W/2-80,H/2+50,'#67e8f9',22);
+  drawText('胞嘧啶',W/2-80,H/2+85,'#06b6d4',11);
+  // 氢键 G-C（3条）
+  ctx.strokeStyle='#a7f3d0';ctx.lineWidth=2;
+  ctx.shadowColor='#10b981';ctx.shadowBlur=4+pulse2*6;
+  for(let i=0;i<3;i++){
+    const yy=H/2+40+i*20;
+    ctx.beginPath();ctx.moveTo(W/2-180,yy);ctx.lineTo(W/2-130,yy);ctx.stroke();
+  }
+  ctx.shadowBlur=0;
+  drawText('G ≡ C   3 条氢键',W/2-205,H/2+140,'#10b981',12);
+  // 嘌呤-嘧啶说明
+  ctx.fillStyle='rgba(167,139,250,0.15)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(W/2+30,H/2-100,300,200,10);ctx.fill();ctx.stroke();
+  drawText('配对规律',W/2+180,H/2-75,'#a78bfa',15);
+  drawText('嘌呤（双环）配嘧啶（单环）',W/2+180,H/2-40,'#fff',12);
+  drawText('A、G 为嘌呤',W/2+180,H/2-12,'#ddd6fe',11);
+  drawText('C、T、U 为嘧啶',W/2+180,H/2+12,'#ddd6fe',11);
+  drawText('RNA 中 A 与 U 配对',W/2+180,H/2+45,'#34d399',12);
+  drawText('保证双链等距、稳定',W/2+180,H/2+70,'#9ab0d0',11);
+}
+
+// ===== 场景：DNA vs RNA 对比 =====
+function drawDNARNACompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('DNA 与 RNA 对比',W/2,30,'#a78bfa',16);
+  const highlight=Math.floor(time*0.6)%4;
+  // 表格
+  const rows=[
+    {k:'比较项',dna:'DNA',rna:'RNA'},
+    {k:'全称',dna:'脱氧核糖核酸',rna:'核糖核酸'},
+    {k:'五碳糖',dna:'脱氧核糖',rna:'核糖'},
+    {k:'碱基种类',dna:'A G C T',rna:'A G C U'},
+    {k:'链数',dna:'双链（双螺旋）',rna:'单链为主'},
+    {k:'主要位置',dna:'细胞核',rna:'核糖体（细胞质）'},
+    {k:'主要功能',dna:'储存遗传信息',rna:'指导蛋白质合成'},
+  ];
+  const startX=80,startY=70,colW=(W-160)/3,rowH=42;
+  // 表头
+  ctx.fillStyle='rgba(167,139,250,0.2)';
+  roundRect(startX,startY,W-160,rowH,6);ctx.fill();
+  rows[0]&&[0,1,2].forEach(c=>{
+    const x=startX+c*colW;
+    drawText(c===0?rows[0].k:(c===1?rows[0].dna:rows[0].rna),x+colW/2,startY+rowH/2,c===0?'#9ab0d0':(c===1?'#a78bfa':'#10b981'),14);
+  });
+  // 数据行
+  for(let i=1;i<rows.length;i++){
+    const y=startY+i*rowH;
+    const hl=(i-1)===highlight;
+    ctx.fillStyle=hl?'rgba(251,191,36,0.12)':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=hl?'#fbbf24':'#243a5e';ctx.lineWidth=hl?2:1;
+    roundRect(startX,y,W-160,rowH,4);ctx.fill();ctx.stroke();
+    [0,1,2].forEach(c=>{
+      const x=startX+c*colW;
+      const txt=c===0?rows[i].k:(c===1?rows[i].dna:rows[i].rna);
+      drawText(txt,x+colW/2,y+rowH/2,c===0?'#9ab0d0':(c===1?'#ddd6fe':'#a7f3d0'),12);
+    });
+  }
+  drawText('三大区别：糖不同 · T/U 不同 · 单链/双链不同',W/2,H-45,'#34d399',13);
+}
+
+// ===== 场景：染色质→染色体→DNA→基因 层级 =====
+function drawStructureScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('遗传物质层级 · 染色质 → 染色体 → DNA → 基因',W/2,30,'#a78bfa',16);
+  const cx=W/2;
+  const levels=[
+    {t:'染色质',d:'DNA+蛋白质（细丝状）',c:'#a78bfa',x:cx-360},
+    {t:'染色体',d:'分裂期高度螺旋',c:'#fbbf24',x:cx-200},
+    {t:'DNA',d:'双螺旋分子',c:'#10b981',x:cx},
+    {t:'基因',d:'有遗传效应的片段',c:'#06b6d4',x:cx+200},
+    {t:'碱基',d:'A/T/G/C 排列',c:'#f87171',x:cx+360},
+  ];
+  const wave=0.5+0.5*Math.sin(time*2);
+  // 连线
+  for(let i=0;i<levels.length-1;i++){
+    ctx.strokeStyle='rgba(103,232,249,'+(0.4+wave*0.4)+')';ctx.lineWidth=2;
+    ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(levels[i].x+50,H/2);ctx.lineTo(levels[i+1].x-50,H/2);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  levels.forEach((m,i)=>{
+    const active=(Math.floor(time*1.2)%levels.length)===i;
+    // 卡片
+    ctx.fillStyle=m.c+'33';ctx.strokeStyle=m.c;ctx.lineWidth=active?3:2;
+    if(active){ctx.shadowColor=m.c;ctx.shadowBlur=15;}
+    roundRect(m.x-55,H/2-70,110,140,10);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText(m.t,m.x,H/2-40,m.c,15);
+    drawText(m.d,m.x,H/2+10,'#fff',11);
+    drawText(i+1,m.x,H/2+50,'rgba(255,255,255,0.2)',22);
+  });
+  drawText('从大到小：染色质是松弛状态，染色体是凝聚状态',W/2,H-55,'#9ab0d0',12);
+  drawText('基因是 DNA 上有遗传效应的片段，由碱基序列编码',W/2,H-32,'#34d399',12);
+}
+
+// ===== 场景：DNA/RNA 位置 =====
+function drawLocationScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('核酸在细胞中的位置',W/2,30,'#a78bfa',16);
+  const cx=W/2,cy=H/2+20;
+  // 细胞
+  ctx.fillStyle='rgba(167,139,250,0.08)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(cx,cy,Math.min(W-160,480)/2,200,0,0,7);ctx.fill();ctx.stroke();
+  drawText('细胞',cx,cy-180,'#a78bfa',12);
+  // 细胞核
+  const nx=cx-130,ny=cy;
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(nx,ny,75,0,7);ctx.fill();ctx.stroke();
+  drawText('细胞核',nx,ny-5,'#fbbf24',13);
+  // DNA 螺旋（在核内）
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  for(let i=-2;i<=2;i++){
+    const a=time*2+i*0.8;
+    ctx.beginPath();ctx.arc(nx,ny+20+i*8,18,a,a+3);ctx.stroke();
+  }
+  drawText('DNA',nx,ny+60,'#a78bfa',12);
+  drawText('主要遗传物质',nx,ny+95,'#ddd6fe',10);
+  // 核糖体（散布）
+  for(let i=0;i<5;i++){
+    const a=i*1.2+time*0.3;
+    const rx=cx+80+Math.cos(a)*70;
+    const ry=cy+Math.sin(a)*70;
+    ctx.fillStyle='rgba(16,185,129,0.4)';ctx.strokeStyle='#10b981';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(rx,ry,12,0,7);ctx.fill();ctx.stroke();
+    // 小亚基
+    ctx.fillStyle='#10b981';
+    ctx.beginPath();ctx.arc(rx,ry-6,7,0,7);ctx.fill();
+  }
+  drawText('核糖体（含 RNA）',cx+80,cy+110,'#10b981',12);
+  drawText('合成蛋白质的场所',cx+80,cy+130,'#a7f3d0',10);
+  // 线粒体（少量 DNA）
+  ctx.fillStyle='rgba(248,113,113,0.2)';ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.ellipse(cx+150,cy-100,30,15,0.5,0,7);ctx.fill();ctx.stroke();
+  drawText('线粒体',cx+150,cy-100,'#f87171',10);
+  drawText('（含少量 DNA）',cx+150,cy-85,'#9ab0d0',9);
+  drawText('DNA 主要在细胞核（少量在线粒体/叶绿体），RNA 主要在核糖体',W/2,H-40,'#34d399',12);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 碱基比例计算',W/2,30,'#a78bfa',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,100,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('某双链 DNA 分子中，腺嘌呤 A 占全部碱基的 20%。',120,115,'#fff',13,'left');
+  drawText('求胞嘧啶 G 占多少？',120,140,'#fff',13,'left');
+  const steps=[
+    {t:'① 规律',d:'双链 DNA 中：A=T，G=C',c:'#06b6d4'},
+    {t:'② 已知',d:'A = 20%',c:'#a78bfa'},
+    {t:'③ 推 T',d:'T = A = 20%',c:'#67e8f9'},
+    {t:'④ 求和',d:'A + T = 40% → G + C = 60%',c:'#fbbf24'},
+    {t:'⑤ 结果',d:'G = C = 30%',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*52;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+21,s.c,13,'left');
+    drawText(s.d,280,y+21,'#fff',13,'left');
+  });
+  drawText('双链 DNA 任意一段：嘌呤总数 = 嘧啶总数',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('核酸结构核心总结',W/2,40,'#a78bfa',18);
+  const items=[
+    {t:'基本单位',d:'核苷酸（磷酸+糖+碱基）',c:'#a78bfa'},
+    {t:'元素组成',d:'C H O N P',c:'#fbbf24'},
+    {t:'DNA 五碳糖',d:'脱氧核糖',c:'#10b981'},
+    {t:'RNA 五碳糖',d:'核糖',c:'#06b6d4'},
+    {t:'碱基互补',d:'A-T (2氢键)  G-C (3氢键)',c:'#34d399'},
+    {t:'DNA 结构',d:'双螺旋（沃森-克里克 1953）',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawNucleotideScene(t);
+  else if(stepIdx===1)drawNucleotideScene(t);
+  else if(stepIdx===2)drawNucleotideScene(t);
+  else if(stepIdx===3)drawNucleotideScene(t);
+  else if(stepIdx===4)drawDNARNACompareScene(t);
+  else if(stepIdx===5)drawDoubleHelixScene(t);
+  else if(stepIdx===6)drawBasePairScene(t);
+  else if(stepIdx===7)drawDNARNACompareScene(t);
+  else if(stepIdx===8)drawLocationScene(t);
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+// ===== 核酸知识体系结束 ]}}
+</script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>蛋白质结构与多样性 · 氨基酸脱水缩合 · 肽键</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#10b981;--accent2:#a78bfa;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(167,139,250,.06)}
+.back:hover{background:rgba(167,139,250,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(16,185,129,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(16,185,129,.2);color:#a7f3d0;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">蛋白质结构与多样性</span><span class="subtitle">氨基酸脱水缩合 · 肽键 · 多样性原因</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>氨基酸通式</h4><div class="v">NH₂-CHR-COOH<br>至少1个氨基1个羧基连同一碳</div></div>
+  <div class="card s2"><div class="num">2</div><h4>肽键</h4><div class="v">-CO-NH-<br>脱水缩合形成的共价键</div></div>
+  <div class="card s3"><div class="num">3</div><h4>蛋白质结构</h4><div class="v">一二三四级结构<br>肽链盘曲折叠成功能蛋白</div></div>
+  <div class="card s4"><div class="num">4</div><h4>多样性原因</h4><div class="v">种类/数目/顺序/空间结构<br>四要素决定蛋白功能</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">氨基酸结构</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'元素组成',body:'蛋白质是生命活动的<strong>主要承担者</strong>，主要由 <code>C、H、O、N</code> 四种元素组成，部分蛋白质还含有 <code>S</code>（如含有二硫键的角蛋白）、Fe、P 等元素。',points:{title:'元素要点',items:['<strong>基本元素</strong>：C、H、O、N','<strong>特殊元素</strong>：S（含硫氨基酸）','<strong>微量元素</strong>：Fe（血红蛋白）、Cu、Zn','<strong>检测反应</strong>：双缩脲试剂遇肽键显紫色']}},
+  {tag:'基础',name:'基本单位氨基酸',body:'<strong>氨基酸</strong>是蛋白质的基本组成单位。组成人体蛋白质的氨基酸共有 <code>20种</code>，其中 <strong>8种必需氨基酸</strong>必须从食物获取，人体自身不能合成。',points:{title:'氨基酸分类',items:['<strong>20种氨基酸</strong>：构成所有天然蛋白质','<strong>必需氨基酸</strong>：成人8种（赖氨酸等）','<strong>非必需氨基酸</strong>：人体可合成','<strong>营养意义</strong>：蛋白质互补提高利用率']}},
+  {tag:'结构',name:'氨基酸结构通式',body:'<strong>通式</strong>：<code>NH₂-CHR-COOH</code>。每个氨基酸至少含有<strong>一个氨基(-NH₂)</strong>和一个<strong>羧基(-COOH)</strong>，且都连接在<strong>同一个碳原子</strong>（α-碳）上，还连有一个氢和一个 R 基。',points:{title:'通式四要素',items:['<strong>α-碳原子</strong>：中心骨架','<strong>-NH₂</strong>：氨基（碱性）','<strong>-COOH</strong>：羧基（酸性）','<strong>R 基</strong>：决定氨基酸种类']}},
+  {tag:'结构',name:'R基决定种类',body:'<strong>R 基</strong>是区分不同氨基酸的关键。20 种氨基酸的 R 基各不相同：甘氨酸的 R=H 最简单，缬氨酸的 R 是异丙基，含硫的甲硫氨酸 R 含 -S-。R 基的化学性质决定蛋白质的高级结构与功能。',points:{title:'R 基的意义',items:['<strong>甘氨酸 Gly</strong>：R = H（最小）','<strong>丙氨酸 Ala</strong>：R = -CH₃','<strong>缬氨酸 Val</strong>：R = 异丙基','<strong>R 不同 → 氨基酸不同</strong>']}},
+  {tag:'反应',name:'脱水缩合反应',body:'<strong>脱水缩合</strong>：一个氨基酸的<strong>羧基(-COOH)</strong>与另一个氨基酸的<strong>氨基(-NH₂)</strong>结合，脱去<strong>一分子水(H₂O)</strong>，形成<strong>肽键</strong>。这是蛋白质合成的核心反应，发生在核糖体上。',points:{title:'反应要点',items:['<strong>反应部位</strong>：-COOH 与 -NH₂','<strong>产物</strong>：肽键 + H₂O','<strong>能量</strong>：吸能反应（消耗 ATP）','<strong>场所</strong>：核糖体（rRNA 催化）']}},
+  {tag:'反应',name:'肽键的形成',body:'<strong>肽键</strong>是连接两个氨基酸的<strong>共价键</strong>，化学式为 <code>-CO-NH-</code>。肽键具有<strong>部分双键性质</strong>（共振稳定），使肽链骨架处于<strong>同一平面</strong>，是蛋白质空间结构的基础。',points:{title:'肽键特性',items:['<strong>化学结构</strong>：-CO-NH-','<strong>键类型</strong>：酰胺键（共价键）','<strong>部分双键性</strong>：肽平面稳定','<strong>断裂方式</strong>：蛋白酶水解']}},
+  {tag:'聚合',name:'二肽多肽肽链',body:'<strong>二肽</strong>：2个氨基酸脱水形成（1个肽键）。<strong>三肽</strong>：3个氨基酸（2个肽键）。<strong>多肽</strong>：多个氨基酸组成的链。<strong>肽链</strong>：一条多肽链有两个末端：N 端（游离氨基）和 C 端（游离羧基）。',points:{title:'肽链分级',items:['<strong>二肽</strong>：2氨基酸，1肽键，1H₂O','<strong>三肽</strong>：3氨基酸，2肽键，2H₂O','<strong>多肽</strong>：通常 < 50 氨基酸','<strong>蛋白质</strong>：≥50 氨基酸，有空间结构']}},
+  {tag:'计算',name:'脱水数计算公式',body:'<strong>核心公式</strong>：<code>脱水数 = 肽键数 = 氨基酸数 n - 肽链数</code>。对于一条肽链，脱水数 = n-1；对于 m 条肽链组成的蛋白质，总肽键数 = n-m。形成的蛋白质分子量 ≈ n×氨基酸平均分子量 - (n-m)×18。',points:{title:'计算要点',items:['<strong>单链</strong>：脱水数 = n - 1','<strong>多链</strong>：脱水数 = n - m（m 条链）','<strong>环肽</strong>：脱水数 = n（首尾相连）','<strong>分子量</strong>：减去脱去的水']}},
+  {tag:'多样性',name:'多样性原因',body:'蛋白质种类繁多（人体 10 万种以上），原因有四：<strong>①氨基酸种类不同</strong>（20种）、<strong>②氨基酸数目不同</strong>、<strong>③排列顺序不同</strong>、<strong>④空间结构不同</strong>。这四要素的组合使蛋白质种类近乎无限。',points:{title:'四要素',items:['<strong>①种类</strong>：20种氨基酸的选择','<strong>②数目</strong>：从几个到几千个','<strong>③顺序</strong>：n个氨基酸有 n! 种排列','<strong>④空间结构</strong>：盘曲折叠方式不同']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>例题</strong>：某蛋白质由 2 条肽链、49 个氨基酸组成。求脱水数、肽键数、分子量减少多少？解：脱水数 = 49 - 2 = 47；肽键数 = 47；分子量减少 47×18 = 846。',points:{title:'核心速记',items:['<strong>通式</strong>：NH₂-CHR-COOH','<strong>肽键</strong>：-CO-NH-','<strong>公式</strong>：脱水数 = n - 肽链数','<strong>多样性</strong>：种类/数目/顺序/空间']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：氨基酸结构通式 =====
+function drawAminoScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('氨基酸结构通式 · NH₂-CHR-COOH',W/2,30,'#10b981',16);
+  const cx=W/2,cy=H/2+20;
+  // 中央 α-碳原子
+  const pulse=1+0.05*Math.sin(time*3);
+  ctx.fillStyle='#10b981';ctx.shadowColor='#10b981';ctx.shadowBlur=20*pulse;
+  ctx.beginPath();ctx.arc(cx,cy,22,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('C',cx,cy,'#fff',18);
+  drawText('α-碳',cx,cy-40,'#10b981',13);
+  // 上：氨基 -NH₂
+  drawBond(cx,cy,cx,cy-100,'#a78bfa');
+  drawText('NH₂',cx,cy-115,'#a78bfa',16);
+  drawText('氨基',cx,cy-140,'#a78bfa',11);
+  // 下：羧基 -COOH
+  drawBond(cx,cy,cx,cy+100,'#f87171');
+  drawText('COOH',cx,cy+115,'#f87171',16);
+  drawText('羧基',cx,cy+140,'#f87171',11);
+  // 左：氢 H
+  drawBond(cx,cy,cx-100,cy,'#67e8f9');
+  drawText('H',cx-100,cy,'#67e8f9',16);
+  drawText('氢',cx-100,cy-25,'#67e8f9',11);
+  // 右：R 基（动态变化）
+  const rIdx=Math.floor(time*0.6)%4;
+  const rList=[{n:'H',c:'#fbbf24',t:'甘氨酸'},{n:'CH₃',c:'#34d399',t:'丙氨酸'},{n:'CH(CH₃)₂',c:'#fb923c',t:'缬氨酸'},{n:'CH₂SH',c:'#ec4899',t:'半胱氨酸'}];
+  const R=rList[rIdx];
+  drawBond(cx,cy,cx+110,cy,R.c);
+  drawText('R',cx+110,cy,R.c,16);
+  drawText(R.n+' ('+R.t+')',cx+130,cy-25,R.c,11);
+  // 通式文字
+  drawText('通式：H₂N-CHR-COOH',W/2,H-50,'#e8eef8',13);
+  drawText('R 基决定氨基酸种类（动态切换中）',W/2,H-28,'#34d399',11);
+}
+
+function drawBond(x1,y1,x2,y2,c){
+  ctx.strokeStyle=c;ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+}
+
+// ===== 场景：脱水缩合 =====
+function drawCondenseScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('脱水缩合 · 形成肽键',W/2,30,'#10b981',16);
+  const cy=H/2-10;
+  // 阶段：0~2 秒
+  const phase=(time%4)/4;
+  // 第一氨基酸
+  const x1=W/2-200,x2=W/2+60;
+  // 氨基酸 1：左侧
+  drawAminoBlock(x1,cy,'H₂N','CHR₁','COOH','#10b981');
+  // 氨基酸 2：右侧
+  drawAminoBlock(x2,cy,'H₂N','CHR₂','COOH','#a78bfa');
+  // 缩合动画
+  if(phase<0.3){
+    // 接近
+    drawText('两个氨基酸靠近...',W/2,cy-100,'#9ab0d0',12);
+  }else if(phase<0.6){
+    // 脱水：COOH的OH和NH2的H飞出
+    const p=(phase-0.3)/0.3;
+    const wx=W/2-10,wy=cy-30-p*60;
+    ctx.fillStyle='#67e8f9';ctx.shadowColor='#67e8f9';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(wx,wy,12,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('H₂O',wx,wy,'#fff',10);
+    drawText('脱去一分子水',W/2,cy-100,'#fbbf24',12);
+  }else{
+    // 形成肽键
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;
+    ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+    ctx.beginPath();ctx.moveTo(x1+70,cy);ctx.lineTo(x2-50,cy);ctx.stroke();
+    ctx.shadowBlur=0;
+    drawText('肽键 -CO-NH-',W/2,cy-15,'#fbbf24',13);
+    drawText('形成二肽！',W/2,cy-100,'#34d399',13);
+  }
+  // 公式
+  drawText('反应式：氨基酸₁ + 氨基酸₂ → 二肽 + H₂O',W/2,H-55,'#e8eef8',12);
+  drawText('肽键结构：-CO-NH-（一个羧基与一个氨基脱去一分子水形成）',W/2,H-30,'#9ab0d0',11);
+}
+
+function drawAminoBlock(x,y,nh,r,cooh,c){
+  ctx.fillStyle=c+'33';ctx.strokeStyle=c;ctx.lineWidth=2;
+  roundRect(x-60,y-30,120,60,8);ctx.fill();ctx.stroke();
+  drawText(nh,x-35,y,c,12);
+  drawText(r,x,y,c,12);
+  drawText(cooh,x+35,y,c,12);
+}
+
+// ===== 场景：多肽链 =====
+function drawPeptideScene(time){
+  const W=cv.width,H=cv.height;
+  const n=6;
+  drawText('多肽链延伸 · n='+n+' 个氨基酸 → '+(n-1)+' 个肽键',W/2,30,'#10b981',16);
+  const cy=H/2+10;
+  const totalW=520;
+  const startX=(W-totalW)/2;
+  const step=totalW/(n-1);
+  const colors=['#10b981','#34d399','#a78bfa','#fb923c','#fbbf24','#67e8f9'];
+  // 显示进度
+  const showCount=Math.min(n,1+Math.floor((time%5)/5*n));
+  for(let i=0;i<n;i++){
+    const x=startX+i*step;
+    if(i>=showCount)break;
+    // 氨基酸圆
+    ctx.fillStyle=colors[i%n]+'33';ctx.strokeStyle=colors[i%n];ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(x,cy,26,0,7);ctx.fill();ctx.stroke();
+    drawText('aa'+(i+1),x,cy,'#fff',11);
+    drawText('R'+(i+1),x,cy-40,colors[i%n],10);
+    // 肽键
+    if(i>0&&i<showCount){
+      const px=startX+(i-1)*step+26;
+      const px2=x-26;
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+      ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+      ctx.beginPath();ctx.moveTo(px,cy);ctx.lineTo(px2,cy);ctx.stroke();
+      ctx.shadowBlur=0;
+      drawText('CO-NH',(px+px2)/2,cy-18,'#fbbf24',9);
+    }
+  }
+  // N 端 / C 端标注
+  if(showCount>=1){
+    drawText('N端\n(H₂N-)',startX-40,cy,'#a78bfa',11);
+    drawText('C端\n(-COOH)',startX+(showCount-1)*step+40,cy,'#f87171',11);
+  }
+  // 计算公式
+  drawText('脱水数 = 肽键数 = n - 1 = '+n+' - 1 = '+(n-1),W/2,H-55,'#34d399',13);
+  drawText('脱去水分子数：'+(n-1)+'，分子量减少 '+(n-1)*18,W/2,H-30,'#9ab0d0',11);
+}
+
+// ===== 场景：20 种氨基酸 =====
+function draw20AminoScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('20 种氨基酸 · R 基不同',W/2,30,'#10b981',16);
+  const names=['甘','丙','缬','亮','异亮','丝','苏','半胱','甲硫','脯','苯丙','酪','色','天冬','谷','赖','精','组','天酰','谷酰'];
+  const codes=['G','A','V','L','I','S','T','C','M','P','F','Y','W','D','E','K','R','H','N','Q'];
+  const colors=['#10b981','#34d399','#a78bfa','#fb923c','#fbbf24','#67e8f9','#ec4899','#f87171','#a3e635','#60a5fa','#c084fc','#fde047','#fbbf24','#fb7185','#22d3ee','#84cc16','#e879f9','#facc15','#4ade80','#fca5a5'];
+  const cols=5,rows=4;
+  const cw=(W-100)/cols,ch=70;
+  for(let i=0;i<20;i++){
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=50+col*cw,y=70+row*ch;
+    const pulse=(Math.sin(time*2+i*0.5)+1)/2;
+    ctx.fillStyle=colors[i]+(pulse>0.7?'55':'22');ctx.strokeStyle=colors[i];ctx.lineWidth=1.5;
+    roundRect(x+5,y+5,cw-10,ch-10,6);ctx.fill();ctx.stroke();
+    drawText(codes[i],x+cw/2,y+22,colors[i],16);
+    drawText(names[i]+'氨酸',x+cw/2,y+46,'#e8eef8',10);
+  }
+  drawText('20种氨基酸 R 基各不相同 → 决定蛋白质的多样性',W/2,H-45,'#34d399',12);
+  drawText('其中 8 种为必需氨基酸（人体不能合成，需从食物获取）',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景：多样性 =====
+function drawDiversityScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('蛋白质多样性 · 不同的排列 → 不同的功能',W/2,30,'#10b981',16);
+  const cy=H/2;
+  const samples=[
+    {n:'血红蛋白',d:'运输 O₂',c:'#f87171',seq:['F','G','G','K','L']},
+    {n:'胰岛素',d:'降血糖',c:'#34d399',seq:['G','I','V','E','Q']},
+    {n:'角蛋白',d:'构成毛发',c:'#a78bfa',seq:['C','C','S','P','S']},
+  ];
+  const totalW=W-100;
+  const bw=totalW/3;
+  samples.forEach((s,i)=>{
+    const x=50+i*bw;
+    // 卡片背景
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    roundRect(x+15,60,bw-30,H-150,10);ctx.fill();ctx.stroke();
+    drawText(s.n,x+bw/2,90,s.c,15);
+    drawText(s.d,x+bw/2,115,'#e8eef8',12);
+    // 氨基酸序列
+    const seqY=cy-10;
+    s.seq.forEach((aa,j)=>{
+      const ay=seqY+j*30;
+      ctx.fillStyle=s.c+'55';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(x+bw/2,ay,14,0,7);ctx.fill();ctx.stroke();
+      drawText(aa,x+bw/2,ay,'#fff',11);
+      if(j>0){
+        ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(x+bw/2,ay-30+14);ctx.lineTo(x+bw/2,ay-14);ctx.stroke();
+      }
+    });
+    drawText('5 肽示例',x+bw/2,H-100,'#9ab0d0',10);
+  });
+  drawText('种类 / 数目 / 顺序 / 空间结构 → 蛋白质种类近乎无限',W/2,H-40,'#34d399',12);
+}
+
+// ===== 场景：蛋白质结构等级 =====
+function drawStructureScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('蛋白质一、二、三、四级结构',W/2,30,'#10b981',16);
+  const levels=[
+    {n:'一级结构',d:'氨基酸排列顺序',c:'#10b981',icon:'linear'},
+    {n:'二级结构',d:'α-螺旋 / β-折叠',c:'#34d399',icon:'helix'},
+    {n:'三级结构',d:'整体盘曲折叠',c:'#a78bfa',icon:'fold'},
+    {n:'四级结构',d:'多条肽链组合',c:'#fb923c',icon:'multi'},
+  ];
+  const bw=(W-100)/4;
+  levels.forEach((l,i)=>{
+    const x=50+i*bw;
+    const cx=x+bw/2,cy=H/2-20;
+    // 卡片
+    ctx.fillStyle=l.c+'22';ctx.strokeStyle=l.c;ctx.lineWidth=2;
+    roundRect(x+10,60,bw-20,H-150,10);ctx.fill();ctx.stroke();
+    drawText((i+1)+'',x+25,80,l.c,22);
+    drawText(l.n,cx,110,l.c,14);
+    drawText(l.d,cx,135,'#e8eef8',10);
+    // 图形
+    const phase=time+i*0.5;
+    if(l.icon==='linear'){
+      // 一级：直线串珠
+      ctx.strokeStyle=l.c;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x+30,cy);ctx.lineTo(x+bw-30,cy);ctx.stroke();
+      for(let k=0;k<5;k++){
+        const ax=x+30+k*((bw-60)/4);
+        ctx.fillStyle=l.c;ctx.beginPath();ctx.arc(ax,cy,7,0,7);ctx.fill();
+      }
+    }else if(l.icon==='helix'){
+      // 二级：螺旋
+      ctx.strokeStyle=l.c;ctx.lineWidth=2.5;
+      ctx.beginPath();
+      for(let k=0;k<40;k++){
+        const ang=k*0.5+phase;
+        const ax=cx+Math.cos(ang)*15;
+        const ay=cy-40+k*2.5;
+        if(k===0)ctx.moveTo(ax,ay);else ctx.lineTo(ax,ay);
+      }
+      ctx.stroke();
+    }else if(l.icon==='fold'){
+      // 三级：折叠团
+      ctx.strokeStyle=l.c;ctx.lineWidth=2.5;
+      ctx.beginPath();
+      for(let k=0;k<30;k++){
+        const ang=k*0.7+phase;
+        const r=20+8*Math.sin(k*0.3+phase);
+        const ax=cx+Math.cos(ang)*r;
+        const ay=cy+Math.sin(ang*1.3)*25;
+        if(k===0)ctx.moveTo(ax,ay);else ctx.lineTo(ax,ay);
+      }
+      ctx.stroke();
+    }else{
+      // 四级：多亚基
+      for(let k=0;k<4;k++){
+        const ang=k*Math.PI/2+phase*0.3;
+        const ax=cx+Math.cos(ang)*22;
+        const ay=cy+Math.sin(ang)*22;
+        ctx.fillStyle=l.c+'77';ctx.strokeStyle=l.c;ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(ax,ay,15,0,7);ctx.fill();ctx.stroke();
+      }
+    }
+  });
+  drawText('一级（序列）→ 二级（局部折叠）→ 三级（整体构象）→ 四级（亚基组装）',W/2,H-40,'#34d399',11);
+  drawText('高级结构决定蛋白质的生物学功能',W/2,H-22,'#9ab0d0',11);
+}
+
+// ===== 场景：计算例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 脱水数与肽键数计算',W/2,30,'#10b981',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,65,W-160,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,85,'#a78bfa',13,'left');
+  drawText('某蛋白质由 2 条肽链、49 个氨基酸组成，',120,108,'#fff',13,'left');
+  drawText('氨基酸平均分子量为 128。求脱水数、肽键数、蛋白质分子量。',120,131,'#fff',13,'left');
+  // 解答步骤
+  const steps=[
+    {t:'① 已知',d:'n=49, 肽链数 m=2, 平均分子量 128',c:'#06b6d4'},
+    {t:'② 公式',d:'脱水数 = n - m；肽键数 = 脱水数',c:'#a78bfa'},
+    {t:'③ 代入',d:'脱水数 = 49 - 2 = 47；肽键数 = 47',c:'#67e8f9'},
+    {t:'④ 分子量',d:'49×128 - 47×18 = 6272 - 846 = 5426',c:'#34d399'},
+    {t:'⑤ 结论',d:'脱水 47 个，肽键 47 个，蛋白 ≈ 5426',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=180+i*60;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,48,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+24,s.c,13,'left');
+    drawText(s.d,260,y+24,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('蛋白质核心总结',W/2,40,'#10b981',18);
+  const items=[
+    {t:'基本单位',d:'20 种氨基酸',c:'#10b981'},
+    {t:'通式',d:'NH₂-CHR-COOH',c:'#34d399'},
+    {t:'脱水缩合',d:'脱 H₂O 形成肽键',c:'#a78bfa'},
+    {t:'肽键结构',d:'-CO-NH-',c:'#fbbf24'},
+    {t:'计算公式',d:'脱水数 = n - 肽链数',c:'#fb923c'},
+    {t:'多样性',d:'种类/数目/顺序/空间',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawAminoScene(t);
+  else if(stepIdx===1)draw20AminoScene(t);
+  else if(stepIdx===2)drawAminoScene(t);
+  else if(stepIdx===3)draw20AminoScene(t);
+  else if(stepIdx===4)drawCondenseScene(t);
+  else if(stepIdx===5)drawCondenseScene(t);
+  else if(stepIdx===6)drawPeptideScene(t);
+  else if(stepIdx===7)drawCalcScene();
+  else if(stepIdx===8)drawDiversityScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

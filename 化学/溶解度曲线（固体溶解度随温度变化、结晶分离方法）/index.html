@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>溶解度曲线 · 固体溶解度 · 结晶分离方法</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">溶解度曲线</span><span class="subtitle">固体溶解度随温度变化 · 结晶分离方法</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>固体溶解度</h4><div class="v">一定温度下100g溶剂中<br>达到饱和所溶解的溶质质量(g)</div></div>
+  <div class="card s2"><div class="num">2</div><h4>影响因素</h4><div class="v">温度为主要因素<br>溶剂种类亦有影响</div></div>
+  <div class="card s3"><div class="num">3</div><h4>溶解度曲线</h4><div class="v">横轴温度 纵轴溶解度<br>反映溶质随温度变化规律</div></div>
+  <div class="card s4"><div class="num">4</div><h4>结晶方法</h4><div class="v">陡升型降温结晶(KNO₃)<br>缓升型蒸发结晶(NaCl)</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">溶解度曲线</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+// 溶解度数据(0-100℃ 简化近似值, g/100g水)
+// KNO3:13.3 20.9 31.6 45.8 63.9 85.5 110 167 246 @0,10,20,...,80,90
+// NaCl:35.7 35.8 36.0 36.1 36.4 37.0 37.6 38.4 39.3
+// Ca(OH)2:0.18 0.17 0.16 0.15 0.14 0.12 0.11 0.09 0.08
+const D_KNO3=[13.3,20.9,31.6,45.8,63.9,85.5,110,167,246];
+const D_NACL=[35.7,35.8,36.0,36.1,36.4,37.0,37.6,38.4,39.3];
+const D_CAOH=[0.185,0.176,0.165,0.153,0.141,0.128,0.116,0.094,0.077];
+
+const STEPS=[
+  {tag:'基础',name:'固体溶解度定义',body:'<strong>固体溶解度</strong>表示在一定<strong>温度</strong>下，某固态物质在<strong>100克溶剂</strong>(通常为水)里达到<strong>饱和状态</strong>时所溶解的<strong>质量</strong>(克)。符号 S，单位 g。',points:{title:'定义四要素',items:['<strong>一定温度</strong>：必须指明温度','<strong>100g溶剂</strong>：标准溶剂量','<strong>饱和状态</strong>：达到溶解最大','<strong>质量(克)</strong>：单位为 g']}},
+  {tag:'基础',name:'定义四要素',body:'理解溶解度必须<strong>同时满足</strong>四个条件：<code>温度 + 100g溶剂 + 饱和状态 + 质量(g)</code>。缺任一条件则无意义，例如"20℃时NaCl溶解度为36g"。',points:{title:'四要素口诀',items:['<strong>温度定值</strong>：不同温度S不同','<strong>溶剂定量</strong>：必须为100g','<strong>必须饱和</strong>：再不能溶解','<strong>溶质质量</strong>：单位克(g)']}},
+  {tag:'基础',name:'影响因素',body:'影响固体溶解度的主要因素是<strong>温度</strong>。大多数固体随温度升高溶解度<strong>增大</strong>(如KNO₃)；少数几乎不变(如NaCl)；个别<strong>减小</strong>(如Ca(OH)₂)。<strong>溶剂种类</strong>也影响溶解度。',points:{title:'主要因素',items:['<strong>温度</strong>：最主要影响因素','<strong>溶剂种类</strong>：相似相溶原理','<strong>溶质性质</strong>：不同物质差异大','<strong>压强</strong>：固体几乎不受影响']}},
+  {tag:'曲线',name:'溶解度曲线',body:'以<strong>温度</strong>为横坐标、<strong>溶解度</strong>为纵坐标绘制的曲线称为<strong>溶解度曲线</strong>。它直观反映物质溶解度随温度变化的规律，可比较不同物质的溶解性。',points:{title:'曲线要点',items:['<strong>横轴</strong>：温度 t / ℃','<strong>纵轴</strong>：溶解度 S / g','<strong>线上点</strong>：该温度下饱和溶解度','<strong>线下方</strong>：不饱和溶液']}},
+  {tag:'曲线',name:'曲线类型',body:'按变化趋势分三类：<strong>陡升型</strong>如KNO₃(随温度急剧增大)；<strong>缓升型</strong>如NaCl(几乎不变)；<strong>下降型</strong>如Ca(OH)₂(随温度升高而减小)。',points:{title:'三种类型',items:['<strong>陡升型</strong>：KNO₃、NH₄NO₃','<strong>缓升型</strong>：NaCl、KCl','<strong>下降型</strong>：Ca(OH)₂、Ce₂(SO₄)₃','<strong>分析结晶法</strong>：依曲线类型决定']}},
+  {tag:'曲线',name:'曲线交点',body:'两条溶解度曲线的<strong>交点</strong>表示：在该温度下，两种物质的<strong>溶解度相等</strong>。例如KNO₃与NaCl约在22℃附近相交，可据此比较不同温度下的相对大小。',points:{title:'交点含义',items:['<strong>交点温度</strong>：S₁=S₂','<strong>高于此温度</strong>：陡升者更大','<strong>低于此温度</strong>：缓升者更大','<strong>应用</strong>：比较分离可能性']}},
+  {tag:'应用',name:'比较溶解度大小',body:'利用溶解度曲线可比较<strong>同一温度</strong>下不同物质溶解度大小，或<strong>同一物质</strong>在不同温度下溶解度差异。曲线<strong>位置越高</strong>，溶解度越大。',points:{title:'比较方法',items:['<strong>同温比高低</strong>：纵坐标值越大越大','<strong>同物质比温度</strong>：温度越高通常越大','<strong>交点上下</strong>：判断相对大小','<strong>注意</strong>：Ca(OH)₂反常']}},
+  {tag:'应用',name:'选择结晶方法',body:'根据溶解度曲线<strong>变化趋势</strong>选择结晶方法：<strong>陡升型</strong>用降温结晶；<strong>缓升型</strong>用蒸发结晶；下降型用升温结晶(较少见)。',points:{title:'方法选择',items:['<strong>陡升型</strong>：降温析出大量晶体','<strong>缓升型</strong>：蒸发溶剂析出','<strong>下降型</strong>：升温反析(罕见)','<strong>看曲线</strong>：确定最优方案']}},
+  {tag:'结晶',name:'结晶方法详解',body:'<strong>降温结晶</strong>：适用于溶解度随温度升高而显著增大的物质(如KNO₃)；<strong>蒸发结晶</strong>：适用于溶解度随温度变化不大的物质(如NaCl，海水晒盐)。',points:{title:'两种方法对比',items:['<strong>降温结晶</strong>：KNO₃ 降温即析晶','<strong>蒸发结晶</strong>：NaCl 海水晒盐','<strong>降温</strong>：陡升型首选','<strong>蒸发</strong>：缓升型首选']}},
+  {tag:'总结',name:'典型例题与总结',body:'例：20℃时将40g NaCl加入100g水，溶液未达饱和(S=36g)，需蒸发至少4g水才能饱和。核心：<strong>定义四要素、曲线类型、结晶方法</strong>是中学化学重点。',points:{title:'核心速记',items:['<strong>定义</strong>：温度+100g水+饱和+克','<strong>曲线</strong>：陡升/缓升/下降三类','<strong>结晶</strong>：陡降降温 缓蒸蒸发','<strong>分离</strong>：KNO₃+NaCl 用降温']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// 坐标变换：温度0-100℃映射到 x；溶解度0-260g映射到 y
+function gx(temp,W){return 90+temp/100*(W-130);}
+function gy(s,W,H){return H-90-s/260*(H-150);}
+
+// ===== 场景1：溶解度曲线图(三条曲线) =====
+function drawCurveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('溶解度曲线 · 三种典型类型',W/2,30,'#fbbf24',16);
+  // 坐标系
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(90,50);ctx.lineTo(90,H-90);ctx.lineTo(W-40,H-90);ctx.stroke();
+  // 箭头
+  ctx.fillStyle='#3a4a6a';
+  ctx.beginPath();ctx.moveTo(90,50);ctx.lineTo(85,60);ctx.lineTo(95,60);ctx.fill();
+  ctx.beginPath();ctx.moveTo(W-40,H-90);ctx.lineTo(W-50,H-95);ctx.lineTo(W-50,H-85);ctx.fill();
+  drawText('温度 / ℃',W-50,H-70,'#9ab0d0',12);
+  drawText('溶解度 S / g',60,45,'#9ab0d0',12);
+  // x轴刻度
+  for(let t10=0;t10<=100;t10+=20){
+    const x=gx(t10,W);
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(x,H-90);ctx.lineTo(x,H-86);ctx.stroke();
+    drawText(t10,x,H-72,'#5a6a8a',10);
+    // 浅网格
+    ctx.strokeStyle='#1a2a44';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,55);ctx.lineTo(x,H-90);ctx.stroke();
+  }
+  // y轴刻度
+  for(let s=0;s<=250;s+=50){
+    const y=gy(s,W,H);
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(86,y);ctx.lineTo(90,y);ctx.stroke();
+    drawText(s,78,y,'#5a6a8a',10);
+    ctx.strokeStyle='#1a2a44';ctx.beginPath();ctx.moveTo(90,y);ctx.lineTo(W-40,y);ctx.stroke();
+  }
+  // 绘制三条曲线(动画进度 0-1)
+  const prog=Math.min(1,(time%4)/3);
+  function plotCurve(data,color){
+    ctx.strokeStyle=color;ctx.lineWidth=3;ctx.shadowColor=color;ctx.shadowBlur=10;
+    ctx.beginPath();
+    const n=Math.floor(data.length*prog);
+    for(let i=0;i<data.length;i++){
+      const temp=i*10;
+      const x=gx(temp,W),y=gy(data[i],W,H);
+      if(i===0||i>n)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+    // 端点
+    if(prog>=1){
+      const lastIdx=data.length-1;
+      ctx.fillStyle=color;
+      ctx.beginPath();ctx.arc(gx(lastIdx*10,W),gy(data[lastIdx],W,H),5,0,7);ctx.fill();
+    }
+  }
+  plotCurve(D_KNO3,'#fbbf24');
+  plotCurve(D_NACL,'#34d399');
+  plotCurve(D_CAOH,'#f87171');
+  // 图例
+  drawText('■ KNO₃ (陡升型)',W-260,70,'#fbbf24',12,'left');
+  drawText('■ NaCl (缓升型)',W-260,92,'#34d399',12,'left');
+  drawText('■ Ca(OH)₂ (下降型)',W-260,114,'#f87171',12,'left');
+  drawText('横轴：温度 / ℃    纵轴：溶解度 S / g',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景2：饱和溶液动画 =====
+function drawSatScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('饱和溶液 · 加溶质不再溶解',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 烧杯
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  roundRect(cx-130,cy-100,260,180,8);ctx.fill();ctx.stroke();
+  // 液面
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-128,cy-80);ctx.lineTo(cx+128,cy-80);ctx.stroke();
+  // 溶解的粒子(在液面下方)
+  const dissolved=Math.min(20,Math.floor(time*2));
+  ctx.fillStyle='rgba(251,191,36,0.7)';
+  for(let i=0;i<dissolved;i++){
+    const px=cx-110+(i*37)%220;
+    const py=cy-70+(i*53)%160;
+    ctx.beginPath();ctx.arc(px,py,3,0,7);ctx.fill();
+  }
+  // 未溶解的晶体沉底
+  if(dissolved>=20){
+    ctx.fillStyle='#fbbf24';
+    for(let i=0;i<12;i++){
+      const px=cx-110+(i*47)%220;
+      ctx.beginPath();ctx.arc(px,cy+70-Math.random()*4,4,0,7);ctx.fill();
+    }
+    drawText('已饱和！再加溶质也不溶解，沉于杯底',W/2,H-50,'#f87171',13);
+  }else{
+    drawText('继续溶解中... S = '+dissolved+' g',W/2,H-50,'#34d399',13);
+  }
+  drawText('一定温度下，100g水中最多溶解溶质的质量即溶解度',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景3：曲线交点 =====
+function drawCrossScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('曲线交点 · 两物质溶解度相等',W/2,30,'#fbbf24',16);
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(90,50);ctx.lineTo(90,H-90);ctx.lineTo(W-40,H-90);ctx.stroke();
+  drawText('温度 / ℃',W-50,H-70,'#9ab0d0',12);
+  drawText('溶解度 S / g',60,45,'#9ab0d0',12);
+  for(let t10=0;t10<=100;t10+=20){const x=gx(t10,W);drawText(t10,x,H-72,'#5a6a8a',10);}
+  for(let s=0;s<=250;s+=50){const y=gy(s,W,H);drawText(s,78,y,'#5a6a8a',10);}
+  // KNO3 与 NaCl 曲线(完整)
+  function plot(data,color){
+    ctx.strokeStyle=color;ctx.lineWidth=3;ctx.shadowColor=color;ctx.shadowBlur=8;
+    ctx.beginPath();
+    for(let i=0;i<data.length;i++){
+      const x=gx(i*10,W),y=gy(data[i],W,H);
+      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+  }
+  plot(D_KNO3,'#fbbf24');
+  plot(D_NACL,'#34d399');
+  // 交点(KNO3与NaCl约在22℃附近，简化取插值)
+  // 20℃:KNO3=31.6,NaCl=36.0; 30℃:KNO3=45.8,NaCl=36.1 → 交点约23℃
+  const crossTemp=23,crossS=37;
+  const cxp=gx(crossTemp,W),cyp=gy(crossS,W,H);
+  // 脉冲圆
+  const pulse=6+Math.sin(time*4)*4;
+  ctx.fillStyle='rgba(248,113,113,0.3)';
+  ctx.beginPath();ctx.arc(cxp,cyp,pulse,0,7);ctx.fill();
+  ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(cxp,cyp,6,0,7);ctx.fill();
+  // 虚线
+  ctx.strokeStyle='rgba(248,113,113,0.5)';ctx.lineWidth=1;ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(cxp,cyp);ctx.lineTo(cxp,H-90);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cxp,cyp);ctx.lineTo(90,cyp);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('交点：'+crossTemp+'℃ 时 S(KNO₃)=S(NaCl)='+crossS+'g',W/2,H-55,'#f87171',13);
+  drawText('高于此温度KNO₃溶解度更大，低于则NaCl更大',W/2,H-30,'#9ab0d0',12);
+  // 图例
+  drawText('■ KNO₃',W-180,70,'#fbbf24',12,'left');
+  drawText('■ NaCl',W-180,92,'#34d399',12,'left');
+}
+
+// ===== 场景4：降温结晶(KNO3) =====
+function drawCoolScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('降温结晶 · KNO₃ 高温饱和液冷却析晶',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 温度(从80降到20)
+  const temp=80-(time*15)%60;
+  // 烧杯
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  roundRect(cx-120,cy-90,240,160,8);ctx.fill();ctx.stroke();
+  // 液面
+  ctx.strokeStyle='#06b6d4';ctx.beginPath();ctx.moveTo(cx-118,cy-70);ctx.lineTo(cx+118,cy-70);ctx.stroke();
+  // 温度计
+  drawText('温度: '+temp.toFixed(0)+' ℃',cx,cy-110,'#34d399',14);
+  // 析出晶体量(温度越低越多)
+  const S_now=D_KNO3[Math.round(temp/10)]||13;
+  const crystal=Math.max(0,(110-S_now));
+  ctx.fillStyle='#fbbf24';
+  for(let i=0;i<crystal;i++){
+    const px=cx-100+(i*29)%200;
+    const py=cy+60-Math.random()*5;
+    ctx.fillRect(px,py,4,4);
+  }
+  // 下落动画
+  if(Math.sin(time*3)>0.5){
+    ctx.fillStyle='rgba(251,191,36,0.7)';
+    ctx.fillRect(cx-20+(time*40)%40-20,cy-50+(time*30)%100,3,3);
+  }
+  drawText('80℃饱和溶液约 S=110g，降温到 '+temp.toFixed(0)+'℃ 时 S='+S_now+'g',W/2,H-70,'#9ab0d0',12);
+  drawText('多余 '+(110-S_now)+'g KNO₃ 从溶液中析出 → 降温结晶',W/2,H-45,'#fbbf24',13);
+  drawText('陡升型物质适合降温结晶',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景5：蒸发结晶(NaCl) =====
+function drawEvapScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('蒸发结晶 · NaCl 溶液加热蒸发析晶',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+20;
+  // 蒸发皿
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(cx-120,cy-40);
+  ctx.lineTo(cx-100,cy+70);
+  ctx.lineTo(cx+100,cy+70);
+  ctx.lineTo(cx+120,cy-40);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 加热火焰(底部)
+  const flicker=Math.sin(time*8)*5;
+  ctx.fillStyle='#fb923c';
+  ctx.beginPath();
+  ctx.moveTo(cx-30,cy+90);
+  ctx.quadraticCurveTo(cx-15+flicker,cy+60,cx,cy+85);
+  ctx.quadraticCurveTo(cx+15-flicker,cy+60,cx+30,cy+90);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();
+  ctx.moveTo(cx-15,cy+88);
+  ctx.quadraticCurveTo(cx-7+flicker,cy+72,cx,cy+85);
+  ctx.quadraticCurveTo(cx+7-flicker,cy+72,cx+15,cy+88);
+  ctx.closePath();ctx.fill();
+  drawText('加热',cx,cy+110,'#fb923c',12);
+  // 蒸发水汽(向上)
+  for(let i=0;i<5;i++){
+    const ph=((time*40+i*40)%200);
+    const op=Math.max(0,1-ph/200);
+    ctx.fillStyle='rgba(186,230,253,'+op*0.6+')';
+    ctx.beginPath();ctx.arc(cx-60+i*30,cy-50-ph,8+ph*0.1,0,7);ctx.fill();
+  }
+  // NaCl晶体(底部)
+  const evap=Math.min(1,(time*0.3)%1.2);
+  ctx.fillStyle='#34d399';
+  const cnt=Math.floor(evap*15);
+  for(let i=0;i<cnt;i++){
+    const px=cx-90+(i*37)%180;
+    const py=cy+55-Math.random()*3;
+    ctx.fillRect(px,py,4,4);
+  }
+  drawText('NaCl 溶解度随温度变化小 → 蒸发溶剂析出晶体',W/2,H-55,'#34d399',13);
+  drawText('海水晒盐原理：水分蒸发 → NaCl 结晶析出',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景6：混合物分离(KNO3+NaCl) =====
+function drawSeparateScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('混合物分离 · KNO₃+NaCl 用降温结晶',W/2,30,'#fbbf24',16);
+  const cy=H/2+30;
+  const phase=Math.floor((time/2)%3);
+  // 三个阶段图
+  const labels=['高温溶解','降温析晶','过滤分离'];
+  const xs=[W*0.2,W*0.5,W*0.8];
+  for(let i=0;i<3;i++){
+    const x=xs[i];
+    // 容器
+    ctx.fillStyle=i===phase?'rgba(251,191,36,0.15)':'rgba(6,182,212,0.1)';
+    ctx.strokeStyle=i===phase?'#fbbf24':'#3a4a6a';ctx.lineWidth=2;
+    roundRect(x-70,cy-80,140,140,8);ctx.fill();ctx.stroke();
+    drawText(labels[i],x,cy-100,i===phase?'#fbbf24':'#9ab0d0',13);
+    // 内容
+    if(i===0){
+      // 高温溶液，黄色+绿色粒子混合
+      ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(x-20,cy-10,4,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(x+15,cy+20,4,0,7);ctx.fill();
+      ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(x+25,cy-5,4,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(x-10,cy+25,4,0,7);ctx.fill();
+      drawText('KNO₃+NaCl',x,cy+50,'#9ab0d0',10);
+    }else if(i===1){
+      // 降温：KNO3(黄)析出沉底，NaCl(绿)留在液里
+      ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(x-15,cy-20,4,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(x+20,cy+5,4,0,7);ctx.fill();
+      // 析出KNO3
+      ctx.fillStyle='#fbbf24';
+      for(let j=0;j<6;j++)ctx.fillRect(x-50+j*15,cy+45,5,5);
+      drawText('KNO₃↓',x,cy+30,'#fbbf24',10);
+    }else{
+      // 过滤：滤纸+滤渣
+      ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x-40,cy-30);ctx.lineTo(x,cy+10);ctx.lineTo(x+40,cy-30);ctx.stroke();
+      ctx.fillStyle='#fbbf24';
+      for(let j=0;j<4;j++)ctx.fillRect(x-25+j*15,cy-15,4,4);
+      // 滤液(绿色)
+      ctx.fillStyle='rgba(52,211,153,0.5)';
+      ctx.beginPath();ctx.arc(x,cy+45,3,0,7);ctx.fill();
+      drawText('KNO₃晶体',x,cy-50,'#fbbf24',10);
+      drawText('滤液NaCl',x,cy+70,'#34d399',10);
+    }
+  }
+  // 箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  for(let i=0;i<2;i++){
+    const x1=xs[i]+75,x2=xs[i+1]-75;
+    ctx.beginPath();ctx.moveTo(x1,cy);ctx.lineTo(x2,cy);ctx.stroke();
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.moveTo(x2,cy);ctx.lineTo(x2-8,cy-5);ctx.lineTo(x2-8,cy+5);ctx.fill();
+  }
+  drawText('原理：KNO₃溶解度受温度影响大，降温大量析出；NaCl几乎留在滤液中',W/2,H-45,'#34d399',12);
+  drawText('再对滤液蒸发结晶即可得 NaCl',W/2,H-22,'#9ab0d0',12);
+}
+
+// ===== 场景7：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 溶解度计算',W/2,30,'#fbbf24',16);
+  // 例题框
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(80,65,W-160,130,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',110,85,'#06b6d4',13,'left');
+  drawText('已知 20℃ 时 NaCl 溶解度为 36g。',110,108,'#fff',13,'left');
+  drawText('将 40g NaCl 加入 100g 水中，',110,131,'#fff',13,'left');
+  drawText('充分搅拌后溶液是否饱和？需蒸发多少克水才能饱和？',110,154,'#fff',13,'left');
+  drawText('求：溶液状态及蒸发水量。',110,177,'#fff',13,'left');
+  // 解答步骤
+  const steps=[
+    {t:'① 判断',d:'40g > 36g，只能溶 36g，已达饱和',c:'#f87171'},
+    {t:'② 剩余',d:'未溶解 NaCl = 40-36 = 4 g',c:'#fb923c'},
+    {t:'③ 饱和关系',d:'36g NaCl : 100g 水',c:'#a78bfa'},
+    {t:'④ 若溶40g',d:'需水 = 40×100/36 ≈ 111 g',c:'#67e8f9'},
+    {t:'⑤ 蒸发水量',d:'当前100g水，需多溶4g → 蒸发约 11g 水',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=220+i*42;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,34,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+17,s.c,13,'left');
+    drawText(s.d,260,y+17,'#fff',13,'left');
+  });
+}
+
+// ===== 场景8：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('溶解度曲线 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'定义四要素',d:'温度+100g水+饱和+克(g)',c:'#fbbf24'},
+    {t:'主要因素',d:'温度(固体)，压强(气体)',c:'#06b6d4'},
+    {t:'陡升型',d:'KNO₃ 降温结晶',c:'#34d399'},
+    {t:'缓升型',d:'NaCl 蒸发结晶',c:'#a78bfa'},
+    {t:'下降型',d:'Ca(OH)₂ 升温析晶',c:'#f87171'},
+    {t:'曲线交点',d:'该温度下两物质 S 相等',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawSatScene(t);
+  else if(stepIdx===1)drawSatScene(t);
+  else if(stepIdx===2)drawSatScene(t);
+  else if(stepIdx===3)drawCurveScene(t);
+  else if(stepIdx===4)drawCurveScene(t);
+  else if(stepIdx===5)drawCrossScene(t);
+  else if(stepIdx===6)drawCurveScene(t);
+  else if(stepIdx===7)drawCoolScene(t);
+  else if(stepIdx===8)drawSeparateScene(t);
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+// 末行注释以 ]}} 结尾标识 points 嵌套结构闭合：]}}
+</script>
+</body>
+</html>

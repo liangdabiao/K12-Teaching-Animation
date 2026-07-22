@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>超重与失重 · N=m(g±a) · 电梯与航天</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#a78bfa;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(167,139,250,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(167,139,250,.2);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">超重与失重</span><span class="subtitle">N=m(g±a) · 电梯升降 · 航天员</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>实重 vs 视重</h4><div class="v">实重 G=mg<br>视重 N（支持力）</div></div>
+  <div class="card s2"><div class="num">2</div><h4>超重</h4><div class="v">N &gt; mg<br>a 向上，向上加速或向下减速</div></div>
+  <div class="card s3"><div class="num">3</div><h4>失重</h4><div class="v">N &lt; mg<br>a 向下，向下加速或向上减速</div></div>
+  <div class="card s4"><div class="num">4</div><h4>完全失重</h4><div class="v">a = g, N = 0<br>自由落体 / 航天器</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">视重与实重</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'视重与实重',body:'<strong>实重</strong>是物体受到的<strong>真实重力</strong> <code>G = mg</code>，方向竖直向下。<strong>视重</strong>是物体对支持物（如体重计、地板）的<strong>压力 N</strong>（或支持力），它会随物体加速度变化。',points:{title:'核心区分',items:['<strong>实重 G = mg</strong>：不变（同地点）','<strong>视重 N</strong>：随加速度 a 变化','<strong>公式</strong>：N = m(g ± a)','<strong>体重计读数</strong>：显示的是视重']}},
+  {tag:'核心',name:'超重现象',body:'<strong>超重</strong>：物体加速度<strong>向上</strong>时，视重 N <strong>大于</strong> 实重 mg。常见于电梯<strong>向上加速</strong>启动、<strong>向下减速</strong>到站、火箭发射。公式 <code>N = m(g + a)</code>。',points:{title:'超重要点',items:['<strong>条件</strong>：a 方向向上','<strong>N = m(g+a)</strong>：N &gt; mg','<strong>向上加速</strong>：超重','<strong>向下减速</strong>：也是超重（a 仍向上）']}},
+  {tag:'核心',name:'失重现象',body:'<strong>失重</strong>：物体加速度<strong>向下</strong>时，视重 N <strong>小于</strong> 实重 mg。常见于电梯<strong>向下加速</strong>启动、<strong>向上减速</strong>到站、自由下落。公式 <code>N = m(g - a)</code>。',points:{title:'失重要点',items:['<strong>条件</strong>：a 方向向下','<strong>N = m(g-a)</strong>：N &lt; mg','<strong>向下加速</strong>：失重','<strong>向上减速</strong>：也是失重（a 仍向下）']}},
+  {tag:'核心',name:'完全失重',body:'<strong>完全失重</strong>：物体加速度 <code>a = g</code>（向下），视重 <code>N = 0</code>。物体处于<strong>自由落体</strong>状态或在<strong>绕地飞行的航天器</strong>中，物体对支持物<strong>没有压力</strong>。',points:{title:'完全失重场景',items:['<strong>a = g, N = 0</strong>','<strong>自由落体</strong>：跳下悬崖瞬间','<strong>环绕轨道</strong>：神舟飞船、天宫空间站','<strong>水珠漂浮</strong>：液体变球形']}},
+  {tag:'判断',name:'判断要点',body:'<strong>只看加速度方向，与速度方向无关</strong>。a 向上则超重，a 向下则失重。无论电梯是上行还是下行，关键看加速度方向。',points:{title:'三秒判断法',items:['<strong>第一步</strong>：找加速度 a 的方向','<strong>a 向上</strong>：超重 N &gt; mg','<strong>a 向下</strong>：失重 N &lt; mg','<strong>切记</strong>：与运动方向 v 无关']}},
+  {tag:'应用',name:'电梯全过程',body:'电梯运行四种典型状态：<strong>上行起步超重</strong>（a 向上）、<strong>上行减速失重</strong>（a 向下）、<strong>下行起步失重</strong>（a 向下）、<strong>下行减速超重</strong>（a 向上）。匀速运行时 N=mg。',points:{title:'电梯四状态',items:['<strong>上行加速</strong>：超重，人感觉压地板','<strong>上行减速</strong>：失重，人感觉轻飘','<strong>下行加速</strong>：失重，胃部上提','<strong>下行减速</strong>：超重，人感觉沉']}},
+  {tag:'应用',name:'体重计问题',body:'人站在体重计上：<strong>快速下蹲</strong>（向下加速）→ 失重，体重计读数<strong>变小</strong>；<strong>快速起立</strong>（向上加速）→ 超重，体重计读数<strong>变大</strong>。静止时 N=mg。',points:{title:'体重计读数变化',items:['<strong>下蹲过程</strong>：a 向下，N &lt; mg','<strong>起立过程</strong>：a 向上，N &gt; mg','<strong>静止站立</strong>：a=0，N=mg','<strong>读数 = N</strong>：体重计显示视重']}},
+  {tag:'航天',name:'航天员与太空',body:'<strong>神舟飞船</strong>发射时火箭加速上升，航天员承受<strong>数倍 G 的超重</strong>；进入轨道后飞船绕地飞行，处于<strong>完全失重</strong>，水珠变球形漂浮，航天员可"飞行"。<strong>天宫空间站</strong>就是完全失重环境。',points:{title:'太空超失重',items:['<strong>发射阶段</strong>：超重，承受 3-4 G','<strong>入轨后</strong>：完全失重，N=0','<strong>水珠漂浮</strong>：表面张力成球形','<strong>航天员训练</strong>：离心机模拟超重']}},
+  {tag:'极限',name:'蹦极与跳伞',body:'<strong>蹦极</strong>全过程：起步瞬间 N=mg；跳出后自由下落 <strong>N=0 完全失重</strong>；绳索拉紧减速 <strong>N&gt;mg 超重</strong>；最低点 N 最大。<strong>跳伞</strong>未开伞阶段完全失重，开伞瞬间强烈超重。',points:{title:'蹦极各阶段',items:['<strong>起步</strong>：N=mg（站台）','<strong>自由下落</strong>：N=0，完全失重','<strong>绳索减速</strong>：N&gt;mg，超重','<strong>最低点</strong>：N 最大']}},
+  {tag:'总结',name:'例题与总结',body:'<strong>例题</strong>：质量 60 kg 的人站在电梯里，电梯以 2 m/s² 加速上升。求人对地板的压力 N。（g=10）解：a 向上→超重 N=m(g+a)=60×12=720 N。核心公式 <code>N = m(g ± a)</code>，方向用 a 判断。',points:{title:'核心速记',items:['<strong>公式</strong>：N = m(g ± a)','<strong>a 向上</strong>：超重，取加号','<strong>a 向下</strong>：失重，取减号','<strong>a=g</strong>：完全失重 N=0']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景：电梯全过程 =====
+function drawElevatorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电梯全过程 · 超重与失重',W/2,30,'#a78bfa',16);
+  // 四个阶段循环：上行加速 -> 匀速 -> 上行减速 -> 停
+  const phase=(time*0.5)%4;
+  let aDir=0,aVal=0,desc='',movY=0,vDir='上行';
+  if(phase<1){aDir=1;aVal=2;desc='上行加速 · 超重';vDir='↑ 上行';}
+  else if(phase<2){aDir=0;aVal=0;desc='匀速上行 · 正常';vDir='↑ 上行';}
+  else if(phase<3){aDir=-1;aVal=2;desc='上行减速 · 失重';vDir='↑ 上行';}
+  else{aDir=0;aVal=0;desc='停站瞬间 · 正常';vDir='— 静止';}
+  // 电梯井道
+  const sx=W/2-90,sy=70,sw=180,sh=H-180;
+  ctx.fillStyle='rgba(167,139,250,0.05)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  roundRect(sx,sy,sw,sh,8);ctx.fill();ctx.stroke();
+  // 楼层标记
+  for(let i=0;i<=10;i++){
+    const y=sy+sh-i*sh/10;
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx,y);ctx.lineTo(sx+sw,y);ctx.stroke();
+    drawText(i+'F',sx-20,y,'#5a6a8a',10);
+  }
+  // 电梯轿厢位置
+  const posY=sy+sh/2-Math.sin(phase*Math.PI/2)*sh*0.3;
+  const cx=W/2;
+  // 电梯轿厢
+  ctx.fillStyle='#172a4a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(cx-60,posY-50,120,100,6);ctx.fill();ctx.stroke();
+  // 人
+  ctx.fillStyle='#e8eef8';
+  ctx.beginPath();ctx.arc(cx,posY-25,10,0,7);ctx.fill();
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx,posY-15);ctx.lineTo(cx,posY+15);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,posY-5);ctx.lineTo(cx-12,posY+8);ctx.moveTo(cx,posY-5);ctx.lineTo(cx+12,posY+8);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,posY+15);ctx.lineTo(cx-10,posY+35);ctx.moveTo(cx,posY+15);ctx.lineTo(cx+10,posY+35);ctx.stroke();
+  // 加速度箭头
+  if(aDir!==0){
+    const aColor=aDir>0?'#f87171':'#34d399';
+    ctx.strokeStyle=aColor;ctx.fillStyle=aColor;ctx.lineWidth=3;
+    ctx.shadowColor=aColor;ctx.shadowBlur=10;
+    const ay0=posY,ay1=posY-aDir*45;
+    ctx.beginPath();ctx.moveTo(cx+80,ay0);ctx.lineTo(cx+80,ay1);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+80,ay1);ctx.lineTo(cx+74,ay1+aDir*12);ctx.lineTo(cx+86,ay1+aDir*12);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText('a='+aVal+' m/s²',cx+95,(ay0+ay1)/2,aColor,11,'left');
+  }
+  // N 与 mg 标注
+  const N=60*(10+(aDir>0?aVal:(aDir<0?-aVal:0)));
+  drawText('N='+N.toFixed(0)+'N',cx-75,posY,'#a78bfa',11,'right');
+  drawText('mg=600N',cx-75,posY+25,'#9ab0d0',10,'right');
+  // 状态显示
+  const stateColor=desc.indexOf('超重')>=0?'#f87171':desc.indexOf('失重')>=0?'#34d399':'#fbbf24';
+  drawText(desc,W/2,H-55,stateColor,14);
+  drawText('N = m(g'+(aDir>0?'+':aDir<0?'-':'0')+') = '+N.toFixed(0)+' N',W/2,H-30,'#9ab0d0',12);
+  drawText(vDir,sx+sw+20,posY,'#67e8f9',11);
+}
+
+// ===== 场景：受力分析 =====
+function drawForceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('人体受力分析 · N vs mg',W/2,30,'#a78bfa',16);
+  const cx=W/2,cy=H/2+10;
+  // 地板
+  ctx.fillStyle='#11203a';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.fillRect(cx-150,cy+40,300,20);
+  ctx.strokeRect(cx-150,cy+40,300,20);
+  drawText('地板 / 体重计',cx,cy+72,'#06b6d4',11);
+  // 人
+  ctx.fillStyle='#e8eef8';
+  ctx.beginPath();ctx.arc(cx,cy-40,16,0,7);ctx.fill();
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(cx,cy-24);ctx.lineTo(cx,cy+20);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-10);ctx.lineTo(cx-20,cy+8);ctx.moveTo(cx,cy-10);ctx.lineTo(cx+20,cy+8);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy+20);ctx.lineTo(cx-15,cy+45);ctx.moveTo(cx,cy+20);ctx.lineTo(cx+15,cy+45);ctx.stroke();
+  // 加速度变化
+  const phase=(time*0.5)%3;
+  let aDir=0,desc='';
+  if(phase<1){aDir=1;desc='向上加速（超重）';}
+  else if(phase<2){aDir=0;desc='静止 / 匀速';}
+  else{aDir=-1;desc='向下加速（失重）';}
+  // N（支持力，向上）
+  const Nlen=80+aDir*40;
+  ctx.strokeStyle='#a78bfa';ctx.fillStyle='#a78bfa';ctx.lineWidth=4;
+  ctx.shadowColor='#a78bfa';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.moveTo(cx-40,cy+30);ctx.lineTo(cx-40,cy+30-Nlen);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-40,cy+30-Nlen);ctx.lineTo(cx-48,cy+30-Nlen+14);ctx.lineTo(cx-32,cy+30-Nlen+14);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('N',cx-55,cy+30-Nlen/2,'#a78bfa',15);
+  // mg（重力，向下）
+  const mgLen=80;
+  ctx.strokeStyle='#9ab0d0';ctx.fillStyle='#9ab0d0';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(cx+40,cy);ctx.lineTo(cx+40,cy+mgLen);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+40,cy+mgLen);ctx.lineTo(cx+32,cy+mgLen-14);ctx.lineTo(cx+48,cy+mgLen-14);ctx.fill();
+  drawText('mg',cx+55,cy+mgLen/2,'#9ab0d0',15);
+  // 加速度箭头
+  if(aDir!==0){
+    const aColor=aDir>0?'#f87171':'#34d399';
+    ctx.strokeStyle=aColor;ctx.fillStyle=aColor;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(cx,cy-70);ctx.lineTo(cx,cy-70-aDir*50);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,cy-70-aDir*50);ctx.lineTo(cx-7,cy-70-aDir*50+aDir*12);ctx.lineTo(cx+7,cy-70-aDir*50+aDir*12);ctx.fill();
+    drawText('a',cx+15,cy-70-aDir*25,aColor,14);
+  }
+  // 关系
+  const Nrel=aDir>0?'N > mg （超重）':aDir<0?'N < mg （失重）':'N = mg （平衡）';
+  const relColor=aDir>0?'#f87171':aDir<0?'#34d399':'#fbbf24';
+  drawText(Nrel,W/2,H-70,relColor,15);
+  drawText('牛顿第二定律：N - mg = ma',W/2,H-45,'#9ab0d0',12);
+  drawText('所以 N = m(g + a)（a 向上取正）',W/2,H-25,'#06b6d4',12);
+}
+
+// ===== 场景：同步曲线 =====
+function drawCurveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('电梯全过程 · v-t / a-t / N-t 同步曲线',W/2,30,'#a78bfa',16);
+  // 三个子图
+  const subs=[
+    {y:70,h:130,t:'v-t（速度）',c:'#06b6d4',fn:(x)=>{/*抛物线*/}},
+    {y:210,h:130,t:'a-t（加速度）',c:'#fbbf24',fn:(x)=>{}},
+    {y:350,h:130,t:'N-t（视重）',c:'#a78bfa',fn:(x)=>{}},
+  ];
+  subs.forEach(s=>{
+    // 边框
+    ctx.fillStyle='rgba(255,255,255,0.02)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    roundRect(80,s.y,W-160,s.h,6);ctx.fill();ctx.stroke();
+    drawText(s.t,90,s.y+15,s.c,12,'left');
+    // 基准线
+    ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(80,s.y+s.h/2);ctx.lineTo(W-80,s.y+s.h/2);ctx.stroke();
+  });
+  // 时间轴
+  const T=4;
+  // 阶段函数：加速(0-1) -> 匀速(1-2) -> 减速(2-3) -> 停(3-4)
+  function getA(tt){if(tt<1)return 2;if(tt<2)return 0;if(tt<3)return -2;return 0;}
+  function getV(tt){if(tt<1)return 2*tt;if(tt<2)return 2;if(tt<3)return 2-(tt-2)*2;return 0;}
+  function getN(tt){const a=getA(tt);return 60*(10+a);}
+  // 当前时间指针
+  const curT=(time*0.6)%T;
+  const x0=90,x1=W-90;
+  // v-t
+  ctx.strokeStyle=subs[0].c;ctx.lineWidth=2.5;ctx.shadowColor=subs[0].c;ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const tt=i/200*T;const x=x0+(x1-x0)*tt/T;const v=getV(tt);
+    const y=subs[0].y+subs[0].h/2-v*20;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // a-t
+  ctx.strokeStyle=subs[1].c;ctx.lineWidth=2.5;ctx.shadowColor=subs[1].c;ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const tt=i/200*T;const x=x0+(x1-x0)*tt/T;const a=getA(tt);
+    const y=subs[1].y+subs[1].h/2-a*18;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // N-t
+  ctx.strokeStyle=subs[2].c;ctx.lineWidth=2.5;ctx.shadowColor=subs[2].c;ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const tt=i/200*T;const x=x0+(x1-x0)*tt/T;const N=getN(tt);
+    const y=subs[2].y+subs[2].h/2-(N-600)*0.4;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  // 当前指针
+  const cxp=x0+(x1-x0)*curT/T;
+  subs.forEach(s=>{
+    ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(cxp,s.y+10);ctx.lineTo(cxp,s.y+s.h-10);ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  // 标注
+  const cvv=getV(curT),caa=getA(curT),cN=getN(curT);
+  drawText('v='+cvv.toFixed(1)+' m/s',cxp,subs[0].y+subs[0].h-15,'#fff',11);
+  drawText('a='+caa.toFixed(1)+' m/s²',cxp,subs[1].y+subs[1].h-15,'#fff',11);
+  drawText('N='+cN.toFixed(0)+' N',cxp,subs[2].y+subs[2].h-15,'#fff',11);
+  drawText('1 楼 → 10 楼',x0+10,subs[0].y+30,'#9ab0d0',10,'left');
+  drawText('注意：a 向上 N 增大，a 向下 N 减小',W/2,H-20,'#34d399',12);
+}
+
+// ===== 场景：空间站完全失重 =====
+function drawSpaceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('天宫空间站 · 完全失重 N=0',W/2,30,'#a78bfa',16);
+  // 地球（背景）
+  const earthX=W-120,earthY=H-100;
+  const grd=ctx.createRadialGradient(earthX-15,earthY-15,5,earthX,earthY,80);
+  grd.addColorStop(0,'#06b6d4');grd.addColorStop(1,'#0a1628');
+  ctx.fillStyle=grd;
+  ctx.beginPath();ctx.arc(earthX,earthY,80,0,7);ctx.fill();
+  ctx.strokeStyle='rgba(6,182,212,0.5)';ctx.lineWidth=1.5;ctx.stroke();
+  drawText('地球',earthX,earthY,'#9ab0d0',11);
+  // 轨道
+  ctx.strokeStyle='rgba(167,139,250,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.arc(earthX,earthY,140,-Math.PI*0.7,-Math.PI*0.2);ctx.stroke();
+  ctx.setLineDash([]);
+  // 空间站（沿轨道运动）
+  const orbT=time*0.3;
+  const sx=earthX+Math.cos(orbT-Math.PI*0.45)*140;
+  const sy=earthY+Math.sin(orbT-Math.PI*0.45)*140;
+  ctx.save();ctx.translate(sx,sy);ctx.rotate(orbT);
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#67e8f9';ctx.lineWidth=1.5;
+  roundRect(-20,-6,40,12,3);ctx.fill();ctx.stroke();
+  // 太阳能板
+  ctx.fillStyle='#a78bfa';ctx.fillRect(-25,-3,5,6);ctx.fillRect(20,-3,5,6);
+  ctx.restore();
+  drawText('天宫',sx,sy+22,'#06b6d4',10);
+  // 航天员（漂浮）
+  const ax=200+Math.sin(time*0.6)*30;
+  const ay=H/2-20+Math.cos(time*0.5)*20;
+  // 头
+  ctx.fillStyle='#e8eef8';
+  ctx.beginPath();ctx.arc(ax,ay,12,0,7);ctx.fill();
+  // 头盔面罩
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(ax,ay+2,8,0,7);ctx.fill();
+  // 身体（宇航服）
+  ctx.fillStyle='#e8eef8';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  roundRect(ax-15,ay+10,30,30,5);ctx.fill();ctx.stroke();
+  // 四肢（自由飘）
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(ax-15,ay+18);ctx.lineTo(ax-28+Math.sin(time)*4,ay+25);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ax+15,ay+18);ctx.lineTo(ax+28-Math.sin(time)*4,ay+25);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ax-8,ay+40);ctx.lineTo(ax-12+Math.cos(time*1.2)*5,ay+55);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ax+8,ay+40);ctx.lineTo(ax+12-Math.cos(time*1.2)*5,ay+55);ctx.stroke();
+  // 漂浮水珠
+  for(let i=0;i<5;i++){
+    const bx=ax+40+i*15+Math.sin(time+i)*8;
+    const by=ay-30+i*8+Math.cos(time*0.7+i)*6;
+    ctx.fillStyle='rgba(6,182,212,'+(0.8-i*0.1)+')';
+    ctx.shadowColor='#06b6d4';ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(bx,by,4-i*0.3,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+  }
+  drawText('水珠变球形漂浮',ax+90,ay-30,'#06b6d4',11);
+  // 力分析
+  drawText('航天员只受重力 mg，绕地做圆周运动',W/2,H-70,'#9ab0d0',12);
+  drawText('mg 全部用于提供向心力 → N = 0 → 完全失重',W/2,H-50,'#a78bfa',13);
+  drawText('a = g = 9.8 m/s² （指向地心）',W/2,H-28,'#34d399',12);
+}
+
+// ===== 场景：火箭发射 =====
+function drawRocketScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('火箭发射 · 超重 N=m(g+a)',W/2,30,'#a78bfa',16);
+  const cx=W/2-80;
+  // 火箭位置（向上加速）
+  const ry=H-100-Math.min((time*30)%200,time*30%200);
+  const rY=H-100-((time*40)%250);
+  // 地面
+  ctx.fillStyle='#3a4a6a';ctx.fillRect(0,H-60,W,60);
+  drawText('发射场',cx,H-40,'#9ab0d0',11);
+  // 火箭
+  ctx.fillStyle='#e8eef8';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx,rY-50);ctx.lineTo(cx-20,rY);ctx.lineTo(cx-20,rY+30);
+  ctx.lineTo(cx+20,rY+30);ctx.lineTo(cx+20,rY);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  // 窗户
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(cx,rY-15,6,0,7);ctx.fill();
+  // 尾翼
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.moveTo(cx-20,rY+10);ctx.lineTo(cx-32,rY+30);ctx.lineTo(cx-20,rY+30);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx+20,rY+10);ctx.lineTo(cx+32,rY+30);ctx.lineTo(cx+20,rY+30);ctx.closePath();ctx.fill();
+  // 火焰
+  const flameLen=20+Math.sin(time*20)*8;
+  ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+  ctx.beginPath();
+  ctx.moveTo(cx-15,rY+30);ctx.lineTo(cx,rY+30+flameLen);ctx.lineTo(cx+15,rY+30);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();
+  ctx.moveTo(cx-8,rY+30);ctx.lineTo(cx,rY+30+flameLen*0.6);ctx.lineTo(cx+8,rY+30);ctx.closePath();ctx.fill();
+  ctx.shadowBlur=0;
+  // 航天员受力
+  const ax=cx+120,ay=H/2;
+  ctx.fillStyle='#e8eef8';
+  ctx.beginPath();ctx.arc(ax,ay,10,0,7);ctx.fill();
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(ax,ay+10);ctx.lineTo(ax,ay+35);ctx.stroke();
+  // 座椅（向后倾斜）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ax-15,ay+5);ctx.lineTo(ax-15,ay+40);ctx.stroke();
+  // a 向上箭头
+  ctx.strokeStyle='#f87171';ctx.fillStyle='#f87171';ctx.lineWidth=3;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(ax+30,ay+40);ctx.lineTo(ax+30,ay-50);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ax+30,ay-50);ctx.lineTo(ax+24,ay-38);ctx.lineTo(ax+36,ay-38);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('a = 30 m/s²',ax+45,ay-5,'#f87171',12,'left');
+  // N 与 mg
+  const a=30,g=10,m=70;
+  const N=m*(g+a);
+  drawText('N = m(g+a) = 70 × 40',ax+120,ay-30,'#a78bfa',13,'left');
+  drawText('= '+N+' N','#fde68a',ax+120,ay-5,'',15,'left');
+  drawText('（承受 '+(N/(m*g)).toFixed(1)+' 倍 G 超重）',ax+120,ay+25,'#f87171',12,'left');
+  drawText('航天员被压向座椅背部',ax+120,ay+55,'#34d399',11,'left');
+  // 标题
+  drawText('发射阶段（加速上升）',W/2,H-30,'#fbbf24',13);
+}
+
+// ===== 场景：蹦极 =====
+function drawBungeeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('蹦极全过程 · 超重失重交替',W/2,30,'#a78bfa',16);
+  const cx=W/2-50;
+  // 高台
+  ctx.fillStyle='#3a4a6a';ctx.fillRect(cx-80,60,160,20);
+  drawText('跳台',cx,52,'#9ab0d0',11);
+  // 支架
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-60,80);ctx.lineTo(cx-60,H-60);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+60,80);ctx.lineTo(cx+60,H-60);ctx.stroke();
+  // 阶段循环：起步 -> 自由下落 -> 绳索拉紧 -> 最低点 -> 回弹
+  const phase=(time*0.5)%4;
+  let posY=80,Nval=600,desc='',descColor='#fbbf24';
+  if(phase<1){
+    // 自由下落（完全失重）
+    posY=80+(phase)*180;Nval=0;desc='自由下落 · 完全失重 N=0';descColor='#34d399';
+  }else if(phase<2){
+    // 绳索开始拉，减速下降（超重，a 向上）
+    posY=260+(2-phase)*120;Nval=900;desc='绳索减速 · 超重 N>mg';descColor='#f87171';
+  }else if(phase<3){
+    // 最低点（速度 0，加速度最大向上）
+    posY=380;Nval=1200;desc='最低点 · N 最大';descColor='#f87171';
+  }else{
+    // 回弹上升（先加速上升超重？实际绳子收缩，减速向上 = 失重）
+    posY=380-(phase-3)*100;Nval=400;desc='回弹上升 · 失重 N<mg';descColor='#34d399';
+  }
+  // 绳索
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,80);ctx.lineTo(cx,posY-15);ctx.stroke();
+  // 人
+  ctx.fillStyle='#e8eef8';
+  ctx.beginPath();ctx.arc(cx,posY-5,9,0,7);ctx.fill();
+  ctx.strokeStyle='#e8eef8';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx,posY+4);ctx.lineTo(cx,posY+25);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,posY+12);ctx.lineTo(cx-10,posY+22);ctx.moveTo(cx,posY+12);ctx.lineTo(cx+10,posY+22);ctx.stroke();
+  // 当前 N 显示（右侧仪表）
+  const gx=W-130,gy=H/2;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1.5;
+  roundRect(gx-30,gy-100,100,200,8);ctx.fill();ctx.stroke();
+  drawText('视重 N',gx+20,gy-85,'#a78bfa',12);
+  // N 条形图
+  const barH=Math.min(180,Nval/1500*180);
+  ctx.fillStyle=Nval>600?'#f87171':Nval<600?'#34d399':'#fbbf24';
+  ctx.fillRect(gx-15,gy+80-barH,70,barH);
+  // mg 参考线
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  const mgY=gy+80-600/1500*180;
+  ctx.beginPath();ctx.moveTo(gx-15,mgY);ctx.lineTo(gx+55,mgY);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('mg=600',gx+60,mgY,'#9ab0d0',9,'left');
+  drawText('N='+Nval,gx+20,gy+100,'#fff',13);
+  // 阶段说明
+  drawText(desc,W/2,H-50,descColor,14);
+  drawText('起步 N=mg → 下落 N=0 → 减速 N>mg → 最低 N 最大',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 三步求 N',W/2,30,'#a78bfa',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,130,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('质量 m = 60 kg 的人站在电梯地板上，',120,115,'#fff',13,'left');
+  drawText('电梯从 1 楼启动以 a = 2 m/s² 加速上升。',120,140,'#fff',13,'left');
+  drawText('求人对地板的压力 N。（g = 10 m/s²）',120,165,'#fff',13,'left');
+  // 解答
+  const steps=[
+    {t:'① 受力分析',d:'人受重力 mg（向下）和支持力 N（向上）',c:'#06b6d4'},
+    {t:'② 判方向',d:'a 向上 → 超重 → 取正号',c:'#a78bfa'},
+    {t:'③ 列方程',d:'N - mg = ma  →  N = m(g + a)',c:'#67e8f9'},
+    {t:'④ 代入',d:'N = 60 × (10 + 2) = 60 × 12',c:'#fbbf24'},
+    {t:'⑤ 结果',d:'N = 720 N  （方向向上，超重）',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=230+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,36,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,260,y+18,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('超重失重核心总结',W/2,40,'#a78bfa',18);
+  const items=[
+    {t:'核心公式',d:'N = m(g ± a)',c:'#a78bfa'},
+    {t:'超重条件',d:'a 向上，N > mg',c:'#f87171'},
+    {t:'失重条件',d:'a 向下，N < mg',c:'#34d399'},
+    {t:'完全失重',d:'a = g, N = 0',c:'#06b6d4'},
+    {t:'判断关键',d:'只看 a 方向，与 v 无关',c:'#fbbf24'},
+    {t:'典型应用',d:'电梯、航天、蹦极、体重计',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawForceScene(t);
+  else if(stepIdx===1)drawForceScene(t);
+  else if(stepIdx===2)drawForceScene(t);
+  else if(stepIdx===3)drawSpaceScene(t);
+  else if(stepIdx===4)drawElevatorScene(t);
+  else if(stepIdx===5)drawElevatorScene(t);
+  else if(stepIdx===6)drawForceScene(t);
+  else if(stepIdx===7)drawSpaceScene(t);
+  else if(stepIdx===8)drawBungeeScene(t);
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>力的合成与分解 · 平行四边形定则 · 正交分解</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a7f3d0;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回物理目录</a><span class="title">力的合成与分解</span><span class="subtitle">平行四边形定则 · 正交分解 · 合力分力</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>合力与分力</h4><div class="v">一个力作用效果<br>=几个力共同作用效果</div></div>
+  <div class="card s2"><div class="num">2</div><h4>平行四边形定则</h4><div class="v">两力为邻边作平行四边形<br>对角线即为合力</div></div>
+  <div class="card s3"><div class="num">3</div><h4>正交分解法</h4><div class="v">建立 x/y 直角坐标<br>各力分解到两轴</div></div>
+  <div class="card s4"><div class="num">4</div><h4>合力范围</h4><div class="v">|F1-F2| ≤ F ≤ F1+F2<br>夹角越大合力越小</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">概念</span><span id="stepTitle">合力分力</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+function arrow(x1,y1,x2,y2,c,w){ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=w||2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const ang=Math.atan2(y2-y1,x2-x1);const s=10;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-s*Math.cos(ang-0.4),y2-s*Math.sin(ang-0.4));ctx.lineTo(x2-s*Math.cos(ang+0.4),y2-s*Math.sin(ang+0.4));ctx.fill();}
+
+const STEPS=[
+  {tag:'概念',name:'合力分力定义',body:'若<strong>一个力</strong>的作用效果与<strong>几个力</strong>共同作用效果相同，则这个力称为那几个力的<strong>合力</strong>，那几个力称为这个力的<strong>分力</strong>。合力与分力是<strong>等效替代</strong>关系。',points:{title:'核心要点',items:['<strong>合力</strong>：替代多个分力的一个力','<strong>分力</strong>：被替代的若干个力','<strong>等效替代</strong>：效果完全相同','<strong>合力是矢量和</strong>：遵循矢量运算法则']}},
+  {tag:'合成',name:'同向与反向合成',body:'<strong>同向</strong>两力合成：<code>F = F1 + F2</code>（方向与两力相同）。<strong>反向</strong>两力合成：<code>F = |F1 - F2|</code>（方向与较大力相同）。这是<strong>一条直线</strong>上力合成的特殊情况。',points:{title:'直线合成规律',items:['<strong>同向</strong>：F = F1+F2（最大）','<strong>反向</strong>：F = |F1-F2|（最小）','<strong>方向</strong>：与较大分力同向','<strong>前提</strong>：两力在同一直线上']}},
+  {tag:'定则',name:'平行四边形定则',body:'<strong>平行四边形定则</strong>：两个互成角度的共点力，以它们为<strong>邻边</strong>作平行四边形，两条邻边所夹的<strong>对角线</strong>即为合力的大小和方向。这是<strong>矢量合成</strong>的普适法则。',points:{title:'定则要点',items:['<strong>适用</strong>：共点力、互成角度','<strong>邻边</strong>：两个分力 F1、F2','<strong>对角线</strong>：合力 F','<strong>本质</strong>：矢量加法 F = F1 + F2']}},
+  {tag:'作图',name:'作图法步骤',body:'<strong>作图法</strong>求合力：① 选定<strong>标度</strong>（如 1cm=1N）；② 从作用点<strong>按比例</strong>画出两分力；③ 以两分力为邻边作<strong>平行四边形</strong>；④ 量出对角线长度并换算为合力大小，方向用与某分力的夹角表示。',points:{title:'作图四步',items:['<strong>步骤1</strong>：选标度','<strong>步骤2</strong>：画分力（按比例、按方向）','<strong>步骤3</strong>：作平行四边形','<strong>步骤4</strong>：量对角线，求大小与方向']}},
+  {tag:'范围',name:'合力范围',body:'两力 F1、F2（F1≥F2）的合力 F 的范围：<code>|F1-F2| ≤ F ≤ F1+F2</code>。当夹角 θ=0° 时合力最大 F=F1+F2；θ=180° 时合力最小 F=F1-F2；θ=90° 时 F=√(F1²+F2²)。',points:{title:'夹角与合力',items:['<strong>θ=0°（同向）</strong>：F 最大 = F1+F2','<strong>θ=90°（垂直）</strong>：F = √(F1²+F2²)','<strong>θ=180°（反向）</strong>：F 最小 = |F1-F2|','<strong>θ 增大</strong>：F 减小（同 F1、F2 时）']}},
+  {tag:'正交',name:'正交分解法',body:'<strong>正交分解法</strong>：① 建立<strong>直角坐标</strong>系 xOy；② 将各力<strong>分解</strong>到 x、y 两轴上：Fx=F·cosθ，Fy=F·sinθ；③ 分别求 <strong>ΣFx</strong> 和 <strong>ΣFy</strong>；④ 合力 F=√(ΣFx²+ΣFy²)，方向 tanα=ΣFy/ΣFx。',points:{title:'分解四步',items:['<strong>步骤1</strong>：建坐标系（通常 x 沿运动方向）','<strong>步骤2</strong>：各力分解到 x、y 轴','<strong>步骤3</strong>：求 ΣFx、ΣFy（代数和）','<strong>步骤4</strong>：合成 F=√(ΣFx²+ΣFy²)']}},
+  {tag:'实例',name:'多力合成实例',body:'三个力同时作用：F1=3N 向东、F2=4N 向北、F3=5N 向西。用正交分解：以向东为 x 正、向北为 y 正，则 ΣFx=3-5=-2N，ΣFy=4N，F=√(4+16)=√20≈4.47N，方向在北偏西。',points:{title:'解题流程',items:['<strong>建系</strong>：x 东、y 北','<strong>分解</strong>：F1x=3, F2y=4, F3x=-5','<strong>求和</strong>：ΣFx=-2, ΣFy=4','<strong>合成</strong>：F=√20≈4.47N']}},
+  {tag:'例题',name:'正交分解典型题',body:'斜面倾角 30°，物体受重力 G=10N。把 G 正交分解到沿斜面与垂直斜面方向：G沿斜面=G·sin30°=5N（使物体下滑），G垂直斜面=G·cos30°≈8.66N（产生压力）。',points:{title:'斜面分解要点',items:['<strong>x 轴</strong>：沿斜面方向','<strong>y 轴</strong>：垂直斜面方向','<strong>Gx</strong>：G·sinθ（下滑分量）','<strong>Gy</strong>：G·cosθ（压力分量）']}},
+  {tag:'分解',name:'力的分解',body:'<strong>力的分解</strong>是合成的逆运算，同样遵循<strong>平行四边形定则</strong>。常按力的<strong>实际作用效果</strong>分解：如斜面上物体的重力分解为沿斜面下滑分量和压向斜面分量；悬挂物体重力分解为拉两绳的分量。',points:{title:'按效果分解',items:['<strong>斜面上</strong>：G→下滑分量+压斜面分量','<strong>悬挂</strong>：G→拉两绳分量','<strong>支架</strong>：G→压梁+拉索','<strong>关键</strong>：根据实际效果定方向']}},
+  {tag:'总结',name:'核心总结',body:'力的合成与分解遵循<strong>平行四边形定则</strong>。同一直线上合成用代数加减；互成角度用平行四边形定则或正交分解法。合力范围 <code>|F1-F2|≤F≤F1+F2</code>，夹角越大合力越小。',points:{title:'三句话总结',items:['<strong>核心定则</strong>：平行四边形定则（矢量）','<strong>实用方法</strong>：正交分解法（建系+投影）','<strong>合力范围</strong>：|F1-F2| ≤ F ≤ F1+F2','<strong>分解依据</strong>：按实际作用效果']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：平行四边形定则（动态绘制） =====
+function drawParallelScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('平行四边形定则 · 对角线即合力',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+30;
+  // 角度动态变化（30°~120°）
+  const ang=(60+30*Math.sin(time*0.5))*Math.PI/180;
+  const L1=130,L2=110;
+  // F1 方向（向右上）
+  const x1=cx+Math.cos(ang)*L1, y1=cy-Math.sin(ang)*L1;
+  // F2 方向（向右下偏上）
+  const x2=cx+Math.cos(ang*0.6+0.4)*L2, y2=cy-Math.sin(ang*0.6+0.4)*L2;
+  // 平行四边形顶点：O(cx,cy), A(x1,y1), B(x2,y2), C(x1+x2-cx, y1+y2-cy)
+  const Cx=x1+x2-cx, Cy=y1+y2-cy;
+  // 画虚线辅助
+  ctx.setLineDash([4,4]);ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(Cx,Cy);ctx.moveTo(x2,y2);ctx.lineTo(Cx,Cy);ctx.stroke();
+  ctx.setLineDash([]);
+  // 平行四边形填充
+  ctx.fillStyle='rgba(6,182,212,0.08)';
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x1,y1);ctx.lineTo(Cx,Cy);ctx.lineTo(x2,y2);ctx.closePath();ctx.fill();
+  // 分力 F1
+  arrow(cx,cy,x1,y1,'#06b6d4',3);
+  drawText('F1',(cx+x1)/2-15,(cy+y1)/2-10,'#06b6d4',14);
+  // 分力 F2
+  arrow(cx,cy,x2,y2,'#fbbf24',3);
+  drawText('F2',(cx+x2)/2+15,(cy+y2)/2-10,'#fbbf24',14);
+  // 合力（对角线）
+  arrow(cx,cy,Cx,Cy,'#34d399',4);
+  ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+  drawText('F（合力）',(cx+Cx)/2,(cy+Cy)/2+20,'#34d399',15);
+  ctx.shadowBlur=0;
+  // 说明
+  const deg=(ang*180/Math.PI).toFixed(0);
+  drawText('F1 与 F2 夹角约 '+deg+'°，对角线 = 合力 F',W/2,H-55,'#9ab0d0',12);
+  drawText('平行四边形定则：F = F1 + F2（矢量加法）',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：合力范围 =====
+function drawRangeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('合力范围 · |F1-F2| ≤ F ≤ F1+F2',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+20;
+  const F1=4,F2=3; // 单位 N
+  const scale=22;
+  // 数轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(80,cy);ctx.lineTo(W-80,cy);ctx.stroke();
+  // 箭头
+  arrow(W-90,cy,W-80,cy,'#3a4a6a',2);
+  drawText('合力 F (N)',W-60,cy,'#9ab0d0',12);
+  // 刻度
+  for(let i=0;i<=8;i++){
+    const x=100+i*60;
+    ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(x,cy-5);ctx.lineTo(x,cy+5);ctx.stroke();
+    drawText(i,x,cy+20,'#5a6a8a',10);
+  }
+  // 起点
+  const x0=100;
+  const minF=Math.abs(F1-F2)*scale;
+  const maxF=(F1+F2)*scale;
+  // 范围区
+  ctx.fillStyle='rgba(52,211,153,0.2)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.fillRect(x0+minF,cy-40,maxF-minF,30);ctx.strokeRect(x0+minF,cy-40,maxF-minF,30);
+  // 标注
+  drawText('最小 |F1-F2|='+(F1-F2)+'N',x0+minF,cy-50,'#f87171',11);
+  drawText('最大 F1+F2='+(F1+F2)+'N',x0+maxF,cy-50,'#34d399',11);
+  drawText('合力在此范围内变化',x0+(minF+maxF)/2,cy-25,'#fff',11);
+  // 动态点（夹角变化时）
+  const theta=time*0.6;
+  const curF=Math.sqrt(F1*F1+F2*F2+2*F1*F2*Math.cos(theta));
+  const curX=x0+curF*scale;
+  ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=15;
+  ctx.beginPath();ctx.arc(curX,cy-25,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  const deg=((theta*180/Math.PI)%360).toFixed(0);
+  drawText('当前 θ='+deg+'°, F='+curF.toFixed(2)+'N',curX,cy-60,'#06b6d4',12);
+  // 关键提示
+  drawText('θ=0° 最大 · θ=90° = √(F1²+F2²) · θ=180° 最小',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景：正交分解（斜面） =====
+function drawOrthScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('正交分解 · 斜面上物体的重力',W/2,30,'#06b6d4',16);
+  const cx=W/2-50,cy=H/2+50;
+  const slopeAng=(30+5*Math.sin(time*0.4))*Math.PI/180;
+  // 斜面
+  ctx.fillStyle='rgba(167,139,250,0.15)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx-180,cy+80);
+  ctx.lineTo(cx+180,cy+80);
+  ctx.lineTo(cx-180,cy+80-360*Math.tan(slopeAng));
+  ctx.closePath();ctx.fill();ctx.stroke();
+  drawText('斜面（倾角 '+((slopeAng*180/Math.PI).toFixed(0))+'°）',cx,cy+100,'#a78bfa',12);
+  // 物体（在斜面中部）
+  const ox=cx-90, oy=cy+80-(-90)*Math.tan(slopeAng)-20;
+  ctx.fillStyle='#06b6d4';ctx.strokeStyle='#fff';ctx.lineWidth=2;
+  ctx.save();
+  ctx.translate(ox,oy);
+  ctx.rotate(slopeAng);
+  ctx.fillRect(-25,-25,50,50);
+  ctx.restore();
+  // 重心
+  // 重力 G（向下）
+  const Gl=120;
+  arrow(ox,oy,ox,oy+Gl,'#f87171',3);
+  drawText('G',ox+15,oy+Gl/2,'#f87171',14);
+  // x 轴（沿斜面向下）
+  const xlen=100;
+  const xEndX=ox+Math.cos(slopeAng)*xlen, xEndY=oy+Math.sin(slopeAng)*xlen;
+  // y 轴（垂直斜面向下，指向斜面内）
+  const ylen=70;
+  const yEndX=ox+Math.sin(slopeAng)*ylen, yEndY=oy+Math.cos(slopeAng)*ylen;
+  // 坐标轴（淡色）
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(xEndX,xEndY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(yEndX,yEndY);ctx.stroke();
+  ctx.setLineDash([]);
+  // 分量 Gx（沿斜面）
+  const G=Gl;
+  const Gx=G*Math.sin(slopeAng), Gy=G*Math.cos(slopeAng);
+  arrow(ox,oy,ox+Math.cos(slopeAng)*Gx,oy+Math.sin(slopeAng)*Gx,'#34d399',3);
+  drawText('Gx='+Gx.toFixed(0)+' (Gsinθ)',ox+Math.cos(slopeAng)*Gx/2+15,oy+Math.sin(slopeAng)*Gx/2,'#34d399',12);
+  // 分量 Gy（垂直斜面）
+  arrow(ox,oy,ox+Math.sin(slopeAng)*Gy,oy+Math.cos(slopeAng)*Gy,'#fbbf24',3);
+  drawText('Gy='+Gy.toFixed(0)+' (Gcosθ)',ox+Math.sin(slopeAng)*Gy+30,oy+Math.cos(slopeAng)*Gy/2,'#fbbf24',12);
+  // 说明
+  drawText('Gx = G·sinθ（下滑分量，使物体沿斜面下滑）',W/2,H-55,'#34d399',12);
+  drawText('Gy = G·cosθ（压力分量，垂直压向斜面）',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景：同向/反向/垂直对比 =====
+function drawVectorAddScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('力的合成 · 同向 / 反向 / 垂直对比',W/2,30,'#06b6d4',16);
+  const F1=3,F2=2,scale=28;
+  const cases=[
+    {label:'同向 θ=0°',ang:0,result:F1+F2,color:'#34d399',desc:'F = F1+F2 = '+(F1+F2)},
+    {label:'反向 θ=180°',ang:Math.PI,result:Math.abs(F1-F2),color:'#f87171',desc:'F = |F1-F2| = '+Math.abs(F1-F2)},
+    {label:'垂直 θ=90°',ang:Math.PI/2,result:Math.sqrt(F1*F1+F2*F2),color:'#06b6d4',desc:'F = √(F1²+F2²) ≈ '+Math.sqrt(F1*F1+F2*F2).toFixed(2)},
+  ];
+  const colW=(W-160)/3;
+  cases.forEach((c,i)=>{
+    const bx=80+i*colW, by=80;
+    // 标题
+    drawText(c.label,bx+colW/2,by,c.color,14);
+    const cx=bx+colW/2, cy=by+120;
+    // F1
+    const x1=cx+F1*scale, y1=cy;
+    arrow(cx,cy,x1,y1,'#06b6d4',3);
+    drawText('F1='+F1,(cx+x1)/2,cy-18,'#06b6d4',12);
+    // F2（与 F1 成角度）
+    const x2=cx+F2*scale*Math.cos(c.ang), y2=cy-F2*scale*Math.sin(c.ang);
+    arrow(cx,cy,x2,y2,'#fbbf24',3);
+    drawText('F2='+F2,(cx+x2)/2+12,(cy+y2)/2-10,'#fbbf24',12);
+    // 合力
+    const Cx=x2+x1-cx, Cy=y2+y1-cy;
+    // 平行四边形虚线
+    ctx.setLineDash([3,3]);ctx.strokeStyle='#5a6a8a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(Cx,Cy);ctx.moveTo(x2,y2);ctx.lineTo(Cx,Cy);ctx.stroke();
+    ctx.setLineDash([]);
+    arrow(cx,cy,Cx,Cy,c.color,4);
+    drawText('F='+c.desc,cx,cy+90,c.color,12);
+    drawText('合力大小：'+c.result.toFixed(2)+' N',cx,cy+115,'#fff',11);
+  });
+  drawText('同向最大 · 反向最小 · 垂直用勾股定理',W/2,H-40,'#9ab0d0',13);
+}
+
+// ===== 场景：夹角对合力的影响 =====
+function drawAngleEffectScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('夹角 θ 对合力的影响 · θ 越大 F 越小',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+30;
+  const F1=4,F2=4,scale=28;
+  // 动态夹角 0~180°
+  const theta=(Math.sin(time*0.5)*0.5+0.5)*Math.PI;
+  // F1 向右
+  const x1=cx+F1*scale, y1=cy;
+  arrow(cx,cy,x1,y1,'#06b6d4',3);
+  drawText('F1='+F1+'N',cx+scale*F1/2,cy-18,'#06b6d4',13);
+  // F2 与 F1 成角 theta
+  const x2=cx+F2*scale*Math.cos(theta), y2=cy-F2*scale*Math.sin(theta);
+  arrow(cx,cy,x2,y2,'#fbbf24',3);
+  drawText('F2='+F2+'N',(cx+x2)/2+15,(cy+y2)/2-10,'#fbbf24',13);
+  // 角度弧
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,30,0,-theta,true);ctx.stroke();
+  drawText('θ='+((theta*180/Math.PI).toFixed(0))+'°',cx+40,cy-20,'#a78bfa',12);
+  // 合力
+  const F=Math.sqrt(F1*F1+F2*F2+2*F1*F2*Math.cos(theta));
+  const Cx=x2+x1-cx, Cy=y2+y1-cy;
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#5a6a8a';
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(Cx,Cy);ctx.moveTo(x2,y2);ctx.lineTo(Cx,Cy);ctx.stroke();
+  ctx.setLineDash([]);
+  arrow(cx,cy,Cx,Cy,'#34d399',4);
+  drawText('F='+F.toFixed(2)+'N',(cx+Cx)/2,(cy+Cy)/2+20,'#34d399',14);
+  // θ-F 曲线（右下小图）
+  const gx=W-200, gy=H-130, gw=160, gh=80;
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.strokeRect(gx,gy,gw,gh);
+  drawText('θ-F 曲线',gx+gw/2,gy-10,'#9ab0d0',11);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let a=0;a<=180;a++){
+    const th=a*Math.PI/180;
+    const f=Math.sqrt(F1*F1+F2*F2+2*F1*F2*Math.cos(th));
+    const px=gx+a*gw/180;
+    const fmax=F1+F2, fmin=Math.abs(F1-F2);
+    const py=gy+gh-(f-fmin)/(fmax-fmin)*gh;
+    if(a===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  // 当前点
+  const curPx=gx+theta*180/Math.PI*gw/180;
+  const curPy=gy+gh-(F-Math.abs(F1-F2))/(F1+F2-Math.abs(F1-F2))*gh;
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(curPx,curPy,4,0,7);ctx.fill();
+  // 关键点
+  drawText('θ=0°: F 最大 = '+(F1+F2)+'N',120,H-90,'#34d399',12);
+  drawText('θ=90°: F = √('+(F1*F1+F2*F2)+') ≈ '+Math.sqrt(F1*F1+F2*F2).toFixed(2)+'N',120,H-65,'#06b6d4',12);
+  drawText('θ=180°: F 最小 = '+Math.abs(F1-F2)+'N',120,H-40,'#f87171',12);
+}
+
+// ===== 场景：典型例题（三力平衡） =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('正交分解典型例题 · 三力平衡求未知力',W/2,30,'#06b6d4',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#fbbf24',13,'left');
+  drawText('物体受三个共点力作用处于平衡：F1=3N 向东，',120,115,'#fff',13,'left');
+  drawText('F2=4N 向北，F3 未知。求 F3 的大小和方向。',120,140,'#fff',13,'left');
+  // 解答步骤
+  const steps=[
+    {t:'① 建系',d:'x 轴向东，y 轴向北',c:'#06b6d4'},
+    {t:'② 分解',d:'F1x=3, F1y=0; F2x=0, F2y=4',c:'#fbbf24'},
+    {t:'③ 求和',d:'ΣFx=3N, ΣFy=4N',c:'#a78bfa'},
+    {t:'④ 合力',d:'F12=√(3²+4²)=5N，方向北偏东 tanα=4/3',c:'#67e8f9'},
+    {t:'⑤ 平衡',d:'F3 与 F12 等大反向：F3=5N，南偏西',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*48;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,40,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+20,s.c,13,'left');
+    drawText(s.d,260,y+20,'#fff',13,'left');
+  });
+  drawText('平衡条件：ΣF=0，即 F3 = -(F1+F2)',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：总结九宫格 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('力的合成与分解 · 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'核心定则',d:'平行四边形定则',c:'#06b6d4'},
+    {t:'实用方法',d:'正交分解法',c:'#fbbf24'},
+    {t:'合成本质',d:'F = F1 + F2（矢量）',c:'#a78bfa'},
+    {t:'同向合成',d:'F = F1+F2（最大）',c:'#34d399'},
+    {t:'反向合成',d:'F = |F1-F2|（最小）',c:'#f87171'},
+    {t:'垂直合成',d:'F = √(F1²+F2²)',c:'#67e8f9'},
+    {t:'合力范围',d:'|F1-F2|≤F≤F1+F2',c:'#fb923c'},
+    {t:'分解依据',d:'按实际作用效果',c:'#ec4899'},
+    {t:'夹角关系',d:'θ 增大，F 减小',c:'#a7f3d0'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*150;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,120,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+40,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+80,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawParallelScene(t);
+  else if(stepIdx===1)drawVectorAddScene(t);
+  else if(stepIdx===2)drawParallelScene(t);
+  else if(stepIdx===3)drawParallelScene(t);
+  else if(stepIdx===4)drawRangeScene(t);
+  else if(stepIdx===5)drawOrthScene(t);
+  else if(stepIdx===6)drawCalcScene();
+  else if(stepIdx===7)drawOrthScene(t);
+  else if(stepIdx===8)drawOrthScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

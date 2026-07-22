@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>水和无机盐 · 结合水自由水 · 无机盐离子形式作用</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a5f3fc;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">水和无机盐</span><span class="subtitle">结合水 · 自由水 · 无机盐离子形式与作用</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>水含量</h4><div class="v">细胞中含量最多的化合物<br>约占细胞鲜重 70%~90%</div></div>
+  <div class="card s2"><div class="num">2</div><h4>自由水 vs 结合水</h4><div class="v">自由水约 95.5%<br>结合水约 4.5%</div></div>
+  <div class="card s3"><div class="num">3</div><h4>无机盐形式</h4><div class="v">主要以离子形式存在<br>少数为化合态</div></div>
+  <div class="card s4"><div class="num">4</div><h4>无机盐作用</h4><div class="v">构成化合物 · 维持渗透压<br>维持酸碱平衡 · 维持兴奋性</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">水是细胞中含量最多的化合物</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'水含量最多',body:'<strong>水</strong>是活细胞中<strong>含量最多的化合物</strong>，约占细胞鲜重的 <code>70%~90%</code>。不同生物、不同组织含水量差异显著：水母约 97%，胚胎约 90%，成人约 70%，骨骼约 22%。',points:{title:'水含量对比',items:['<strong>水母</strong>：约 97%（最高）','<strong>胚胎</strong>：约 90%','<strong>成人</strong>：约 70%','<strong>牙齿/骨骼</strong>：约 14%~22%（最低）']}},
+  {tag:'基础',name:'水的存在形式',body:'水在细胞中以两种形式存在：<strong>自由水</strong>（约占 <code>95.5%</code>，可自由流动）和<strong>结合水</strong>（约占 <code>4.5%</code>，与细胞内亲水性大分子结合）。',points:{title:'两种存在形式',items:['<strong>自由水</strong>：约 95.5%，可自由流动','<strong>结合水</strong>：约 4.5%，与蛋白质/多糖结合','<strong>二者可相互转化</strong>：温度升高自由水增多','<strong>总和不变</strong>：构成细胞总含水量']}},
+  {tag:'自由水',name:'自由水的功能',body:'<strong>自由水</strong>是细胞内最主要的溶剂和反应介质，功能：(1)<strong>良好溶剂</strong>；(2)<strong>参与生化反应</strong>（水解、光合）；(3)<strong>物质运输</strong>；(4)<strong>调节体温</strong>（比热大）。',points:{title:'自由水四大功能',items:['<strong>良好溶剂</strong>：溶解物质，便于反应','<strong>参与反应</strong>：水解、光反应、呼吸','<strong>物质运输</strong>：血液、汁液运养分','<strong>调节体温</strong>：比热大，蒸发散热']}},
+  {tag:'结合水',name:'结合水的功能',body:'<strong>结合水</strong>是细胞结构的<strong>重要组成成分</strong>，与蛋白质、多糖等大分子结合，赋予细胞刚性。结合水不流动、不蒸发、不结冰，是<strong>抗逆性</strong>的关键。',points:{title:'结合水要点',items:['<strong>结构成分</strong>：与蛋白/多糖紧密结合','<strong>不参与反应</strong>：不流动、不蒸发','<strong>抗逆关键</strong>：结合水多抗寒抗旱强','<strong>种子休眠</strong>：结合水多，自由水极少']}},
+  {tag:'比值',name:'自由水/结合水比值',body:'<strong>自由水/结合水比值</strong>决定细胞<strong>代谢强度</strong>和<strong>抗逆性</strong>：比值高→代谢旺盛（生长、分裂），但抗逆性差；比值低→代谢缓慢，但抗寒、抗旱、抗热能力强。',points:{title:'比值与代谢抗逆',items:['<strong>比值高</strong>：代谢旺、生长快','<strong>比值高</strong>：抗寒/抗旱差','<strong>比值低</strong>：代谢慢、抗逆强','<strong>越冬/休眠</strong>：结合水比例上升']}},
+  {tag:'理化',name:'水的理化性质',body:'水是<strong>极性分子</strong>，分子间形成<strong>氢键</strong>，使其具有<strong>比热大</strong>、<strong>汽化热大</strong>、<strong>固态密度小</strong>等特性，这些都是生命活动的基础。',points:{title:'水的特性',items:['<strong>极性分子</strong>：良好溶剂基础','<strong>氢键</strong>：分子间作用力强','<strong>比热大</strong>：维持体温稳定','<strong>4°C密度最大</strong>：冰浮水面保护水生生物']}},
+  {tag:'无机盐',name:'无机盐存在形式',body:'无机盐在细胞中<strong>主要以离子形式</strong>存在（如 Na⁺、K⁺、Ca²⁺、Mg²⁺、Fe²⁺、Cl⁻、PO₄³⁻），<strong>少数以化合态</strong>存在（如 Fe 在血红蛋白中、Ca 在骨骼羟基磷酸钙中）。',points:{title:'存在形式',items:['<strong>主要形式</strong>：离子（游离态）','<strong>次要形式</strong>：化合物（结合态）','<strong>阳离子</strong>：Na⁺ K⁺ Ca²⁺ Mg²⁺ Fe²⁺','<strong>阴离子</strong>：Cl⁻ SO₄²⁻ PO₄³⁻ HCO₃⁻']}},
+  {tag:'无机盐',name:'无机盐的四大作用',body:'无机盐作用：(1)<strong>构成化合物</strong>（Fe²⁺→血红蛋白，Mg²⁺→叶绿素，Ca²⁺→骨骼）；(2)<strong>维持渗透压</strong>（Na⁺/Cl⁻）；(3)<strong>维持酸碱平衡</strong>（HCO₃⁻/H₂CO₃ 缓冲对）；(4)<strong>维持兴奋性</strong>（Na⁺/K⁺/Ca²⁺）。',points:{title:'四大作用',items:['<strong>构成化合物</strong>：Fe²⁺→血红蛋白，Mg²⁺→叶绿素','<strong>维持渗透压</strong>：Na⁺、Cl⁻ 决定血浆渗透压','<strong>维持酸碱</strong>：HCO₃⁻ 缓冲对维持 pH 7.35-7.45','<strong>维持兴奋</strong>：Na⁺/K⁺/Ca²⁺ 影响神经肌肉']}},
+  {tag:'缺素',name:'典型缺素症',body:'<strong>缺铁</strong>→贫血（血红蛋白合成不足）；<strong>缺钙</strong>→抽搐（神经肌肉兴奋性异常升高）；<strong>缺镁</strong>→影响光合（叶绿素合成受阻）；<strong>缺碘</strong>→甲状腺肿（大脖子病）；<strong>缺硼</strong>→花而不实（植物花粉发育不良）。',points:{title:'常见缺素症',items:['<strong>缺 Fe</strong>：贫血（成人/儿童常见）','<strong>缺 Ca</strong>：抽搐、骨质疏松','<strong>缺 Mg</strong>：叶片发黄，光合下降','<strong>缺 I</strong>：地方性甲状腺肿','<strong>缺 B</strong>：油菜"花而不实"']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>例题</strong>：下列关于水和无机盐的叙述，正确的是：自由水/结合水比值升高时代谢增强；Fe²⁺ 是血红蛋白的组成成分；Mg²⁺ 是叶绿素的必需成分；细胞中无机盐大多数以离子形式存在。答案：以上<strong>全部正确</strong>。',points:{title:'核心速记',items:['<strong>水</strong>：含量最多的化合物（70%~90%）','<strong>自由水</strong>：溶剂、反应、运输、调温','<strong>结合水</strong>：结构成分，决定抗逆性','<strong>无机盐</strong>：多为离子，构成化合物+维持稳态','<strong>缺素症</strong>：Fe/Ca/Mg/I/B 各有典型表现']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景一：不同生物含水量条形图 =====
+function drawWaterContentScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('不同生物（组织）的含水量',W/2,30,'#06b6d4',16);
+  const data=[
+    {name:'水母',val:97,c:'#06b6d4'},
+    {name:'胚胎',val:90,c:'#67e8f9'},
+    {name:'心肌',val:79,c:'#34d399'},
+    {name:'成人',val:70,c:'#fbbf24'},
+    {name:'肝脏',val:70,c:'#fb923c'},
+    {name:'骨骼',val:22,c:'#f87171'},
+  ];
+  const baseX=120,baseY=H-60,maxW=W-baseX-40;
+  // 坐标轴
+  ctx.strokeStyle='#3a4a6a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(baseX,60);ctx.lineTo(baseX,baseY);ctx.lineTo(W-30,baseY);ctx.stroke();
+  // 网格线
+  for(let v=0;v<=100;v+=20){
+    const x=baseX+v*maxW/100;
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(x,60);ctx.lineTo(x,baseY);ctx.stroke();
+    ctx.setLineDash([]);
+    drawText(v+'%',x,baseY+18,'#5a6a8a',10);
+  }
+  // 动画进度
+  const prog=Math.min(1,(time*0.6));
+  data.forEach((d,i)=>{
+    const y=80+i*55;
+    const w=d.val*maxW/100*prog;
+    // 背景条
+    ctx.fillStyle='#172a4a';roundRect(baseX,y,0+w*0+maxW,32,6);ctx.fill();
+    // 实际条
+    const grd=ctx.createLinearGradient(baseX,0,baseX+w,0);
+    grd.addColorStop(0,d.c+'88');grd.addColorStop(1,d.c);
+    ctx.fillStyle=grd;roundRect(baseX,y,w,32,6);ctx.fill();
+    // 标签
+    drawText(d.name,baseX-30,y+16,'#e8eef8',12,'right');
+    drawText(d.val+'%',baseX+w+8,y+16,d.c,12,'left');
+  });
+  drawText('水母含水量最高，骨骼最低',W/2,50,'#fbbf24',12);
+  drawText('结论：水是活细胞中含量最多的化合物',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景二：自由水 vs 结合水 动态平衡 =====
+function drawFreeVsBoundScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('自由水 vs 结合水 · 动态平衡',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+20;
+  // 大圆表示细胞，内部分两块
+  const R=140;
+  // 自由水比例随时间小幅波动（0.93-0.98）
+  const ratio=0.955+0.025*Math.sin(time*0.5);
+  // 自由水（青）+ 结合水（琥珀）
+  ctx.lineWidth=3;
+  ctx.strokeStyle='#3a4a6a';
+  // 自由水扇形
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,-Math.PI/2,-Math.PI/2+ratio*2*Math.PI);ctx.closePath();ctx.fill();ctx.stroke();
+  // 结合水扇形
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,-Math.PI/2+ratio*2*Math.PI,-Math.PI/2+2*Math.PI);ctx.closePath();ctx.fill();ctx.stroke();
+  // 中心圆
+  ctx.fillStyle='#11203a';ctx.beginPath();ctx.arc(cx,cy,40,0,7);ctx.fill();ctx.stroke();
+  drawText('细胞',cx,cy,'#e8eef8',13);
+  // 标签
+  drawText('自由水 '+(ratio*100).toFixed(1)+'%',cx-R/3,cy-R/4,'#06b6d4',14);
+  drawText('结合水 '+((1-ratio)*100).toFixed(1)+'%',cx+R/2,cy+R/3,'#fbbf24',14);
+  // 比值指示
+  const metLabel=ratio>0.965?'代谢旺盛':'代谢稳定';
+  drawText('自由水/结合水 = '+(ratio/(1-ratio)).toFixed(1),W/2,H-70,'#34d399',13);
+  drawText(metLabel,W/2,H-45,'#fbbf24',12);
+  drawText('温度升高：自由水增多，代谢加快',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景三：自由水作为溶剂 =====
+function drawSolventScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('自由水是良好溶剂 · 溶解物质',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+10;
+  // 烧杯
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(cx-140,cy-120);
+  ctx.lineTo(cx-140,cy+100);
+  ctx.lineTo(cx+140,cy+100);
+  ctx.lineTo(cx+140,cy-120);
+  ctx.stroke();
+  // 水面
+  ctx.fillStyle='rgba(6,182,212,0.25)';
+  ctx.beginPath();
+  ctx.moveTo(cx-138,cy-80+Math.sin(time*2)*3);
+  for(let x=cx-138;x<=cx+138;x+=4){
+    ctx.lineTo(x,cy-80+Math.sin(x*0.05+time*2)*3);
+  }
+  ctx.lineTo(cx+138,cy+98);ctx.lineTo(cx-138,cy+98);ctx.closePath();ctx.fill();
+  // 溶质粒子（葡萄糖、氨基酸等）
+  const solutes=[
+    {c:'#fbbf24',n:'葡萄糖'},
+    {c:'#34d399',n:'氨基酸'},
+    {c:'#a78bfa',n:'Na⁺'},
+    {c:'#fb923c',n:'K⁺'},
+  ];
+  solutes.forEach((s,i)=>{
+    for(let j=0;j<5;j++){
+      const seed=i*13+j*7;
+      const px=cx-100+(Math.sin(time*0.8+seed)*0.5+0.5)*200;
+      const py=cy-60+(Math.cos(time*0.6+seed*1.3)*0.5+0.5)*140;
+      ctx.fillStyle=s.c;
+      ctx.shadowColor=s.c;ctx.shadowBlur=6;
+      ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
+      ctx.shadowBlur=0;
+    }
+  });
+  // 图例
+  const legends=[
+    {c:'#fbbf24',n:'葡萄糖'},{c:'#34d399',n:'氨基酸'},
+    {c:'#a78bfa',n:'Na⁺'},{c:'#fb923c',n:'K⁺'},
+  ];
+  legends.forEach((l,i)=>{
+    const x=60+i*((W-120)/4);
+    ctx.fillStyle=l.c;ctx.beginPath();ctx.arc(x,H-40,5,0,7);ctx.fill();
+    drawText(l.n,x+18,H-40,'#e8eef8',11,'left');
+  });
+  drawText('自由水使生化反应得以进行',W/2,H-15,'#34d399',12);
+}
+
+// ===== 场景四：离子符号与作用 =====
+function drawIonScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('细胞中的主要无机盐离子',W/2,30,'#06b6d4',16);
+  const ions=[
+    {sym:'Na⁺',c:'#fbbf24',fn:'维持细胞外液渗透压'},
+    {sym:'K⁺',c:'#fb923c',fn:'维持细胞内液渗透压、神经兴奋'},
+    {sym:'Ca²⁺',c:'#34d399',fn:'骨骼、神经肌肉兴奋性、血液凝固'},
+    {sym:'Mg²⁺',c:'#a78bfa',fn:'叶绿素组成、酶激活剂'},
+    {sym:'Fe²⁺',c:'#f87171',fn:'血红蛋白组成、运输氧气'},
+    {sym:'PO₄³⁻',c:'#67e8f9',fn:'ATP、核酸、磷脂的成分'},
+  ];
+  const cols=3,rows=2;
+  const cellW=(W-160)/cols,cellH=(H-180)/rows;
+  ions.forEach((ion,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=80+col*cellW,y=70+row*cellH;
+    // 卡片
+    const pulse=1+0.08*Math.sin(time*2+i);
+    ctx.fillStyle=ion.c+'22';ctx.strokeStyle=ion.c;ctx.lineWidth=2;
+    roundRect(x+10,y,cellW-20,cellH-20,10);ctx.fill();ctx.stroke();
+    // 离子符号圆
+    ctx.fillStyle=ion.c;
+    ctx.shadowColor=ion.c;ctx.shadowBlur=12*pulse;
+    ctx.beginPath();ctx.arc(x+cellW/2,y+45,28*pulse,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    drawText(ion.sym,x+cellW/2,y+45,'#1a1a1a',16);
+    drawText(ion.fn,x+cellW/2,y+95,'#e8eef8',11);
+  });
+  drawText('离子是细胞维持稳态的关键',W/2,H-25,'#fbbf24',12);
+}
+
+// ===== 场景五：缺素症图示 =====
+function drawDeficiencyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型缺素症图示',W/2,30,'#06b6d4',16);
+  const cases=[
+    {e:'缺 Fe',d:'贫血',c:'#f87171',icon:'blood'},
+    {e:'缺 Ca',d:'抽搐',c:'#fbbf24',icon:'muscle'},
+    {e:'缺 I',d:'甲状腺肿',c:'#a78bfa',icon:'neck'},
+    {e:'缺 Mg',d:'光合下降',c:'#34d399',icon:'leaf'},
+  ];
+  const cellW=(W-120)/4;
+  cases.forEach((cs,i)=>{
+    const x=60+i*cellW,y=80;
+    ctx.fillStyle=cs.c+'22';ctx.strokeStyle=cs.c;ctx.lineWidth=2;
+    roundRect(x+10,y,cellW-20,H-180,10);ctx.fill();ctx.stroke();
+    drawText(cs.e,x+cellW/2,y+25,cs.c,14);
+    const pulse=0.6+0.4*Math.abs(Math.sin(time*1.5+i));
+    // 简化图示
+    const icx=x+cellW/2,icy=y+H/2-30;
+    if(cs.icon==='blood'){
+      // 红细胞（变淡）
+      ctx.fillStyle='rgba(248,113,113,'+(0.3+0.4*pulse)+')';
+      ctx.beginPath();ctx.ellipse(icx,icy,30,22,0,0,7);ctx.fill();
+      drawText('红细胞↓',icx,icy+50,'#f87171',11);
+    }else if(cs.icon==='muscle'){
+      // 抽搐的肌肉（之字形）
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+      ctx.beginPath();
+      const off=Math.sin(time*8)*8*pulse;
+      ctx.moveTo(icx-30,icy-20);
+      ctx.lineTo(icx-10,icy+off);
+      ctx.lineTo(icx+10,icy-20-off);
+      ctx.lineTo(icx+30,icy+off);
+      ctx.stroke();
+      drawText('肌肉痉挛',icx,icy+50,'#fbbf24',11);
+    }else if(cs.icon==='neck'){
+      // 肿大的甲状腺
+      ctx.fillStyle='rgba(167,139,250,'+(0.4+0.4*pulse)+')';
+      ctx.beginPath();
+      ctx.arc(icx,icy,20+pulse*10,0,7);ctx.fill();
+      drawText('颈部肿大',icx,icy+50,'#a78bfa',11);
+    }else if(cs.icon==='leaf'){
+      // 叶片（发黄）
+      ctx.fillStyle='rgba(251,191,36,'+(0.4+0.4*pulse)+')';
+      ctx.beginPath();
+      ctx.ellipse(icx,icy,30,18,Math.PI/6,0,7);ctx.fill();
+      ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(icx-25,icy+8);ctx.lineTo(icx+25,icy-8);ctx.stroke();
+      drawText('叶绿素↓',icx,icy+50,'#34d399',11);
+    }
+    drawText(cs.d,x+cellW/2,y+H-200,'#e8eef8',13);
+  });
+  drawText('合理膳食 · 补充必需无机盐',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景六：无机盐维持渗透压（红细胞渗透） =====
+function drawOsmosisScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('无机盐维持渗透压 · 红细胞实验',W/2,30,'#06b6d4',16);
+  const cases=[
+    {name:'等渗 0.9% NaCl',state:'正常',c:'#34d399',size:30},
+    {name:'低渗 <0.9%',state:'吸水膨胀',c:'#fbbf24',size:30+8*Math.sin(time*2)},
+    {name:'高渗 >0.9%',state:'失水皱缩',c:'#f87171',size:30-6},
+  ];
+  const cellW=(W-120)/3;
+  cases.forEach((cs,i)=>{
+    const x=60+i*cellW,y=70;
+    ctx.fillStyle=cs.c+'22';ctx.strokeStyle=cs.c;ctx.lineWidth=2;
+    roundRect(x+10,y,cellW-20,H-160,10);ctx.fill();ctx.stroke();
+    drawText(cs.name,x+cellW/2,y+25,cs.c,13);
+    // 烧杯
+    const bx=x+cellW/2,by=y+H/2-10;
+    ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(bx-60,by-60);ctx.lineTo(bx-60,by+60);
+    ctx.lineTo(bx+60,by+60);ctx.lineTo(bx+60,by-60);ctx.stroke();
+    // 液体
+    ctx.fillStyle='rgba(6,182,212,0.2)';
+    ctx.fillRect(bx-58,by-40,116,98);
+    // 红细胞
+    ctx.fillStyle='#f87171';
+    ctx.shadowColor='#f87171';ctx.shadowBlur=8;
+    ctx.beginPath();ctx.ellipse(bx,by,cs.size,cs.size*0.75,0,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    // 中心淡（双凹）
+    ctx.fillStyle='rgba(248,113,113,0.4)';
+    ctx.beginPath();ctx.ellipse(bx,by,cs.size*0.4,cs.size*0.3,0,0,7);ctx.fill();
+    // 水分子箭头（低渗向外、高渗向内）
+    if(i===1){
+      // 水分子进入
+      for(let k=0;k<3;k++){
+        const ang=-Math.PI/2+k*Math.PI/3+time;
+        ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+        ctx.beginPath();
+        ctx.moveTo(bx+Math.cos(ang)*50,by+Math.sin(ang)*50);
+        ctx.lineTo(bx+Math.cos(ang)*40,by+Math.sin(ang)*40);
+        ctx.stroke();
+      }
+    }else if(i===2){
+      // 水分子流出
+      for(let k=0;k<3;k++){
+        const ang=-Math.PI/2+k*Math.PI/3+time;
+        ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+        ctx.beginPath();
+        ctx.moveTo(bx+Math.cos(ang)*40,by+Math.sin(ang)*40);
+        ctx.lineTo(bx+Math.cos(ang)*50,by+Math.sin(ang)*50);
+        ctx.stroke();
+      }
+    }
+    drawText(cs.state,x+cellW/2,y+H-100,'#fff',13);
+  });
+  drawText('血浆渗透压主要由 Na⁺ 和 Cl⁻ 维持',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景七：自由水/结合水比值与抗寒性 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('自由水/结合水比值与抗寒性',W/2,30,'#06b6d4',16);
+  // 两组对比：夏季（比值高） vs 越冬（比值低）
+  const groups=[
+    {name:'夏季枝条',free:0.95,bound:0.05,c:'#fbbf24',anti:'抗寒弱'},
+    {name:'越冬枝条',free:0.75,bound:0.25,c:'#67e8f9',anti:'抗寒强'},
+  ];
+  const cellW=(W-160)/2;
+  groups.forEach((g,i)=>{
+    const x=80+i*cellW,y=80;
+    ctx.fillStyle=g.c+'22';ctx.strokeStyle=g.c;ctx.lineWidth=2;
+    roundRect(x+10,y,cellW-20,H-200,10);ctx.fill();ctx.stroke();
+    drawText(g.name,x+cellW/2,y+25,g.c,14);
+    // 堆叠条
+    const by=y+60,bw=cellW-60,bh=40;
+    ctx.fillStyle='#172a4a';roundRect(x+30,by,bw,bh,8);ctx.fill();
+    // 自由水
+    const fw=bw*g.free;
+    const grd1=ctx.createLinearGradient(x+30,0,x+30+fw,0);
+    grd1.addColorStop(0,'#06b6d488');grd1.addColorStop(1,'#06b6d4');
+    ctx.fillStyle=grd1;roundRect(x+30,by,fw,bh,8);ctx.fill();
+    // 结合水
+    const grd2=ctx.createLinearGradient(x+30+fw,0,x+30+bw,0);
+    grd2.addColorStop(0,'#fbbf24');grd2.addColorStop(1,'#fbbf2488');
+    ctx.fillStyle=grd2;roundRect(x+30+fw,by,bw-fw,bh,8);ctx.fill();
+    drawText('自由水 '+(g.free*100).toFixed(0)+'%',x+30+fw/2,by+bh/2,'#1a1a1a',12);
+    drawText('结合水 '+(g.bound*100).toFixed(0)+'%',x+30+fw+(bw-fw)/2,by+bh/2,'#1a1a1a',12);
+    // 雪花/温度图示
+    const sy=by+90;
+    if(i===0){
+      // 夏季：太阳
+      ctx.fillStyle='#fbbf24';
+      ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+      ctx.beginPath();ctx.arc(x+cellW/2,sy,25,0,7);ctx.fill();
+      ctx.shadowBlur=0;
+      drawText('高温 · 代谢旺盛',x+cellW/2,sy+45,'#fbbf24',12);
+    }else{
+      // 冬季：雪花飘
+      for(let k=0;k<6;k++){
+        const fx=x+30+(k+0.5)*(bw/6);
+        const fy=sy+Math.sin(time*2+k)*15;
+        ctx.fillStyle='#67e8f9';
+        drawText('*',fx,fy,'#a5f3fc',18);
+      }
+      drawText('低温 · 结合水增多抗寒',x+cellW/2,sy+45,'#67e8f9',12);
+    }
+    drawText(g.anti,x+cellW/2,y+H-120,g.c,14);
+  });
+  drawText('结合水比例升高 → 抗寒/抗旱能力增强',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景八：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('水和无机盐核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'水含量',d:'细胞鲜重 70%~90%',c:'#06b6d4'},
+    {t:'自由水',d:'溶剂·反应·运输·调温',c:'#67e8f9'},
+    {t:'结合水',d:'结构成分·决定抗逆性',c:'#fbbf24'},
+    {t:'无机盐形式',d:'主要为离子，少数化合态',c:'#a78bfa'},
+    {t:'四大作用',d:'构成·渗透压·酸碱·兴奋',c:'#34d399'},
+    {t:'典型缺素',d:'Fe Ca Mg I B 各显症状',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawWaterContentScene(t);
+  else if(stepIdx===1)drawFreeVsBoundScene(t);
+  else if(stepIdx===2)drawSolventScene(t);
+  else if(stepIdx===3)drawSolventScene(t);
+  else if(stepIdx===4)drawCompareScene(t);
+  else if(stepIdx===5)drawFreeVsBoundScene(t);
+  else if(stepIdx===6)drawIonScene(t);
+  else if(stepIdx===7)drawOsmosisScene(t);
+  else if(stepIdx===8)drawDeficiencyScene(t);
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

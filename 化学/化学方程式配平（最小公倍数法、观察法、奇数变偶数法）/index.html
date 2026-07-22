@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>化学方程式配平 · 最小公倍数法 · 观察法 · 奇数变偶数法</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#8b5cf6;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(139,92,246,.06)}
+.back:hover{background:rgba(139,92,246,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(139,92,246,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(139,92,246,.25);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">化学方程式配平</span><span class="subtitle">最小公倍数法 · 观察法 · 奇数变偶数法</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>配平原则</h4><div class="v">质量守恒<br>原子种类数目不变</div></div>
+  <div class="card s2"><div class="num">2</div><h4>最小公倍数法</h4><div class="v">选出现次数少的元素<br>找左右原子数最小公倍数</div></div>
+  <div class="card s3"><div class="num">3</div><h4>观察法</h4><div class="v">适用于简单反应<br>从复杂分子入手</div></div>
+  <div class="card s4"><div class="num">4</div><h4>奇数变偶数法</h4><div class="v">先变奇数为偶数<br>再配平其他元素</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">配平原则</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'配平原则',body:'<strong>化学方程式配平</strong>依据<strong>质量守恒定律</strong>：反应前后<strong>原子的种类</strong>不变，<strong>各种原子的数目</strong>必须相等。只能在化学式前加<strong>化学计量数（系数）</strong>，不能改动化学式中的小下标。',points:{title:'核心原则',items:['<strong>质量守恒</strong>：反应物总质量=产物总质量','<strong>原子守恒</strong>：左右各元素原子数相等','<strong>只配系数</strong>：不改化学式下标','<strong>最简整数比</strong>：系数取最简整数']}},
+  {tag:'基础',name:'配平五步',body:'<strong>配平步骤</strong>：①写出反应物和产物 → ②配系数使原子数相等 → ③检查左右各原子总数 → ④标出反应条件（点燃/加热△/催化剂等） → ⑤标出气体↑和沉淀↓符号。',points:{title:'五步法',items:['<strong>步骤1</strong>：写出反应物与产物','<strong>步骤2</strong>：配系数（最小整数）','<strong>步骤3</strong>：检查原子守恒','<strong>步骤4</strong>：标注反应条件','<strong>步骤5</strong>：气体↑、沉淀↓']}},
+  {tag:'方法',name:'最小公倍数法',body:'<strong>最小公倍数法</strong>：选择一种在化学方程式中<strong>只出现一次</strong>的元素（左右各一边），找出该元素左右两边原子数的最小公倍数，再求出对应化学式前的系数。例：Fe + O₂ → Fe₃O₄，配 O 原子，左 2 右 4，最小公倍数 4。',points:{title:'操作步骤',items:['<strong>选元素</strong>：左右各出现一次的元素','<strong>求公倍数</strong>：左 a 右 b 的最小公倍数','<strong>定系数</strong>：左=b/gcd，右=a/gcd','<strong>再配其他</strong>：依次推出其余系数']}},
+  {tag:'方法',name:'观察法',body:'<strong>观察法</strong>适用于<strong>较简单</strong>的化学反应：从化学式中<strong>较复杂</strong>的分子入手，由它的原子个数推出另一边相关分子的系数。例：Fe + H₂O → Fe₃O₄ + H₂，从 Fe₃O₄ 入手，其 O 为 4，故 H₂O 系数为 4。',points:{title:'观察要点',items:['<strong>从复杂分子入手</strong>：原子数较多的分子','<strong>看唯一元素</strong>：只在一处出现的元素','<strong>顺推系数</strong>：复杂→简单','<strong>适用范围</strong>：分子较少的简单反应']}},
+  {tag:'方法',name:'奇数变偶数法',body:'<strong>奇数变偶数法</strong>：当某元素在<strong>一边为奇数</strong>、另一边为偶数时，先把奇数那边的化学式前配 2，使其变为偶数，再配平其他元素。例：C₂H₂ + O₂ → CO₂ + H₂O，O 右边为 2+1=3（奇），配 H₂O 系数为 2。',points:{title:'方法要点',items:['<strong>找奇数</strong>：某元素一边为奇数','<strong>配 2 化奇为偶</strong>：奇数边系数 ×2','<strong>再配其他</strong>：依次推系数','<strong>典型反应</strong>：燃烧反应、含 O₂ 的反应']}},
+  {tag:'方法',name:'待定系数法',body:'<strong>待定系数法（代数法）</strong>：设各物质系数为 a、b、c、d 等未知数，由<strong>原子守恒</strong>列方程组，解出系数比，再化为最简整数比。适合<strong>复杂反应</strong>或难以观察的反应。',points:{title:'代数法要点',items:['<strong>设未知数</strong>：a、b、c、d 等','<strong>列方程</strong>：每种元素一个等式','<strong>求解</strong>：令一个为 1 求其余','<strong>化整数比</strong>：去分母得最简系数']}},
+  {tag:'方法',name:'归一法',body:'<strong>归一法</strong>：以反应中<strong>最复杂的分子</strong>（原子种类多、个数多的）系数定为 1，再依次配出其他分子的系数，最后统一化为整数。例：C₂H₅OH + O₂ → CO₂ + H₂O，先令 C₂H₅OH 系数为 1。',points:{title:'归一法步骤',items:['<strong>找最复杂分子</strong>：原子数最多','<strong>令其为 1</strong>：该分子系数=1','<strong>顺推其他</strong>：依此推出系数','<strong>化整数</strong>：去分母得最简整数比']}},
+  {tag:'标注',name:'气体↑与沉淀↓',body:'反应物中<strong>无气体</strong>而<strong>产物有气体</strong>时，在气体化学式后标 <code>↑</code>；反应物中<strong>无固体</strong>而<strong>产物有沉淀</strong>时（在溶液中），在沉淀化学式后标 <code>↓</code>。注意：反应物中已有气体或固体时不标。',points:{title:'符号规则',items:['<strong>↑ 气体符号</strong>：产物气体、反应物无气','<strong>↓ 沉淀符号</strong>：溶液中生成沉淀','<strong>不标情况</strong>：反应物已是气体/固体','<strong>示例</strong>：Zn+H₂SO₄→ZnSO₄+H₂↑']}},
+  {tag:'条件',name:'反应条件标注',body:'化学方程式中需在<strong>等号上下</strong>标注反应条件：常见有<strong>点燃</strong>（点燃）、<strong>加热</strong>（△，三角形）、<strong>高温</strong>（高温）、<strong>催化剂</strong>（如 MnO₂、Pt）、<strong>通电</strong>（通电）等。多个条件可同时写。',points:{title:'常见条件',items:['<strong>点燃</strong>：可燃物在空气中燃烧','<strong>加热 △</strong>：需持续加热的反应','<strong>高温</strong>：需更高温度（如 CaCO₃ 分解）','<strong>催化剂</strong>：写催化剂名称或化学式','<strong>通电</strong>：电解反应（如电解水）']}},
+  {tag:'例题',name:'典型例题与总结',body:'<strong>综合例题</strong>：Cu + HNO₃ → Cu(NO₃)₂ + NO↑ + H₂O（稀硝酸与铜反应）。这是一道较复杂的氧化还原配平题，常用<strong>待定系数法</strong>。掌握四种基本方法后，可根据题目灵活选择。',points:{title:'配平总策略',items:['<strong>简单反应</strong>：观察法直接配','<strong>含 O₂ 燃烧</strong>：奇数变偶数法','<strong>单一元素</strong>：最小公倍数法','<strong>复杂反应</strong>：待定系数法','<strong>最终</strong>：检查 + 标条件 + 标符号']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.6;
+
+// ===== 场景：配平原则（质量守恒）=====
+function drawPrincipleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('配平原则 · 质量守恒 · 原子守恒',W/2,30,'#8b5cf6',16);
+  const cx=W/2,cy=H/2+10;
+  // 反应物（左）
+  ctx.fillStyle='rgba(139,92,246,0.15)';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=2;
+  roundRect(60,cy-60,180,120,10);ctx.fill();ctx.stroke();
+  drawText('反应物',150,cy-40,'#8b5cf6',13);
+  // 原子（左）
+  const pulse=Math.sin(time*2)*0.2+1;
+  ctx.fillStyle='#a78bfa';
+  for(let i=0;i<6;i++){
+    ctx.beginPath();ctx.arc(90+i%3*40,cy-10+Math.floor(i/3)*30,8*pulse,0,7);ctx.fill();
+    drawText('H',90+i%3*40,cy-10+Math.floor(i/3)*30,'#fff',10);
+  }
+  // 等号
+  ctx.font='bold 28px serif';ctx.fillStyle='#fbbf24';ctx.textAlign='center';
+  ctx.fillText('=',cx,cy);
+  // 产物（右）
+  ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  roundRect(W-240,cy-60,180,120,10);ctx.fill();ctx.stroke();
+  drawText('产物',W-150,cy-40,'#34d399',13);
+  ctx.fillStyle='#6ee7b7';
+  for(let i=0;i<6;i++){
+    ctx.beginPath();ctx.arc(W-210+i%3*40,cy-10+Math.floor(i/3)*30,8*pulse,0,7);ctx.fill();
+    drawText('H',W-210+i%3*40,cy-10+Math.floor(i/3)*30,'#fff',10);
+  }
+  // 箭头流向
+  const flow=(time*1)%1;
+  ctx.strokeStyle='rgba(251,191,36,'+(1-flow)+')';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-30,cy);ctx.lineTo(cx+30,cy);ctx.stroke();
+  // 标注
+  drawText('原子种类不变，数目相等',W/2,H-70,'#fbbf24',13);
+  drawText('只配系数，不改下标',W/2,H-45,'#9ab0d0',12);
+  drawText('m(反应物) = m(产物)',W/2,H-22,'#34d399',12);
+}
+
+// ===== 场景：最小公倍数法（P + O₂ → P₂O₅）=====
+function drawMinComScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('最小公倍数法 · P + O₂ → P₂O₅',W/2,30,'#8b5cf6',16);
+  const phase=Math.floor((time*1.2)%4); // 0:原式 1:找O 2:配系数 3:完成
+  // 显示方程式
+  ctx.font='bold 22px serif';
+  const cy=110;
+  // 步骤说明
+  const hints=['① 写出未配平方程式','② 观察 O：左 2，右 5','③ 最小公倍数 = 10，配系数','④ 完成配平：4P + 5O₂ → 2P₂O₅'];
+  drawText(hints[phase],W/2,60,'#fbbf24',14);
+  // 方程式绘制
+  const pCoef=phase>=3?4:phase>=2?(phase===2?'4':''):'';
+  const o2Coef=phase>=2?(phase===2?'5':5):'';
+  const p2o5Coef=phase>=3?2:phase>=2?(phase===2?'2':''):'';
+  ctx.textAlign='center';ctx.fillStyle='#fff';
+  // P
+  drawText(pCoef,W/2-200,cy,'#fbbf24',20);
+  drawText('P',W/2-170,cy,'#a78bfa',22);
+  drawText('+',W/2-130,cy,'#9ab0d0',20);
+  drawText(o2Coef,W/2-105,cy,'#fbbf24',20);
+  drawText('O₂',W/2-65,cy,'#67e8f9',22);
+  // 箭头（带条件）
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(W/2-25,cy);ctx.lineTo(W/2+25,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.moveTo(W/2+25,cy);ctx.lineTo(W/2+18,cy-5);ctx.lineTo(W/2+18,cy+5);ctx.fill();
+  drawText('点燃',W/2,cy-15,'#fbbf24',11);
+  // P₂O₅
+  drawText(p2o5Coef,W/2+60,cy,'#fbbf24',20);
+  drawText('P₂O₅',W/2+105,cy,'#34d399',22);
+  // O 原子高亮（phase 1,2）
+  if(phase===1){
+    drawText('O: 2',W/2-65,cy+35,'#67e8f9',12);
+    drawText('O: 5',W/2+105,cy+35,'#34d399',12);
+    drawText('左右不等，需配平！',W/2,cy+60,'#f87171',13);
+  }
+  if(phase===2){
+    drawText('2×5=10，5×2=10',W/2,cy+35,'#fbbf24',12);
+    drawText('最小公倍数 LCM(2,5)=10',W/2,cy+60,'#34d399',13);
+  }
+  // 步骤说明区
+  const steps=[
+    '① 选 O 元素（左右各出现一次）',
+    '② 左边 2 个 O，右边 5 个 O',
+    '③ 最小公倍数 = 10',
+    '④ 左边系数 = 10/2 = 5，右边系数 = 10/5 = 2',
+    '⑤ 再配 P：右边 2×2=4 个 P，左边 P 系数 = 4',
+    '⑥ 检查：4P + 5O₂ → 2P₂O₅  ✓',
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*40;
+    const active=i<=phase+1;
+    ctx.fillStyle=active?'rgba(139,92,246,0.18)':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?'#8b5cf6':'#243a5e';ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,32,6);ctx.fill();ctx.stroke();
+    drawText(s,W/2,y+16,active?'#ddd6fe':'#5a6a8a',12);
+  });
+}
+
+// ===== 场景：奇数变偶数法（C₂H₂ + O₂ → CO₂ + H₂O）=====
+function drawOddScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('奇数变偶数法 · C₂H₂ + O₂ → CO₂ + H₂O',W/2,30,'#8b5cf6',16);
+  const phase=Math.floor((time*1.2)%4);
+  const hints=['① 写出未配平方程式','② O 右边为奇数(3)','③ 配 H₂O 系数为 2','④ 完成：2C₂H₂ + 5O₂ → 4CO₂ + 2H₂O'];
+  drawText(hints[phase],W/2,60,'#fbbf24',14);
+  const cy=110;
+  ctx.font='bold 20px serif';ctx.textAlign='center';ctx.fillStyle='#fff';
+  const c2h2Coef=phase>=3?2:'';
+  const o2Coef=phase>=3?5:'';
+  const co2Coef=phase>=3?4:'';
+  const h2oCoef=phase>=2?(phase===2?'2':2):'';
+  drawText(c2h2Coef,W/2-260,cy,'#fbbf24',18);
+  drawText('C₂H₂',W/2-215,cy,'#a78bfa',20);
+  drawText('+',W/2-160,cy,'#9ab0d0',18);
+  drawText(o2Coef,W/2-135,cy,'#fbbf24',18);
+  drawText('O₂',W/2-100,cy,'#67e8f9',20);
+  // 箭头
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(W/2-60,cy);ctx.lineTo(W/2-10,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.moveTo(W/2-10,cy);ctx.lineTo(W/2-17,cy-5);ctx.lineTo(W/2-17,cy+5);ctx.fill();
+  drawText('点燃',W/2-35,cy-15,'#fbbf24',11);
+  drawText(co2Coef,W/2+20,cy,'#fbbf24',18);
+  drawText('CO₂',W/2+60,cy,'#34d399',20);
+  drawText('+',W/2+105,cy,'#9ab0d0',18);
+  drawText(h2oCoef,W/2+130,cy,'#fbbf24',18);
+  drawText('H₂O',W/2+170,cy,'#fbbf24',20);
+  // O 原子计数
+  if(phase===1){
+    drawText('右 O：2 + 1 = 3 （奇数）',W/2+90,cy+40,'#f87171',13);
+    drawText('左 O：2（偶数）→ 需变偶',W/2-100,cy+40,'#67e8f9',13);
+  }
+  if(phase===2){
+    drawText('配 H₂O ×2 → 右 O：2+2=4（偶数）',W/2+90,cy+40,'#34d399',13);
+  }
+  // 步骤说明
+  const steps=[
+    '① 找奇数：右边 O 总数为 3（CO₂ 含 2，H₂O 含 1）',
+    '② 奇变偶：H₂O 系数 ×2，使右 O = 2+2 = 4',
+    '③ 配 H：左 2×2=4 H，左 C₂H₂ 系数 = 2',
+    '④ 配 C：右 2×2=4 C，CO₂ 系数 = 4',
+    '⑤ 配 O：右 4×2+2=10 O，O₂ 系数 = 5',
+    '⑥ 结果：2C₂H₂ + 5O₂ → 4CO₂ + 2H₂O  ✓',
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*40;
+    const active=i<=phase+1;
+    ctx.fillStyle=active?'rgba(251,191,36,0.15)':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?'#fbbf24':'#243a5e';ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,32,6);ctx.fill();ctx.stroke();
+    drawText(s,W/2,y+16,active?'#fde68a':'#5a6a8a',12);
+  });
+}
+
+// ===== 场景：观察法（Fe + H₂O → Fe₃O₄ + H₂）=====
+function drawObserveScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('观察法 · Fe + H₂O → Fe₃O₄ + H₂',W/2,30,'#8b5cf6',16);
+  const phase=Math.floor((time*1.2)%4);
+  const hints=['① 写出未配平方程式','② 从复杂分子 Fe₃O₄ 入手','③ 由 O=4 推出 H₂O 系数=4','④ 完成：3Fe + 4H₂O → Fe₃O₄ + 4H₂'];
+  drawText(hints[phase],W/2,60,'#fbbf24',14);
+  const cy=110;
+  ctx.font='bold 22px serif';ctx.textAlign='center';ctx.fillStyle='#fff';
+  const feCoef=phase>=3?3:'';
+  const h2oCoef=phase>=2?(phase===2?'4':4):'';
+  const h2Coef=phase>=3?4:'';
+  drawText(feCoef,W/2-210,cy,'#fbbf24',20);
+  drawText('Fe',W/2-180,cy,'#a78bfa',22);
+  drawText('+',W/2-140,cy,'#9ab0d0',20);
+  drawText(h2oCoef,W/2-110,cy,'#fbbf24',20);
+  drawText('H₂O',W/2-65,cy,'#67e8f9',22);
+  // 箭头
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(W/2-20,cy);ctx.lineTo(W/2+30,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.moveTo(W/2+30,cy);ctx.lineTo(W/2+23,cy-5);ctx.lineTo(W/2+23,cy+5);ctx.fill();
+  drawText('高温',W/2+5,cy-15,'#fbbf24',11);
+  drawText('Fe₃O₄',W/2+85,cy,'#34d399',22);
+  drawText('+',W/2+135,cy,'#9ab0d0',20);
+  drawText(h2Coef,W/2+160,cy,'#fbbf24',20);
+  drawText('H₂↑',W/2+195,cy,'#fbbf24',22);
+  if(phase===1){
+    drawText('Fe₃O₄ 最复杂，O=4',W/2+85,cy+40,'#34d399',13);
+  }
+  if(phase===2){
+    drawText('右 O=4，左 H₂O 系数=4',W/2-65,cy+40,'#67e8f9',13);
+  }
+  const steps=[
+    '① 找最复杂分子：Fe₃O₄（含 4 个 O，3 个 Fe）',
+    '② 由 O 守恒：左 H₂O 系数 = 4',
+    '③ 由 H 守恒：右 H₂ 系数 = 4',
+    '④ 由 Fe 守恒：左 Fe 系数 = 3',
+    '⑤ 检查：Fe 3=3，H 8=8，O 4=4  ✓',
+    '⑥ 标条件：高温，气体 H₂ 标 ↑',
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*40;
+    const active=i<=phase+1;
+    ctx.fillStyle=active?'rgba(52,211,153,0.15)':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?'#34d399':'#243a5e';ctx.lineWidth=1.5;
+    roundRect(80,y,W-160,32,6);ctx.fill();ctx.stroke();
+    drawText(s,W/2,y+16,active?'#6ee7b7':'#5a6a8a',12);
+  });
+}
+
+// ===== 场景：原子计数检查 =====
+function drawCheckScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('原子计数检查 · 4P + 5O₂ → 2P₂O₅',W/2,30,'#8b5cf6',16);
+  const cy=90;
+  ctx.font='bold 22px serif';ctx.textAlign='center';ctx.fillStyle='#fff';
+  drawText('4P + 5O₂ → 2P₂O₅',W/2,cy,'#ddd6fe',22);
+  // 元素计数表
+  const blink=Math.sin(time*3)>0;
+  const rows=[
+    {el:'P',left:4*1,right:2*2,ok:true},
+    {el:'O',left:5*2,right:2*5,ok:true},
+  ];
+  const headers=['元素','左边原子数','右边原子数','是否守恒'];
+  const hx=[W/2-200,W/2-80,W/2+80,W/2+200];
+  headers.forEach((h,i)=>drawText(h,hx[i],150,'#fbbf24',13));
+  ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(W/2-260,165);ctx.lineTo(W/2+260,165);ctx.stroke();
+  rows.forEach((r,i)=>{
+    const y=190+i*45;
+    const col=r.ok?'#34d399':'#f87171';
+    ctx.fillStyle=r.ok?'rgba(52,211,153,0.1)':'rgba(248,113,113,0.1)';
+    ctx.strokeStyle=blink&&r.ok?'#34d399':'#243a5e';ctx.lineWidth=1.5;
+    roundRect(W/2-260,y-18,520,36,6);ctx.fill();ctx.stroke();
+    drawText(r.el,hx[0],y,'#a78bfa',14);
+    drawText(r.left+'',hx[1],y,'#67e8f9',14);
+    drawText(r.right+'',hx[2],y,'#67e8f9',14);
+    drawText(r.ok?'✓ 守恒':'✗ 不等',hx[3],y,col,14);
+  });
+  // 结论
+  drawText('所有元素原子数左右相等 → 配平正确',W/2,H-80,'#34d399',13);
+  drawText('检查是配平的最后保障',W/2,H-55,'#9ab0d0',12);
+  drawText('口诀：左数=右数，才算配平完成',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景：符号标注（↑ ↓ △ 催化剂）=====
+function drawSymbolScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('符号标注 · 气体↑ 沉淀△ 催化剂',W/2,30,'#8b5cf6',16);
+  const cy=100;
+  // 反应 1：气体 ↑
+  ctx.fillStyle='rgba(139,92,246,0.15)';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=1.5;
+  roundRect(60,cy-20,W-120,80,8);ctx.fill();ctx.stroke();
+  drawText('① 气体生成 ↑',120,cy,'#fbbf24',13,'left');
+  ctx.font='bold 18px serif';ctx.textAlign='center';
+  drawText('Zn + H₂SO₄ → ZnSO₄ + H₂',W/2,cy+25,'#fff',18);
+  drawText('（错，应标 ↑）',W/2,cy+50,'#f87171',12);
+  // 浮动 ↑
+  const upFlow=(time*1)%1;
+  ctx.fillStyle='rgba(251,191,36,'+(1-upFlow)+')';
+  ctx.font='bold 20px sans-serif';
+  ctx.fillText('↑',W/2+130,cy+25-upFlow*30);
+  ctx.font='bold 18px serif';
+  drawText('Zn + H₂SO₄ → ZnSO₄ + H₂↑',W/2,cy+85,'#34d399',17);
+  // 反应 2：沉淀 ↓
+  const cy2=cy+115;
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(60,cy2-10,W-120,50,8);ctx.fill();ctx.stroke();
+  drawText('② 沉淀生成 ↓（溶液中）',120,cy2+10,'#fbbf24',12,'left');
+  ctx.font='bold 17px serif';ctx.textAlign='center';
+  drawText('CuSO₄ + 2NaOH → Cu(OH)₂↓ + Na₂SO₄',W/2,cy2+30,'#34d399',17);
+  // 下落 ↓
+  const downFlow=(time*1)%1;
+  ctx.fillStyle='rgba(248,113,113,'+(1-downFlow)+')';
+  ctx.font='bold 20px sans-serif';
+  ctx.fillText('↓',W/2-150,cy2+30+downFlow*30);
+  // 反应条件
+  const cy3=cy2+60;
+  drawText('③ 反应条件标注',W/2,cy3,'#fbbf24',14);
+  ctx.font='bold 16px serif';
+  const conds=[
+    {c:'2H₂O 通电 2H₂↑ + O₂↑',d:'通电'},
+    {c:'2KMnO₄ △ K₂MnO₄ + MnO₂ + O₂↑',d:'加热△'},
+    {c:'CaCO₃ 高温 CaO + CO₂↑',d:'高温'},
+    {c:'2H₂O₂ MnO₂ 2H₂O + O₂↑',d:'催化剂'},
+  ];
+  conds.forEach((cd,i)=>{
+    const y=cy3+30+i*32;
+    ctx.fillStyle='rgba(139,92,246,0.1)';ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    roundRect(80,y,W-160,26,5);ctx.fill();ctx.stroke();
+    drawText(cd.c,W/2,y+13,'#fff',13);
+    drawText('['+cd.d+']',W-110,y+13,'#fbbf24',11);
+  });
+}
+
+// ===== 场景：难题示例（Cu + HNO₃）=====
+function drawHardScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('难题示例 · Cu + HNO₃(稀) → Cu(NO₃)₂ + NO↑ + H₂O',W/2,30,'#8b5cf6',16);
+  const phase=Math.floor((time*0.8)%4);
+  const hints=['① 设各系数为 a,b,c,d,e','② 列守恒方程','③ 解方程组','④ 结果：3Cu + 8HNO₃ → 3Cu(NO₃)₂ + 2NO↑ + 4H₂O'];
+  drawText(hints[phase],W/2,60,'#fbbf24',13);
+  // 方程式
+  const cy=110;
+  ctx.font='bold 20px serif';ctx.textAlign='center';
+  const a=phase>=3?3:'a',b=phase>=3?8:'b',c=phase>=3?3:'c',d=phase>=3?2:'d',e=phase>=3?4:'e';
+  drawText(a,W/2-280,cy,'#fbbf24',18);
+  drawText('Cu',W/2-250,cy,'#a78bfa',20);
+  drawText('+',W/2-210,cy,'#9ab0d0',18);
+  drawText(b,W/2-185,cy,'#fbbf24',18);
+  drawText('HNO₃',W/2-140,cy,'#67e8f9',20);
+  // 箭头
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(W/2-90,cy);ctx.lineTo(W/2-40,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.moveTo(W/2-40,cy);ctx.lineTo(W/2-47,cy-5);ctx.lineTo(W/2-47,cy+5);ctx.fill();
+  drawText(c,W/2-15,cy,'#fbbf24',18);
+  drawText('Cu(NO₃)₂',W/2+35,cy,'#34d399',20);
+  drawText('+',W/2+95,cy,'#9ab0d0',18);
+  drawText(d,W/2+115,cy,'#fbbf24',18);
+  drawText('NO↑',W/2+150,cy,'#f87171',20);
+  drawText('+',W/2+185,cy,'#9ab0d0',18);
+  drawText(e,W/2+205,cy,'#fbbf24',18);
+  drawText('H₂O',W/2+240,cy,'#fbbf24',20);
+  // 守恒方程
+  if(phase>=1){
+    const eqs=[
+      'Cu 守恒：a = c',
+      'N 守恒：b = 2c + d',
+      'H 守恒：b = 2e',
+      'O 守恒：3b = 6c + d + e',
+    ];
+    eqs.forEach((eq,i)=>{
+      const y=170+i*30;
+      const active=phase>=2||i===0;
+      ctx.fillStyle=active?'rgba(139,92,246,0.1)':'rgba(255,255,255,0.02)';
+      ctx.strokeStyle=active?'#8b5cf6':'#243a5e';ctx.lineWidth=1;
+      roundRect(100,y,W-200,24,5);ctx.fill();ctx.stroke();
+      drawText(eq,W/2,y+12,active?'#ddd6fe':'#5a6a8a',12);
+    });
+  }
+  // 解
+  if(phase>=2){
+    drawText('令 c = 1 → a=1, d=b-2, e=b/2',W/2,300,'#fbbf24',13);
+    drawText('由 O 守恒：3b = 6 + (b-2) + b/2',W/2,325,'#67e8f9',13);
+    drawText('解得 b=8/3 → 化为整数：×3',W/2,350,'#34d399',13);
+  }
+  if(phase>=3){
+    drawText('最终：3Cu + 8HNO₃ → 3Cu(NO₃)₂ + 2NO↑ + 4H₂O',W/2,H-50,'#34d399',14);
+  }
+  drawText('氧化还原反应常用待定系数法',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：例题分步 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 配平分步',W/2,30,'#8b5cf6',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,110,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('配平化学方程式：Al + O₂ → Al₂O₃',120,115,'#fff',14,'left');
+  drawText('（铝在氧气中燃烧）',120,140,'#9ab0d0',12,'left');
+  drawText('要求：使用最小公倍数法',120,162,'#fbbf24',12,'left');
+  // 解答
+  const steps=[
+    {t:'① 找元素',d:'O 左 2，右 3，各出现一次',c:'#06b6d4'},
+    {t:'② 求公倍数',d:'LCM(2,3) = 6',c:'#a78bfa'},
+    {t:'③ 定系数',d:'O₂ 系数=6/2=3，Al₂O₃ 系数=6/3=2',c:'#67e8f9'},
+    {t:'④ 配 Al',d:'右 Al=2×2=4，左 Al 系数=4',c:'#34d399'},
+    {t:'⑤ 结果',d:'4Al + 3O₂ → 2Al₂O₃  ✓',c:'#fbbf24'},
+    {t:'⑥ 完整式',d:'4Al + 3O₂ 点燃 2Al₂O₃',c:'#ec4899'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*42;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,34,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+17,s.c,13,'left');
+    drawText(s.d,260,y+17,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('化学方程式配平核心总结',W/2,40,'#8b5cf6',18);
+  const items=[
+    {t:'配平原则',d:'质量守恒，原子守恒',c:'#8b5cf6'},
+    {t:'最小公倍数法',d:'选单一元素，求LCM',c:'#fbbf24'},
+    {t:'观察法',d:'从复杂分子入手',c:'#34d399'},
+    {t:'奇数变偶数法',d:'先化奇为偶再配',c:'#fb923c'},
+    {t:'待定系数法',d:'设未知数列方程',c:'#ec4899'},
+    {t:'归一法',d:'最复杂分子令为1',c:'#06b6d4'},
+    {t:'符号标注',d:'气体↑ 沉淀↓',c:'#a78bfa'},
+    {t:'反应条件',d:'点燃 △ 高温 催化剂',c:'#67e8f9'},
+    {t:'最终检查',d:'原子守恒验证',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*150;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,120,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+40,m.c,14);
+    drawText(m.d,x+(W-160)/6,y+80,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawPrincipleScene(t);
+  else if(stepIdx===1)drawPrincipleScene(t);
+  else if(stepIdx===2)drawMinComScene(t);
+  else if(stepIdx===3)drawObserveScene(t);
+  else if(stepIdx===4)drawOddScene(t);
+  else if(stepIdx===5)drawMinComScene(t);
+  else if(stepIdx===6)drawObserveScene(t);
+  else if(stepIdx===7)drawSymbolScene(t);
+  else if(stepIdx===8)drawSymbolScene(t);
+  else if(stepIdx===9)drawHardScene(t);
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

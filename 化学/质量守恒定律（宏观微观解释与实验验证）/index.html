@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>质量守恒定律 · 宏观微观解释与实验验证</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#fbbf24;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(251,191,36,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(251,191,36,.2);color:#fde68a;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">质量守恒定律</span><span class="subtitle">宏观微观解释与实验验证</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>定律内容</h4><div class="v">反应前后<br>物质总质量不变</div></div>
+  <div class="card s2"><div class="num">2</div><h4>微观本质</h4><div class="v">原子种类/数目/质量<br>均不发生改变</div></div>
+  <div class="card s3"><div class="num">3</div><h4>宏观表现</h4><div class="v">元素种类不变<br>元素质量不变</div></div>
+  <div class="card s4"><div class="num">4</div><h4>实验验证</h4><div class="v">白磷燃烧/铁与硫酸铜<br>需在密闭容器中</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">质量守恒定律</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'质量守恒定律内容',body:'<strong>质量守恒定律</strong>：在<strong>化学反应</strong>中，参加反应的各物质的<strong>质量总和</strong>，等于反应后生成的各物质的<strong>质量总和</strong>。即反应前后物质的总质量<strong>保持不变</strong>。',points:{title:'核心内容',items:['<strong>适用范围</strong>：仅化学反应，不含核反应','<strong>反应前质量</strong>：= 反应后质量','<strong>发现者</strong>：拉瓦锡首次定量验证','<strong>关键词</strong>：参加反应的各物质']}},
+  {tag:'微观',name:'微观本质（原子重组）',body:'化学反应的<strong>微观本质</strong>是<strong>原子的重新组合</strong>。反应前后：<strong>原子的种类、数目、质量</strong>都不发生改变，所以总质量必然守恒。',points:{title:'微观三不变',items:['<strong>原子种类</strong>：不增不减','<strong>原子数目</strong>：不增不减','<strong>原子质量</strong>：不变','<strong>仅重新组合</strong>：旧键断裂、新键形成']}},
+  {tag:'宏观',name:'宏观表现（元素不变）',body:'由原子守恒推出<strong>宏观</strong>结论：反应前后<strong>元素的种类</strong>不变，<strong>元素的质量</strong>也不变。如 H₂ + O₂ → H₂O，反应前后只有 H、O 两种元素。',points:{title:'宏观推论',items:['<strong>元素种类</strong>：反应前后不变','<strong>元素质量</strong>：每种元素总质量不变','<strong>物质种类</strong>：会变化','<strong>分子种类</strong>：会变化']}},
+  {tag:'规律',name:'六个不变',body:'质量守恒定律可归纳为<strong>六个不变</strong>：反应前后——<strong>原子种类</strong>、<strong>原子数目</strong>、<strong>原子质量</strong>、<strong>元素种类</strong>、<strong>元素质量</strong>、<strong>反应前后总质量</strong>不变。',points:{title:'六个不变清单',items:['<strong>宏观 1</strong>：物质总质量不变','<strong>宏观 2</strong>：元素种类不变','<strong>宏观 3</strong>：元素质量不变','<strong>微观 4</strong>：原子种类不变','<strong>微观 5</strong>：原子数目不变','<strong>微观 6</strong>：原子质量不变']}},
+  {tag:'规律',name:'两个变',body:'除六个不变外，还有<strong>两个一定变</strong>：<strong>物质种类</strong>改变（生成新物质）、<strong>分子种类</strong>改变。这是化学反应区别于物理变化的核心。',points:{title:'两个一定变',items:['<strong>物质种类</strong>：一定变（生成新物质）','<strong>分子种类</strong>：一定变','<strong>分子数目</strong>：可能变（如 2H₂+O₂→2H₂O，3 分子→2 分子）','<strong>体积</strong>：可能变']}},
+  {tag:'实验',name:'白磷燃烧实验',body:'<strong>白磷燃烧</strong>验证质量守恒：在<strong>密闭锥形瓶</strong>内放白磷，称量；引燃白磷生成五氧化二磷，冷却后<strong>再次称量</strong>。两次质量<strong>完全相等</strong>，证明总质量守恒。',points:{title:'实验要点',items:['<strong>装置</strong>：必须密闭锥形瓶','<strong>反应</strong>：4P + 5O₂ → 2P₂O₅','<strong>现象</strong>：白烟生成、放热','<strong>关键</strong>：密闭防气体逸出/进入']}},
+  {tag:'实验',name:'铁与硫酸铜反应',body:'将<strong>铁钉</strong>浸入<strong>蓝色硫酸铜</strong>溶液中：Fe + CuSO₄ → FeSO₄ + Cu。密闭称量前后<strong>质量相等</strong>。溶液由蓝色变为浅绿色，铁钉表面附红色铜。',points:{title:'实验现象',items:['<strong>反应</strong>：Fe + CuSO₄ → FeSO₄ + Cu','<strong>颜色</strong>：蓝色 → 浅绿色','<strong>固体</strong>：铁钉附红色铜','<strong>无气体</strong>：可在敞口进行（需称量）']}},
+  {tag:'实验',name:'开放容器反例',body:'蜡烛在<strong>开放</strong>容器中燃烧后，称量发现<strong>质量减少</strong>——这看似违背质量守恒定律。原因：生成的 <strong>CO₂ 和水蒸气逸入空气</strong>，若将逸出气体计入，总质量仍守恒。',points:{title:'反例解析',items:['<strong>开放容器</strong>：气体逸出 → 质量看似减小','<strong>镁条燃烧</strong>：结合 O₂ → 质量看似增大','<strong>解决</strong>：在密闭容器中实验','<strong>结论</strong>：定律仍成立，仅"未观测到"']}},
+  {tag:'应用',name:'定律的应用',body:'质量守恒定律有三大应用：① <strong>配平化学方程式</strong>（原子数目守恒）；② <strong>计算反应物或产物质量</strong>（已知 m(A)、m(B)、m(C)，求 m(D)）；③ <strong>推断未知物的元素组成</strong>。',points:{title:'三大应用',items:['<strong>配平方程式</strong>：左右各原子数目相等','<strong>质量计算</strong>：m(反应物) = m(产物)','<strong>推断元素</strong>：产物元素必来自反应物','<strong>定量化学</strong>：化学计量学的基础']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>例题</strong>：A + B → C + D，已知 m(A)=10g、m(B)=15g、m(C)=12g，求 m(D)。由质量守恒：m(D)=m(A)+m(B)−m(C)=10+15−12=<strong>13g</strong>。',points:{title:'解题与速记',items:['<strong>步骤1</strong>：列出已知质量','<strong>步骤2</strong>：套用 m(前)=m(后)','<strong>步骤3</strong>：解出未知 m(D)','<strong>核心</strong>：六个不变 + 两个一定变']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：H2 + O2 → H2O 微观重组 =====
+function drawMicroScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('微观本质 · 2H₂ + O₂ → 2H₂O 原子重组',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+10;
+  const phase=(Math.sin(time*0.8)+1)/2; // 0→1→0
+  // 左侧：反应物 2H₂ + O₂
+  drawText('反应前（原子种类/数目不变）',W/4,cy-90,'#06b6d4',13);
+  // 右侧：产物 2H₂O
+  drawText('反应后（仅重新组合）',3*W/4,cy-90,'#34d399',13);
+  // 原子位置：反应前 H₂（4 个 H）+ O₂（2 个 O）
+  // 反应后 2 个 H₂O
+  // 反应前原子
+  const hColor='#fbbf24',oColor='#f87171';
+  function atom(x,y,r,c,label){
+    ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=12;
+    ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle='#1a1a1a';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,x,y);
+  }
+  // 反应前：2 个 H₂ 分子（在左上），1 个 O₂ 分子（在左下）
+  const lx=W/4;
+  // H₂ 分子位置
+  const hPositions=[
+    [lx-30,cy-30],[lx-10,cy-30], // 第一个 H₂
+    [lx+10,cy-30],[lx+30,cy-30], // 第二个 H₂
+  ];
+  // O₂ 位置
+  const oPositions=[[lx-10,cy+30],[lx+10,cy+30]];
+  // 反应后：2 个 H₂O（每个 H₂O 含 1 O + 2 H）
+  const rx=3*W/4;
+  const waterPos=[
+    {o:[rx-40,cy],h1:[rx-55,cy-18],h2:[rx-25,cy-18]},
+    {o:[rx+40,cy],h1:[rx+25,cy-18],h2:[rx+55,cy-18]},
+  ];
+  // 插值
+  const fromAtoms=[
+    ...hPositions.map(p=>({p,c:hColor,label:'H'})),
+    ...oPositions.map(p=>({p,c:oColor,label:'O'})),
+  ];
+  const toAtoms=[
+    {p:waterPos[0].o,c:oColor,label:'O'},
+    {p:waterPos[0].h1,c:hColor,label:'H'},
+    {p:waterPos[0].h2,c:hColor,label:'H'},
+    {p:waterPos[1].o,c:oColor,label:'O'},
+    {p:waterPos[1].h1,c:hColor,label:'H'},
+    {p:waterPos[1].h2,c:hColor,label:'H'},
+  ];
+  // 中间过渡区域绘制
+  for(let i=0;i<fromAtoms.length;i++){
+    const fx=fromAtoms[i].p[0],fy=fromAtoms[i].p[1];
+    const tx=toAtoms[i].p[0],ty=toAtoms[i].p[1];
+    const x=fx+(tx-fx)*phase,y=fy+(ty-fy)*phase;
+    atom(x,y,12,fromAtoms[i].c,fromAtoms[i].label);
+  }
+  // 中间箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(W/2-40,cy);ctx.lineTo(W/2+40,cy);ctx.stroke();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.moveTo(W/2+40,cy);ctx.lineTo(W/2+30,cy-6);ctx.lineTo(W/2+30,cy+6);ctx.fill();
+  drawText('重组',W/2,cy-18,'#fbbf24',12);
+  // 计数：4 H + 2 O 不变
+  drawText('反应前：4H + 2O',W/4,cy+90,'#9ab0d0',12);
+  drawText('反应后：4H + 2O',3*W/4,cy+90,'#9ab0d0',12);
+  drawText('原子种类、数目、质量均不变 → 总质量守恒',W/2,H-35,'#34d399',13);
+}
+
+// ===== 场景：天平平衡（密闭容器反应前后） =====
+function drawBalanceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('密闭容器中反应前后天平平衡',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+40;
+  const tilt=Math.sin(time*1.2)*0.015; // 几乎不动
+  // 支点
+  ctx.fillStyle='#243a5e';
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx-25,cy+40);ctx.lineTo(cx+25,cy+40);ctx.fill();
+  // 横梁
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(tilt);
+  ctx.fillStyle='#06b6d4';ctx.fillRect(-180,-6,360,12);
+  // 左盘
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(-150,0);ctx.lineTo(-150,30);ctx.stroke();
+  ctx.fillStyle='#172a4a';
+  ctx.beginPath();ctx.moveTo(-210,30);ctx.lineTo(-90,30);ctx.lineTo(-110,55);ctx.lineTo(-190,55);ctx.closePath();ctx.fill();ctx.stroke();
+  // 右盘
+  ctx.beginPath();ctx.moveTo(150,0);ctx.lineTo(150,30);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(90,30);ctx.lineTo(210,30);ctx.lineTo(190,55);ctx.lineTo(110,55);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.restore();
+  // 左侧：密闭锥形瓶（反应前）
+  drawClosedFlask(cx-150,cy-15,'#06b6d4',false);
+  drawText('反应前 m₁',cx-150,cy+75,'#06b6d4',12);
+  // 右侧：反应后（同质量）
+  drawClosedFlask(cx+150,cy-15,'#34d399',true);
+  drawText('反应后 m₂ = m₁',cx+150,cy+75,'#34d399',12);
+  // 结论
+  drawText('天平始终平衡 → m(反应前) = m(反应后)',W/2,H-45,'#34d399',13);
+  drawText('前提：必须在密闭容器中',W/2,H-25,'#fbbf24',12);
+}
+
+function drawClosedFlask(x,y,color,after){
+  // 锥形瓶轮廓
+  ctx.strokeStyle=color;ctx.lineWidth=2;
+  ctx.fillStyle='rgba(6,182,212,0.1)';
+  ctx.beginPath();
+  ctx.moveTo(x-30,y-25);ctx.lineTo(x-30,y-15);
+  ctx.lineTo(x-40,y+25);ctx.lineTo(x+40,y+25);
+  ctx.lineTo(x+30,y-15);ctx.lineTo(x-30,y-15);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 瓶口/塞子
+  ctx.fillStyle=color;ctx.fillRect(x-32,y-32,64,8);
+  // 内部（反应后白烟）
+  if(after){
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    for(let i=0;i<6;i++){
+      ctx.beginPath();ctx.arc(x-20+i*8,y+10+Math.sin(i)*3,2,0,7);ctx.fill();
+    }
+  }else{
+    // 反应前固体小颗粒（白磷）
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.arc(x-5,y+18,3,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(x+8,y+20,2,0,7);ctx.fill();
+  }
+}
+
+// ===== 场景：白磷燃烧实验 =====
+function drawPhosphorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('白磷燃烧验证质量守恒实验',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  const phase=(Math.sin(time*0.6)+1)/2;
+  // 锥形瓶（更大）
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.fillStyle='rgba(6,182,212,0.08)';
+  ctx.beginPath();
+  ctx.moveTo(cx-50,cy-50);ctx.lineTo(cx-50,cy-35);
+  ctx.lineTo(cx-75,cy+35);ctx.lineTo(cx+75,cy+35);
+  ctx.lineTo(cx+50,cy-35);ctx.lineTo(cx-50,cy-35);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // 橡皮塞
+  ctx.fillStyle='#fbbf24';ctx.fillRect(cx-52,cy-58,104,10);
+  drawText('橡皮塞（密闭）',cx,cy-72,'#fbbf24',11);
+  // 内部白磷 + 电热丝
+  if(phase<0.5){
+    // 反应前：白磷颗粒
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.arc(cx-10,cy+25,4,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+8,cy+27,3,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(cx,cy+22,3,0,7);ctx.fill();
+    drawText('白磷（P）',cx,cy+50,'#fbbf24',11);
+    drawText('反应前称量 m₁ = 50.0 g',W/2,H-70,'#06b6d4',13);
+  }else{
+    // 反应中/后：白烟（P₂O₅）
+    ctx.fillStyle='rgba(255,255,255,'+(0.4+phase*0.4)+')';
+    for(let i=0;i<15;i++){
+      const px=cx-30+Math.random()*60;
+      const py=cy-15+Math.random()*45;
+      ctx.beginPath();ctx.arc(px,py,1.5+Math.random()*2,0,7);ctx.fill();
+    }
+    drawText('生成 P₂O₅（白烟）',cx,cy+50,'#fff',11);
+    drawText('反应后称量 m₂ = 50.0 g',W/2,H-70,'#34d399',13);
+  }
+  // 电热丝（引燃）
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy-58);ctx.lineTo(cx,cy-10);ctx.stroke();
+  if(phase<0.5){
+    ctx.fillStyle='#f87171';
+    ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('电打火',cx+25,cy-30);
+  }else{
+    // 闪光
+    ctx.fillStyle='rgba(248,113,113,0.8)';
+    ctx.beginPath();ctx.arc(cx,cy-10,6,0,7);ctx.fill();
+  }
+  // 方程式
+  drawText('4P + 5O₂ → 2P₂O₅',W/2,H-110,'#fff',14);
+  drawText('两次称量完全相等 → 质量守恒',W/2,H-35,'#34d399',13);
+}
+
+// ===== 场景：开放容器反例（蜡烛燃烧） =====
+function drawOpenScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('开放容器反例 · 蜡烛燃烧"质量减少"',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2+30;
+  // 天平倾斜（不平衡）
+  const tilt=0.06;
+  ctx.save();ctx.translate(cx,cy);
+  // 支点
+  ctx.fillStyle='#243a5e';
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-25,40);ctx.lineTo(25,40);ctx.fill();
+  ctx.rotate(tilt);
+  ctx.fillStyle='#06b6d4';ctx.fillRect(-150,-5,300,10);
+  // 左盘：蜡烛
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(-120,0);ctx.lineTo(-120,25);ctx.stroke();
+  ctx.fillStyle='#172a4a';
+  ctx.beginPath();ctx.moveTo(-170,25);ctx.lineTo(-70,25);ctx.lineTo(-90,50);ctx.lineTo(-150,50);ctx.closePath();ctx.fill();ctx.stroke();
+  // 蜡烛
+  ctx.fillStyle='#fbbf24';
+  ctx.fillRect(-125,-10,10,35);
+  // 火焰
+  const flick=Math.sin(time*8)*2;
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();
+  ctx.moveTo(-120,-10);ctx.quadraticCurveTo(-115+flick,-25,-120,-35);
+  ctx.quadraticCurveTo(-125+flick,-25,-120,-10);ctx.fill();
+  ctx.restore();
+  // 飘散的 CO₂ / 水蒸气
+  for(let i=0;i<6;i++){
+    const a=time*0.5+i*1.2;
+    const px=cx-120+Math.sin(a)*5;
+    const py=cy-30-i*15-((time*30)%60);
+    if(py>cy-120){
+      ctx.fillStyle='rgba(255,255,255,'+(0.6-i*0.08)+')';
+      ctx.font='11px sans-serif';ctx.textAlign='center';
+      ctx.fillText(i<3?'CO₂':'H₂O',px,py);
+    }
+  }
+  // 标注
+  drawText('开放容器：CO₂、水蒸气逸出',cx+150,cy-40,'#f87171',12);
+  drawText('称量结果：质量"变小" → 看似不守恒',W/2,H-65,'#f87171',13);
+  drawText('实际：若收集逸出气体，总质量仍守恒',W/2,H-40,'#34d399',13);
+  drawText('结论：定律成立，必须在密闭容器验证',W/2,H-22,'#fbbf24',12);
+}
+
+// ===== 场景：六个不变 + 两个变 卡片 =====
+function drawSixUnchangeScene(){
+  const W=cv.width,H=cv.height;
+  drawText('六个不变 + 两个一定变',W/2,30,'#fbbf24',16);
+  const items=[
+    {t:'① 总质量不变',c:'#fbbf24',type:'不变'},
+    {t:'② 元素种类不变',c:'#fbbf24',type:'不变'},
+    {t:'③ 元素质量不变',c:'#fbbf24',type:'不变'},
+    {t:'④ 原子种类不变',c:'#06b6d4',type:'不变'},
+    {t:'⑤ 原子数目不变',c:'#06b6d4',type:'不变'},
+    {t:'⑥ 原子质量不变',c:'#06b6d4',type:'不变'},
+    {t:'① 物质种类变',c:'#f87171',type:'变'},
+    {t:'② 分子种类变',c:'#f87171',type:'变'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%4,row=Math.floor(i/4);
+    const x=60+col*((W-120)/4);
+    const y=90+row*150;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+8,y,(W-120)/4-16,120,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-120)/8,y+50,m.c,14);
+    drawText(m.type,x+(W-120)/8,y+85,'#fff',12);
+  });
+  drawText('宏观不变 → ①②③ ； 微观不变 → ④⑤⑥ ； 一定变 → 物质/分子种类',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：定律应用（已知 m(A) m(B) m(C) 求 m(D)） =====
+function drawApplyScene(){
+  const W=cv.width,H=cv.height;
+  drawText('应用 · 已知 A+B→C+D，求 m(D)',W/2,30,'#fbbf24',16);
+  const cx=W/2,cy=H/2;
+  // 方程式
+  ctx.font='bold 20px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('A(10g) + B(15g) → C(12g) + D(?g)',cx,90);
+  // 方框表示物质
+  function box(x,y,w,h,label,c,bg){
+    ctx.fillStyle=bg||c+'22';ctx.strokeStyle=c;ctx.lineWidth=2;
+    roundRect(x,y,w,h,8);ctx.fill();ctx.stroke();
+    drawText(label,x+w/2,y+h/2,c,14);
+  }
+  box(cx-260,cy-20,80,40,'A = 10g','#fbbf24');
+  box(cx-140,cy-20,80,40,'B = 15g','#06b6d4');
+  drawText('→',cx-40,cy,'#fbbf24',22);
+  box(cx,cy-20,80,40,'C = 12g','#34d399');
+  box(cx+120,cy-20,80,40,'D = ?','#f87171');
+  // 推算框
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(80,cy+60,W-160,90,8);ctx.fill();ctx.stroke();
+  drawText('【质量守恒】 m(A) + m(B) = m(C) + m(D)',W/2,cy+80,'#fbbf24',13);
+  drawText('10 + 15 = 12 + m(D)',W/2,cy+105,'#fff',13);
+  drawText('m(D) = 25 − 12 = 13 g',W/2,cy+130,'#34d399',14);
+  drawText('应用：配平方程式 / 质量计算 / 推断未知物元素',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 三步解法',W/2,30,'#fbbf24',16);
+  // 题目
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,100,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#06b6d4',13,'left');
+  drawText('在反应 A + B → C + D 中，已知参加反应的',120,115,'#fff',13,'left');
+  drawText('m(A) = 10 g，m(B) = 15 g，m(C) = 12 g，求 m(D)。',120,140,'#fff',13,'left');
+  // 解答步骤
+  const steps=[
+    {t:'① 判据',d:'化学反应 → 质量守恒定律',c:'#fbbf24'},
+    {t:'② 列式',d:'m(A) + m(B) = m(C) + m(D)',c:'#a78bfa'},
+    {t:'③ 代入',d:'10 + 15 = 12 + m(D)',c:'#06b6d4'},
+    {t:'④ 求解',d:'m(D) = 10 + 15 − 12 = 13 g',c:'#34d399'},
+    {t:'⑤ 验证',d:'反应前总质量 25g = 反应后总质量 25g',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=200+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,36,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,260,y+18,'#fff',13,'left');
+  });
+  drawText('答案：m(D) = 13 g',W/2,H-35,'#34d399',15);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('质量守恒定律 · 核心总结',W/2,40,'#fbbf24',18);
+  const items=[
+    {t:'定律内容',d:'反应前后总质量不变',c:'#fbbf24'},
+    {t:'微观本质',d:'原子种类/数目/质量不变',c:'#06b6d4'},
+    {t:'宏观表现',d:'元素种类/质量不变',c:'#34d399'},
+    {t:'六个不变',d:'三原子 + 三元素 + 总质量',c:'#a78bfa'},
+    {t:'两个一定变',d:'物质种类、分子种类',c:'#f87171'},
+    {t:'实验关键',d:'必须在密闭容器中',c:'#fb923c'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawMicroScene(t);
+  else if(stepIdx===1)drawMicroScene(t);
+  else if(stepIdx===2)drawMicroScene(t);
+  else if(stepIdx===3)drawSixUnchangeScene();
+  else if(stepIdx===4)drawSixUnchangeScene();
+  else if(stepIdx===5)drawPhosphorScene(t);
+  else if(stepIdx===6)drawBalanceScene(t);
+  else if(stepIdx===7)drawOpenScene(t);
+  else if(stepIdx===8)drawApplyScene();
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

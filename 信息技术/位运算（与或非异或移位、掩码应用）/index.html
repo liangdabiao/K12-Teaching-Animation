@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>位运算 · 与或非异或 · 移位 · 掩码</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#8b5cf6;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(139,92,246,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(139,92,246,.2);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回信息技术目录</a><span class="title">位运算</span><span class="subtitle">与或非异或 · 移位 · 掩码应用</span></header>
+<div class="cards">
+  <div class="card"><div class="num">&amp;</div><h4>按位与 AND</h4><div class="v">两位都为 1 则为 1<br>否则为 0 · 用途：清零、取位</div></div>
+  <div class="card s2"><div class="num">|</div><h4>按位或 OR</h4><div class="v">两位任一为 1 则为 1<br>否则为 0 · 用途：置位、合并</div></div>
+  <div class="card s3"><div class="num">^</div><h4>按位异或 XOR</h4><div class="v">两位不同为 1<br>相同为 0 · 用途：翻转、加密</div></div>
+  <div class="card s4"><div class="num">&gt;&gt;</div><h4>移位 SHL/SHR</h4><div class="v">左移相当于 ×2<br>右移相当于 ÷2</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">位运算</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'位运算 vs 逻辑运算',body:'<strong>位运算</strong>对整数<strong>每一位</strong>独立进行与/或/非/异或操作，结果仍是整数；<strong>逻辑运算</strong>（&amp;&amp; || !）把操作数当成<strong>真/假</strong>，结果是布尔值。',points:{title:'核心区别',items:['<strong>位运算</strong>：按位独立处理','<strong>逻辑运算</strong>：整体判真假','<strong>5 &amp; 3 = 1</strong>：按位与','<strong>5 &amp;&amp; 3 = 1</strong>：两边都真则真']}},
+  {tag:'基础',name:'按位与 AND',body:'<strong>按位与 &amp;</strong>：两个数的每一位都为 1 时结果为 1，否则为 0。常用于<strong>清零</strong>（与 0）、<strong>取位</strong>（与 1）和<strong>掩码</strong>。',points:{title:'真值表 &amp;',items:['<strong>0 &amp; 0 = 0</strong>','<strong>0 &amp; 1 = 0</strong>','<strong>1 &amp; 0 = 0</strong>','<strong>1 &amp; 1 = 1</strong>（全 1 才 1）']}},
+  {tag:'基础',name:'按位或 OR',body:'<strong>按位或 |</strong>：两位中任一位为 1 结果就为 1，否则为 0。常用于<strong>置位</strong>（或 1）、<strong>合并标志位</strong>。',points:{title:'真值表 |',items:['<strong>0 | 0 = 0</strong>','<strong>0 | 1 = 1</strong>','<strong>1 | 0 = 1</strong>','<strong>1 | 1 = 1</strong>（有 1 即 1）']}},
+  {tag:'基础',name:'按位非 NOT',body:'<strong>按位非 ~</strong>：单目运算，把每一位<strong>0 变 1，1 变 0</strong>。在有符号整数中 ~x = -x-1（取反加一的补码性质）。',points:{title:'真值表 ~',items:['<strong>~0 = 1</strong>','<strong>~1 = 0</strong>','<strong>~5 = -6</strong>（8 位下）','<strong>本质</strong>：每位翻转']}},
+  {tag:'基础',name:'按位异或 XOR',body:'<strong>按位异或 ^</strong>：两位<strong>不同</strong>为 1，<strong>相同</strong>为 0。性质：a^a=0、a^0=a、满足交换律结合律，是<strong>加密、交换、去重</strong>的利器。',points:{title:'真值表 ^',items:['<strong>0 ^ 0 = 0</strong>','<strong>0 ^ 1 = 1</strong>','<strong>1 ^ 0 = 1</strong>','<strong>1 ^ 1 = 0</strong>（不同则 1）']}},
+  {tag:'移位',name:'左移 SHL',body:'<strong>左移 &lt;&lt; n</strong>：所有位向左移动 n 位，低位补 0，高位丢弃。<strong>左移 1 位相当于 ×2</strong>，左移 n 位相当于 ×2ⁿ（不溢出时）。',points:{title:'左移性质',items:['<strong>1 &lt;&lt; 0 = 1</strong>','<strong>1 &lt;&lt; 1 = 2</strong>','<strong>1 &lt;&lt; 3 = 8</strong>','<strong>x &lt;&lt; n = x × 2ⁿ</strong>']}},
+  {tag:'移位',name:'右移 SHR',body:'<strong>右移 &gt;&gt; n</strong>：所有位向右移动 n 位。<strong>逻辑右移</strong>高位补 0（无符号数）；<strong>算术右移</strong>高位补符号位（有符号数，保持正负）。右移 1 位相当于 ÷2。',points:{title:'两种右移',items:['<strong>逻辑右移</strong>：高位补 0','<strong>算术右移</strong>：高位补符号位','<strong>8 &gt;&gt; 1 = 4</strong>','<strong>-8 &gt;&gt; 1 = -4</strong>（算术）']}},
+  {tag:'应用',name:'掩码应用',body:'<strong>掩码</strong>：用按位与提取特定位。例如 <code>x &amp; 0x0F</code> 取低 4 位（保留 0~15），<code>x &amp; 0xFF</code> 取低 8 位，<code>x &amp; (1&lt;&lt;n)</code> 测试第 n 位。',points:{title:'掩码技巧',items:['<strong>&amp; 0x0F</strong>：取低 4 位','<strong>&amp; 0xFF</strong>：取低 8 位（一字节）','<strong>&amp; (1&lt;&lt;n)</strong>：测试第 n 位是否为 1','<strong>| (1&lt;&lt;n)</strong>：把第 n 位置 1']}},
+  {tag:'实战',name:'异或交换两数',body:'不用临时变量交换 a、b：<code>a^=b; b^=a; a^=b;</code>。原理：异或满足结合律且 a^a=0、a^0=a。',points:{title:'交换过程',items:['<strong>步骤1</strong>：a = a ^ b','<strong>步骤2</strong>：b = a ^ b（原 a）','<strong>步骤3</strong>：a = a ^ b（原 b）','<strong>注意</strong>：a、b 不能是同一变量']}},
+  {tag:'总结',name:'核心速记',body:'位运算直接操作<strong>二进制位</strong>，速度极快，常用于<strong>底层编程、算法优化、加密压缩</strong>。掌握与/或/非/异或/移位的真值表与典型应用即可。',points:{title:'三句话总结',items:['<strong>四则运算</strong>：与(全1)、或(有1)、非(翻转)、异或(不同)','<strong>移位</strong>：左移×2，右移÷2','<strong>掩码</strong>：&amp; 取位、| 置位、^ 翻转','<strong>应用</strong>：交换、加密、状态标志、哈希']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// 8 位二进制数渲染
+function drawByteRow(bits,x,y,label,color,active){
+  const w=40,h=44,gap=4;
+  bits.forEach((b,i)=>{
+    const bx=x+i*(w+gap);
+    const on=active?active[i]:b;
+    ctx.fillStyle=on?'#8b5cf6':'#172a4a';
+    ctx.strokeStyle=on?'#a78bfa':'#243a5e';ctx.lineWidth=2;
+    roundRect(bx,y,w,h,6);ctx.fill();ctx.stroke();
+    drawText(b,bx+w/2,y+h/2,on?'#fff':'#5a6a8a',18);
+  });
+  drawText(label,x-60,y+h/2,color,13,'right');
+}
+
+// ===== 场景：位运算 vs 逻辑运算 =====
+function drawBitScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('位运算 vs 逻辑运算',W/2,30,'#8b5cf6',16);
+  const a=0b00010110,b=0b00001100; // 22, 12
+  const bitAnd=a&b,bitOr=a|b,bitXor=a^b;
+  const rowY=110;
+  drawByteRow(toBits(a,8),W/2-180,rowY,'a = '+a,'#06b6d4');
+  drawByteRow(toBits(b,8),W/2-180,rowY+70,'b = '+b,'#67e8f9');
+  drawText('&',W/2-220,rowY+35,'#8b5cf6',22);
+  drawText('|',W/2-220,rowY+105,'#06b6d4',22);
+  drawText('^',W/2-220,rowY+175,'#34d399',22);
+  drawByteRow(toBits(bitAnd,8),W/2-180,rowY+140,'a&b = '+bitAnd,'#a78bfa');
+  drawByteRow(toBits(bitOr,8),W/2-180,rowY+140,'',null);
+  drawByteRow(toBits(bitOr,8),W/2-180,rowY+70+140,'a|b = '+bitOr,'#06b6d4');
+  // 逻辑运算对比
+  const ly=H-110;
+  drawText('逻辑运算：a && b = '+(a&&b)+'   a || b = '+(a||b)+'   !a = '+(a?0:1),W/2,ly,'#fbbf24',13);
+  drawText('位运算：按位独立处理；逻辑运算：整体判真假',W/2,ly+25,'#9ab0d0',12);
+}
+
+function toBits(n,w){const r=[];for(let i=w-1;i>=0;i--)r.push((n>>i)&1);return r;}
+
+// ===== 场景：四种基本运算 =====
+function drawOpScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('四种基本位运算 · 位级演示',W/2,30,'#8b5cf6',16);
+  const phase=Math.floor(time/1.5)%4;
+  const a=0b00001100,b=0b00001010; // 12, 10
+  const ops=[
+    {name:'按位与 &',sym:'&',res:a&b,color:'#8b5cf6',fn:(x,y)=>x&y},
+    {name:'按位或 |',sym:'|',res:a|b,color:'#06b6d4',fn:(x,y)=>x|y},
+    {name:'按位非 ~',sym:'~',res:(~a)&0xFF,color:'#fbbf24',fn:x=>(~x)&0xFF},
+    {name:'按位异或 ^',sym:'^',res:a^b,color:'#34d399',fn:(x,y)=>x^y},
+  ];
+  const op=ops[phase];
+  const startX=W/2-180,rowY=130;
+  drawByteRow(toBits(a,8),startX,rowY,'a = '+a,'#06b6d4');
+  if(op.sym==='~'){
+    drawByteRow(toBits(a,8),startX,rowY,'~a','#fbbf24');
+    drawText('~',startX-220,rowY+35,op.color,22);
+    const res=toBits(op.fn(a),8);
+    drawByteRow(res,startX,rowY+90,'= '+op.fn(a),op.color,res.map((v,i)=>v!==toBits(a,8)[i]));
+  }else{
+    drawByteRow(toBits(b,8),startX,rowY+70,'b = '+b,'#67e8f9');
+    drawText(op.sym,startX-220,rowY+35,op.color,22);
+    const res=toBits(op.fn(a,b),8);
+    const aBits=toBits(a,8),bBits=toBits(b,8);
+    drawByteRow(res,startX,rowY+140,'= '+op.fn(a,b),op.color,res.map((v,i)=>(aBits[i]===1||bBits[i]===1)&&v===1));
+  }
+  drawText(op.name+' · 结果 = '+(op.sym==='~'?op.fn(a):op.fn(a,b)),W/2,H-50,op.color,15);
+  drawText('真值：0 & 0=0, 0 | 1=1, ~0=1, 1 ^ 0=1',W/2,H-25,'#9ab0d0',11);
+}
+
+// ===== 场景：移位运算 =====
+function drawShiftScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('移位运算 · 左移×2 · 右移÷2',W/2,30,'#8b5cf6',16);
+  const phase=Math.floor(time/2)%2;
+  const base=0b00000010; // 2
+  if(phase===0){
+    // 左移动画
+    const shift=Math.min(5,Math.floor((time%2)*5));
+    const v=base<<shift;
+    drawByteRow(toBits(base,8),W/2-180,100,'原始 a = '+base,'#06b6d4');
+    drawText('<< '+shift,W/2,180,'#fbbf24',16);
+    drawByteRow(toBits(v,8),W/2-180,220,'左移后 = '+v,'#8b5cf6',toBits(v,8).map((b,i)=>b===1&&i>=8-1-shift));
+    drawText('左移 '+shift+' 位 = a × 2^'+shift+' = '+base+' × '+(1<<shift)+' = '+v,W/2,320,'#34d399',14);
+    // 箭头动画
+    const ax=W/2+Math.sin(time*3)*40;
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(ax-30,180);ctx.lineTo(ax+30,180);ctx.stroke();
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.moveTo(ax+30,180);ctx.lineTo(ax+20,175);ctx.lineTo(ax+20,185);ctx.fill();
+  }else{
+    // 右移动画
+    const base2=0b10000000; // 128
+    const shift=Math.min(5,Math.floor((time%2)*5));
+    const v=base2>>shift;
+    drawByteRow(toBits(base2,8),W/2-180,100,'原始 a = '+base2,'#06b6d4');
+    drawText('>> '+shift,W/2,180,'#fbbf24',16);
+    drawByteRow(toBits(v,8),W/2-180,220,'右移后 = '+v,'#8b5cf6',toBits(v,8).map((b,i)=>b===1&&i<shift));
+    drawText('右移 '+shift+' 位 = a ÷ 2^'+shift+' = '+base2+' ÷ '+(1<<shift)+' = '+v,W/2,320,'#34d399',14);
+    const ax=W/2-Math.sin(time*3)*40;
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(ax+30,180);ctx.lineTo(ax-30,180);ctx.stroke();
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.moveTo(ax-30,180);ctx.lineTo(ax-20,175);ctx.lineTo(ax-20,185);ctx.fill();
+  }
+  drawText('左移 n 位 = ×2ⁿ，右移 n 位 = ÷2ⁿ（整数除法向下取整）',W/2,H-50,'#9ab0d0',12);
+  drawText('注意溢出：移出位被丢弃，符号位在算术右移时保持',W/2,H-25,'#fbbf24',11);
+}
+
+// ===== 场景：掩码应用 =====
+function drawMaskScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('掩码应用 · & 0x0F 提取低 4 位',W/2,30,'#8b5cf6',16);
+  const x=0b10110011; // 0xB3 = 179
+  const mask=0b00001111; // 0x0F
+  const low=x&mask; // 0x03 = 3
+  drawByteRow(toBits(x,8),W/2-180,110,'x = 0x'+x.toString(16).toUpperCase()+' = '+x,'#06b6d4');
+  drawByteRow(toBits(mask,8),W/2-180,180,'& 0x0F','#fbbf24');
+  // 高亮低 4 位
+  drawText('&',W/2-220,145,'#8b5cf6',22);
+  const res=toBits(low,8);
+  const lowHi=res.map((b,i)=>i>=4&&b===1);
+  drawByteRow(res,W/2-180,250,'= 0x'+low.toString(16).toUpperCase()+' = '+low,'#a78bfa',lowHi);
+  drawText('只保留低 4 位（0~15），高位被清零',W/2,330,'#34d399',13);
+  // 掩码块可视化
+  const bx=W/2-180,by=380;
+  toBits(mask,8).forEach((m,i)=>{
+    const xx=bx+i*44;
+    drawText(m?'保留':'屏蔽',xx+20,by+(m?-50:0),m?'#34d399':'#f87171',10);
+  });
+  drawText('常用掩码：& 0xFF 取低8位  | (1<<n) 置第n位  ^ (1<<n) 翻转第n位',W/2,H-40,'#9ab0d0',12);
+}
+
+// ===== 场景：异或交换 =====
+function drawSwapScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('异或交换两数 · 不用临时变量',W/2,30,'#8b5cf6',16);
+  const A=5,B=9;
+  let a=A,b=B;
+  const phase=Math.floor(time/1.5)%3;
+  // 步骤动画
+  let stepDesc='';
+  if(phase===0){
+    a=A^B; stepDesc='a ^= b   →   a = '+a;
+  }else if(phase===1){
+    a=A^B; b=a^B; stepDesc='b = a^b   →   b = '+b+' (原a)';
+  }else{
+    a=A^B; b=a^B; a=a^b; stepDesc='a = a^b   →   a = '+a+' (原b)';
+  }
+  // 大数字显示
+  const cx=W/2;
+  ctx.font='bold 48px monospace';ctx.textAlign='center';
+  ctx.fillStyle='#06b6d4';ctx.fillText('a = '+a,cx-130,160);
+  ctx.fillStyle='#67e8f9';ctx.fillText('b = '+b,cx+130,160);
+  ctx.font='bold 36px monospace';
+  ctx.fillStyle='#fbbf24';ctx.fillText('⇄',cx,160);
+  ctx.font='13px sans-serif';
+  drawText('初始：a='+A+', b='+B,W/2,100,'#9ab0d0',12);
+  // 步骤提示
+  ctx.fillStyle='rgba(139,92,246,0.15)';ctx.strokeStyle='#8b5cf6';ctx.lineWidth=2;
+  roundRect(W/2-250,240,500,50,8);ctx.fill();ctx.stroke();
+  drawText(stepDesc,W/2,265,'#fff',14);
+  // 原理说明
+  drawText('原理：a^a=0, a^0=a, 异或满足交换律和结合律',W/2,330,'#34d399',12);
+  drawText('注意：a、b 不能是同一变量（会变成 0）',W/2,360,'#f87171',12);
+  // 最终结果
+  if(phase===2){
+    drawText('交换完成：a='+a+'(原b), b='+b+'(原a)',W/2,400,'#34d399',14);
+  }
+  drawText('代码：a^=b; b^=a; a^=b;',W/2,H-40,'#fbbf24',14);
+}
+
+// ===== 场景：异或加密 =====
+function drawXorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('异或加密 · 明文 ^ 密钥 = 密文',W/2,30,'#8b5cf6',16);
+  const plain=0b01001011; // 0x4B
+  const key=0b11110000;
+  const cipher=plain^key;
+  const decrypt=cipher^key;
+  const phase=Math.floor(time/1.5)%3;
+  const items=[
+    {label:'明文 P',val:plain,color:'#06b6d4'},
+    {label:'密钥 K',val:key,color:'#fbbf24'},
+    {label:'密文 C=P^K',val:cipher,color:'#f87171'},
+  ];
+  // 加密流向
+  drawByteRow(toBits(plain,8),W/2-180,100,'明文 P','#06b6d4');
+  drawByteRow(toBits(key,8),W/2-180,170,'^ 密钥 K','#fbbf24');
+  drawText('^',W/2-220,135,'#8b5cf6',22);
+  drawByteRow(toBits(cipher,8),W/2-180,240,'= 密文 C','#f87171',toBits(cipher,8).map((b,i)=>b!==toBits(plain,8)[i]));
+  // 解密
+  drawText('解密：C ^ K = P',W/2,310,'#34d399',14);
+  drawByteRow(toBits(cipher,8),W/2-380,350,'密文','#f87171');
+  drawByteRow(toBits(key,8),W/2-180,350,'^ 密钥','#fbbf24');
+  drawText('^',W/2-280,350,'#8b5cf6',18);
+  const decHi=toBits(decrypt,8).map((b,i)=>b===toBits(plain,8)[i]);
+  drawByteRow(toBits(decrypt,8),W/2+20,350,'= 明文','#34d399',decHi);
+  drawText('同一密钥异或两次即恢复原文：P^K^K = P',W/2,H-50,'#9ab0d0',12);
+  drawText('应用：简单加密、CRC 校验、游戏存档、图像水印',W/2,H-25,'#fbbf24',11);
+}
+
+// ===== 场景：综合例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 位运算综合',W/2,30,'#8b5cf6',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,65,W-160,90,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,85,'#a78bfa',13,'left');
+  drawText('已知 a = 0x6C（0110 1100），完成：',120,108,'#fff',13,'left');
+  drawText('(1) 取低 4 位  (2) 把第 0、7 位置 1  (3) 翻转第 3 位  (4) 左移 2 位',120,131,'#fff',13,'left');
+  const steps=[
+    {t:'(1) 取低4位',d:'a & 0x0F = 0x6C & 0x0F = 0x0C (= 12)',c:'#06b6d4'},
+    {t:'(2) 置位',d:'a | 0x81 = 0x6C | 0x81 = 0xED (= 237)',c:'#a78bfa'},
+    {t:'(3) 翻转',d:'a ^ 0x08 = 0x6C ^ 0x08 = 0x64 (= 100)',c:'#67e8f9'},
+    {t:'(4) 左移2',d:'a << 2 = 0x6C << 2 = 0xB0 (= 176，溢出位丢弃)',c:'#34d399'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=180+i*60;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,48,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+24,s.c,13,'left');
+    drawText(s.d,280,y+24,'#fff',13,'left');
+  });
+}
+
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('位运算核心总结',W/2,40,'#8b5cf6',18);
+  const items=[
+    {t:'按位与 &',d:'全 1 则 1 · 清零取位',c:'#8b5cf6'},
+    {t:'按位或 |',d:'有 1 则 1 · 置位合并',c:'#06b6d4'},
+    {t:'按位非 ~',d:'0 变 1，1 变 0',c:'#fbbf24'},
+    {t:'异或 ^',d:'不同为 1 · 加密交换',c:'#34d399'},
+    {t:'左移 <<',d:'×2ⁿ，低位补 0',c:'#a78bfa'},
+    {t:'右移 >>',d:'÷2ⁿ，注意符号位',c:'#67e8f9'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawBitScene(t);
+  else if(stepIdx===1)drawOpScene(t);
+  else if(stepIdx===2)drawOpScene(t);
+  else if(stepIdx===3)drawOpScene(t);
+  else if(stepIdx===4)drawOpScene(t);
+  else if(stepIdx===5)drawShiftScene(t);
+  else if(stepIdx===6)drawShiftScene(t);
+  else if(stepIdx===7)drawMaskScene(t);
+  else if(stepIdx===8)drawSwapScene(t);
+  else if(stepIdx===9)drawXorScene(t);
+  else if(stepIdx===10)drawCalcScene();
+  else if(stepIdx===11)drawSummaryScene();
+  else drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

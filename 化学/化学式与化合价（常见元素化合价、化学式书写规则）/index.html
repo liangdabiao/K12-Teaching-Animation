@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>化学式与化合价 · 元素化合价 · 化学式书写</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#a5f3fc;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">化学式与化合价</span><span class="subtitle">常见元素化合价 · 化学式书写规则</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>化学式</h4><div class="v">用元素符号和数字<br>表示物质组成</div></div>
+  <div class="card s2"><div class="num">2</div><h4>化合价</h4><div class="v">原子得失或偏移<br>电子的数目</div></div>
+  <div class="card s3"><div class="num">3</div><h4>化合价规则</h4><div class="v">化合物中正负<br>化合价代数和为零</div></div>
+  <div class="card s4"><div class="num">4</div><h4>化学式书写</h4><div class="v">排顺序 · 标价<br>约简 · 交叉</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">化学式</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'化学式定义',body:'<strong>化学式</strong>是用<strong>元素符号和数字</strong>表示物质组成的式子。如 H₂O、CO₂、NaCl。它表达该物质由<strong>哪些元素</strong>组成及各元素的<strong>原子个数比</strong>。',points:{title:'核心要点',items:['<strong>组成</strong>：元素符号 + 数字','<strong>意义</strong>：表示一种物质','<strong>金属</strong>：直接用原子个数比（NaCl）','<strong>非金属</strong>：表示一个分子（H₂O）']}},
+  {tag:'基础',name:'化学式意义',body:'<strong>宏观</strong>：表示一种<strong>物质</strong>及组成元素。例如 H₂O 表示<strong>水</strong>，由 H、O 两种元素组成。<strong>微观</strong>：表示<strong>一个分子</strong>及分子内构成原子的<strong>个数</strong>。例如 H₂O 表示 1 个水分子含 2 个氢原子和 1 个氧原子。',points:{title:'两种意义',items:['<strong>宏观</strong>：1 种物质','<strong>微观</strong>：1 个分子','<strong>原子个数</strong>：2H + 1O','<strong>元素种类</strong>：H、O 两种元素']}},
+  {tag:'化合价',name:'化合价定义',body:'<strong>化合价</strong>是元素的<strong>一个原子</strong>在化合物中<strong>得失或偏移电子</strong>的数目。化合价有<strong>正价</strong>和<strong>负价</strong>，是形成化合物时的<strong>原子结合能力</strong>标志。',points:{title:'化合价本质',items:['<strong>本质</strong>：电子得失或共用偏移','<strong>正价</strong>：原子失电子或偏离','<strong>负价</strong>：原子得电子或偏向','<strong>单位</strong>：通常省略，写右上角']}},
+  {tag:'化合价',name:'化合价规则',body:'在<strong>化合物</strong>中，各元素正负化合价的<strong>代数和等于零</strong>。<strong>单质</strong>中元素的化合价<strong>为零</strong>。例如 NaCl 中 Na(+1)+Cl(-1)=0；H₂O 中 2×(+1)+(-2)=0。',points:{title:'两条规则',items:['<strong>化合物</strong>：正负价代数和=0','<strong>单质</strong>：化合价=0（如 O₂、Fe）','<strong>H₂O 验证</strong>：2×(+1)+(-2)=0','<strong>NaCl 验证</strong>：(+1)+(-1)=0']}},
+  {tag:'记忆',name:'常见化合价口诀',body:'<strong>常见化合价口诀</strong>：钾钠银氢正一价，钙镁钡锌正二价；氟氯溴碘负一价，通常氧是负二价；铜正一二铝正三，铁有正二和正三；碳有正二和正四，硫有负二正四六。',points:{title:'口诀速记',items:['<strong>+1 价</strong>：K、Na、Ag、H','<strong>+2 价</strong>：Ca、Mg、Ba、Zn','<strong>-1 价</strong>：F、Cl、Br、I','<strong>-2 价</strong>：O（通常）']}},
+  {tag:'记忆',name:'常见原子团',body:'<strong>原子团</strong>是由几个原子结合成的<strong>整体</strong>，在反应中<strong>不分开</strong>，作为一个整体显示固定化合价。常见：氢氧根 <code>OH⁻</code>(-1)、硫酸根 <code>SO₄²⁻</code>(-2)、硝酸根 <code>NO₃⁻</code>(-1)、碳酸根 <code>CO₃²⁻</code>(-2)、铵根 <code>NH₄⁺</code>(+1)。',points:{title:'常见原子团',items:['<strong>OH⁻</strong>：氢氧根，-1 价','<strong>SO₄²⁻</strong>：硫酸根，-2 价','<strong>NO₃⁻</strong>：硝酸根，-1 价','<strong>NH₄⁺</strong>：铵根，+1 价']}},
+  {tag:'对比',name:'化合价与离子区别',body:'<strong>化合价</strong>与<strong>离子</strong>不同。<strong>化合价</strong>写在元素符号<strong>正上方</strong>，先写正负再写数字（如 ⁺¹Na）。<strong>离子</strong>写在元素符号<strong>右上角</strong>，先写数字再写正负（如 Na⁺）。数值相同但<strong>位置和顺序</strong>不同。',points:{title:'写法对比',items:['<strong>化合价</strong>：⁺¹Na（上方，先符号）','<strong>离子</strong>：Na⁺（右上角，先数字）','<strong>+1</strong>：化合价 = 离子电荷数','<strong>位置</strong>：化合价在上方，离子在右上']}},
+  {tag:'书写',name:'化学式书写步骤',body:'<strong>四步法</strong>（以 Al₂O₃ 为例）：①<strong>排顺序</strong>（金属在前非金属在后：Al O）②<strong>标价</strong>（Al +3，O -2）③<strong>约简</strong>（+3 和 -2 已最简，不需约）④<strong>交叉</strong>（把 +3 的 3 作 O 的下标，-2 的 2 作 Al 的下标，得 Al₂O₃）。',points:{title:'四步法',items:['<strong>① 排顺序</strong>：金前非金后','<strong>② 标价</strong>：标各元素化合价','<strong>③ 约简</strong>：能约分先约','<strong>④ 交叉</strong>：交叉数字做下标']}},
+  {tag:'计算',name:'根据化学式求化合价',body:'已知化学式和部分元素化合价，可<strong>求未知元素</strong>化合价。例：求 KMnO₄ 中 Mn 的化合价（K=+1，O=-2）。设 Mn=x，则 <code>(+1)+x+4×(-2)=0</code>，解得 <code>x=+7</code>，所以 Mn 为 +7 价。',points:{title:'解题步骤',items:['<strong>设未知</strong>：Mn = x','<strong>列方程</strong>：(+1)+x+4(-2)=0','<strong>解方程</strong>：x = +7','<strong>结论</strong>：KMnO₄ 中 Mn 为 +7 价']}},
+  {tag:'总结',name:'典型例题与总结',body:'<strong>例题</strong>：标出 Fe₂O₃ 中 Fe 的化合价。设 Fe=x，则 <code>2x+3×(-2)=0</code>，解得 <code>x=+3</code>。<strong>总结</strong>：化学式表示物质组成，化合价遵循代数和为零，书写按四步法，计算按设未知列方程。',points:{title:'本章总结',items:['<strong>化学式</strong>：表物质组成','<strong>化合价</strong>：电子得失偏移数目','<strong>规则</strong>：化合物中代数和=0','<strong>书写</strong>：排顺序·标价·约简·交叉']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：化学式微观分子图 =====
+function drawFormulaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化学式意义 · 微观分子图',W/2,30,'#06b6d4',16);
+  const items=[
+    {name:'H₂O',x:W*0.2,sub:'2 个氢原子 + 1 个氧原子',ox1:'#fbbf24',ox2:'#06b6d4'},
+    {name:'CO₂',x:W*0.5,sub:'1 个碳原子 + 2 个氧原子',ox1:'#34d399',ox2:'#06b6d4'},
+    {name:'NaCl',x:W*0.8,sub:'1 个钠原子 + 1 个氯原子',ox1:'#fbbf24',ox2:'#34d399'},
+  ];
+  items.forEach(m=>{
+    const cx=m.x,cy=H/2+20;
+    const pulse=1+0.05*Math.sin(time*2);
+    // 标题
+    ctx.font='bold 26px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText(m.name,cx,cy-90);
+    // 原子绘制
+    if(m.name==='H₂O'){
+      // 氧（大球）
+      ctx.fillStyle='#06b6d4';ctx.shadowColor='#06b6d4';ctx.shadowBlur=20;
+      ctx.beginPath();ctx.arc(cx,cy,28*pulse,0,7);ctx.fill();ctx.shadowBlur=0;
+      drawText('O',cx,cy,'#fff',16);
+      // 氢（小球）
+      ctx.fillStyle='#fbbf24';
+      const ang=time*0.5;
+      const h1x=cx+Math.cos(ang)*40,h1y=cy+Math.sin(ang)*30;
+      const h2x=cx+Math.cos(ang+2.2)*40,h2y=cy+Math.sin(ang+2.2)*30;
+      ctx.beginPath();ctx.arc(h1x,h1y,14,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(h2x,h2y,14,0,7);ctx.fill();
+      drawText('H',h1x,h1y,'#1a1a1a',11);
+      drawText('H',h2x,h2y,'#1a1a1a',11);
+    }else if(m.name==='CO₂'){
+      // 碳（中心）
+      ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=20;
+      ctx.beginPath();ctx.arc(cx,cy,22*pulse,0,7);ctx.fill();ctx.shadowBlur=0;
+      drawText('C',cx,cy,'#1a1a1a',14);
+      // 氧（左右）
+      ctx.fillStyle='#06b6d4';
+      ctx.beginPath();ctx.arc(cx-50,cy,16,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(cx+50,cy,16,0,7);ctx.fill();
+      drawText('O',cx-50,cy,'#fff',11);
+      drawText('O',cx+50,cy,'#fff',11);
+      // 键
+      ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(cx-22,cy);ctx.lineTo(cx-34,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx+22,cy);ctx.lineTo(cx+34,cy);ctx.stroke();
+    }else{
+      // NaCl 离子
+      ctx.fillStyle='#fbbf24';ctx.shadowColor='#fbbf24';ctx.shadowBlur=15;
+      ctx.beginPath();ctx.arc(cx-30,cy,24*pulse,0,7);ctx.fill();ctx.shadowBlur=0;
+      drawText('Na',cx-30,cy,'#1a1a1a',13);
+      ctx.fillStyle='#34d399';ctx.shadowColor='#34d399';ctx.shadowBlur=15;
+      ctx.beginPath();ctx.arc(cx+30,cy,24*pulse,0,7);ctx.fill();ctx.shadowBlur=0;
+      drawText('Cl',cx+30,cy,'#1a1a1a',13);
+      // 静电引力
+      ctx.strokeStyle='rgba(251,191,36,.5)';ctx.lineWidth=1.5;
+      ctx.setLineDash([4,4]);
+      ctx.beginPath();ctx.moveTo(cx-10,cy);ctx.lineTo(cx+10,cy);ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    drawText(m.sub,cx,cy+85,'#9ab0d0',11);
+  });
+  drawText('化学式 = 元素符号 + 数字（表示原子个数）',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：化合价动态表格 =====
+function drawValenceTable(time){
+  const W=cv.width,H=cv.height;
+  drawText('常见元素化合价表 · 点击高亮',W/2,30,'#06b6d4',16);
+  const data=[
+    {sym:'K',val:'+1',c:'#fbbf24'},{sym:'Na',val:'+1',c:'#fbbf24'},{sym:'Ag',val:'+1',c:'#fbbf24'},{sym:'H',val:'+1',c:'#fbbf24'},
+    {sym:'Ca',val:'+2',c:'#34d399'},{sym:'Mg',val:'+2',c:'#34d399'},{sym:'Ba',val:'+2',c:'#34d399'},{sym:'Zn',val:'+2',c:'#34d399'},
+    {sym:'Al',val:'+3',c:'#a78bfa'},{sym:'Fe',val:'+2/+3',c:'#fb923c'},{sym:'Cu',val:'+1/+2',c:'#06b6d4'},
+    {sym:'C',val:'+2/+4',c:'#67e8f9'},{sym:'S',val:'-2/+4/+6',c:'#ec4899'},
+    {sym:'F',val:'-1',c:'#f87171'},{sym:'Cl',val:'-1',c:'#f87171'},{sym:'Br',val:'-1',c:'#f87171'},{sym:'I',val:'-1',c:'#f87171'},
+    {sym:'O',val:'-2',c:'#06b6d4'},
+  ];
+  const cols=6,cellW=(W-160)/cols,cellH=52;
+  const startX=80,startY=70;
+  // 表头
+  drawText('元素符号',80+cellW*0.5,startY-15,'#9ab0d0',11);
+  drawText('化合价',80+cellW*2,startY-15,'#9ab0d0',11);
+  const highlightIdx=Math.floor((time*1.2)%data.length);
+  data.forEach((d,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=startX+col*cellW,y=startY+row*cellH;
+    const isHi=(i===highlightIdx);
+    ctx.fillStyle=isHi?d.c+'55':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=isHi?d.c:'#243a5e';ctx.lineWidth=isHi?2:1;
+    roundRect(x+3,y+3,cellW-6,cellH-6,6);ctx.fill();ctx.stroke();
+    ctx.font='bold 18px serif';ctx.fillStyle=isHi?d.c:'#fff';ctx.textAlign='center';
+    ctx.fillText(d.sym,x+cellW/2,y+cellH/2-5);
+    ctx.font='11px sans-serif';ctx.fillStyle=isHi?d.c:'#9ab0d0';
+    ctx.fillText(d.val,x+cellW/2,y+cellH/2+12);
+  });
+  drawText('口诀：钾钠银氢+1，钙镁钡锌+2，氟氯溴碘-1，氧通常-2',W/2,H-40,'#fbbf24',12);
+  drawText('金属一般为正价，非金属可正可负',W/2,H-20,'#9ab0d0',11);
+}
+
+// ===== 场景：化合价规则（代数和=0） =====
+function drawRuleScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化合价规则 · 正负代数和 = 0',W/2,30,'#06b6d4',16);
+  const cases=[
+    {formula:'NaCl',parts:['Na','Cl'],vals:['+1','-1'],x:W*0.3},
+    {formula:'H₂O',parts:['H','O'],vals:['+1','-2'],hcount:2,x:W*0.7},
+  ];
+  cases.forEach(cs=>{
+    const cx=cs.x,cy=H/2;
+    // 标题
+    ctx.font='bold 30px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+    // 化合价标注
+    const fade=Math.min(1,Math.max(0,(time%4)-0.5));
+    if(cs.formula==='NaCl'){
+      ctx.fillText('NaCl',cx,cy-50);
+      drawText('+1',cx-40,cy-75,'#fbbf24',14);
+      drawText('-1',cx+40,cy-75,'#f87171',14);
+    }else{
+      ctx.fillText('H₂O',cx,cy-50);
+      drawText('+1',cx-40,cy-75,'#fbbf24',14);
+      drawText('-2',cx+40,cy-75,'#f87171',14);
+    }
+    // 等式
+    ctx.font='14px sans-serif';ctx.fillStyle='#9ab0d0';
+    if(cs.formula==='NaCl'){
+      drawText('(+1) + (-1) = 0',cx,cy+10,'#67e8f9',14);
+    }else{
+      drawText('2 × (+1) + (-2) = 0',cx,cy+10,'#67e8f9',14);
+    }
+    // 结论框
+    ctx.fillStyle='rgba(52,211,153,0.15)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+    roundRect(cx-90,cy+30,180,36,8);ctx.fill();ctx.stroke();
+    drawText('代数和 = 0',cx,cy+48,'#34d399',14);
+  });
+  // 单质提示
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(80,H-90,W-160,55,8);ctx.fill();ctx.stroke();
+  drawText('单质化合价 = 0（如 O₂、Fe、Cu、H₂）',W/2,H-75,'#fbbf24',13);
+  drawText('化合物中各元素正负化合价代数和为零',W/2,H-52,'#fff',12);
+}
+
+// ===== 场景：化学式书写四步（Al₂O₃） =====
+function drawWritingScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化学式书写四步 · 以 Al₂O₃ 为例',W/2,30,'#06b6d4',16);
+  const phase=Math.floor((time*1.2)%4);
+  const steps=[
+    {t:'① 排顺序',d:'金前非金后',formula:'Al  O',c:'#06b6d4'},
+    {t:'② 标价',d:'标化合价',formula:'⁺³Al  O⁻²',c:'#fbbf24'},
+    {t:'③ 约简',d:'+3 与 -2 已最简',formula:'⁺³Al  O⁻²',c:'#34d399'},
+    {t:'④ 交叉',d:'交叉作下标',formula:'Al₂O₃',c:'#f87171'},
+  ];
+  steps.forEach((s,i)=>{
+    const x=80+i*(W-160)/4;
+    const y=70;
+    const active=(i===phase);
+    ctx.fillStyle=active?s.c+'44':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?s.c:'#243a5e';ctx.lineWidth=active?2:1;
+    roundRect(x+5,y,(W-160)/4-10,90,8);ctx.fill();ctx.stroke();
+    drawText(s.t,x+(W-160)/8,y+22,active?s.c:'#fff',13);
+    drawText(s.d,x+(W-160)/8,y+45,active?s.c:'#9ab0d0',11);
+    ctx.font='bold 18px serif';ctx.fillStyle=active?'#fff':'#5a6a8a';ctx.textAlign='center';
+    ctx.fillText(s.formula,x+(W-160)/8,y+72);
+  });
+  // 箭头连接
+  for(let i=0;i<3;i++){
+    const x1=80+(i+1)*(W-160)/4;
+    drawText('→',x1,115,'#9ab0d0',18);
+  }
+  // 最终结果
+  const cx=W/2,cy=H/2+50;
+  ctx.fillStyle='rgba(248,113,113,0.15)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(cx-150,cy-30,300,90,10);ctx.fill();ctx.stroke();
+  drawText('最终结果',cx,cy-10,'#f87171',13);
+  ctx.font='bold 42px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Al₂O₃',cx,cy+25);
+  // 验证
+  drawText('验证：2 × (+3) + 3 × (-2) = +6 - 6 = 0  ✓',W/2,H-30,'#34d399',13);
+}
+
+// ===== 场景：常见原子团 =====
+function drawGroupScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('常见原子团 · 整体显固定化合价',W/2,30,'#06b6d4',16);
+  const groups=[
+    {sym:'OH',val:'-1',name:'氢氧根',atoms:['O','H'],c:'#06b6d4'},
+    {sym:'SO₄',val:'-2',name:'硫酸根',atoms:['S','O','O','O','O'],c:'#fbbf24'},
+    {sym:'NO₃',val:'-1',name:'硝酸根',atoms:['N','O','O','O'],c:'#34d399'},
+    {sym:'CO₃',val:'-2',name:'碳酸根',atoms:['C','O','O','O'],c:'#a78bfa'},
+    {sym:'NH₄',val:'+1',name:'铵根',atoms:['N','H','H','H','H'],c:'#ec4899'},
+  ];
+  const cols=5,cellW=(W-160)/cols,cellH=240;
+  groups.forEach((g,i)=>{
+    const x=80+i*cellW,y=70;
+    const active=(Math.floor(time)%groups.length===i);
+    ctx.fillStyle=active?g.c+'33':'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=active?g.c:'#243a5e';ctx.lineWidth=active?2:1;
+    roundRect(x+8,y,cellW-16,cellH,10);ctx.fill();ctx.stroke();
+    // 符号
+    ctx.font='bold 26px serif';ctx.fillStyle=g.c;ctx.textAlign='center';
+    ctx.fillText(g.sym,x+cellW/2,y+40);
+    // 化合价
+    drawText('化合价 '+g.val,x+cellW/2,y+70,g.c,13);
+    drawText(g.name,x+cellW/2,y+95,'#fff',13);
+    // 原子构成
+    const rot=time*0.5+i;
+    g.atoms.forEach((a,j)=>{
+      const ang=(j/g.atoms.length)*Math.PI*2+rot;
+      const ax=x+cellW/2+Math.cos(ang)*40;
+      const ay=y+150+Math.sin(ang)*30;
+      ctx.fillStyle=g.c+'aa';
+      ctx.beginPath();ctx.arc(ax,ay,10,0,7);ctx.fill();
+      drawText(a,ax,ay,'#1a1a1a',10);
+    });
+    // 中心
+    ctx.strokeStyle=g.c+'66';ctx.lineWidth=1;
+    g.atoms.forEach((a,j)=>{
+      const ang=(j/g.atoms.length)*Math.PI*2+rot;
+      const ax=x+cellW/2+Math.cos(ang)*40;
+      const ay=y+150+Math.sin(ang)*30;
+      ctx.beginPath();ctx.moveTo(x+cellW/2,y+150);ctx.lineTo(ax,ay);ctx.stroke();
+    });
+    ctx.fillStyle=g.c;
+    ctx.beginPath();ctx.arc(x+cellW/2,y+150,12,0,7);ctx.fill();
+    drawText('◇',x+cellW/2,y+150,'#1a1a1a',14);
+    drawText('整体',x+cellW/2,y+200,'#9ab0d0',11);
+  });
+  drawText('原子团在化学反应中作为一个整体不分开',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：化合价 vs 离子对比 =====
+function drawIonVSValScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化合价 vs 离子 · 写法对比',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2;
+  // 左：化合价
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  roundRect(80,cy-100,W/2-110,200,12);ctx.fill();ctx.stroke();
+  drawText('化合价写法',80+(W/2-110)/2,cy-70,'#06b6d4',15);
+  // 示例：⁺¹Na
+  ctx.font='bold 60px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Na',80+(W/2-110)/2,cy+30);
+  ctx.font='bold 20px serif';ctx.fillStyle='#06b6d4';
+  drawText('+1',80+(W/2-110)/2-50,cy-5,'#06b6d4',16);
+  drawText('位置：正上方',80+(W/2-110)/2,cy+85,'#9ab0d0',12);
+  drawText('顺序：先符号后数字',80+(W/2-110)/2,cy+105,'#67e8f9',11);
+  // 右：离子
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W/2+30,cy-100,W/2-110,200,12);ctx.fill();ctx.stroke();
+  drawText('离子写法',W/2+30+(W/2-110)/2,cy-70,'#fbbf24',15);
+  ctx.font='bold 60px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Na',W/2+30+(W/2-110)/2,cy+30);
+  ctx.font='bold 20px serif';ctx.fillStyle='#fbbf24';
+  drawText('+',W/2+30+(W/2-110)/2+40,cy-5,'#fbbf24',16);
+  drawText('位置：右上角',W/2+30+(W/2-110)/2,cy+85,'#9ab0d0',12);
+  drawText('顺序：先数字后符号',W/2+30+(W/2-110)/2,cy+105,'#fde68a',11);
+  // 中间对比
+  drawText('VS',W/2,cy,'#f87171',22);
+  // 底部
+  ctx.fillStyle='rgba(52,211,153,0.1)';ctx.strokeStyle='#34d399';ctx.lineWidth=1.5;
+  roundRect(80,H-80,W-160,50,8);ctx.fill();ctx.stroke();
+  drawText('数值相同 · 位置不同 · 顺序不同',W/2,H-65,'#34d399',13);
+  drawText('化合价写正上方 ⁺¹Na，离子写右上角 Na⁺',W/2,H-45,'#fff',12);
+}
+
+// ===== 场景：根据化学式求化合价 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('求未知化合价 · KMnO₄ 中 Mn',W/2,30,'#06b6d4',16);
+  // 例题
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,80,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('已知 KMnO₄ 中 K 为 +1 价，O 为 -2 价，',120,115,'#fff',13,'left');
+  drawText('求 Mn 元素的化合价。',120,140,'#fff',13,'left');
+  // 解答
+  const steps=[
+    {t:'① 设未知',d:'设 Mn 的化合价为 x',c:'#06b6d4'},
+    {t:'② 列方程',d:'(+1) + x + 4 × (-2) = 0',c:'#a78bfa'},
+    {t:'③ 化简',d:'+1 + x - 8 = 0',c:'#67e8f9'},
+    {t:'④ 解方程',d:'x = +7',c:'#34d399'},
+    {t:'⑤ 结论',d:'KMnO₄ 中 Mn 为 +7 价',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=175+i*55;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,42,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+21,s.c,13,'left');
+    drawText(s.d,300,y+21,'#fff',13,'left');
+  });
+  // 公式提示
+  drawText('化合物中正负化合价代数和为零',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('化学式与化合价 · 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'化学式定义',d:'元素符号+数字表组成',c:'#06b6d4'},
+    {t:'化学式意义',d:'宏观物质+微观分子',c:'#67e8f9'},
+    {t:'化合价定义',d:'电子得失偏移数目',c:'#a78bfa'},
+    {t:'化合价规则',d:'化合物中代数和=0',c:'#34d399'},
+    {t:'常见化合价',d:'KNaAgH+1, CaMgBaZn+2',c:'#fbbf24'},
+    {t:'书写四步',d:'排顺序·标价·约简·交叉',c:'#f87171'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawFormulaScene(t);
+  else if(stepIdx===1)drawFormulaScene(t);
+  else if(stepIdx===2)drawValenceTable(t);
+  else if(stepIdx===3)drawRuleScene(t);
+  else if(stepIdx===4)drawValenceTable(t);
+  else if(stepIdx===5)drawGroupScene(t);
+  else if(stepIdx===6)drawIonVSValScene(t);
+  else if(stepIdx===7)drawWritingScene(t);
+  else if(stepIdx===8)drawCalcScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

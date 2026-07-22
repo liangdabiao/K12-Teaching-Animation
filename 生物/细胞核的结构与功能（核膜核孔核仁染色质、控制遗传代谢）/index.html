@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>细胞核的结构与功能 · 核膜 · 核孔 · 核仁 · 染色质</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#a78bfa;--accent2:#06b6d4;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(167,139,250,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(167,139,250,.2);color:#ddd6fe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent2)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回生物目录</a><span class="title">细胞核的结构与功能</span><span class="subtitle">核膜 · 核孔 · 核仁 · 染色质 · 控制遗传代谢</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>核膜</h4><div class="v">双层膜结构<br>外膜连内质网</div></div>
+  <div class="card s2"><div class="num">2</div><h4>核孔</h4><div class="v">大分子进出通道<br>具有选择性</div></div>
+  <div class="card s3"><div class="num">3</div><h4>核仁</h4><div class="v">rRNA 合成场所<br>核糖体亚基装配</div></div>
+  <div class="card s4"><div class="num">4</div><h4>染色质</h4><div class="v">DNA + 蛋白质<br>分裂期凝缩为染色体</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">细胞核</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'细胞核存在性',body:'<strong>细胞核</strong>是<strong>真核细胞</strong>内最大的细胞器，是遗传信息储存和控制中心。<strong>多数真核细胞有 1 个核</strong>（如肝细胞），但也有特例：成熟<strong>哺乳动物红细胞无核</strong>（为装载血红蛋白），<strong>骨骼肌细胞多核</strong>（由多个细胞融合而成）。',points:{title:'核的数量规律',items:['<strong>典型细胞</strong>：1 个核（如肝细胞）','<strong>成熟红细胞</strong>：无核（为携氧腾空间）','<strong>骨骼肌细胞</strong>：多核（融合发育而来）','<strong>变形虫</strong>：1 个核（控制代谢）']}},
+  {tag:'结构',name:'核膜（双层膜）',body:'<strong>核膜</strong>是<strong>双层磷脂膜</strong>结构，把核内物质与细胞质分开。外膜表面常附着<strong>核糖体</strong>，且与<strong>粗面内质网</strong>相连通，便于物质运输与膜结构协同。',points:{title:'核膜要点',items:['<strong>双层膜</strong>：外膜 + 内膜','<strong>外膜连内质网</strong>：膜系统连续','<strong>外膜有核糖体</strong>：可合成蛋白质','<strong>功能</strong>：把核质与细胞质分开']}},
+  {tag:'结构',name:'核孔（选择性通道）',body:'<strong>核孔</strong>是核膜上的<strong>贯穿通道</strong>，由多种蛋白质组成<strong>核孔复合体</strong>。<strong>小分子</strong>自由进出，<strong>大分子</strong>（如 mRNA、蛋白质）<strong>选择性</strong>通过，保证核内环境稳定与信息交流。',points:{title:'核孔运输',items:['<strong>mRNA 出核</strong>：转录产物到细胞质','<strong>蛋白质进核</strong>：聚合酶、组蛋白等','<strong>选择性</strong>：只允许特定大分子通过','<strong>核孔复合体</strong>：由多种蛋白构成']}},
+  {tag:'结构',name:'核仁（rRNA 合成）',body:'<strong>核仁</strong>是核内<strong>无膜</strong>的致密区域，是 <strong>rRNA 合成</strong>和<strong>核糖体亚基装配</strong>的场所。合成出的核糖体亚基通过核孔运到细胞质，参与蛋白质合成。',points:{title:'核仁功能',items:['<strong>rRNA 合成</strong>：在核仁内进行','<strong>核糖体装配</strong>：大小亚基组装','<strong>无膜结构</strong>：与核质直接接触','<strong>运输</strong>：亚基经核孔到细胞质']}},
+  {tag:'物质',name:'染色质与染色体',body:'<strong>染色质</strong>和<strong>染色体</strong>是<strong>同一种物质</strong>在不同时期的<strong>两种形态</strong>：间期松散为染色质（细丝状），分裂期高度凝缩为染色体（棒状），便于均分到子细胞。',points:{title:'形态转换',items:['<strong>间期</strong>：染色质（细丝状、松散）','<strong>分裂期</strong>：染色体（凝缩、棒状）','<strong>同种物质</strong>：DNA + 蛋白质','<strong>易着色</strong>：故称染色质/染色体']}},
+  {tag:'物质',name:'染色质组成',body:'<strong>染色质</strong>由 <strong>DNA 和蛋白质</strong>组成。蛋白质包括<strong>组蛋白</strong>（碱性蛋白，与 DNA 结合形成核小体）和<strong>非组蛋白</strong>。DNA 是遗传信息的载体，蛋白质负责包装与调控。',points:{title:'组成成分',items:['<strong>DNA</strong>：储存遗传信息','<strong>组蛋白</strong>：包装 DNA 形成核小体','<strong>非组蛋白</strong>：调控基因表达','<strong>少量 RNA</strong>：参与转录过程']}},
+  {tag:'功能',name:'细胞核的功能',body:'细胞核是细胞的<strong>遗传信息库</strong>，<strong>控制细胞的代谢和遗传</strong>。它是 <strong>DNA 复制</strong>和<strong>转录</strong>的主要场所，合成 mRNA、tRNA、rRNA，决定细胞性状和生命活动。',points:{title:'核的三大功能',items:['<strong>遗传信息库</strong>：储存 DNA','<strong>控制代谢</strong>：通过 mRNA 指导蛋白质合成','<strong>繁殖遗传</strong>：DNA 复制与染色体传递','<strong>转录场所</strong>：mRNA、tRNA、rRNA 合成']}},
+  {tag:'实验',name:'实验证据（伞藻·克隆羊）',body:'<strong>伞藻核移植实验</strong>：将伞藻的核移植到去核伞藻中，再生出的<strong>伞帽形状由核的来源决定</strong>，证明<strong>核控制性状</strong>。<strong>克隆羊多利</strong>：将 A 羊乳腺细胞核注入 B 羊去核卵细胞，发育成多利，证明<strong>已分化细胞的核仍保持全能性</strong>。',points:{title:'两大经典实验',items:['<strong>伞藻实验</strong>：核决定伞帽形态','<strong>多利羊</strong>：体细胞核全能性','<strong>结论</strong>：核是遗传控制中心','<strong>细胞质</strong>：提供环境和能量']}},
+  {tag:'综合',name:'核与细胞质的依存',body:'<strong>细胞核与细胞质互相依存</strong>：核内的遗传信息通过 mRNA 指导细胞质合成蛋白质，细胞质为核提供<strong>能量、原料和酶</strong>。两者协同完成生命活动，缺一不可。',points:{title:'相互关系',items:['<strong>核 → 质</strong>：mRNA 指导蛋白质合成','<strong>质 → 核</strong>：提供 ATP、核苷酸、氨基酸','<strong>能量来源</strong>：线粒体（细胞质）','<strong>协调</strong>：共同维持细胞生命']}},
+  {tag:'总结',name:'典型例题与总结',body:'细胞核是真核细胞<strong>控制遗传和代谢</strong>的中心。核心要素：<strong>核膜</strong>双层膜、<strong>核孔</strong>选择性通道、<strong>核仁</strong>装配核糖体、<strong>染色质</strong>承载遗传信息。例题：人体成熟红细胞无核，不能<strong>分裂和合成新蛋白质</strong>。',points:{title:'核心速记',items:['<strong>结构四要素</strong>：核膜、核孔、核仁、染色质','<strong>染色质</strong>：DNA + 蛋白质','<strong>核孔</strong>：大分子选择性通道','<strong>功能</strong>：遗传信息库 + 控制代谢']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.4;
+
+// ===== 场景：细胞核三维结构剖面 =====
+function drawNucleusStructScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('细胞核结构剖面 · 核膜/核孔/核仁/染色质',W/2,30,'#a78bfa',16);
+  const cx=W/2,cy=H/2+10,R=Math.min(W,H)*0.32;
+  // 核内基质
+  const grd=ctx.createRadialGradient(cx,cy,10,cx,cy,R);
+  grd.addColorStop(0,'rgba(167,139,250,0.35)');
+  grd.addColorStop(1,'rgba(167,139,250,0.08)');
+  ctx.fillStyle=grd;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fill();
+  // 核膜双层（外膜 + 内膜）
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();
+  ctx.strokeStyle='rgba(167,139,250,0.6)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,R-8,0,7);ctx.stroke();
+  drawText('核膜（双层）',cx,cy-R-18,'#a78bfa',13);
+  // 核孔（在核膜上的缺口）
+  const nPores=8;
+  for(let i=0;i<nPores;i++){
+    const a=i/nPores*Math.PI*2+time*0.2;
+    const px=cx+Math.cos(a)*R,py=cy+Math.sin(a)*R;
+    // 缺口（黑色圆圈）
+    ctx.fillStyle='#06101f';
+    ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();
+    ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.stroke();
+  }
+  drawText('核孔',cx+R*0.7,cy-R*0.7,'#06b6d4',13);
+  // 核仁（核内偏中心的致密球）
+  const nux=cx-R*0.25,nuy=cy-R*0.15;
+  const ngrd=ctx.createRadialGradient(nux,nuy,2,nux,nuy,R*0.22);
+  ngrd.addColorStop(0,'#fde68a');ngrd.addColorStop(1,'#f59e0b');
+  ctx.fillStyle=ngrd;
+  ctx.shadowColor='#f59e0b';ctx.shadowBlur=12;
+  ctx.beginPath();ctx.arc(nux,nuy,R*0.22,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('核仁',nux,nuy,'#1a1a1a',12);
+  // 染色质（核内细丝状）
+  ctx.strokeStyle='rgba(52,211,153,0.7)';ctx.lineWidth=1.5;
+  for(let i=0;i<5;i++){
+    const phase=time*0.4+i*1.3;
+    ctx.beginPath();
+    for(let k=0;k<60;k++){
+      const ang=k/60*Math.PI*2;
+      const rr=R*0.5+Math.sin(ang*3+phase)*R*0.15;
+      const x=cx+Math.cos(ang+phase*0.3)*rr*0.7+Math.sin(i)*10;
+      const y=cy+Math.sin(ang+phase*0.3)*rr*0.7;
+      if(k===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+  drawText('染色质（DNA+蛋白质）',cx+R*0.4,cy+R*0.6,'#34d399',12);
+  // 指引线
+  ctx.strokeStyle='rgba(154,176,208,0.4)';ctx.lineWidth=1;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(cx,cy-R-10);ctx.lineTo(cx,cy-R+5);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('核膜双层膜，外膜连内质网',W/2,H-35,'#9ab0d0',12);
+}
+
+// ===== 场景：核孔物质运输 =====
+function drawPoreScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('核孔 · 大分子物质选择性运输',W/2,30,'#a78bfa',16);
+  const cx=W/2,cy=H/2+10;
+  // 核膜（横切：上下两条线）
+  ctx.fillStyle='rgba(167,139,250,0.15)';
+  ctx.fillRect(60,cy-50,W-120,18);
+  ctx.fillRect(60,cy+32,W-120,18);
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.strokeRect(60,cy-50,W-120,18);
+  ctx.strokeRect(60,cy+32,W-120,18);
+  drawText('核膜（双层）',90,cy-60,'#a78bfa',12,'left');
+  drawText('核内',90,cy-90,'#fbbf24',13,'left');
+  drawText('细胞质',90,cy+90,'#06b6d4',13,'left');
+  // 核孔（缺口）
+  const poreX=cx,poreW=50;
+  ctx.fillStyle='#06101f';
+  ctx.fillRect(poreX-poreW/2,cy-50,poreW,100);
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(poreX-poreW/2,cy-50);ctx.lineTo(poreX-poreW/2,cy+50);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(poreX+poreW/2,cy-50);ctx.lineTo(poreX+poreW/2,cy+50);ctx.stroke();
+  drawText('核孔复合体',poreX,cy+70,'#06b6d4',12);
+  // mRNA 出核（从上向下）
+  const mrnaProgress=(time*0.4)%1;
+  const mrnaY=cy-40+mrnaProgress*80;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=4;
+  ctx.shadowColor='#34d399';ctx.shadowBlur=10;
+  ctx.beginPath();
+  for(let i=0;i<5;i++){
+    const xx=poreX-15+i*8;
+    const yy=mrnaY+Math.sin(i*1.5+time*3)*4;
+    if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // mRNA 箭头
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(poreX+20,mrnaY);ctx.lineTo(poreX+14,mrnaY-5);ctx.lineTo(poreX+14,mrnaY+5);ctx.fill();
+  drawText('mRNA 出核',poreX-100,mrnaY,'#34d399',12,'right');
+  // 蛋白质进核（从下向上，错开时间）
+  const protProgress=((time*0.4)+0.5)%1;
+  const protY=cy+40-protProgress*80;
+  ctx.fillStyle='#fbbf24';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(poreX+30,protY,7,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('蛋白质',poreX+30,protY,'#fbbf24',11);
+  // 进核箭头
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(poreX+30,protY-12);ctx.lineTo(poreX+30,protY-22);ctx.stroke();
+  drawText('蛋白质进核',poreX+100,protY,'#fbbf24',12,'left');
+  // 选择性标识
+  drawText('核孔具有选择性 · 只允许特定大分子通过',W/2,H-30,'#a78bfa',13);
+}
+
+// ===== 场景：染色质 → 染色体凝缩 =====
+function drawChromatinScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('染色质 → 染色体 · 分裂期凝缩',W/2,30,'#a78bfa',16);
+  const phase=(Math.sin(time*0.5)+1)/2; // 0 间期 ~ 1 分裂期
+  drawText('间期（松散）',150,70,'#34d399',13);
+  drawText('分裂期（凝缩）',W-150,70,'#f87171',13);
+  // 中间箭头
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  const ax=W/2-60,bx=W/2+60;
+  ctx.beginPath();ctx.moveTo(ax,75);ctx.lineTo(bx,75);ctx.stroke();
+  ctx.fillStyle='#a78bfa';
+  ctx.beginPath();ctx.moveTo(bx,75);ctx.lineTo(bx-10,70);ctx.lineTo(bx-10,80);ctx.fill();
+  // 左侧：染色质（松散细丝）
+  ctx.save();
+  ctx.translate(150,200);
+  ctx.strokeStyle='rgba(52,211,153,0.8)';ctx.lineWidth=1.5;
+  for(let i=0;i<4;i++){
+    ctx.beginPath();
+    for(let k=0;k<80;k++){
+      const x=k/80*180;
+      const y=Math.sin(k*0.5+i*1.5)*20+Math.sin(time*1.5+i)*8;
+      if(k===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+  drawText('染色质',90,60,'#34d399',13);
+  ctx.restore();
+  // 右侧：染色体（凝缩棒状）随 phase 逐渐变粗
+  ctx.save();
+  ctx.translate(W-220,200);
+  const thick=4+phase*16;
+  // 染色体 1
+  ctx.strokeStyle='#f87171';ctx.lineWidth=thick;
+  ctx.shadowColor='#f87171';ctx.shadowBlur=phase*10;
+  ctx.beginPath();ctx.moveTo(20,0);ctx.bezierCurveTo(50,-20,80,20,110,0);ctx.stroke();
+  // 染色体 2（姐妹染色单体）
+  ctx.beginPath();ctx.moveTo(30,40);ctx.bezierCurveTo(60,20,90,60,120,40);ctx.stroke();
+  ctx.shadowBlur=0;
+  // 着丝粒
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(65,0,3+phase*3,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(75,40,3+phase*3,0,7);ctx.fill();
+  drawText('染色体',75,75,'#f87171',13);
+  ctx.restore();
+  // 凝缩进度条
+  const barX=W/2-120,barY=H-60,barW=240;
+  ctx.fillStyle='rgba(255,255,255,0.1)';
+  roundRect(barX,barY,barW,14,7);ctx.fill();
+  ctx.fillStyle='#a78bfa';
+  roundRect(barX,barY,barW*phase,14,7);ctx.fill();
+  drawText('凝缩程度 '+(phase*100).toFixed(0)+'%',W/2,barY-12,'#a78bfa',12);
+  drawText('同种物质（DNA+蛋白质），不同时期两种形态',W/2,H-25,'#9ab0d0',12);
+}
+
+// ===== 场景：核仁合成 rRNA、装配核糖体 =====
+function drawNucleolusScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('核仁 · rRNA 合成 · 核糖体亚基装配',W/2,30,'#a78bfa',16);
+  const cx=W/2-60,cy=H/2;
+  // 核仁
+  const grd=ctx.createRadialGradient(cx,cy,5,cx,cy,55);
+  grd.addColorStop(0,'#fde68a');grd.addColorStop(1,'#f59e0b');
+  ctx.fillStyle=grd;
+  ctx.shadowColor='#f59e0b';ctx.shadowBlur=20;
+  ctx.beginPath();ctx.arc(cx,cy,55,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('核仁',cx,cy,'#1a1a1a',14);
+  drawText('rRNA 合成',cx,cy+75,'#fbbf24',12);
+  // rRNA 出核仁（颗粒）
+  const emitT=time*1.5;
+  for(let i=0;i<5;i++){
+    const p=(emitT+i*0.3)%1;
+    const a=i/5*Math.PI*2;
+    const x=cx+Math.cos(a)*55+p*70;
+    const y=cy+Math.sin(a)*55+p*40;
+    ctx.fillStyle='rgba(52,211,153,'+(1-p)+')';
+    ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();
+  }
+  // 装配区（右侧）
+  const ax=cx+200,ay=cy;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.setLineDash([4,4]);
+  roundRect(ax-60,ay-50,120,100,10);ctx.stroke();
+  ctx.setLineDash([]);
+  drawText('装配区',ax,ay-65,'#06b6d4',12);
+  // 大亚基 + 小亚基
+  const wob=Math.sin(time*3)*3;
+  ctx.fillStyle='#06b6d4';
+  // 大亚基（上半）
+  roundRect(ax-30,ay-30+wob,60,25,8);ctx.fill();
+  drawText('大亚基',ax,ay-17+wob,'#fff',11);
+  // 小亚基（下半）
+  ctx.fillStyle='#67e8f9';
+  roundRect(ax-25,ay+5-wob,50,18,8);ctx.fill();
+  drawText('小亚基',ax,ay+14-wob,'#1a1a1a',11);
+  // 组装完成箭头到细胞质
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ax+60,ay);ctx.lineTo(ax+110,ay);ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(ax+110,ay);ctx.lineTo(ax+100,ay-5);ctx.lineTo(ax+100,ay+5);ctx.fill();
+  // 完整核糖体
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.arc(ax+135,ay-7,8,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(ax+135,ay+6,6,0,7);ctx.fill();
+  drawText('核糖体',ax+135,ay+25,'#34d399',11);
+  drawText('核仁合成 rRNA → 装配大小亚基 → 经核孔到细胞质',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景：伞藻核移植实验 =====
+function drawAcetabulariaScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('伞藻核移植实验 · 证明核决定性状',W/2,30,'#a78bfa',16);
+  const baseY=H-80;
+  // 实验流程：左侧菊花形伞藻 → 核移植 → 右侧长出
+  // 伞藻 1（左：提供核，菊花形）
+  const x1=140;
+  ctx.strokeStyle='#34d399';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(x1,baseY);ctx.lineTo(x1,baseY-150);ctx.stroke();
+  // 假根（含核）
+  ctx.fillStyle='#a78bfa';
+  ctx.beginPath();ctx.ellipse(x1,baseY,20,12,0,0,7);ctx.fill();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(x1,baseY,6,0,7);ctx.fill();
+  drawText('核（菊花形）',x1,baseY+20,'#fbbf24',11);
+  // 伞帽（菊花形，边缘锯齿）
+  ctx.fillStyle='rgba(52,211,153,0.6)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<16;i++){
+    const a=i/16*Math.PI*2;
+    const r=40+(i%2?10:0);
+    const x=x1+Math.cos(a)*r;
+    const y=baseY-150+Math.sin(a)*r*0.6;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.closePath();ctx.fill();ctx.stroke();
+  drawText('伞藻 A（菊花帽）',x1,baseY-220,'#34d399',12);
+  // 箭头
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x1+70,baseY-100);ctx.lineTo(W/2-30,baseY-100);ctx.stroke();
+  ctx.fillStyle='#a78bfa';
+  ctx.beginPath();ctx.moveTo(W/2-30,baseY-100);ctx.lineTo(W/2-40,baseY-105);ctx.lineTo(W/2-40,baseY-95);ctx.fill();
+  drawText('核移植',x1+140,baseY-115,'#a78bfa',12);
+  // 伞藻 2（右：去核 + A 的核 → 长出菊花帽）
+  const x2=W-140;
+  const grow=(Math.sin(time*0.6)+1)/2*0.6+0.4;
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(x2,baseY);ctx.lineTo(x2,baseY-150*grow);ctx.stroke();
+  // 假根
+  ctx.fillStyle='#a78bfa';
+  ctx.beginPath();ctx.ellipse(x2,baseY,20,12,0,0,7);ctx.fill();
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(x2,baseY,6,0,7);ctx.fill();
+  drawText('A 的核',x2,baseY+20,'#fbbf24',11);
+  // 新伞帽（生长，菊花形）
+  if(grow>0.7){
+    ctx.fillStyle='rgba(52,211,153,0.6)';ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let i=0;i<16;i++){
+      const a=i/16*Math.PI*2;
+      const r=40*(grow-0.6)/0.4+(i%2?10:0);
+      const x=x2+Math.cos(a)*r;
+      const y=baseY-150+Math.sin(a)*r*0.6;
+      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.closePath();ctx.fill();ctx.stroke();
+  }
+  drawText('伞藻 B（去核）+ A 核',x2,baseY-220,'#06b6d4',12);
+  drawText('结果：再生出菊花形伞帽 → 性状由核决定',W/2,H-30,'#34d399',13);
+}
+
+// ===== 场景：克隆羊多利 =====
+function drawDollyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('克隆羊多利 · 体细胞核全能性',W/2,30,'#a78bfa',16);
+  const cy=H/2;
+  // A 羊（乳腺细胞供核）
+  const ax=120;
+  ctx.fillStyle='rgba(251,191,36,0.15)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(ax,cy,45,35,0,0,7);ctx.fill();ctx.stroke();
+  drawText('A 羊',ax,cy-10,'#fbbf24',13);
+  drawText('乳腺细胞',ax,cy+10,'#fbbf24',11);
+  // 乳腺细胞核（取出）
+  ctx.fillStyle='#fbbf24';
+  ctx.beginPath();ctx.arc(ax,cy,8,0,7);ctx.fill();
+  // B 羊（去核卵细胞）
+  const bx=W/2;
+  ctx.fillStyle='rgba(6,182,212,0.15)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(bx,cy,45,35,0,0,7);ctx.fill();ctx.stroke();
+  drawText('B 羊',bx,cy-10,'#06b6d4',13);
+  drawText('去核卵细胞',bx,cy+10,'#06b6d4',11);
+  // 去核标识
+  ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(bx-8,cy-8);ctx.lineTo(bx+8,cy+8);ctx.stroke();
+  // 注入 A 核到 B（动画）
+  const injT=(time*0.5)%1;
+  const injX=ax+(bx-ax)*injT;
+  ctx.fillStyle='#fbbf24';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(injX,cy-60,8,0,7);ctx.fill();
+  ctx.shadowBlur=0;
+  drawText('A 的核',injX,cy-80,'#fbbf24',11);
+  // 融合 → 多利
+  const dx=W-130;
+  ctx.fillStyle='rgba(167,139,250,0.2)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(dx,cy,50,38,0,0,7);ctx.fill();ctx.stroke();
+  drawText('多利',dx,cy-10,'#a78bfa',14);
+  drawText('= A 的克隆',dx,cy+12,'#a78bfa',11);
+  // 羊头简笔
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(dx-15,cy-25,6,0,7);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(dx-12,cy-20);ctx.lineTo(dx-5,cy-15);ctx.stroke();
+  // 箭头到多利
+  ctx.strokeStyle='#34d399';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(bx+50,cy);ctx.lineTo(dx-55,cy);ctx.stroke();
+  ctx.fillStyle='#34d399';
+  ctx.beginPath();ctx.moveTo(dx-55,cy);ctx.lineTo(dx-65,cy-5);ctx.lineTo(dx-65,cy+5);ctx.fill();
+  drawText('移植发育',W/2,cy-25,'#34d399',11);
+  drawText('结论：已分化细胞的核仍保持全能性',W/2,H-30,'#34d399',13);
+}
+
+// ===== 场景：不同细胞核数量对比 =====
+function drawCompareScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('不同细胞的核数量对比',W/2,30,'#a78bfa',16);
+  const baseY=H/2+40;
+  const cells=[
+    {x:W*0.18,n:0,name:'成熟红细胞',desc:'无核（携氧）',c:'#f87171'},
+    {x:W*0.5,n:1,name:'肝细胞',desc:'单核（典型）',c:'#34d399'},
+    {x:W*0.82,n:5,name:'骨骼肌细胞',desc:'多核（融合）',c:'#06b6d4'},
+  ];
+  cells.forEach(cell=>{
+    // 细胞（椭圆）
+    ctx.fillStyle=cell.c+'22';ctx.strokeStyle=cell.c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.ellipse(cell.x,baseY,75,55,0,0,7);ctx.fill();ctx.stroke();
+    // 细胞核
+    if(cell.n===0){
+      drawText('无核',cell.x,baseY,'#f87171',13);
+      // X 标识
+    }else if(cell.n===1){
+      const grd=ctx.createRadialGradient(cell.x,baseY,2,cell.x,baseY,18);
+      grd.addColorStop(0,'#fde68a');grd.addColorStop(1,'#f59e0b');
+      ctx.fillStyle=grd;
+      ctx.shadowColor='#f59e0b';ctx.shadowBlur=8;
+      ctx.beginPath();ctx.arc(cell.x,baseY,18,0,7);ctx.fill();
+      ctx.shadowBlur=0;
+    }else{
+      for(let i=0;i<cell.n;i++){
+        const a=i/cell.n*Math.PI*2;
+        const xx=cell.x+Math.cos(a)*35;
+        const yy=baseY+Math.sin(a)*25;
+        ctx.fillStyle='#fbbf24';
+        ctx.shadowColor='#fbbf24';ctx.shadowBlur=6;
+        ctx.beginPath();ctx.arc(xx,yy,8,0,7);ctx.fill();
+      }
+      ctx.shadowBlur=0;
+    }
+    // 标签
+    drawText(cell.name,cell.x,baseY-85,cell.c,13);
+    drawText(cell.desc,cell.x,baseY+85,'#9ab0d0',11);
+    drawText('核数: '+cell.n,cell.x,baseY-65,'#fff',12);
+  });
+  drawText('结论：多数真核细胞 1 个核，红细胞无核，骨骼肌多核',W/2,H-30,'#a78bfa',12);
+}
+
+// ===== 场景：典型例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 细胞核功能分析',W/2,30,'#a78bfa',16);
+  // 例题框
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,120,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#a78bfa',13,'left');
+  drawText('下列关于细胞核结构与功能的叙述，正确的是？',120,115,'#fff',13,'left');
+  drawText('A. 核膜是单层膜  B. 核孔无选择性',120,140,'#fff',13,'left');
+  drawText('C. 核仁是 rRNA 合成场所  D. 染色质只含 DNA',120,165,'#fff',13,'left');
+  // 解答步骤
+  const steps=[
+    {t:'A 判断',d:'核膜是双层膜，外膜连内质网 → 错',c:'#f87171'},
+    {t:'B 判断',d:'核孔对大分子有选择性 → 错',c:'#f87171'},
+    {t:'C 判断',d:'核仁是 rRNA 合成和核糖体装配场所 → 对',c:'#34d399'},
+    {t:'D 判断',d:'染色质 = DNA + 蛋白质 → 错',c:'#f87171'},
+    {t:'答案',d:'正确答案：C',c:'#fbbf24'},
+  ];
+  steps.forEach((s,i)=>{
+    const y=215+i*42;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,34,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+17,s.c,13,'left');
+    drawText(s.d,280,y+17,'#fff',13,'left');
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('细胞核结构与功能 · 核心总结',W/2,40,'#a78bfa',18);
+  const items=[
+    {t:'核膜',d:'双层膜，外膜连内质网',c:'#a78bfa'},
+    {t:'核孔',d:'大分子选择性通道',c:'#06b6d4'},
+    {t:'核仁',d:'rRNA 合成 + 核糖体装配',c:'#fbbf24'},
+    {t:'染色质',d:'DNA + 蛋白质（间期）',c:'#34d399'},
+    {t:'染色体',d:'凝缩形态（分裂期）',c:'#f87171'},
+    {t:'细胞核功能',d:'遗传信息库 + 控制代谢',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+  drawText('核是细胞的控制中心 · 控制遗传与代谢',W/2,H-30,'#a78bfa',14);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawCompareScene(t);
+  else if(stepIdx===1)drawNucleusStructScene(t);
+  else if(stepIdx===2)drawPoreScene(t);
+  else if(stepIdx===3)drawNucleolusScene(t);
+  else if(stepIdx===4)drawChromatinScene(t);
+  else if(stepIdx===5)drawNucleusStructScene(t);
+  else if(stepIdx===6)drawNucleusStructScene(t);
+  else if(stepIdx===7)drawAcetabulariaScene(t);
+  else if(stepIdx===8)drawDollyScene(t);
+  else if(stepIdx===9)drawCalcScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

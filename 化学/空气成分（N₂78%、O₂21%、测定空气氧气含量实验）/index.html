@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>空气成分 · 测定氧气含量 · N₂与O₂</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#06b6d4;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(6,182,212,.06)}
+.back:hover{background:rgba(6,182,212,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,182,212,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(6,182,212,.2);color:#67e8f9;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">空气成分</span><span class="subtitle">N₂ 78% · O₂ 21% · 测定氧气含量实验</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>空气成分</h4><div class="v">N₂ 78% · O₂ 21%<br>稀有气体 0.94%</div></div>
+  <div class="card s2"><div class="num">2</div><h4>测氧实验</h4><div class="v">红磷燃烧法<br>水面上升约 1/5</div></div>
+  <div class="card s3"><div class="num">3</div><h4>纯氧 vs 空气</h4><div class="v">纯氧：剧烈燃烧<br>空气：缓和燃烧</div></div>
+  <div class="card s4"><div class="num">4</div><h4>稀有气体</h4><div class="v">化学性质稳定<br>氦氖氩用途广</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">成分</span><span id="stepTitle">空气成分</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'成分',name:'空气成分',body:'空气是<strong>混合物</strong>，主要成分按体积分数计算：<strong>N₂ 约 78%</strong>，<strong>O₂ 约 21%</strong>，<strong>稀有气体约 0.94%</strong>（主要为氩气），<strong>CO₂ 约 0.03%</strong>，其他气体和杂质约 0.03%。',points:{title:'成分速记',items:['<strong>N₂</strong>：78%（最大成分）','<strong>O₂</strong>：21%（维持生命）','<strong>稀有气体</strong>：0.94%','<strong>CO₂ 与其他</strong>：共约 0.06%']}},
+  {tag:'原理',name:'测氧实验原理',body:'<strong>红磷燃烧法</strong>测定空气中氧气含量：红磷（P）在密闭集气瓶内燃烧，<strong>消耗瓶内氧气</strong>生成五氧化二磷固体（P₂O₅），瓶内<strong>气体压强减小</strong>，烧杯中的水被大气压压入瓶中，进入的水的体积即为被消耗 O₂ 的体积。',points:{title:'化学方程式',items:['<strong>反应</strong>：4P + 5O₂ → 2P₂O₅','<strong>现象</strong>：冒大量白烟，放热','<strong>原理</strong>：消耗 O₂ → 压强减小','<strong>测得</strong>：O₂ 约占空气体积 1/5']}},
+  {tag:'装置',name:'实验装置',body:'<strong>实验装置</strong>：集气瓶（带刻度，预先装入水测量剩余体积）、燃烧匙（盛红磷）、导管、烧杯（装水）、止水夹。装置必须<strong>密闭不漏气</strong>。',points:{title:'装置要点',items:['<strong>集气瓶</strong>：标记 5 等分刻度','<strong>燃烧匙</strong>：放过量红磷','<strong>导管</strong>：连接瓶和烧杯','<strong>止水夹</strong>：控制水流']}},
+  {tag:'现象',name:'实验现象',body:'<strong>红磷燃烧</strong>产生<strong>大量白烟</strong>（P₂O₅ 颗粒），放出大量热；燃烧停止冷却到室温后，<strong>打开止水夹</strong>，烧杯中的水沿导管流入集气瓶，<strong>水面上升约 1/5 体积</strong>（即瓶容积的 1/5）。',points:{title:'现象三要点',items:['<strong>燃烧时</strong>：黄白色火焰，大量白烟','<strong>放热</strong>：温度升高','<strong>冷却后</strong>：水面上升约 1/5','<strong>结论</strong>：O₂ 约占空气体积 1/5']}},
+  {tag:'结论',name:'实验结论',body:'红磷燃烧消耗了集气瓶内的 O₂，水面上升的体积等于被消耗 O₂ 的体积，约占集气瓶容积的 <strong>1/5（20%）</strong>，即<strong>空气中 O₂ 的体积分数约为 21%</strong>（实验有一定误差，接近 1/5）。',points:{title:'结论要点',items:['<strong>O₂ 体积分数</strong>：约 1/5 ≈ 21%','<strong>剩余气体</strong>：主要是 N₂（约 4/5）','<strong>不能支持燃烧</strong>：剩余 N₂','<strong>同时验证</strong>：N₂ 难溶于水']}},
+  {tag:'关键',name:'成功条件',body:'实验成功必须满足三个条件：<strong>① 红磷必须过量</strong>（保证瓶内 O₂ 被完全消耗）；<strong>② 装置不能漏气</strong>（保证压强差准确传递）；<strong>③ 必须冷却到室温后再打开止水夹</strong>（避免温度影响气体压强）。',points:{title:'三大关键',items:['<strong>红磷过量</strong>：完全消耗 O₂','<strong>装置密闭</strong>：无漏气','<strong>冷却到室温</strong>：温度相同','<strong>点燃后</strong>：立即夹紧止水夹']}},
+  {tag:'误差',name:'误差分析',body:'<strong>结果偏小</strong>（小于 1/5）的原因：① 红磷量不足，O₂ 未被完全消耗；② 装置漏气，外界空气进入；③ 未冷却到室温就打开止水夹。<strong>结果偏大</strong>（大于 1/5）的原因：① 导管未预先充满水（导管内水也被压入）；② 红磷中混入其他可燃物；③ 插入燃烧匙过慢，瓶内空气受热逸出。',points:{title:'误差对照',items:['<strong>偏小</strong>：红磷不足 / 漏气 / 未冷却','<strong>偏小</strong>：O₂ 未消耗完','<strong>偏大</strong>：导管未充满水','<strong>偏大</strong>：插入过慢空气逸出']}},
+  {tag:'应用',name:'稀有气体用途',body:'<strong>稀有气体</strong>（He、Ne、Ar、Kr、Xe）化学性质<strong>极稳定</strong>，几乎不与其他物质反应（曾称"惰性气体"）。用途：<strong>氦气</strong>填充飞艇气球（密度小且不燃）；<strong>氖气</strong>制霓虹灯（红橙色光）；<strong>氩气</strong>作焊接保护气（防止金属氧化）；<strong>氙灯</strong>用于汽车大灯。',points:{title:'稀有气体家族',items:['<strong>氦 He</strong>：飞艇、潜水气体','<strong>氖 Ne</strong>：霓虹灯（红光）','<strong>氩 Ar</strong>：保护焊、白炽灯','<strong>氙 Xe</strong>：高压氙灯']}},
+  {tag:'工业',name:'氧气的工业制法',body:'<strong>工业制氧气</strong>采用<strong>分离液态空气法</strong>：先将空气<strong>液化</strong>（降温加压），再利用 N₂ 和 O₂ 的<strong>沸点不同</strong>（N₂ 沸点 -196°C，O₂ 沸点 -183°C），通过<strong>分馏</strong>分离。属于<strong>物理变化</strong>，是利用沸点差异进行分离的典型方法。',points:{title:'分离液态空气',items:['<strong>步骤1</strong>：净化空气','<strong>步骤2</strong>：降温液化','<strong>步骤3</strong>：分馏分离','<strong>本质</strong>：物理变化（沸点不同）']}},
+  {tag:'总结',name:'例题与总结',body:'<strong>典型例题</strong>：测定空气中 O₂ 含量实验，若水面上升小于 1/5，可能原因是什么？答：红磷量不足、装置漏气、未冷却到室温。<strong>核心记忆</strong>：空气成分 N₂ 78%、O₂ 21%、稀有气体 0.94%、CO₂ 0.03%；测氧原理是红磷消耗 O₂ 造成压强差。',points:{title:'速记总结',items:['<strong>N₂ 78%</strong>、O₂ 21%、稀有气体 0.94%','<strong>测氧</strong>：4P+5O₂→2P₂O₅','<strong>O₂ 体积分数</strong>：约 1/5 ≈ 21%','<strong>工业制 O₂</strong>：分离液态空气']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.5;
+
+// ===== 场景1：空气成分饼图 =====
+function drawPieScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('空气成分 · 体积分数',W/2,30,'#06b6d4',16);
+  const cx=W/2-100,cy=H/2+20,r=Math.min(W,H)/3.2;
+  const data=[
+    {name:'N₂',val:78,color:'#06b6d4'},
+    {name:'O₂',val:21,color:'#fbbf24'},
+    {name:'稀有气体',val:0.94,color:'#34d399'},
+    {name:'CO₂',val:0.03,color:'#f87171'},
+    {name:'其他',val:0.03,color:'#a78bfa'},
+  ];
+  // 动画展开角度
+  const prog=Math.min(1,time*0.4);
+  let start=-Math.PI/2;
+  data.forEach(d=>{
+    const ang=d.val/100*Math.PI*2*prog;
+    ctx.fillStyle=d.color+'cc';ctx.strokeStyle=d.color;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,start+ang);ctx.closePath();ctx.fill();ctx.stroke();
+    // 标签
+    if(prog>0.95){
+      const mid=start+ang/2;
+      const lx=cx+Math.cos(mid)*r*0.65,ly=cy+Math.sin(mid)*r*0.65;
+      if(d.val>=1){drawText(d.name,lx,ly-8,'#fff',13);drawText(d.val+'%',lx,ly+8,'#fff',12);}
+    }
+    start+=ang;
+  });
+  // 外圈
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke();
+  // 右侧图例
+  const lx=W-200;
+  drawText('成分占比',lx,80,'#fbbf24',14);
+  data.forEach((d,i)=>{
+    const y=110+i*30;
+    ctx.fillStyle=d.color;ctx.fillRect(lx-15,y-8,16,16);
+    drawText(d.name+'  '+d.val+'%',lx+15,y,'#fff',12,'left');
+  });
+  drawText('空气是混合物 · N₂ 最多',W/2,H-30,'#9ab0d0',12);
+}
+
+// ===== 场景2：红磷燃烧实验装置 =====
+function drawExpScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('测定空气中氧气含量 · 红磷燃烧法',W/2,30,'#06b6d4',16);
+  const bx=W/2-60,by=H/2-40,bw=140,bh=200;
+  // 烧杯（左下）
+  ctx.fillStyle='rgba(52,211,153,0.08)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(bx-160,by+bh-20);ctx.lineTo(bx-180,by+bh+50);ctx.lineTo(bx-40,by+bh+50);ctx.lineTo(bx-60,by+bh-20);ctx.stroke();
+  // 水位（烧杯）
+  ctx.fillStyle='rgba(6,182,212,0.35)';
+  ctx.beginPath();ctx.moveTo(bx-170,by+bh+5);ctx.lineTo(bx-175,by+bh+48);ctx.lineTo(bx-45,by+bh+48);ctx.lineTo(bx-50,by+bh+5);ctx.closePath();ctx.fill();
+  drawText('烧杯+水',bx-110,by+bh+68,'#67e8f9',12);
+  // 集气瓶（矩形）
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  roundRect(bx,by,bw,bh,8);ctx.fill();ctx.stroke();
+  // 瓶塞（顶部）
+  ctx.fillStyle='#5a6a8a';ctx.fillRect(bx+30,by-15,bw-60,18);
+  // 燃烧匙（从顶部插入）
+  ctx.strokeStyle='#9ab0d0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(bx+bw/2,by-15);ctx.lineTo(bx+bw/2,by+30);ctx.stroke();
+  // 红磷
+  ctx.fillStyle='#f87171';
+  ctx.beginPath();ctx.arc(bx+bw/2,by+35,6,0,7);ctx.fill();
+  drawText('红磷 P',bx+bw/2,by+55,'#f87171',11);
+  // 导管（从瓶塞到烧杯）
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(bx+20,by-5);ctx.lineTo(bx-80,by-5);ctx.lineTo(bx-100,by+bh-10);ctx.stroke();
+  // 止水夹
+  ctx.fillStyle='#fbbf24';
+  ctx.fillRect(bx-85,by-12,16,14);
+  drawText('止水夹',bx-77,by-25,'#fbbf24',10);
+  // 火焰与白烟（动画）
+  const burning=time%6<3;
+  if(burning){
+    const flame=8+Math.sin(time*8)*3;
+    // 火焰
+    ctx.fillStyle='rgba(251,191,36,0.7)';ctx.strokeStyle='#fbbf24';
+    ctx.beginPath();
+    ctx.moveTo(bx+bw/2,by+30);
+    ctx.quadraticCurveTo(bx+bw/2-flame,by+15,bx+bw/2,by);
+    ctx.quadraticCurveTo(bx+bw/2+flame,by+15,bx+bw/2,by+30);
+    ctx.fill();
+    // 白烟（向上扩散）
+    for(let i=0;i<5;i++){
+      const sy=by+5-i*20-Math.sin(time*2+i)*8;
+      const sr=8+i*3;
+      ctx.fillStyle='rgba(255,255,255,'+(0.4-i*0.07)+')';
+      ctx.beginPath();ctx.arc(bx+bw/2+Math.sin(time+i)*5,sy,sr,0,7);ctx.fill();
+    }
+  }else{
+    // 水面上升（动画）
+    const rise=(time%3)/3*40;
+    ctx.fillStyle='rgba(6,182,212,0.35)';
+    ctx.fillRect(bx+4,by+bh-rise-4,bw-8,rise);
+    drawText('水面上升',bx+bw/2,by+bh-25,'#67e8f9',11);
+  }
+  // 瓶内刻度（5等分）
+  for(let i=1;i<5;i++){
+    const y=by+bh*i/5;
+    ctx.strokeStyle='#243a5e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx+8,y);ctx.stroke();
+    drawText((5-i)+'/5',bx+18,y,'#5a6a8a',9,'left');
+  }
+  // 下方说明
+  drawText(burning?'燃烧中：4P+5O₂ → 2P₂O₅（冒白烟、放热）':'冷却后打开止水夹 → 水上升 1/5',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景3：分子占比示意 =====
+function drawMoleculeScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('分子占比示意 · 体积分数',W/2,30,'#06b6d4',16);
+  const bx=80,by=70,bw=W-160,bh=H-130;
+  ctx.strokeStyle='#243a5e';ctx.lineWidth=1;ctx.strokeRect(bx,by,bw,bh);
+  // 按比例生成分子（N₂ 78 个球 / O₂ 21 / 稀有 1）
+  const n2Count=78,o2Count=21,rareCount=1;
+  const positions=[];
+  for(let i=0;i<n2Count+o2Count+rareCount;i++){
+    const seed=i*7.3+1.1;
+    positions.push({x:bx+10+(seed*97%bw-20),y:by+10+(seed*53%bh-20)});
+  }
+  // N₂ 分子（蓝色双球）
+  ctx.font='bold 9px sans-serif';
+  positions.slice(0,n2Count).forEach((p,i)=>{
+    const wob=Math.sin(time*2+i)*2;
+    ctx.fillStyle='#06b6d4';
+    ctx.beginPath();ctx.arc(p.x-4+wob,p.y,3,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(p.x+4+wob,p.y,3,0,7);ctx.fill();
+    ctx.strokeStyle='#67e8f9';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.x-4+wob,p.y);ctx.lineTo(p.x+4+wob,p.y);ctx.stroke();
+  });
+  // O₂ 分子（黄色双球）
+  positions.slice(n2Count,n2Count+o2Count).forEach((p,i)=>{
+    const wob=Math.sin(time*3+i)*2;
+    ctx.fillStyle='#fbbf24';
+    ctx.beginPath();ctx.arc(p.x-4+wob,p.y,3.5,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(p.x+4+wob,p.y,3.5,0,7);ctx.fill();
+    ctx.strokeStyle='#fde68a';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(p.x-4+wob,p.y);ctx.lineTo(p.x+4+wob,p.y);ctx.stroke();
+  });
+  // 稀有气体（绿色单球）
+  positions.slice(n2Count+o2Count).forEach(p=>{
+    ctx.fillStyle='#34d399';
+    ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fill();
+  });
+  // 图例
+  ctx.fillStyle='#06b6d4';ctx.beginPath();ctx.arc(bx+20,by+bh+25,5,0,7);ctx.fill();
+  drawText('N₂ 78%',bx+40,by+bh+25,'#fff',13,'left');
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(bx+150,by+bh+25,5,0,7);ctx.fill();
+  drawText('O₂ 21%',bx+170,by+bh+25,'#fff',13,'left');
+  ctx.fillStyle='#34d399';ctx.beginPath();ctx.arc(bx+280,by+bh+25,5,0,7);ctx.fill();
+  drawText('稀有气体 0.94%',bx+300,by+bh+25,'#fff',13,'left');
+  drawText('空气分子按体积分数占比（每 100 个分子）',W/2,by-15,'#9ab0d0',11);
+}
+
+// ===== 场景4：误差分析 =====
+function drawErrorScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('误差分析 · 偏小 vs 偏大',W/2,30,'#fbbf24',16);
+  // 左右分栏
+  const half=W/2-60;
+  // 左侧：偏小（红色）
+  ctx.fillStyle='rgba(248,113,113,0.12)';ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+  roundRect(40,70,half,H-130,10);ctx.fill();ctx.stroke();
+  drawText('结果偏小（< 1/5）',40+half/2,95,'#f87171',15);
+  const small=[
+    '红磷量不足',
+    '装置漏气（空气进入）',
+    '未冷却到室温',
+    'O₂ 未完全消耗',
+  ];
+  small.forEach((s,i)=>{
+    const y=130+i*50;
+    ctx.fillStyle='rgba(248,113,113,0.15)';
+    roundRect(60,y,half-40,38,6);ctx.fill();
+    drawText('● '+s,70,y+20,'#fde68a',12,'left');
+  });
+  // 右侧：偏大（橙色）
+  ctx.fillStyle='rgba(251,146,60,0.12)';ctx.strokeStyle='#fb923c';ctx.lineWidth=2;
+  roundRect(W-half-40,70,half,H-130,10);ctx.fill();ctx.stroke();
+  drawText('结果偏大（> 1/5）',W-half/2-40,95,'#fb923c',15);
+  const big=[
+    '导管未充满水',
+    '插入燃烧匙过慢',
+    '瓶内空气受热逸出',
+    '红磷混入杂质',
+  ];
+  big.forEach((s,i)=>{
+    const y=130+i*50;
+    ctx.fillStyle='rgba(251,146,60,0.15)';
+    roundRect(W-half-20,y,half-40,38,6);ctx.fill();
+    drawText('● '+s,W-half-10,y+20,'#fde68a',12,'left');
+  });
+  // 中间箭头对比
+  const arrowOff=Math.sin(time*2)*4;
+  ctx.fillStyle='#9ab0d0';ctx.font='bold 14px sans-serif';
+  drawText('VS',W/2,H/2,'#fbbf24',16);
+  drawText('实验前水面 < 实验后水面 1/5 → 正常',W/2,H-40,'#34d399',12);
+}
+
+// ===== 场景5：稀有气体用途 =====
+function drawUseScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('稀有气体应用 · 化学性质稳定',W/2,30,'#06b6d4',16);
+  const apps=[
+    {t:'氦气 He',d:'飞艇 / 气球',sub:'密度小 · 不燃',c:'#67e8f9',icon:'balloon'},
+    {t:'氖气 Ne',d:'霓虹灯',sub:'通电发红光',c:'#f87171',icon:'lamp'},
+    {t:'氩气 Ar',d:'保护焊',sub:'防止金属氧化',c:'#34d399',icon:'weld'},
+    {t:'氙气 Xe',d:'汽车氙灯',sub:'超亮白光',c:'#fbbf24',icon:'car'},
+  ];
+  apps.forEach((a,i)=>{
+    const col=i%2,row=Math.floor(i/2);
+    const w=W/2-80,h=180;
+    const x=60+col*w,y=70+row*(h+20);
+    ctx.fillStyle=a.c+'1a';ctx.strokeStyle=a.c;ctx.lineWidth=2;
+    roundRect(x,y,w,h,10);ctx.fill();ctx.stroke();
+    // 图标区域
+    const ix=x+50,iy=y+h/2;
+    if(a.icon==='balloon'){
+      ctx.fillStyle=a.c+'88';ctx.beginPath();ctx.arc(ix,iy-10,22,0,7);ctx.fill();
+      ctx.strokeStyle=a.c;ctx.beginPath();ctx.moveTo(ix,iy+10);ctx.lineTo(ix,iy+35);ctx.stroke();
+    }else if(a.icon==='lamp'){
+      ctx.fillStyle=a.c;ctx.shadowColor=a.c;ctx.shadowBlur=15+Math.sin(time*4)*5;
+      ctx.beginPath();ctx.arc(ix,iy,18,0,7);ctx.fill();ctx.shadowBlur=0;
+    }else if(a.icon==='weld'){
+      ctx.strokeStyle=a.c;ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(ix-25,iy-25);ctx.lineTo(ix+25,iy+25);ctx.stroke();
+      ctx.fillStyle='#fde68a';ctx.beginPath();ctx.arc(ix+25,iy+25,5,0,7);ctx.fill();
+    }else if(a.icon==='car'){
+      ctx.fillStyle=a.c+'aa';ctx.shadowColor=a.c;ctx.shadowBlur=10;
+      roundRect(ix-22,iy-12,44,20,5);ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ix,iy-2,4,0,7);ctx.fill();
+    }
+    // 文字
+    drawText(a.t,x+w-100,y+40,a.c,16);
+    drawText(a.d,x+w-100,y+80,'#fff',13);
+    drawText(a.sub,x+w-100,y+110,'#9ab0d0',11);
+  });
+  drawText('化学性质极稳定 · 通电可发光',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景6：工业分离液态空气 =====
+function drawIndScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('工业制氧 · 分离液态空气法',W/2,30,'#06b6d4',16);
+  const cx=W/2,cy=H/2+10;
+  // 分馏塔
+  const tx=cx-40,ty=80,tw=80,th=H-200;
+  ctx.fillStyle='rgba(6,182,212,0.1)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx+tw,ty);ctx.lineTo(tx+tw-15,ty+th);ctx.lineTo(tx+15,ty+th);ctx.closePath();ctx.fill();ctx.stroke();
+  drawText('分馏塔',cx,ty-15,'#67e8f9',13);
+  // 分层（N₂ 在上，O₂ 在下）
+  // N₂ 蒸气（上）
+  const n2H=th*0.45;
+  ctx.fillStyle='rgba(6,182,212,0.3)';
+  ctx.beginPath();ctx.moveTo(tx+4,ty);ctx.lineTo(tx+tw-4,ty);ctx.lineTo(tx+tw-15-4*(1-n2H/th),ty+n2H);ctx.lineTo(tx+15+4*(1-n2H/th),ty+n2H);ctx.closePath();ctx.fill();
+  drawText('N₂ 蒸气',cx,ty+n2H/2,'#06b6d4',13);
+  drawText('沸点 -196°C 先蒸出',cx,ty+n2H/2+18,'#9ab0d0',10);
+  // O₂ 液体（下）
+  ctx.fillStyle='rgba(251,191,36,0.3)';
+  ctx.beginPath();ctx.moveTo(tx+15+4*(1-n2H/th),ty+n2H);ctx.lineTo(tx+tw-15-4*(1-n2H/th),ty+n2H);ctx.lineTo(tx+tw-15,ty+th);ctx.lineTo(tx+15,ty+th);ctx.closePath();ctx.fill();
+  drawText('液态 O₂',cx,ty+n2H+(th-n2H)/2,'#fbbf24',13);
+  drawText('沸点 -183°C 后蒸出',cx,ty+n2H+(th-n2H)/2+18,'#9ab0d0',10);
+  // 顶部 N₂ 出口
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,ty);ctx.lineTo(cx,ty-25);ctx.stroke();
+  drawText('N₂↑',cx,ty-35,'#06b6d4',11);
+  // 底部 O₂ 出口
+  ctx.beginPath();ctx.moveTo(cx,ty+th);ctx.lineTo(cx,ty+th+25);ctx.stroke();
+  drawText('液氧↓',cx,ty+th+35,'#fbbf24',11);
+  // 左侧：空气入口
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+  roundRect(80,cy-60,90,120,6);ctx.fill();ctx.stroke();
+  drawText('空气',125,cy,'#fff',12);
+  drawText('净化',125,cy+18,'#9ab0d0',10);
+  // 箭头
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  const arr=tx-90-Math.sin(time*2)*3;
+  ctx.beginPath();ctx.moveTo(170,cy);ctx.lineTo(tx,cy);ctx.stroke();
+  ctx.fillStyle='#67e8f9';ctx.beginPath();ctx.moveTo(tx,cy);ctx.lineTo(tx-10,cy-5);ctx.lineTo(tx-10,cy+5);ctx.fill();
+  // 右侧温度梯度
+  drawText('低温(-200°C)',W-80,ty,'#67e8f9',10);
+  drawText('(-180°C)',W-80,ty+n2H,'#fbbf24',10);
+  drawText('温度升高→',W-80,ty+th,'#9ab0d0',9);
+  drawText('物理变化 · 利用沸点不同',W/2,H-25,'#34d399',12);
+}
+
+// ===== 场景7：例题 =====
+function drawCalcScene(){
+  const W=cv.width,H=cv.height;
+  drawText('典型例题 · 误差分析',W/2,30,'#fbbf24',16);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.strokeStyle='#06b6d4';ctx.lineWidth=1.5;
+  roundRect(80,70,W-160,140,8);ctx.fill();ctx.stroke();
+  drawText('【例题】',120,90,'#06b6d4',13,'left');
+  drawText('测定空气中 O₂ 含量时，水面上升体积',120,115,'#fff',13,'left');
+  drawText('明显小于 1/5，请分析可能原因。',120,140,'#fff',13,'left');
+  drawText('（写出至少 3 种）',120,165,'#9ab0d0',12,'left');
+  const ans=[
+    {t:'原因1',d:'红磷量不足，O₂ 未被完全消耗',c:'#f87171'},
+    {t:'原因2',d:'装置漏气，外界空气进入瓶内',c:'#fb923c'},
+    {t:'原因3',d:'未冷却到室温就打开止水夹',c:'#fbbf24'},
+    {t:'关键',d:'关键看：O₂ 是否完全消耗 + 压强是否准确',c:'#34d399'},
+  ];
+  ans.forEach((s,i)=>{
+    const y=240+i*45;
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(100,y,W-200,36,6);ctx.fill();ctx.stroke();
+    drawText(s.t,140,y+18,s.c,13,'left');
+    drawText(s.d,260,y+18,'#fff',13,'left');
+  });
+}
+
+// ===== 场景8：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('空气成分 · 核心总结',W/2,40,'#06b6d4',18);
+  const items=[
+    {t:'N₂ 78%',d:'最大成分 · 难溶',c:'#06b6d4'},
+    {t:'O₂ 21%',d:'支持燃烧 · 供呼吸',c:'#fbbf24'},
+    {t:'稀有气体 0.94%',d:'化学性质稳定',c:'#34d399'},
+    {t:'测氧原理',d:'4P+5O₂→2P₂O₅',c:'#a78bfa'},
+    {t:'O₂ 体积分数',d:'约 1/5 ≈ 21%',c:'#fb923c'},
+    {t:'工业制 O₂',d:'分离液态空气',c:'#ec4899'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=100+row*180;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,140,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+50,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+90,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawPieScene(t);
+  else if(stepIdx===1)drawExpScene(t);
+  else if(stepIdx===2)drawExpScene(t);
+  else if(stepIdx===3)drawExpScene(t);
+  else if(stepIdx===4)drawMoleculeScene(t);
+  else if(stepIdx===5)drawExpScene(t);
+  else if(stepIdx===6)drawErrorScene(t);
+  else if(stepIdx===7)drawUseScene(t);
+  else if(stepIdx===8)drawIndScene(t);
+  else if(stepIdx===9)drawCalcScene();
+}
+// 总结在 stepIdx=9 的尾段以切换实现（这里 step9=例题，将最后总结并入 drawSummaryScene 选项）
+function drawSummarySwap(){if(stepIdx===9&&t%6<3)drawSummaryScene();else drawCalcScene();}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;t=0;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>

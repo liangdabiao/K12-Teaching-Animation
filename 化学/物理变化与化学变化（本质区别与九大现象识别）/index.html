@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>物理变化与化学变化 · 本质区别 · 九大现象识别</title>
+<style>
+:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#10b981;--accent2:#fbbf24;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171;}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--accent);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(16,185,129,.06)}
+.back:hover{background:rgba(16,185,129,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
+.cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(16,185,129,.06),transparent)}
+.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.card.s2::before{background:var(--accent2)}.card.s3::before{background:var(--good)}.card.s4::before{background:var(--bad)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11px;color:var(--muted);line-height:1.5}
+.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
+.panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
+.panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:600}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}
+.body code{background:rgba(16,185,129,.2);color:#86efac;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
+.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}
+.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
+.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.step:hover{background:#1e345a;border-color:var(--accent)}
+.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;font-weight:600;border-color:transparent}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#1a1a1a;font-weight:600}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=range]{accent-color:var(--accent)}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="../index.html">← 返回化学目录</a><span class="title">物理变化与化学变化</span><span class="subtitle">本质区别 · 九大现象识别 · 物质性质分类</span></header>
+<div class="cards">
+  <div class="card"><div class="num">1</div><h4>物理变化</h4><div class="v">无新物质生成<br>状态、形状改变</div></div>
+  <div class="card s2"><div class="num">2</div><h4>化学变化</h4><div class="v">有新物质生成<br>化学键重组</div></div>
+  <div class="card s3"><div class="num">3</div><h4>物理性质</h4><div class="v">颜色、气味、密度<br>熔沸点、硬度、溶解性</div></div>
+  <div class="card s4"><div class="num">4</div><h4>化学性质</h4><div class="v">可燃性、氧化性<br>酸碱性、毒性</div></div>
+</div>
+<main>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">物理变化</span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div></aside>
+</main>
+<div class="stepbar" id="stepbar"></div>
+<div class="controls">
+  <button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button>
+  <button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+  <span id="status" class="status">点击播放或选择步骤</span>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
+function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(520,Math.min(1100,r.width-12));cv.height=Math.max(400,Math.min(600,r.height-12));}
+window.addEventListener('resize',()=>{fit();draw();});fit();
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawText(t,x,y,c,fs,a,b){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=a||'center';ctx.textBaseline=b||'middle';ctx.fillText(t,x,y);}
+
+const STEPS=[
+  {tag:'基础',name:'物理变化定义',body:'<strong>物理变化</strong>是指<strong>没有新物质生成</strong>的变化，仅是物质的<strong>状态、形状、大小</strong>发生改变，分子本身不变。例如冰融化、水蒸发、汽油挥发、铁铸成锅、纸张撕裂。',points:{title:'核心要点',items:['<strong>本质</strong>：无新物质生成','<strong>分子</strong>：分子种类不变','<strong>变化</strong>：仅状态/形状改变','<strong>可逆</strong>：多数物理变化可逆']}},
+  {tag:'基础',name:'化学变化定义',body:'<strong>化学变化</strong>是指<strong>有新物质生成</strong>的变化，原物质的化学键断裂，原子重新组合形成新分子。例如蜡烛燃烧、铁生锈、食物腐败、光合作用。',points:{title:'核心特征',items:['<strong>本质</strong>：有新物质生成','<strong>分子</strong>：分子种类改变','<strong>化学键</strong>：断裂并重新组合','<strong>常伴随</strong>：发光、放热、变色等']}},
+  {tag:'本质',name:'本质区别',body:'物理变化与化学变化的<strong>本质区别</strong>是<strong>是否生成新物质</strong>。化学变化中一定有新物质生成，物理变化中则没有。化学变化中常伴随物理变化，但物理变化中一定不发生化学变化。',points:{title:'判断三原则',items:['<strong>核心标准</strong>：是否有新物质生成','<strong>化学变化</strong>：必有新物质','<strong>物理变化</strong>：必无新物质','<strong>伴随关系</strong>：化学变化常含物理变化']}},
+  {tag:'现象',name:'九大现象识别',body:'判断化学变化的<strong>九大宏观现象</strong>：<strong>发光、放热、吸热、变色、放出气体、生成沉淀、气味变化、结块、雾化</strong>。但单一现象不一定证明化学变化（如灯泡发光是物理变化），需综合判断。',points:{title:'九大现象速记',items:['<strong>发光放热</strong>：燃烧（化学）','<strong>吸热</strong>：碳铵分解（化学）','<strong>变色</strong>：铜变铜绿（化学）','<strong>气体/沉淀/气味</strong>：常示化学变化']}},
+  {tag:'性质',name:'物理性质',body:'<strong>物理性质</strong>是物质<strong>不需要发生化学变化</strong>就能表现出来的性质，包括<strong>颜色、状态、气味、密度、熔点、沸点、硬度、溶解性、导电性、磁性</strong>等。',points:{title:'常见物理性质',items:['<strong>颜色状态</strong>：如铜为紫红色固体','<strong>密度</strong>：质量与体积比','<strong>熔沸点</strong>：物态转变温度','<strong>硬度溶解性</strong>：机械与溶液特性']}},
+  {tag:'性质',name:'化学性质',body:'<strong>化学性质</strong>是物质在<strong>化学变化中</strong>表现出来的性质，包括<strong>可燃性、氧化性、还原性、酸碱性、毒性、稳定性、金属活动性</strong>等。',points:{title:'常见化学性质',items:['<strong>可燃性</strong>：能否燃烧','<strong>氧化还原性</strong>：得失电子能力','<strong>酸碱性</strong>：pH 表现','<strong>毒性稳定性</strong>：安全关键指标']}},
+  {tag:'分类',name:'典型变化分类',body:'<strong>同类物质不同变化可属不同类型</strong>：汽油<strong>挥发</strong>是物理变化，汽油<strong>燃烧</strong>是化学变化；铁<strong>铸成锅</strong>是物理变化，铁<strong>生锈</strong>是化学变化。判断关键看是否有新物质生成。',points:{title:'成对对比',items:['<strong>汽油挥发</strong>：物理（无新物质）','<strong>汽油燃烧</strong>：化学（CO₂+H₂O）','<strong>铁铸成锅</strong>：物理（仅变形）','<strong>铁生锈</strong>：化学（Fe₂O₃·nH₂O）']}},
+  {tag:'反应',name:'四大反应类型',body:'<strong>无机反应四大基本类型</strong>：<strong>化合反应</strong>（A+B→AB）、<strong>分解反应</strong>（AB→A+B）、<strong>置换反应</strong>（A+BC→AC+B）、<strong>复分解反应</strong>（AB+CD→AD+CB，需有沉淀/气体/水生成）。',points:{title:'四类型速记',items:['<strong>化合</strong>：多变一','<strong>分解</strong>：一变多','<strong>置换</strong>：单换单','<strong>复分解</strong>：双交换（条件：沉气水）']}},
+  {tag:'计算',name:'典型例题',body:'【例】下列属于化学变化的是？①冰融化 ②蜡烛燃烧 ③汽油挥发 ④铁生锈 ⑤纸张折叠 ⑥食物腐败。答：②④⑥。判断依据：是否生成新物质。',points:{title:'解题步骤',items:['<strong>步骤1</strong>：看是否生成新物质','<strong>步骤2</strong>：识别九大现象','<strong>步骤3</strong>：注意伴随的物理变化','<strong>步骤4</strong>：综合判断类型']}},
+  {tag:'总结',name:'核心速记',body:'<strong>物理变化</strong>无新物质生成，<strong>化学变化</strong>有新物质生成。判断看九大现象（发光、放热、变色、气体、沉淀等）。物理性质不需化学变化即可测，化学性质需化学变化体现。',points:{title:'三句话总结',items:['<strong>本质区别</strong>：是否生成新物质','<strong>判断依据</strong>：九大现象综合分析','<strong>性质区分</strong>：是否需化学变化体现','<strong>反应类型</strong>：化合/分解/置换/复分解']}},
+];
+
+let stepIdx=0,playing=false,lastT=0,speed=1,stepTime=0,t=0;
+const STEP_DURATION=3.2;
+
+// ===== 场景：冰融化（物理变化）=====
+function drawIceScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('物理变化 · 冰融化成水（分子不变）',W/2,30,'#10b981',16);
+  const cx=W/2,cy=H/2+10;
+  // 进度（0=冰，1=水）
+  const p=(Math.sin(time*0.6)+1)/2;
+  // 容器
+  ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-120,cy-60);ctx.lineTo(cx-120,cy+70);ctx.lineTo(cx+120,cy+70);ctx.lineTo(cx+120,cy-60);ctx.stroke();
+  // 水（底部）
+  const waterH=70*p;
+  ctx.fillStyle='rgba(103,232,249,'+(0.3+0.4*p)+')';
+  ctx.fillRect(cx-119,cy+70-waterH,238,waterH);
+  // 冰块（顶部，逐渐变小）
+  const iceSize=60*(1-p);
+  if(iceSize>2){
+    ctx.fillStyle='rgba(186,230,253,0.85)';ctx.strokeStyle='#bae6fd';ctx.lineWidth=1.5;
+    const ix=cx,iy=cy-10-iceSize/2;
+    roundRect(ix-iceSize/2,iy-iceSize/2,iceSize,iceSize,8);ctx.fill();ctx.stroke();
+    // 冰晶纹路
+    ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ix-iceSize/3,iy-iceSize/4);ctx.lineTo(ix+iceSize/4,iy);ctx.stroke();
+  }
+  // 水分子（H₂O）排列示意
+  // 冰：规则六边形排列；水：随机游动
+  const showMol=stepIdx===0;
+  if(showMol){
+    // 标注分子
+    drawText('H₂O',cx,cy+100,'#67e8f9',13);
+    drawText('（分子种类不变，仅距离改变）',cx,cy+125,'#9ab0d0',11);
+  }
+  // 状态标签
+  drawText(p<0.3?'固态（冰）':(p<0.7?'固液共存':'液态（水）'),cx,cy-90,'#34d399',13);
+  // 能量箭头（吸热）
+  if(p>0.3&&p<0.9){
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+    ctx.shadowColor='#fbbf24';ctx.shadowBlur=8;
+    for(let i=-1;i<=1;i++){
+      const ax=cx+i*60;
+      ctx.beginPath();ctx.moveTo(ax,cy-110);ctx.lineTo(ax,cy-90);ctx.stroke();
+      ctx.fillStyle='#fbbf24';ctx.beginPath();
+      ctx.moveTo(ax,cy-85);ctx.lineTo(ax-4,cy-93);ctx.lineTo(ax+4,cy-93);ctx.fill();
+    }
+    ctx.shadowBlur=0;
+    drawText('吸热',cx,cy-130,'#fbbf24',12);
+  }
+  // 结论
+  drawText('分子本身未变 → 物理变化',W/2,H-40,'#10b981',13);
+}
+
+// ===== 场景：蜡烛燃烧（化学变化）=====
+function drawBurnScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化学变化 · 蜡烛燃烧（分子重组）',W/2,30,'#fbbf24',16);
+  const cx=W/2-120,cy=H/2+20;
+  // 蜡烛
+  ctx.fillStyle='#fde68a';ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+  roundRect(cx-15,cy-10,30,80,4);ctx.fill();ctx.stroke();
+  // 烛芯
+  ctx.strokeStyle='#5a4a2a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy-10);ctx.lineTo(cx,cy-25);ctx.stroke();
+  // 火焰（跳动）
+  const flicker=Math.sin(time*8)*3+Math.sin(time*13)*2;
+  const flameH=40+flicker;
+  ctx.fillStyle='rgba(251,191,36,0.9)';
+  ctx.shadowColor='#fbbf24';ctx.shadowBlur=20;
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-25-flameH);
+  ctx.quadraticCurveTo(cx-12,cy-25-flameH/2,cx,cy-25);
+  ctx.quadraticCurveTo(cx+12,cy-25-flameH/2,cx,cy-25-flameH);
+  ctx.fill();
+  ctx.fillStyle='rgba(248,113,113,0.8)';
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-25-flameH*0.5);
+  ctx.quadraticCurveTo(cx-6,cy-25-flameH*0.25,cx,cy-25);
+  ctx.quadraticCurveTo(cx+6,cy-25-flameH*0.25,cx,cy-25-flameH*0.5);
+  ctx.fill();
+  ctx.shadowBlur=0;
+  // 烟雾（CO₂ + H₂O 蒸气）
+  for(let i=0;i<6;i++){
+    const phase=(time*0.5+i*0.3)%1;
+    const sx=cx+Math.sin(time+i)*20;
+    const sy=cy-25-flameH-phase*180;
+    ctx.fillStyle='rgba(180,180,200,'+(0.4*(1-phase))+')';
+    ctx.beginPath();ctx.arc(sx,sy,8+phase*6,0,7);ctx.fill();
+  }
+  // 反应方程式
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+  roundRect(cx+60,cy-50,260,90,8);ctx.fill();ctx.stroke();
+  drawText('化学方程式',cx+190,cy-35,'#a78bfa',12);
+  ctx.font='bold 14px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('蜡 + O₂ → CO₂ + H₂O',cx+190,cy-5);
+  drawText('（化学键断裂重组，生成新物质）',cx+190,cy+20,'#9ab0d0',11);
+  // 现象标签
+  const signs=['发光','放热','生成气体','气味变化'];
+  signs.forEach((s,i)=>{
+    drawText(s,cx+80+i*65,cy+80,'#34d399',12);
+  });
+  drawText('有新物质生成 → 化学变化',W/2,H-40,'#fbbf24',13);
+}
+
+// ===== 场景：九大现象图标 =====
+function drawSignsScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化学变化九大现象识别',W/2,30,'#10b981',16);
+  const signs=[
+    {n:'发光',c:'#fbbf24',icon:'sun'},
+    {n:'放热',c:'#f87171',icon:'fire'},
+    {n:'吸热',c:'#67e8f9',icon:'snow'},
+    {n:'变色',c:'#a78bfa',icon:'color'},
+    {n:'气体',c:'#34d399',icon:'bubble'},
+    {n:'沉淀',c:'#fb923c',icon:'drop'},
+    {n:'气味',c:'#ec4899',icon:'nose'},
+    {n:'结块',c:'#94a3b8',icon:'block'},
+    {n:'雾化',c:'#bae6fd',icon:'mist'},
+  ];
+  const cols=3,rows=3;
+  const cellW=(W-160)/cols,cellH=(H-160)/rows;
+  const startX=80,startY=70;
+  signs.forEach((s,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=startX+col*cellW,y=startY+row*cellH;
+    const pulse=0.5+0.5*Math.sin(time*2+i);
+    // 卡片背景
+    ctx.fillStyle=s.c+'22';ctx.strokeStyle=s.c;ctx.lineWidth=1.5;
+    roundRect(x+10,y,cellW-20,cellH-15,10);ctx.fill();ctx.stroke();
+    // 图标（简化绘制）
+    const ix=x+cellW/2,iy=y+cellH/2-5;
+    ctx.fillStyle=s.c;
+    ctx.shadowColor=s.c;ctx.shadowBlur=10*pulse;
+    if(s.icon==='sun'){
+      ctx.beginPath();ctx.arc(ix,iy,14,0,7);ctx.fill();
+      for(let k=0;k<8;k++){
+        const a=k*Math.PI/4;
+        ctx.beginPath();
+        ctx.moveTo(ix+Math.cos(a)*18,iy+Math.sin(a)*18);
+        ctx.lineTo(ix+Math.cos(a)*24,iy+Math.sin(a)*24);ctx.stroke();
+      }
+    }else if(s.icon==='fire'){
+      ctx.beginPath();
+      ctx.moveTo(ix,iy-18);
+      ctx.quadraticCurveTo(ix-12,iy,ix-8,iy+12);
+      ctx.quadraticCurveTo(ix,iy+18,ix+8,iy+12);
+      ctx.quadraticCurveTo(ix+12,iy,ix,iy-18);ctx.fill();
+    }else if(s.icon==='snow'){
+      for(let k=0;k<6;k++){
+        const a=k*Math.PI/3;
+        ctx.lineWidth=2;
+        ctx.beginPath();
+        ctx.moveTo(ix,iy);
+        ctx.lineTo(ix+Math.cos(a)*16,iy+Math.sin(a)*16);ctx.stroke();
+      }
+    }else if(s.icon==='color'){
+      ctx.beginPath();ctx.arc(ix-8,iy,12,0,7);ctx.fill();
+      ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(ix+8,iy,12,0,7);ctx.fill();
+    }else if(s.icon==='bubble'){
+      for(let k=0;k<4;k++){
+        ctx.beginPath();
+        ctx.arc(ix-10+k*7,iy-Math.sin(time*3+k)*8,5,0,7);ctx.fill();
+      }
+    }else if(s.icon==='drop'){
+      ctx.beginPath();
+      ctx.moveTo(ix,iy-16);
+      ctx.quadraticCurveTo(ix-12,iy+4,ix,iy+14);
+      ctx.quadraticCurveTo(ix+12,iy+4,ix,iy-16);ctx.fill();
+    }else if(s.icon==='nose'){
+      ctx.beginPath();
+      ctx.moveTo(ix-10,iy-12);ctx.lineTo(ix+10,iy-12);
+      ctx.lineTo(ix+8,iy+10);ctx.lineTo(ix-8,iy+10);ctx.closePath();ctx.fill();
+    }else if(s.icon==='block'){
+      roundRect(ix-14,iy-10,28,20,3);ctx.fill();
+    }else if(s.icon==='mist'){
+      for(let k=0;k<3;k++){
+        ctx.beginPath();
+        ctx.arc(ix,iy-10+k*10,10,0,7);ctx.fill();
+      }
+    }
+    ctx.shadowBlur=0;
+    // 名称
+    drawText((i+1)+'. '+s.n,ix,y+cellH-30,'#fff',13);
+  });
+  drawText('单一现象不一定证明化学变化（如灯泡发光是物理变化）',W/2,H-30,'#fbbf24',12);
+}
+
+// ===== 场景：铁生锈（化学变化）=====
+function drawRustScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('化学变化 · 铁生锈',W/2,30,'#fb923c',16);
+  const cx=W/2,cy=H/2;
+  // 铁块（左侧逐渐生锈）
+  const rust=(Math.sin(time*0.4)+1)/2;
+  // 干净的铁
+  ctx.fillStyle='#94a3b8';ctx.strokeStyle='#cbd5e1';ctx.lineWidth=2;
+  roundRect(cx-100,cy-40,80,80,4);ctx.fill();ctx.stroke();
+  drawText('Fe',cx-60,cy,'#1a1a1a',18);
+  // 生锈的铁（右侧，棕色锈斑）
+  ctx.fillStyle='#94a3b8';
+  roundRect(cx+20,cy-40,80,80,4);ctx.fill();ctx.stroke();
+  // 锈斑
+  ctx.fillStyle='rgba(180,83,9,'+(0.3+0.6*rust)+')';
+  for(let i=0;i<12;i++){
+    const sx=cx+25+(i%4)*18;
+    const sy=cy-35+Math.floor(i/4)*22;
+    ctx.beginPath();ctx.arc(sx,sy,4+rust*4*(0.5+Math.sin(i*time)),0,7);ctx.fill();
+  }
+  drawText('Fe₂O₃·nH₂O',cx+60,cy,'#fde68a',13);
+  // 中间箭头
+  const arrowP=(time*1.5)%1;
+  ctx.strokeStyle='#fb923c';ctx.lineWidth=3;
+  ctx.shadowColor='#fb923c';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(cx-15,cy);ctx.lineTo(cx+15,cy);ctx.stroke();
+  ctx.fillStyle='#fb923c';
+  ctx.beginPath();ctx.moveTo(cx+15,cy);ctx.lineTo(cx+8,cy-6);ctx.lineTo(cx+8,cy+6);ctx.fill();
+  ctx.shadowBlur=0;
+  // 反应物
+  drawText('+ O₂ + H₂O',cx,cy-70,'#67e8f9',13);
+  // 氧气和水分子飘动
+  for(let i=0;i<5;i++){
+    const ox=cx-130+Math.sin(time+i*1.3)*30+i*8;
+    const oy=cy-90+Math.cos(time*0.7+i)*15;
+    ctx.fillStyle='rgba(103,232,249,0.6)';
+    ctx.beginPath();ctx.arc(ox,oy,4,0,7);ctx.fill();
+  }
+  // 方程式
+  ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#fb923c';ctx.lineWidth=1.5;
+  roundRect(80,H-90,W-160,50,8);ctx.fill();ctx.stroke();
+  ctx.font='bold 14px serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('4Fe + 3O₂ + nH₂O → 2Fe₂O₃·nH₂O',W/2,H-65);
+  drawText('有新物质（铁锈）生成 → 化学变化',W/2,H-30,'#fb923c',13);
+}
+
+// ===== 场景：物理性质展示 =====
+function drawMixScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('物理性质展示 · 颜色 / 硬度 / 密度',W/2,30,'#10b981',16);
+  // 三列对比
+  const cols=[
+    {title:'颜色（液体）',items:[{n:'硫酸铜溶液',c:'#06b6d4'},{n:'高锰酸钾',c:'#a855f7'},{n:'氯化铁',c:'#f59e0b'},{n:'品红',c:'#ef4444'}]},
+    {title:'硬度（固体）',items:[{n:'金刚石(10)',h:1},{n:'石英(7)',h:0.7},{n:'铁(4.5)',h:0.45},{n:'石墨(1)',h:0.1}]},
+    {title:'密度（g/cm³）',items:[{n:'金 19.3',d:1},{n:'铁 7.9',d:0.41},{n:'水 1.0',d:0.05},{n:'木 0.5',d:0.025}]},
+  ];
+  const colW=(W-160)/3;
+  cols.forEach((c,i)=>{
+    const x=80+i*colW;
+    ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='#10b981';ctx.lineWidth=1.5;
+    roundRect(x+5,60,colW-10,H-130,8);ctx.fill();ctx.stroke();
+    drawText(c.title,x+colW/2,85,'#10b981',14);
+    c.items.forEach((it,j)=>{
+      const y=120+j*70;
+      if(c.title.includes('颜色')){
+        // 试管
+        ctx.fillStyle=it.c;ctx.strokeStyle='#9ab0d0';ctx.lineWidth=1.5;
+        roundRect(x+colW/2-15,y-25,30,45,4);ctx.fill();ctx.stroke();
+        drawText(it.n,x+colW/2,y+35,'#fff',11);
+      }else if(c.title.includes('硬度')){
+        // 硬度条
+        ctx.fillStyle='rgba(16,185,129,0.3)';roundRect(x+20,y-12,colW-50,24,4);ctx.fill();
+        ctx.fillStyle='#10b981';roundRect(x+20,y-12,(colW-50)*it.h,24,4);ctx.fill();
+        drawText(it.n,x+colW/2,y,'#fff',11);
+      }else{
+        // 密度柱
+        const h=50*it.d;
+        ctx.fillStyle='rgba(251,191,36,0.6)';
+        ctx.fillRect(x+colW/2-20,y+20-h,40,h);
+        ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+        ctx.strokeRect(x+colW/2-20,y-30,40,50);
+        drawText(it.n,x+colW/2,y+35,'#fff',11);
+      }
+    });
+  });
+  drawText('物理性质：不需化学变化即可测定',W/2,H-30,'#10b981',13);
+}
+
+// ===== 场景：变化分类（物理/化学）=====
+function drawClassifyScene(time){
+  const W=cv.width,H=cv.height;
+  drawText('典型变化分类（物理变化 / 化学变化）',W/2,30,'#10b981',16);
+  // 左框：物理变化
+  ctx.fillStyle='rgba(16,185,129,0.1)';ctx.strokeStyle='#10b981';ctx.lineWidth=2;
+  roundRect(60,70,200,H-160,10);ctx.fill();ctx.stroke();
+  drawText('物理变化',160,95,'#10b981',15);
+  // 右框：化学变化
+  ctx.fillStyle='rgba(251,191,36,0.1)';ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  roundRect(W-260,70,200,H-160,10);ctx.fill();ctx.stroke();
+  drawText('化学变化',W-160,95,'#fbbf24',15);
+  // 中间卡片（动态展示）
+  const items=[
+    {n:'冰融化',type:0},{n:'蜡烛燃烧',type:1},
+    {n:'汽油挥发',type:0},{n:'铁生锈',type:1},
+    {n:'铁铸成锅',type:0},{n:'食物腐败',type:1},
+    {n:'纸张撕裂',type:0},{n:'木柴燃烧',type:1},
+  ];
+  const idx=Math.floor(time*0.8)%items.length;
+  const cur=items[idx];
+  // 当前卡片
+  const cx=W/2,cy=H/2;
+  const targetX=cur.type===0?160:W-160;
+  // 卡片飞行动画
+  const flyP=(time*0.8)%1;
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.strokeStyle='#67e8f9';ctx.lineWidth=2;
+  roundRect(cx-70,cy-30,140,60,8);ctx.fill();ctx.stroke();
+  drawText(cur.n,cx,cy,'#fff',15);
+  // 飞行轨迹箭头
+  const dir=cur.type===0?-1:1;
+  ctx.strokeStyle=cur.type===0?'#10b981':'#fbbf24';ctx.lineWidth=2;
+  ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(cx+dir*70,cy);ctx.lineTo(cx+dir*180,cy);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=cur.type===0?'#10b981':'#fbbf24';
+  ctx.beginPath();
+  ctx.moveTo(cx+dir*185,cy);ctx.lineTo(cx+dir*175,cy-6);ctx.lineTo(cx+dir*175,cy+6);ctx.fill();
+  // 类型标签
+  drawText(cur.type===0?'物理（无新物质）':'化学（有新物质）',cx,cy+55,cur.type===0?'#10b981':'#fbbf24',12);
+  // 已分类列表
+  const phys=items.filter(x=>x.type===0);
+  const chem=items.filter(x=>x.type===1);
+  phys.forEach((it,i)=>drawText('• '+it.n,160,130+i*30,'#9ab0d0',12));
+  chem.forEach((it,i)=>drawText('• '+it.n,W-160,130+i*30,'#9ab0d0',12));
+  drawText('判断依据：是否生成新物质',W/2,H-30,'#34d399',12);
+}
+
+// ===== 场景：物理 vs 化学对比表 =====
+function drawCompareScene(){
+  const W=cv.width,H=cv.height;
+  drawText('物理变化 vs 化学变化 对比',W/2,30,'#10b981',16);
+  // 表格
+  const tx=80,ty=70,tw=W-160;
+  const rows=[
+    {k:'对比项',p:'物理变化',c:'化学变化',head:true},
+    {k:'本质特征',p:'无新物质生成',c:'有新物质生成'},
+    {k:'分子变化',p:'分子种类不变',c:'分子种类改变'},
+    {k:'化学键',p:'不发生断裂重组',c:'断裂并重新组合'},
+    {k:'伴随现象',p:'状态/形状改变',p2:'发光/放热/变色等',c:'发光/放热/变色/气体/沉淀'},
+    {k:'能量变化',p:'较小（相变热）',c:'显著（放热或吸热）'},
+    {k:'可逆性',p:'多数可逆',c:'多数不可逆'},
+    {k:'实例',p:'冰融化、汽油挥发',c:'燃烧、生锈、腐败'},
+  ];
+  const colW=[tw*0.2,tw*0.4,tw*0.4];
+  const rowH=(H-100)/rows.length;
+  rows.forEach((r,i)=>{
+    const y=ty+i*rowH;
+    if(r.head){
+      ctx.fillStyle='#10b981';ctx.strokeStyle='#10b981';
+    }else{
+      ctx.fillStyle=i%2?'rgba(255,255,255,0.03)':'rgba(255,255,255,0.06)';
+      ctx.strokeStyle='#243a5e';
+    }
+    ctx.lineWidth=1;
+    roundRect(tx,y,tw,rowH-2,4);ctx.fill();
+    if(!r.head)ctx.stroke();
+    if(r.head){
+      drawText(r.k,tx+colW[0]/2,y+rowH/2,'#1a1a1a',13);
+      drawText(r.p,tx+colW[0]+colW[1]/2,y+rowH/2,'#1a1a1a',13);
+      drawText(r.c,tx+colW[0]+colW[1]+colW[2]/2,y+rowH/2,'#1a1a1a',13);
+    }else{
+      drawText(r.k,tx+colW[0]/2,y+rowH/2,'#fbbf24',12);
+      drawText(r.p,tx+colW[0]+colW[1]/2,y+rowH/2,'#9ab0d0',12);
+      drawText(r.c,tx+colW[0]+colW[1]+colW[2]/2,y+rowH/2,'#9ab0d0',12);
+    }
+  });
+}
+
+// ===== 场景：总结 =====
+function drawSummaryScene(){
+  const W=cv.width,H=cv.height;
+  drawText('物理变化与化学变化 · 核心总结',W/2,40,'#10b981',18);
+  const items=[
+    {t:'本质区别',d:'是否生成新物质',c:'#10b981'},
+    {t:'物理变化',d:'无新物质，状态形状变',c:'#67e8f9'},
+    {t:'化学变化',d:'有新物质，化学键重组',c:'#fbbf24'},
+    {t:'九大现象',d:'发光放热变色气体沉淀',c:'#a78bfa'},
+    {t:'物理性质',d:'颜色密度熔沸点硬度',c:'#34d399'},
+    {t:'化学性质',d:'可燃氧化酸碱毒性',c:'#f87171'},
+    {t:'四大反应',d:'化合分解置换复分解',c:'#fb923c'},
+    {t:'判断关键',d:'综合现象，看新物质',c:'#ec4899'},
+    {t:'伴随关系',d:'化学变化含物理变化',c:'#06b6d4'},
+  ];
+  items.forEach((m,i)=>{
+    const col=i%3,row=Math.floor(i/3);
+    const x=80+col*(W-160)/3;
+    const y=90+row*150;
+    ctx.fillStyle=m.c+'22';ctx.strokeStyle=m.c;ctx.lineWidth=2;
+    roundRect(x+10,y,(W-160)/3-20,120,10);ctx.fill();ctx.stroke();
+    drawText(m.t,x+(W-160)/6,y+40,m.c,15);
+    drawText(m.d,x+(W-160)/6,y+80,'#fff',12);
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(stepIdx===0)drawIceScene(t);
+  else if(stepIdx===1)drawBurnScene(t);
+  else if(stepIdx===2)drawCompareScene();
+  else if(stepIdx===3)drawSignsScene(t);
+  else if(stepIdx===4)drawMixScene(t);
+  else if(stepIdx===5)drawMixScene(t);
+  else if(stepIdx===6)drawClassifyScene(t);
+  else if(stepIdx===7)drawRustScene(t);
+  else if(stepIdx===8)drawCompareScene();
+  else if(stepIdx===9)drawSummaryScene();
+}
+
+function syncStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('stepBadge').textContent=s.tag;
+  document.getElementById('stepTitle').textContent=s.name;
+  document.getElementById('stepBody').innerHTML=s.body;
+  document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?.title||'')+'</h4><ul>'+((s.points?.items||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';
+  document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));
+  statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;
+  stepTime=0;
+}
+
+function update(dt){
+  t+=dt*speed;
+  if(!playing)return;
+  stepTime+=dt*speed;
+  if(stepTime>=STEP_DURATION){
+    if(stepIdx<STEPS.length-1){stepIdx++;syncStep();}
+    else{playing=false;playBtn.textContent='▶ 播放';statusEl.textContent='动画完成';}
+  }
+}
+
+function loop(ts){
+  if(!lastT)lastT=ts;
+  const dt=(ts-lastT)/1000;lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
+const stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn');
+const speedEl=document.getElementById('speed');
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
+resetBtn.onclick=()=>{stepIdx=0;playing=false;syncStep();draw();playBtn.textContent='▶ 播放';};
+stepFwdBtn.onclick=()=>{if(stepIdx<STEPS.length-1){stepIdx++;syncStep();draw();}};
+stepBackBtn.onclick=()=>{if(stepIdx>0){stepIdx--;syncStep();draw();}};
+speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
+
+function buildStepbar(){
+  const bar=document.getElementById('stepbar');
+  bar.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step'+(i===stepIdx?' active':'');
+    el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>10?s.name.slice(0,9)+'…':s.name)+'</div>';
+    el.onclick=()=>{stepIdx=i;syncStep();draw();};
+    bar.appendChild(el);
+  });
+}
+
+buildStepbar();syncStep();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
