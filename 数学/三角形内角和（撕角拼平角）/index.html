@@ -1,133 +1,108 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>三角形内角和 · 撕角拼成平角</title>
-<style>:root{
-  --bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;
-  --accent:#3b82f6;--accent2:#74b9ff;--line:#243a5e;
-  --good:#34d399;--warn:#fbbf24;--bad:#f87171;--info:#38bdf8;
-}
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>三角形内角和 · 撕角拼平角</title><style>:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#3b82f6;--accent2:#74b9ff;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
 body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
-.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}
-.back:hover{background:rgba(116,185,255,.14)}
-.title{font-size:15px;font-weight:600}
-.subtitle{font-size:12px;color:var(--muted)}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}.back:hover{background:rgba(116,185,255,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
 .cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(59,130,246,.06),transparent)}
-.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
-.card.s2::before{background:var(--good)}
-.card.s3::before{background:var(--bad)}
-.card.s4::before{background:var(--warn)}
-.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
-.card .v{font-size:11px;color:var(--muted);line-height:1.5}
-.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
-main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+.card{flex:1;min-width:190px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}.card.s2::before{background:var(--good)}.card.s3::before{background:var(--bad)}.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11.5px;color:var(--muted);line-height:1.6;font-family:Consolas,Monaco,monospace;white-space:pre-wrap}
+.card .num{position:absolute;right:8px;top:6px;font-size:22px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
 canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
 .panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
 .panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
 .badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
-.body{color:var(--muted);margin:0 0 10px}
-.body strong{color:var(--ink)}
-.body code{background:rgba(59,130,246,.2);color:#bfdbfe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
-.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
-.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
-.points ul{margin:0;padding-left:18px;color:var(--muted)}
-.points li{margin-bottom:3px}
-.points li strong{color:var(--accent)}
-.code{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:11px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
-.code .kw{color:#ff7b72}.code .ty{color:#79c0ff}.code .cm{color:#8b949e}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}.body code{background:rgba(59,130,246,.2);color:#bfdbfe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.code{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:11.5px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
 .stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
-.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
-.step:hover{background:#1e345a;border-color:var(--accent2)}
-.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.step{flex:1;min-width:84px;padding:8px 6px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}.step:hover{background:#1e345a;border-color:var(--accent2)}.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
 .controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
-button:hover{background:#1e345a}
-button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-button.primary:hover{background:#4b91f8}
-.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-input[type=range],input[type=number]{accent-color:var(--accent);background:var(--card);color:var(--ink);border:1px solid var(--line);padding:4px 6px;border-radius:4px;width:60px}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}button.primary:hover{background:#4b91f8}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}input[type=range]{accent-color:var(--accent);width:90px}select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px}
+.pval{color:var(--accent2);font-size:12px;font-family:Consolas,Monaco,monospace;min-width:50px;display:inline-block}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
-</style>
-</head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}</style></head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回数学目录</a>
-  <span class="title">三角形内角和 · 撕角拼成平角</span>
-  <span class="subtitle">∠A+∠B+∠C=180°</span>
-</header>
-<div class="cards"><div class="card s2"><div class="num">1</div><h4>内角和</h4><div class="v">三内角之和固定</div></div><div class="card s3"><div class="num">2</div><h4>平角</h4><div class="v">180° 直线角</div></div><div class="card s4"><div class="num">3</div><h4>推导</h4><div class="v">拼合即证</div></div><div class="card "><div class="num">4</div><h4>应用</h4><div class="v">求未知角</div></div></div>
-<main>
-  <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">三角形内角和 · 撕角拼成平角</span></h2>
-    <p class="body" id="stepBody"></p>
-    <div class="points" id="stepPoints"></div>
-    <div class="code" id="stepCode"></div>
-  </aside>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">三角形内角和 · 撕角拼平角</span><span class="subtitle">A+B+C=180° · 拖动角A实时验证</span></header>
+<div class="cards"><div class="card s2"><div class="num">1</div><h4>三个内角（实时）</h4><div class="v" id="cardAng"></div></div><div class="card s3"><div class="num">2</div><h4>内角和（实时）</h4><div class="v" id="cardSum"></div></div><div class="card s4"><div class="num">3</div><h4>当前参数</h4><div class="v" id="cardParam"></div></div><div class="card "><div class="num">4</div><h4>操作提示</h4><div class="v">拖动角A，B 固定 70°，C 随之变化，和恒为 180°</div></div></div>
+<main><div class="stage"><canvas id="cv"></canvas></div>
+<aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle"></span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div><div class="code" id="stepCode"></div></aside>
 </main>
 <div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
-  
-  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status">下一步观察三个角拼成一条直线</span>
+<button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+<label>角A<input id="pa" type="range" min="30" max="120" step="1" value="60"><span id="paV" class="pval"></span></label>
+<label>速度<input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+<span id="status" class="status">拖动参数或按 ▶ 自动演示</span>
 </div>
-<script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
+<script>const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(560,Math.min(1100,r.width-12));cv.height=Math.max(420,Math.min(560,r.height-12));}
 window.addEventListener('resize',()=>{fit();sceneDraw();});fit();
-function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
-function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
 window.showTip=function(m){if(statusEl)statusEl.textContent=m;};
-let playing=false,lastT=0,speed=1;
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing)sceneUpdate(dt);sceneDraw();requestAnimationFrame(loop);}
+function drawText(t,x,y,c,fs,al,bl){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=al||'center';ctx.textBaseline=bl||'middle';ctx.fillText(t,x,y);}
+function ease(t){t=t<0?0:t>1?1:t;return t*t*(3-2*t);}
+function lerp(a,b,t){return a+(b-a)*t;}
+let stepIdx=0,animT=0,playing=false,lastT=0,speed=1;
+const STEP_DUR=1.5;
+function loop(ts){if(!lastT)lastT=ts;var dt=(ts-lastT)/1000;lastT=ts;sceneUpdate(dt);sceneDraw();requestAnimationFrame(loop);}
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn'),speedEl=document.getElementById('speed');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{sceneReset();sceneDraw();statusEl.textContent='已重置';};
-stepFwdBtn.onclick=()=>{stepIdx=(stepIdx+1)%STEPS.length;loadStep();};
-stepBackBtn.onclick=()=>{stepIdx=(stepIdx-1+STEPS.length)%STEPS.length;loadStep();};
-speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function loadStep(){const s=STEPS[stepIdx];if(!s)return;document.getElementById('stepBadge').textContent=s.tag;document.getElementById('stepTitle').textContent=s.name;document.getElementById('stepBody').innerHTML=s.body;document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?s.points.title:'')+'</h4><ul>'+((s.points?s.points.items:[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';document.getElementById('stepCode').innerHTML=s.code||'';document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;}
-function buildStepbar(){const bar=document.getElementById('stepbar');bar.innerHTML='';STEPS.forEach((s,i)=>{const el=document.createElement('div');el.className='step'+(i===stepIdx?' active':'');el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>8?s.name.slice(0,7)+'…':s.name)+'</div>';el.onclick=()=>{stepIdx=i;loadStep();};bar.appendChild(el);});}
-const STEPS=[{"tag": "基础", "name": "内角和定理", "body": "任意三角形的三个内角和等于 <strong>180°</strong>。这是平面几何基本事实，可用于求未知角。", "points": {"title": "定理", "items": ["<strong>∠A+∠B+∠C=180°</strong>", "与形状大小无关", "直角三角形两锐角互余", "钝角三角形恰一钝角"]}, "code": "∠A + ∠B + ∠C = 180°"}, {"tag": "演示", "name": "撕角拼平角", "body": "把三角形的三个角剪下，拼在一起，恰好组成一个<strong>平角（180°）</strong>——这就是定理最直观的证明。", "points": {"title": "操作", "items": ["分别撕下三角", "拼到同一直线", "首尾相接成平角", "直观得证"]}, "code": "撕下 ∠A,∠B,∠C\n拼合 → 平角 180°"}, {"tag": "应用", "name": "求未知角", "body": "已知两角可求第三角：<strong>∠C = 180° − ∠A − ∠B</strong>。直角三角形更可借互余关系速算。", "points": {"title": "例题", "items": ["已知 ∠A=50,∠B=60", "∠C=180−50−60=70", "直角 △：∠B=90−∠A", "常用于多边形分割"]}, "code": "∠C = 180° − ∠A − ∠B"}];
-let stepIdx=0;
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing)animT=0;};
+resetBtn.onclick=function(){sceneReset();};
+stepFwdBtn.onclick=function(){stepIdx=(stepIdx+1)%STEPS.length;loadStep();};
+stepBackBtn.onclick=function(){stepIdx=(stepIdx-1+STEPS.length)%STEPS.length;loadStep();};
+speedEl.oninput=function(){speed=parseFloat(speedEl.value);};
+function loadStep(){var s=STEPS[stepIdx];if(!s)return;animT=0;if(typeof applyEx==='function'&&s.ex){applyEx(s.ex);}document.getElementById('stepBadge').textContent=s.tag;document.getElementById('stepTitle').textContent=s.name;document.getElementById('stepBody').innerHTML=s.body;document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?s.points.title:'')+'</h4><ul>'+((s.points?s.points.items:[]).map(function(x){return '<li>'+x+'</li>';}).join(''))+'</ul>';document.getElementById('stepCode').textContent=s.code||'';document.querySelectorAll('.step').forEach(function(el,i){el.classList.toggle('active',i===stepIdx);});statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;}
+function buildStepbar(){var bar=document.getElementById('stepbar');bar.innerHTML='';STEPS.forEach(function(s,i){var el=document.createElement('div');el.className='step'+(i===stepIdx?' active':'');el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>7?s.name.slice(0,6)+'…':s.name)+'</div>';el.onclick=function(){stepIdx=i;loadStep();};bar.appendChild(el);});}
+const STEPS=[{"tag": "引入", "name": "三角形内角和", "body": "任意三角形的三个内角之和<strong>恒等于 180°</strong>。下面用「撕角拼平角」直观证明：把三个角撕下来拼在一起，正好成一个平角。", "points": {"title": "结论", "items": ["∠A + ∠B + ∠C = 180°", "任意三角形都成立", "平角 = 180°", "撕角拼合法"]}, "code": "A + B + C = 180°"}, {"tag": "标角", "name": "标出三个内角", "body": "三角形每个顶点处的角叫<strong>内角</strong>，共三个：∠A、∠B、∠C。拖动滑块改变 ∠A，观察 ∠C 如何随之变化，而三者之和始终是 180°。", "points": {"title": "三个内角", "items": ["∠A 在顶点 A", "∠B 在顶点 B", "∠C 在顶点 C", "和 = 180°"]}, "code": "∠A, ∠B, ∠C"}, {"tag": "撕角", "name": "撕下三个角", "body": "把三角形三个角「撕」下来，变成三个独立的角（每个角的大小不变）。准备把它们拼到一起。", "points": {"title": "撕角", "items": ["三个角分离", "大小不变", "准备拼合", "拼成平角"]}, "code": "撕下 ∠A, ∠B, ∠C"}, {"tag": "拼平角", "name": "拼成平角", "body": "把三个角顶点对齐、边贴边地排在一起。因为 <code>A+B+C=180°</code>，它们刚好拼成一个<strong>平角</strong>（一条直线上），直观证明内角和为 180°。", "points": {"title": "拼合", "items": ["顶点对齐", "边贴边", "拼成平角", "= 180°"]}, "code": "A+B+C = 180° = 平角"}, {"tag": "结论", "name": "结论与应用", "body": "所以 <strong>三角形内角和 = 180°</strong>。由此：已知两角可求第三角；三角形外角等于不相邻两内角之和。", "points": {"title": "应用", "items": ["内角和 180°", "已知两角求第三角", "外角=不相邻内角和", "任意三角形"]}, "code": "C = 180° − A − B"}];
 
-var TRI={t:0,a:50,b:60,c:70};
-function sceneInit(){TRI={t:0,a:50,b:60,c:70};}
-function sceneReset(){sceneInit();}
-function sceneUpdate(dt){TRI.t+=dt;}
-function sceneDraw(){
-  var W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  var ox=W*0.27,oy=H*0.42,sc=2.2;
-  var A={x:ox-60*sc*Math.cos(TRI.a*Math.PI/180),y:oy+60*sc*Math.sin(TRI.a*Math.PI/180)};
-  var B={x:ox+70,y:oy},C={x:ox-40,y:oy+90};
-  ctx.strokeStyle='#74b9ff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(B.x,B.y);ctx.lineTo(C.x,C.y);ctx.lineTo(A.x,A.y);ctx.closePath();ctx.stroke();
-  drawText('A',A.x-14,A.y-6,'#e8eef8',14);drawText('B',B.x+10,B.y-8,'#e8eef8',14);drawText('C',C.x-10,C.y+14,'#e8eef8',14);
-  drawText(TRI.a+'°',(A.x+B.x)/2-6,(A.y+B.y)/2-8,'#34d399',13);
-  drawText(TRI.b+'°',(B.x+C.x)/2+8,(B.y+C.y)/2,'#34d399',13);
-  drawText(TRI.c+'°',(C.x+A.x)/2-4,(C.y+A.y)/2+10,'#34d399',13);
-  if(stepIdx>=1){
-    var by=H-50, bx0=W*0.5, len=300;
-    ctx.strokeStyle='#243a5e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bx0,by);ctx.lineTo(bx0+len,by);ctx.stroke();
-    var x=bx0, cols=['#74b9ff','#fbbf24','#f87171'];
-    var angs=[TRI.a,TRI.b,TRI.c];
-    for(var i=0;i<3;i++){var ar=angs[i]*Math.PI/180;ctx.fillStyle=cols[i];ctx.beginPath();ctx.moveTo(x,by);ctx.lineTo(x+Math.cos(Math.PI-ar)*40,by-Math.sin(Math.PI-ar)*40);ctx.lineTo(x,by);ctx.fill();x+=len*angs[i]/180;}
-    drawText('拼成平角 = 180°',bx0+len/2,by-30,'#e8eef8',14);
-  }
+const paEl=document.getElementById('pa'),paV=document.getElementById('paV');
+const cardAng=document.getElementById('cardAng'),cardSum=document.getElementById('cardSum'),cardParam=document.getElementById('cardParam');
+let A=60;const B=70;
+function fmt(x){return Math.round(x*10)/10;}
+function C(){return 180-A-B;}
+function readParams(){A=parseInt(paEl.value);paV.textContent='∠A='+A+'°';cardAng.textContent='∠A = '+A+'°\n∠B = '+B+'°\n∠C = '+fmt(C())+'°';cardSum.textContent='A+B+C = '+(A+B+fmt(C()))+'° = 180° ✓';cardParam.textContent='∠A = '+A+'°   ∠B = '+B+'°\n∠C = 180 − A − B = '+fmt(C())+'°';}
+paEl.oninput=function(){readParams();sceneDraw();};
+function triVerts(u,ox,oy){var sinC=Math.sin((A+B)*Math.PI/180),b=6*Math.sin(B*Math.PI/180)/sinC;var Ax=ox, Ay=oy, Bx=ox+6*u, By=oy;var Cx=ox+b*u*Math.cos(A*Math.PI/180), Cy=oy-b*u*Math.sin(A*Math.PI/180);return {A:[Ax,Ay],B:[Bx,By],C:[Cx,Cy]};}
+function drawTri(u,ox,oy,fill,stroke,lw){var v=triVerts(u,ox,oy);ctx.beginPath();ctx.moveTo(v.A[0],v.A[1]);ctx.lineTo(v.B[0],v.B[1]);ctx.lineTo(v.C[0],v.C[1]);ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}ctx.strokeStyle=stroke;ctx.lineWidth=lw||2;ctx.stroke();return v;}
+function angleArc(vx,vy,r,a0,a1,col,label){ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.arc(vx,vy,r,a0,a1);ctx.stroke();ctx.fillStyle=col;ctx.font='12px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,vx,vy);}
+function drawIntro(p){var W=cv.width,H=cv.height,u=Math.min(W,H)/14,ox=(W-6*u)/2,oy=H/2+2.2*u;var pe=ease(Math.min(p/0.7,1));var v=drawTri(u,ox,oy,'rgba(59,130,246,'+(0.15*pe)+')','#74b9ff',3);if(pe>0.5){drawText('三角形三个内角之和 = 180° ?',W/2,40,'#e8eef8',16);}}
+function drawMark(p){var W=cv.width,H=cv.height,u=Math.min(W,H)/14,ox=(W-6*u)/2,oy=H/2+2.2*u;var v=drawTri(u,ox,oy,'rgba(59,130,246,.12)','#74b9ff',2);var pe=ease(Math.min(p/0.8,1));
+ // A 处弧(底边右方向 +x 到 AC 方向)
+ var acAng=Math.atan2(v.C[1]-v.A[1],v.C[0]-v.A[0]); // 负角(向上)
+ if(pe>0.1){ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.beginPath();ctx.arc(v.A[0],v.A[1],22,acAng,0);ctx.stroke();drawText('A='+A+'°',v.A[0]+18,v.A[1]-12,'#fbbf24',12);}
+ // B 处弧(BA 方向 π 到 BC 方向)
+ var bcAng=Math.atan2(v.C[1]-v.B[1],v.C[0]-v.B[0]); // 向上左, 角在 (π, 2π)? atan2 给 (-π,0)
+ if(pe>0.4){ctx.strokeStyle='#34d399';ctx.lineWidth=2;ctx.beginPath();ctx.arc(v.B[0],v.B[1],22,Math.PI,bcAng+2*Math.PI);ctx.stroke();drawText('B='+B+'°',v.B[0]-18,v.B[1]-12,'#34d399',12);}
+ // C 处弧(CA 方向 到 CB 方向)
+ var caAng=Math.atan2(v.A[1]-v.C[1],v.A[0]-v.C[0]); var cbAng=Math.atan2(v.B[1]-v.C[1],v.B[0]-v.C[0]);
+ if(pe>0.7){ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.beginPath();ctx.arc(v.C[0],v.C[1],22,cbAng,caAng);ctx.stroke();drawText('C='+fmt(C())+'°',v.C[0],v.C[1]-20,'#f87171',12);}
 }
+function drawSector(cx,cy,r,a0,a1,fill){ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a0,a1);ctx.closePath();ctx.fillStyle=fill;ctx.fill();}
+function drawTear(p){var W=cv.width,H=cv.height;var pe=ease(Math.min(p/0.8,1));var r=46;
+ // 三个扇形分离显示
+ var ys=[H/2-40,H/2-40,H/2-40], xs=[W/2-120,W/2,W/2+120];
+ drawSector(xs[0],ys[0],r,0,A*Math.PI/180,'rgba(251,191,36,'+(0.4+0.4*pe)+')');
+ drawSector(xs[1],ys[1],r,0,B*Math.PI/180,'rgba(52,211,153,'+(0.4+0.4*pe)+')');
+ drawSector(xs[2],ys[2],r,0,C()*Math.PI/180,'rgba(248,113,113,'+(0.4+0.4*pe)+')');
+ drawText('∠A='+A+'°',xs[0],ys[0]+r+18,'#fbbf24',12);drawText('∠B='+B+'°',xs[1],ys[1]+r+18,'#34d399',12);drawText('∠C='+fmt(C())+'°',xs[2],ys[2]+r+18,'#f87171',12);
+ drawText('三个角撕下，大小不变',W/2,H-18,'#9ab0d0',13);
+}
+function drawAssemble(p){var W=cv.width,H=cv.height;var pe=ease(Math.min(p/0.9,1));var rx=W/2,ry=H/2+10,r=70;
+ // 三扇形拼成上半圆(平角): 角度区间在 [π, 2π] (上半)
+ var acc=0;var arr=[[A,'rgba(251,191,36,.55)'],[B,'rgba(52,211,153,.55)'],[C(),'rgba(248,113,113,.55)']];
+ for(var i=0;i<3;i++){var ang=arr[i][0]*Math.PI/180;var grow=Math.min(pe*3-i,1);if(grow>0){grow=ease(Math.max(0,grow));drawSector(rx,ry,r,Math.PI+acc,Math.PI+acc+ang*grow,arr[i][1]);}acc+=ang;}
+ // 平角底线
+ ctx.strokeStyle='#e8eef8';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(rx-r,ry);ctx.lineTo(rx+r,ry);ctx.stroke();
+ drawText('平角 = 180°',rx,ry+r+18,'#e8eef8',14);
+ drawText('三角拼成一条直线 → 内角和 = 180°',W/2,H-18,'#34d399',13);
+}
+function drawConcl(p){var W=cv.width,H=cv.height;var pe=ease(Math.min(p/0.6,1));ctx.globalAlpha=pe;drawText('三角形内角和 = 180°',W/2,H/2-20,'#34d399',22);drawText('A+B+C = '+A+'+'+B+'+'+fmt(C())+' = 180°',W/2,H/2+20,'#fbbf24',16);ctx.globalAlpha=1;}
+function sceneDraw(){var W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);var p=ease(Math.min(animT/STEP_DUR,1));if(stepIdx===0)drawIntro(p);else if(stepIdx===1)drawMark(p);else if(stepIdx===2)drawTear(p);else if(stepIdx===3)drawAssemble(p);else if(stepIdx===4)drawConcl(p);}
+function sceneInit(){A=60;stepIdx=0;animT=0;playing=false;paEl.value=A;readParams();}
+function sceneReset(){sceneInit();loadStep();}
+function sceneUpdate(dt){animT+=dt*speed;if(!playing&&animT>STEP_DUR)animT=STEP_DUR;if(playing&&animT>STEP_DUR+0.5){stepIdx=(stepIdx+1)%STEPS.length;loadStep();}}
 
-sceneInit(); buildStepbar(); loadStep(); requestAnimationFrame(loop);
-</script>
-</body>
-</html>
+sceneInit();buildStepbar();loadStep();requestAnimationFrame(loop);</script></body></html>

@@ -1,137 +1,79 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>频率与概率 · 抛硬币·掷骰子</title>
-<style>:root{
-  --bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;
-  --accent:#3b82f6;--accent2:#74b9ff;--line:#243a5e;
-  --good:#34d399;--warn:#fbbf24;--bad:#f87171;--info:#38bdf8;
-}
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>频率与概率 · 抛硬币·掷骰子</title><style>:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#3b82f6;--accent2:#74b9ff;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
 body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
-.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}
-.back:hover{background:rgba(116,185,255,.14)}
-.title{font-size:15px;font-weight:600}
-.subtitle{font-size:12px;color:var(--muted)}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}.back:hover{background:rgba(116,185,255,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
 .cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(59,130,246,.06),transparent)}
-.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
-.card.s2::before{background:var(--good)}
-.card.s3::before{background:var(--bad)}
-.card.s4::before{background:var(--warn)}
-.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
-.card .v{font-size:11px;color:var(--muted);line-height:1.5}
-.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
-main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+.card{flex:1;min-width:190px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}.card.s2::before{background:var(--good)}.card.s3::before{background:var(--bad)}.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11.5px;color:var(--muted);line-height:1.6;font-family:Consolas,Monaco,monospace;white-space:pre-wrap}
+.card .num{position:absolute;right:8px;top:6px;font-size:22px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
 canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
 .panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
 .panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
 .badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
-.body{color:var(--muted);margin:0 0 10px}
-.body strong{color:var(--ink)}
-.body code{background:rgba(59,130,246,.2);color:#bfdbfe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
-.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
-.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
-.points ul{margin:0;padding-left:18px;color:var(--muted)}
-.points li{margin-bottom:3px}
-.points li strong{color:var(--accent)}
-.code{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:11px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
-.code .kw{color:#ff7b72}.code .ty{color:#79c0ff}.code .cm{color:#8b949e}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}.body code{background:rgba(59,130,246,.2);color:#bfdbfe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.code{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:11.5px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
 .stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
-.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
-.step:hover{background:#1e345a;border-color:var(--accent2)}
-.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.step{flex:1;min-width:84px;padding:8px 6px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}.step:hover{background:#1e345a;border-color:var(--accent2)}.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
 .controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
-button:hover{background:#1e345a}
-button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-button.primary:hover{background:#4b91f8}
-.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-input[type=range],input[type=number]{accent-color:var(--accent);background:var(--card);color:var(--ink);border:1px solid var(--line);padding:4px 6px;border-radius:4px;width:60px}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}button.primary:hover{background:#4b91f8}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}input[type=range]{accent-color:var(--accent);width:90px}select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px}
+.pval{color:var(--accent2);font-size:12px;font-family:Consolas,Monaco,monospace;min-width:50px;display:inline-block}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
-</style>
-</head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}</style></head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回数学目录</a>
-  <span class="title">频率与概率 · 抛硬币·掷骰子</span>
-  <span class="subtitle">频率随试验次数趋近概率</span>
-</header>
-<div class="cards"><div class="card s2"><div class="num">1</div><h4>随机事件</h4><div class="v">结果不确定</div></div><div class="card s3"><div class="num">2</div><h4>概率</h4><div class="v">理论可能</div></div><div class="card s4"><div class="num">3</div><h4>频率</h4><div class="v">实际比值</div></div><div class="card "><div class="num">4</div><h4>大数</h4><div class="v">频率趋近概率</div></div></div>
-<main>
-  <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">频率与概率 · 抛硬币·掷骰子</span></h2>
-    <p class="body" id="stepBody"></p>
-    <div class="points" id="stepPoints"></div>
-    <div class="code" id="stepCode"></div>
-  </aside>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">频率与概率 · 抛硬币·掷骰子</span><span class="subtitle">大量试验下频率稳定于概率 · 拖动 n 实时观察</span></header>
+<div class="cards"><div class="card s2"><div class="num">1</div><h4>样本量 n（实时）</h4><div class="v" id="cardN"></div></div><div class="card s3"><div class="num">2</div><h4>当前频率（实时）</h4><div class="v" id="cardFreq"></div></div><div class="card s4"><div class="num">3</div><h4>理论概率（实时）</h4><div class="v" id="cardTheo"></div></div><div class="card "><div class="num">4</div><h4>操作提示</h4><div class="v">拖动 n（试验次数），观察频率如何逼近理论概率</div></div></div>
+<main><div class="stage"><canvas id="cv"></canvas></div>
+<aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle"></span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div><div class="code" id="stepCode"></div></aside>
 </main>
 <div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
-  
-  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status">播放观察累计频率趋于理论值</span>
+<button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+<label>样本量n<input id="pa" type="range" min="10" max="2000" step="10" value="200"><span id="paV" class="pval"></span></label>
+<label>速度<input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+<span id="status" class="status">拖动参数或按 ▶ 自动演示</span>
 </div>
-<script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
+<script>const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(560,Math.min(1100,r.width-12));cv.height=Math.max(420,Math.min(560,r.height-12));}
 window.addEventListener('resize',()=>{fit();sceneDraw();});fit();
-function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
-function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
 window.showTip=function(m){if(statusEl)statusEl.textContent=m;};
-let playing=false,lastT=0,speed=1;
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing)sceneUpdate(dt);sceneDraw();requestAnimationFrame(loop);}
+function drawText(t,x,y,c,fs,al,bl){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=al||'center';ctx.textBaseline=bl||'middle';ctx.fillText(t,x,y);}
+function ease(t){t=t<0?0:t>1?1:t;return t*t*(3-2*t);}
+function lerp(a,b,t){return a+(b-a)*t;}
+let stepIdx=0,animT=0,playing=false,lastT=0,speed=1;
+const STEP_DUR=1.4;
+function loop(ts){if(!lastT)lastT=ts;var dt=(ts-lastT)/1000;lastT=ts;sceneUpdate(dt);sceneDraw();requestAnimationFrame(loop);}
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn'),speedEl=document.getElementById('speed');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{sceneReset();sceneDraw();statusEl.textContent='已重置';};
-stepFwdBtn.onclick=()=>{stepIdx=(stepIdx+1)%STEPS.length;loadStep();};
-stepBackBtn.onclick=()=>{stepIdx=(stepIdx-1+STEPS.length)%STEPS.length;loadStep();};
-speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function loadStep(){const s=STEPS[stepIdx];if(!s)return;document.getElementById('stepBadge').textContent=s.tag;document.getElementById('stepTitle').textContent=s.name;document.getElementById('stepBody').innerHTML=s.body;document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?s.points.title:'')+'</h4><ul>'+((s.points?s.points.items:[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';document.getElementById('stepCode').innerHTML=s.code||'';document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;}
-function buildStepbar(){const bar=document.getElementById('stepbar');bar.innerHTML='';STEPS.forEach((s,i)=>{const el=document.createElement('div');el.className='step'+(i===stepIdx?' active':'');el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>8?s.name.slice(0,7)+'…':s.name)+'</div>';el.onclick=()=>{stepIdx=i;loadStep();};bar.appendChild(el);});}
-const STEPS=[{"tag": "基础", "name": "概率与频率", "body": "<strong>概率</strong>是事件发生的理论可能性（如抛硬币正面概率 0.5）。<strong>频率</strong>=某结果出现次数/总试验次数，是实际比值。", "points": {"title": "概念", "items": ["<strong>概率 P</strong>：理论值", "<strong>频率</strong>=频数/总数", "频率围绕概率波动", "试验越多越稳"]}, "code": "频率 = 频数 / 试验次数"}, {"tag": "大数", "name": "大数定律", "body": "试验次数越多，<strong>频率越稳定地趋近概率</strong>。这就是用频率估计概率的依据（大数定律）。", "points": {"title": "核心", "items": ["<strong>频率→概率</strong>", "试验越多越准", "波动逐渐减小", "统计估计基础"]}, "code": "n→∞ : 频率 → 概率"}, {"tag": "例", "name": "硬币与骰子", "body": "抛硬币正面概率 1/2；掷均匀骰子某点概率 1/6。动画中随次数增加，频率曲线逐渐贴近理论水平线。", "points": {"title": "实例", "items": ["硬币 正面=0.5", "骰子 某点=1/6", "多次后贴合", "直观验证"]}, "code": "P(正面)=1/2\nP(点6)=1/6"}];
-let stepIdx=0;
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing)animT=0;};
+resetBtn.onclick=function(){sceneReset();};
+stepFwdBtn.onclick=function(){stepIdx=(stepIdx+1)%STEPS.length;loadStep();};
+stepBackBtn.onclick=function(){stepIdx=(stepIdx-1+STEPS.length)%STEPS.length;loadStep();};
+speedEl.oninput=function(){speed=parseFloat(speedEl.value);};
+function loadStep(){var s=STEPS[stepIdx];if(!s)return;animT=0;if(typeof applyEx==='function'&&s.ex){applyEx(s.ex);}document.getElementById('stepBadge').textContent=s.tag;document.getElementById('stepTitle').textContent=s.name;document.getElementById('stepBody').innerHTML=s.body;document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?s.points.title:'')+'</h4><ul>'+((s.points?s.points.items:[]).map(function(x){return '<li>'+x+'</li>';}).join(''))+'</ul>';document.getElementById('stepCode').textContent=s.code||'';document.querySelectorAll('.step').forEach(function(el,i){el.classList.toggle('active',i===stepIdx);});statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;}
+function buildStepbar(){var bar=document.getElementById('stepbar');bar.innerHTML='';STEPS.forEach(function(s,i){var el=document.createElement('div');el.className='step'+(i===stepIdx?' active':'');el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>7?s.name.slice(0,6)+'…':s.name)+'</div>';el.onclick=function(){stepIdx=i;loadStep();};bar.appendChild(el);});}
+const STEPS=[{"tag": "引入", "name": "频率与概率", "body": "<strong>概率</strong>是事件发生的理论可能性（如硬币正面=½）。<strong>频率</strong>是实际试验中事件发生的比例。大量重复试验时，频率会<strong>稳定在概率附近</strong>。", "points": {"title": "核心概念", "items": ["概率：理论值", "频率：试验比值", "频率→概率（大量试验）", "用频率估计概率"]}, "code": "频率 = 发生次数 / 总次数"}, {"tag": "抛硬币", "name": "抛硬币", "body": "抛一枚均匀硬币，正面概率为 ½。拖动 n 看正面频率（蓝）与反面频率（绿）的柱子，它们都<strong>逼近 0.5</strong>。黄虚线是理论 0.5。", "points": {"title": "硬币", "items": ["正面概率 0.5", "反面概率 0.5", "n 越大越接近", "频率≈0.5"]}, "code": "P(正面) = 1/2"}, {"tag": "掷骰子", "name": "掷骰子", "body": "掷一枚均匀骰子，每个面概率 1/6。拖动 n 看 6 个面的频率柱子，都<strong>逼近 1/6 ≈ 0.1667</strong>。说明每种结果长期等可能。", "points": {"title": "骰子", "items": ["6 个面等可能", "每面概率 1/6", "频率各自逼近", "长期稳定"]}, "code": "P(某面) = 1/6"}, {"tag": "大数定律", "name": "大数定律", "body": "随试验次数 n 增大，正面频率的折线在 0.5 附近<strong>摆动且越来越稳定</strong>——这就是大数定律：频率依概率收敛于概率。", "points": {"title": "大数定律", "items": ["n 越大越稳定", "围绕 0.5 摆动", "收敛于概率", "不是恰好等于"]}, "code": "lim 频率 = 概率"}, {"tag": "结论", "name": "结论与应用", "body": "结论：<strong>用频率估计概率</strong>；试验次数越多，估计越可靠。实际中常通过大量抽样（如民意调查、质检）用频率估概率。", "points": {"title": "应用", "items": ["频率估计概率", "抽样越多越准", "民意/质检常用", "概率的客观意义"]}, "code": "频率 → 概率"}];
 
-var FRQ={t:0,trials:0,ok:0,last:0};
-function sceneInit(){FRQ={t:0,trials:0,ok:0,last:0};}
-function sceneReset(){sceneInit();}
-function sceneUpdate(dt){FRQ.t+=dt; if(FRQ.t>0.25){FRQ.t=0;FRQ.trials++; var r=Math.random(); var target=(stepIdx>=1)?(1/6):0.5; FRQ.last=(r<target)?1:0; if(FRQ.last)FRQ.ok++;}}
-function sceneDraw(){
-  var W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  var theo=(stepIdx>=1)?(1/6):0.5;
-  drawText((stepIdx>=1?'掷骰子·点6 ':'抛硬币·正面 ')+'理论概率='+theo.toFixed(3),W/2,H*0.12,'#e8eef8',14);
-  // 频率曲线
-  var bx=70, by=H*0.75, bw=W-140, bh=H*0.5;
-  ctx.strokeStyle='#243a5e';ctx.beginPath();ctx.moveTo(bx,by-bh);ctx.lineTo(bx,by);ctx.lineTo(bx+bw,by);ctx.stroke();
-  ctx.strokeStyle='#34d399';ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(bx,by-bh*theo);ctx.lineTo(bx+bw,by-bh*theo);ctx.stroke();ctx.setLineDash([]);
-  drawText('理论 '+theo.toFixed(2),bx+bw,by-bh*theo-8,'#34d399',11);
-  if(FRQ.trials>0){
-    var freq=FRQ.ok/FRQ.trials;
-    var px=bx+Math.min(FRQ.trials,200)/200*bw;
-    var py=by-bh*freq;
-    // 当前点
-    ctx.fillStyle='#74b9ff';ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();
-    // 轨迹
-    ctx.strokeStyle='rgba(116,185,255,.5)';ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(px,py);ctx.stroke();
-    drawText('试验 '+FRQ.trials+' 次  频率='+freq.toFixed(3),W/2,by+22,'#74b9ff',13);
-    drawText('最近一次：'+(FRQ.last?'命中':'未中'),W/2,by+40,'#9ab0d0',12);
-  } else {
-    drawText('播放开始掷·抛',W/2,by+22,'#9ab0d0',12);
-  }
-}
+const paEl=document.getElementById('pa'),paV=document.getElementById('paV');
+const cardN=document.getElementById('cardN'),cardFreq=document.getElementById('cardFreq'),cardTheo=document.getElementById('cardTheo');
+let N=200,coin=[],dice=[];
+function rng(seed){var s=seed>>>0;return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+function fill(){var r=rng(987654321);coin=[];dice=[];for(var i=0;i<2000;i++){coin.push(r()<0.5?0:1);dice.push(Math.floor(r()*6)+1);}}
+function readParams(){N=parseInt(paEl.value);paV.textContent='n='+N;cardN.textContent='样本量 n = '+N;}
+paEl.oninput=function(){readParams();sceneDraw();};
+function drawBar(cx,w,frac,col,label,val){var H=cv.height,baseY=H-64,maxH=H*0.5;var h=maxH*frac;ctx.fillStyle=col;ctx.fillRect(cx-w/2,baseY-h,w,h);ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.strokeRect(cx-w/2,baseY-h,w,h);drawText(label,cx,baseY+16,col,13);drawText(val,cx,baseY-h-12,'#e8eef8',12);}
+function drawCoin(p){var heads=0;for(var i=0;i<N;i++)heads+=coin[i];var f=heads/N;var W=cv.width;drawBar(W/2-110,90,f,'#74b9ff','正面',f.toFixed(3));drawBar(W/2+20,90,1-f,'#34d399','反面',(1-f).toFixed(3));var baseY=cv.height-64,maxH=cv.height*0.5;ctx.strokeStyle='#fbbf24';ctx.setLineDash([6,4]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(40,baseY-maxH*0.5);ctx.lineTo(W-40,baseY-maxH*0.5);ctx.stroke();ctx.setLineDash([]);drawText('理论概率 0.5',W-40,baseY-maxH*0.5-10,'#fbbf24',12);cardFreq.textContent='正面频率 = '+f.toFixed(3);cardTheo.textContent='理论 0.5';drawText('抛硬币 n='+N+' 次',W/2,cv.height-16,'#9ab0d0',13);}
+function drawDice(p){var cnt=[0,0,0,0,0,0];for(var i=0;i<N;i++)cnt[dice[i]-1]++;var W=cv.width,H=cv.height;var gap=18,bw=(W-80-gap*5)/6,x0=40,baseY=H-64,maxH=H*0.5;for(var k=0;k<6;k++){var frac=cnt[k]/N;drawBar(x0+k*(bw+gap)+bw/2,bw,frac,k%2?'#74b9ff':'#34d399',(k+1)+'',frac.toFixed(3));}ctx.strokeStyle='#fbbf24';ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(40,baseY-maxH/6);ctx.lineTo(W-40,baseY-maxH/6);ctx.stroke();ctx.setLineDash([]);drawText('理论 1/6 ≈ 0.1667',W-40,baseY-maxH/6-10,'#fbbf24',12);cardFreq.textContent='1点频率 = '+(cnt[0]/N).toFixed(3);cardTheo.textContent='理论 1/6';drawText('掷骰子 n='+N+' 次',W/2,H-16,'#9ab0d0',13);}
+function drawConv(p){var W=cv.width,H=cv.height,left=50,right=W-50,top=40,baseY=H-50,maxH=baseY-top;ctx.strokeStyle='#3a5a8a';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(left,top);ctx.lineTo(left,baseY);ctx.lineTo(right,baseY);ctx.stroke();drawText('n',right,baseY+14,'#9ab0d0',12);drawText('频率',left-12,top,'#9ab0d0',12);var yMid=top+maxH*0.5;ctx.strokeStyle='#fbbf24';ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(left,yMid);ctx.lineTo(right,yMid);ctx.stroke();ctx.setLineDash([]);drawText('0.5',left-12,yMid,'#fbbf24',11);var runN=Math.max(N,300);ctx.strokeStyle='#74b9ff';ctx.lineWidth=2;ctx.beginPath();var cum=0;for(var i=1;i<=runN;i++){cum+=coin[i-1];var x=left+(right-left)*(i/runN);var f=cum/i;var y=top+maxH*(1-f);if(i===1)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();cardFreq.textContent='(正面频率随 n 的摆动)';cardTheo.textContent='稳定于 0.5';drawText('n 越大，频率在 0.5 附近越稳定',W/2,baseY+24,'#9ab0d0',12);}
+function drawIntro(p){var W=cv.width,H=cv.height;var pe=ease(Math.min(p/0.7,1));ctx.globalAlpha=pe;drawText('频率与概率：大量重复试验下，频率稳定于概率',W/2,40,'#e8eef8',15);drawText('拖动 n 看频率如何逼近理论概率',W/2,H-20,'#9ab0d0',12);ctx.globalAlpha=1;}
+function drawConcl(p){var W=cv.width,H=cv.height;var pe=ease(Math.min(p/0.6,1));ctx.globalAlpha=pe;drawText('结论：用频率估计概率；试验次数越多越稳定（大数定律）',W/2,H/2,'#34d399',15);ctx.globalAlpha=1;}
+function sceneDraw(){var W=cv.height;ctx.clearRect(0,0,cv.width,W);var pp=ease(Math.min(animT/STEP_DUR,1));if(stepIdx===0)drawIntro(pp);else if(stepIdx===1)drawCoin(pp);else if(stepIdx===2)drawDice(pp);else if(stepIdx===3)drawConv(pp);else if(stepIdx===4)drawConcl(pp);}
+function sceneInit(){N=200;stepIdx=0;animT=0;playing=false;fill();paEl.value=N;readParams();}
+function sceneReset(){sceneInit();loadStep();}
+function sceneUpdate(dt){animT+=dt*speed;if(!playing&&animT>STEP_DUR)animT=STEP_DUR;if(playing&&animT>STEP_DUR+0.5){stepIdx=(stepIdx+1)%STEPS.length;loadStep();}}
 
-sceneInit(); buildStepbar(); loadStep(); requestAnimationFrame(loop);
-</script>
-</body>
-</html>
+sceneInit();buildStepbar();loadStep();requestAnimationFrame(loop);</script></body></html>

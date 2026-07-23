@@ -1,123 +1,81 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>相似三角形 · 比例与位似</title>
-<style>:root{
-  --bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;
-  --accent:#3b82f6;--accent2:#74b9ff;--line:#243a5e;
-  --good:#34d399;--warn:#fbbf24;--bad:#f87171;--info:#38bdf8;
-}
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>相似三角形与比例 · 位似</title><style>:root{--bg:#0a1628;--panel:#11203a;--card:#172a4a;--ink:#e8eef8;--muted:#9ab0d0;--accent:#3b82f6;--accent2:#74b9ff;--line:#243a5e;--good:#34d399;--warn:#fbbf24;--bad:#f87171}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
 body{background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
-.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}
-.back:hover{background:rgba(116,185,255,.14)}
-.title{font-size:15px;font-weight:600}
-.subtitle{font-size:12px;color:var(--muted)}
+.back{color:var(--accent2);text-decoration:none;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;background:rgba(116,185,255,.06)}.back:hover{background:rgba(116,185,255,.14)}
+.title{font-size:15px;font-weight:600}.subtitle{font-size:12px;color:var(--muted)}
 .cards{display:flex;gap:10px;padding:10px 16px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(59,130,246,.06),transparent)}
-.card{flex:1;min-width:160px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
-.card.s2::before{background:var(--good)}
-.card.s3::before{background:var(--bad)}
-.card.s4::before{background:var(--warn)}
-.card h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
-.card .v{font-size:11px;color:var(--muted);line-height:1.5}
-.card .num{position:absolute;right:8px;top:6px;font-size:24px;font-weight:700;color:rgba(255,255,255,.07)}
-main{flex:1;display:flex;min-height:0}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
+.card{flex:1;min-width:190px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}.card.s2::before{background:var(--good)}.card.s3::before{background:var(--bad)}.card.s4::before{background:var(--warn)}
+.card h4{margin:0 0 4px;font-size:13px}.card .v{font-size:11.5px;color:var(--muted);line-height:1.6;font-family:Consolas,Monaco,monospace;white-space:pre-wrap}
+.card .num{position:absolute;right:8px;top:6px;font-size:22px;font-weight:700;color:rgba(255,255,255,.07)}
+main{flex:1;display:flex;min-height:0}.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;min-width:0}
 canvas{background:#06101f;border:1px solid var(--line);border-radius:12px;max-width:100%;max-height:100%;display:block}
 .panel{width:340px;flex:none;padding:14px;overflow:auto;border-left:1px solid var(--line);background:var(--panel);font-size:13px;line-height:1.7}
 .panel h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
 .badge{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600}
-.body{color:var(--muted);margin:0 0 10px}
-.body strong{color:var(--ink)}
-.body code{background:rgba(59,130,246,.2);color:#bfdbfe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
-.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}
-.points h4{margin:0 0 6px;font-size:13px;color:var(--ink)}
-.points ul{margin:0;padding-left:18px;color:var(--muted)}
-.points li{margin-bottom:3px}
-.points li strong{color:var(--accent)}
-.code{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:11px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
-.code .kw{color:#ff7b72}.code .ty{color:#79c0ff}.code .cm{color:#8b949e}
+.body{color:var(--muted);margin:0 0 10px}.body strong{color:var(--ink)}.body code{background:rgba(59,130,246,.2);color:#bfdbfe;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:12px}
+.points{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-top:8px;border-left:3px solid var(--accent2)}.points h4{margin:0 0 6px;font-size:13px}.points ul{margin:0;padding-left:18px;color:var(--muted)}.points li{margin-bottom:3px}.points li strong{color:var(--accent)}
+.code{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:Consolas,Monaco,monospace;font-size:11.5px;line-height:1.6;color:#c9d1d9;white-space:pre-wrap}
 .stepbar{display:flex;gap:6px;padding:8px 16px;background:var(--panel);border-top:1px solid var(--line);overflow-x:auto}
-.step{flex:1;min-width:100px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
-.step:hover{background:#1e345a;border-color:var(--accent2)}
-.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
+.step{flex:1;min-width:84px;padding:8px 6px;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}.step:hover{background:#1e345a;border-color:var(--accent2)}.step.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;border-color:transparent}
 .controls{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
-button:hover{background:#1e345a}
-button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-button.primary:hover{background:#4b91f8}
-.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-input[type=range],input[type=number]{accent-color:var(--accent);background:var(--card);color:var(--ink);border:1px solid var(--line);padding:4px 6px;border-radius:4px;width:60px}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}button:hover{background:#1e345a}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}button.primary:hover{background:#4b91f8}
+.controls label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}input[type=range]{accent-color:var(--accent);width:90px}select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px}
+.pval{color:var(--accent2);font-size:12px;font-family:Consolas,Monaco,monospace;min-width:50px;display:inline-block}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}
-</style>
-</head>
+@media(max-width:960px){main{flex-direction:column}.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:240px}}</style></head>
 <body>
-<header class="topbar">
-  <a class="back" href="../index.html">← 返回数学目录</a>
-  <span class="title">相似三角形 · 比例与位似</span>
-  <span class="subtitle">形状相同，大小成比例</span>
-</header>
-<div class="cards"><div class="card s2"><div class="num">1</div><h4>相似</h4><div class="v">形状相同</div></div><div class="card s3"><div class="num">2</div><h4>比例</h4><div class="v">对应边成比 k</div></div><div class="card s4"><div class="num">3</div><h4>位似</h4><div class="v">特殊相似</div></div><div class="card "><div class="num">4</div><h4>性质</h4><div class="v">角等、边成比例</div></div></div>
-<main>
-  <div class="stage"><canvas id="cv"></canvas></div>
-  <aside class="panel">
-    <h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle">相似三角形 · 比例与位似</span></h2>
-    <p class="body" id="stepBody"></p>
-    <div class="points" id="stepPoints"></div>
-    <div class="code" id="stepCode"></div>
-  </aside>
+<header class="topbar"><a class="back" href="../index.html">← 返回数学目录</a><span class="title">相似三角形与比例 · 位似</span><span class="subtitle">对应边成比例、面积比为平方 · 拖动k实时观察</span></header>
+<div class="cards"><div class="card s2"><div class="num">1</div><h4>边比（实时）</h4><div class="v" id="cardSide"></div></div><div class="card s3"><div class="num">2</div><h4>面积比（实时）</h4><div class="v" id="cardArea"></div></div><div class="card s4"><div class="num">3</div><h4>参数（实时）</h4><div class="v" id="cardParam"></div></div><div class="card "><div class="num">4</div><h4>操作提示</h4><div class="v">拖动位似比 k，观察边比=k、面积比=k²</div></div></div>
+<main><div class="stage"><canvas id="cv"></canvas></div>
+<aside class="panel"><h2><span class="badge" id="stepBadge">基础</span><span id="stepTitle"></span></h2><p class="body" id="stepBody"></p><div class="points" id="stepPoints"></div><div class="code" id="stepCode"></div></aside>
 </main>
 <div class="stepbar" id="stepbar"></div>
 <div class="controls">
-  <button id="playBtn" class="primary">▶ 播放</button>
-  <button id="resetBtn">↺ 重置</button>
-  <button id="stepBackBtn">◀ 上一步</button>
-  <button id="stepFwdBtn">下一步 ▶</button>
-  
-  <label>速度 <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
-  <span id="status" class="status">播放观察小三角形放大为大三角形</span>
+<button id="playBtn" class="primary">▶ 播放</button><button id="resetBtn">↺ 重置</button><button id="stepBackBtn">◀ 上一步</button><button id="stepFwdBtn">下一步 ▶</button>
+<label>位似比k<input id="pa" type="range" min="0.5" max="2" step="0.1" value="1.5"><span id="paV" class="pval"></span></label>
+<label>速度<input id="speed" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+<span id="status" class="status">拖动参数或按 ▶ 自动演示</span>
 </div>
-<script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const statusEl=document.getElementById('status');
+<script>const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),statusEl=document.getElementById('status');
 function fit(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.max(560,Math.min(1100,r.width-12));cv.height=Math.max(420,Math.min(560,r.height-12));}
 window.addEventListener('resize',()=>{fit();sceneDraw();});fit();
-function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
-function drawText(t,x,y,c,fs,align,baseline){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=align||'center';ctx.textBaseline=baseline||'middle';ctx.fillText(t,x,y);}
 window.showTip=function(m){if(statusEl)statusEl.textContent=m;};
-let playing=false,lastT=0,speed=1;
-function loop(ts){if(!lastT)lastT=ts;const dt=(ts-lastT)/1000;lastT=ts;if(playing)sceneUpdate(dt);sceneDraw();requestAnimationFrame(loop);}
+function drawText(t,x,y,c,fs,al,bl){ctx.fillStyle=c||'#9ab0d0';ctx.font=(fs||12)+'px sans-serif';ctx.textAlign=al||'center';ctx.textBaseline=bl||'middle';ctx.fillText(t,x,y);}
+function ease(t){t=t<0?0:t>1?1:t;return t*t*(3-2*t);}
+function lerp(a,b,t){return a+(b-a)*t;}
+let stepIdx=0,animT=0,playing=false,lastT=0,speed=1;
+const STEP_DUR=1.5;
+function loop(ts){if(!lastT)lastT=ts;var dt=(ts-lastT)/1000;lastT=ts;sceneUpdate(dt);sceneDraw();requestAnimationFrame(loop);}
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),stepBackBtn=document.getElementById('stepBackBtn'),stepFwdBtn=document.getElementById('stepFwdBtn'),speedEl=document.getElementById('speed');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';};
-resetBtn.onclick=()=>{sceneReset();sceneDraw();statusEl.textContent='已重置';};
-stepFwdBtn.onclick=()=>{stepIdx=(stepIdx+1)%STEPS.length;loadStep();};
-stepBackBtn.onclick=()=>{stepIdx=(stepIdx-1+STEPS.length)%STEPS.length;loadStep();};
-speedEl.oninput=()=>{speed=parseFloat(speedEl.value);};
-function loadStep(){const s=STEPS[stepIdx];if(!s)return;document.getElementById('stepBadge').textContent=s.tag;document.getElementById('stepTitle').textContent=s.name;document.getElementById('stepBody').innerHTML=s.body;document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?s.points.title:'')+'</h4><ul>'+((s.points?s.points.items:[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul>';document.getElementById('stepCode').innerHTML=s.code||'';document.querySelectorAll('.step').forEach((el,i)=>el.classList.toggle('active',i===stepIdx));statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;}
-function buildStepbar(){const bar=document.getElementById('stepbar');bar.innerHTML='';STEPS.forEach((s,i)=>{const el=document.createElement('div');el.className='step'+(i===stepIdx?' active':'');el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>8?s.name.slice(0,7)+'…':s.name)+'</div>';el.onclick=()=>{stepIdx=i;loadStep();};bar.appendChild(el);});}
-const STEPS=[{"tag": "基础", "name": "相似三角形", "body": "<strong>相似三角形</strong>：对应角相等、对应边成比例。记 ΔABC∽ΔA'B'C'。形状相同、大小可以不同。", "points": {"title": "定义", "items": ["<strong>对应角相等</strong>", "<strong>对应边成比例</strong>", "记 ∽", "与位置无关"]}, "code": "ΔABC ∽ ΔA'B'C'"}, {"tag": "比例", "name": "相似比 k", "body": "对应边之比称为<strong>相似比 k</strong>。若 k>1 则放大，k<1 则缩小；周长比=k，面积比=k²。", "points": {"title": "性质", "items": ["<strong>边比 = k</strong>", "周长比 = k", "<strong>面积比 = k²</strong>", "高/中线比 = k"]}, "code": "a'/a = b'/b = c'/c = k\nS'/S = k²"}, {"tag": "位似", "name": "位似", "body": "<strong>位似</strong>是特殊的相似：所有对应点连线交于一点（位似中心），且到中心距离比恒为 k。", "points": {"title": "位似", "items": ["<strong>一点</strong>为中心", "连线共点", "距离比 = k", "放大/缩小变换"]}, "code": "O 为位似中心\nOA'/OA = k"}];
-let stepIdx=0;
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'⏸ 暂停':'▶ 播放';if(playing)animT=0;};
+resetBtn.onclick=function(){sceneReset();};
+stepFwdBtn.onclick=function(){stepIdx=(stepIdx+1)%STEPS.length;loadStep();};
+stepBackBtn.onclick=function(){stepIdx=(stepIdx-1+STEPS.length)%STEPS.length;loadStep();};
+speedEl.oninput=function(){speed=parseFloat(speedEl.value);};
+function loadStep(){var s=STEPS[stepIdx];if(!s)return;animT=0;if(typeof applyEx==='function'&&s.ex){applyEx(s.ex);}document.getElementById('stepBadge').textContent=s.tag;document.getElementById('stepTitle').textContent=s.name;document.getElementById('stepBody').innerHTML=s.body;document.getElementById('stepPoints').innerHTML='<h4>'+(s.points?s.points.title:'')+'</h4><ul>'+((s.points?s.points.items:[]).map(function(x){return '<li>'+x+'</li>';}).join(''))+'</ul>';document.getElementById('stepCode').textContent=s.code||'';document.querySelectorAll('.step').forEach(function(el,i){el.classList.toggle('active',i===stepIdx);});statusEl.textContent='步骤 '+(stepIdx+1)+' / '+STEPS.length+' · '+s.name;}
+function buildStepbar(){var bar=document.getElementById('stepbar');bar.innerHTML='';STEPS.forEach(function(s,i){var el=document.createElement('div');el.className='step'+(i===stepIdx?' active':'');el.innerHTML='<div>'+s.tag+'</div><div>'+(s.name.length>7?s.name.slice(0,6)+'…':s.name)+'</div>';el.onclick=function(){stepIdx=i;loadStep();};bar.appendChild(el);});}
+const STEPS=[{"tag": "引入", "name": "相似三角形", "body": "两个三角形<strong>形状相同、大小可能不同</strong>，就是相似。相似三角形的<strong>对应角相等，对应边成比例</strong>。", "points": {"title": "相似", "items": ["形状相同", "对应角相等", "对应边成比例", "大小可不同"]}, "code": "△ABC ∽ △A′B′C′"}, {"tag": "位似", "name": "位似变换", "body": "<strong>位似</strong>是一种特殊的相似：两个相似图形的对应点连线<strong>交于同一点（位似中心 O）</strong>。拖动 k 改变大小，对应点始终在过 O 的同一直线上。", "points": {"title": "位似", "items": ["对应点连线过 O", "O = 位似中心", "k = 位似比", "同侧或异侧"]}, "code": "O A′ = k · O A"}, {"tag": "边比", "name": "对应边比 = k", "body": "位似比为 k 时，<strong>对应边之比 = k</strong>。即 A′B′ = k·AB，B′C′ = k·BC，C′A′ = k·CA。k>1 放大，k<1 缩小。", "points": {"title": "边比", "items": ["A′B′/AB = k", "B′C′/BC = k", "C′A′/CA = k", "k>1 放大"]}, "code": "对应边比 = k"}, {"tag": "面积比", "name": "面积比 = k²", "body": "长度比为 k，则<strong>面积比为 k²</strong>（面积是长度的平方）。所以 S′/S = k²。这是「相似比平方」规律。", "points": {"title": "面积比", "items": ["面积比 = k²", "长度平方", "k=2 → 面积4倍", "相似比平方律"]}, "code": "S′ / S = k²"}, {"tag": "性质", "name": "相似的性质", "body": "相似三角形：对应角相等、对应边成比例、周长比为 k、面积比为 k²。位似是特殊的相似（有位似中心）。", "points": {"title": "性质", "items": ["对应角相等", "对应边成比例", "周长比 = k", "面积比 = k²"]}, "code": "周长比=k, 面积比=k²"}];
 
-var SIM={t:0,k:1.5};
-function sceneInit(){SIM={t:0,k:1.5};}
-function sceneReset(){sceneInit();}
-function sceneUpdate(dt){SIM.t+=dt;SIM.k=1.5+0.4*Math.sin(SIM.t*0.5);}
-function sceneDraw(){
-  var W=cv.width,H=cv.height,ox=W*0.42,oy=H*0.6;ctx.clearRect(0,0,W,H);
-  var P=[[0,-70],[90,10],[20,80]];
-  function drawTri(scale,col){ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();for(var i=0;i<3;i++){var x=ox+P[i][0]*scale,y=oy+P[i][1]*scale;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.closePath();ctx.stroke();}
-  drawTri(1,'#74b9ff');drawTri(SIM.k,'rgba(251,191,36,.8)');
-  drawText('小 △ (k=1)',ox-30,oy+20,'#74b9ff',12);
-  drawText('放大 k='+SIM.k.toFixed(2),ox+90*SIM.k,oy-70*SIM.k,'#fbbf24',12);
-  drawText('边比 = k，面积比 = k²',W/2,H*0.18,'#e8eef8',13);
-}
+const paEl=document.getElementById('pa'),paV=document.getElementById('paV');
+const cardSide=document.getElementById('cardSide'),cardArea=document.getElementById('cardArea'),cardParam=document.getElementById('cardParam');
+let K=1.5;
+function readParams(){K=parseFloat(paEl.value);paV.textContent='k='+K.toFixed(1);cardSide.textContent='对应边比 = k = '+K.toFixed(2);cardArea.textContent='面积比 = k² = '+(K*K).toFixed(2);cardParam.textContent='k = '+K.toFixed(1)+'   k² = '+(K*K).toFixed(2);}
+paEl.oninput=function(){readParams();sceneDraw();};
+// 基础三角形（相对位似中心O的坐标）
+function base(){return [[-1.2,-1],[1.4,-1],[0.3,1.6]];}
+function geom(){var W=cv.width,H=cv.height,O=[W*0.32,H*2/3],u=Math.min(W,H)/5.5;return{O,u};}
+function drawTri(P,fill,stroke,lw){ctx.beginPath();ctx.moveTo(P[0][0],P[0][1]);ctx.lineTo(P[1][0],P[1][1]);ctx.lineTo(P[2][0],P[2][1]);ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}ctx.strokeStyle=stroke;ctx.lineWidth=lw||2;ctx.stroke();}
+function scaled(O,u,k){var b=base();return b.map(function(p){return [O[0]+p[0]*u*k, O[1]+p[1]*u*k];});}
+function drawIntro(p){var W=cv.width,H=cv.height,{O,u}=geom();var A=scaled(O,u,1),B=scaled(O,u,K);var pe=ease(Math.min(p/0.7,1));ctx.globalAlpha=pe*0.5;drawTri(A,'rgba(59,130,246,.2)','#74b9ff',2);ctx.globalAlpha=pe;drawTri(B,'rgba(52,211,153,.25)','#34d399',2);ctx.globalAlpha=1;ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(O[0],O[1],4,0,7);ctx.fill();drawText('O',O[0]-10,O[1]+14,'#fbbf24',12);ctx.globalAlpha=pe;drawText('相似三角形：形状相同、对应边成比例',W/2,36,'#e8eef8',15);ctx.globalAlpha=1;}
+function drawHom(p){var{O,u}=geom();var A=scaled(O,u,1),B=scaled(O,u,K);var pe=ease(Math.min(p/0.8,1));drawTri(A,'rgba(59,130,246,.15)','#74b9ff',1.5);drawTri(B,'rgba(52,211,153,.2)','#34d399',2);ctx.globalAlpha=pe;ctx.strokeStyle='rgba(251,191,36,.4)';ctx.lineWidth=1;ctx.setLineDash([4,3]);for(var i=0;i<3;i++){ctx.beginPath();ctx.moveTo(O[0],O[1]);ctx.lineTo(B[i][0],B[i][1]);ctx.stroke();}ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(O[0],O[1],4,0,7);ctx.fill();drawText('对应点连线过位似中心 O',cv.width/2,cv.height-16,'#fbbf24',13);}
+function drawSide(p){var{O,u}=geom();var A=scaled(O,u,1),B=scaled(O,u,K);drawTri(A,'rgba(59,130,246,.15)','#74b9ff',1.5);drawTri(B,'rgba(52,211,153,.2)','#34d399',2);var pe=ease(Math.min(p/0.7,1));ctx.globalAlpha=pe;ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(A[0][0],A[0][1]);ctx.lineTo(A[1][0],A[1][1]);ctx.stroke();ctx.strokeStyle='#34d399';ctx.beginPath();ctx.moveTo(B[0][0],B[0][1]);ctx.lineTo(B[1][0],B[1][1]);ctx.stroke();ctx.globalAlpha=1;ctx.globalAlpha=pe;drawText('A′B′ = k·AB = '+K.toFixed(1)+'·AB',cv.width/2,cv.height-16,'#fbbf24',13);ctx.globalAlpha=1;}
+function drawArea(p){var{O,u}=geom();var A=scaled(O,u,1),B=scaled(O,u,K);var pe=ease(Math.min(p/0.7,1));ctx.globalAlpha=pe*0.6;drawTri(A,'rgba(59,130,246,.3)','#74b9ff',1.5);ctx.globalAlpha=pe;drawTri(B,'rgba(52,211,153,.3)','#34d399',2);ctx.globalAlpha=1;ctx.globalAlpha=pe;drawText('面积比 = k² = '+(K*K).toFixed(2),cv.width/2,36,'#34d399',15);ctx.globalAlpha=1;}
+function drawProp(p){var W=cv.width,H=cv.height;drawIntro(1);var pe=ease(Math.min(p/0.6,1));ctx.globalAlpha=pe;drawText('对应角等 / 边比=k / 周长比=k / 面积比=k²',W/2,36,'#e8eef8',14);ctx.globalAlpha=1;}
+function sceneDraw(){var W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);var pp=ease(Math.min(animT/STEP_DUR,1));if(stepIdx===0)drawIntro(pp);else if(stepIdx===1)drawHom(pp);else if(stepIdx===2)drawSide(pp);else if(stepIdx===3)drawArea(pp);else if(stepIdx===4)drawProp(pp);}
+function sceneInit(){K=1.5;stepIdx=0;animT=0;playing=false;paEl.value=K;readParams();}
+function sceneReset(){sceneInit();loadStep();}
+function sceneUpdate(dt){animT+=dt*speed;if(!playing&&animT>STEP_DUR)animT=STEP_DUR;if(playing&&animT>STEP_DUR+0.5){stepIdx=(stepIdx+1)%STEPS.length;loadStep();}}
 
-sceneInit(); buildStepbar(); loadStep(); requestAnimationFrame(loop);
-</script>
-</body>
-</html>
+sceneInit();buildStepbar();loadStep();requestAnimationFrame(loop);</script></body></html>
