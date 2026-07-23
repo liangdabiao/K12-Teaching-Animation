@@ -63,14 +63,46 @@ const cardArc=document.getElementById('cardArc'),cardArea=document.getElementByI
 let TH=120,R=2;
 function readParams(){TH=parseInt(paEl.value);R=parseFloat(pbEl.value);paV.textContent='θ='+TH+'°';pbV.textContent='R='+R.toFixed(1);var l=2*Math.PI*R*TH/360, s=Math.PI*R*R*TH/360;cardArc.textContent='l = 2πR·θ/360 = '+l.toFixed(2);cardArea.textContent='S = πR²·θ/360 = '+s.toFixed(2);cardParam.textContent='θ = '+TH+'°   R = '+R.toFixed(1)+'   整圆周 = '+(2*Math.PI*R).toFixed(2)+'   整圆面积 = '+(Math.PI*R*R).toFixed(2);}
 paEl.oninput=function(){readParams();sceneDraw();};pbEl.oninput=function(){readParams();sceneDraw();};
-function geom(){var W=cv.width,H=cv.height,cx=W/2,cy=H/2+10,rr=Math.min(W,H)*0.16*R;var th=TH*Math.PI/180,a0=-Math.PI/2-th/2;return{cx,cy,rr,th,a0};}
-function drawCirc(){var{cx,cy,rr}=geom();ctx.strokeStyle='#3a5a8a';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,rr,0,7);ctx.stroke();return geom();}
-function drawSector(pe){var{cx,cy,rr,th,a0}=geom();var end=a0+th*pe;ctx.fillStyle='rgba(59,130,246,.35)';ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,rr,a0,end);ctx.closePath();ctx.fill();ctx.strokeStyle='#74b9ff';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(cx,cy,rr,a0,end);ctx.stroke();ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+rr*Math.cos(a0),cy+rr*Math.sin(a0));ctx.moveTo(cx,cy);ctx.lineTo(cx+rr*Math.cos(end),cy+rr*Math.sin(end));ctx.stroke();}
-function drawIntro(p){var W=cv.width,H=cv.height;drawCirc();var pe=ease(Math.min(p/0.7,1));drawSector(pe);var{cx,cy,rr,th,a0}=geom();ctx.fillStyle='#74b9ff';ctx.beginPath();ctx.arc(cx,cy,3,0,7);ctx.fill();drawText('O',cx-12,cy+12,'#74b9ff',12);drawText('R',cx+rr*0.6,cy+16,'#fbbf24',12);ctx.globalAlpha=pe;drawText('扇形：弧 + 两条半径',W/2,36,'#e8eef8',15);ctx.globalAlpha=1;}
-function drawProp(p){var W=cv.width,H=cv.height;drawCirc();var pe=ease(Math.min(p/0.7,1));drawSector(1);ctx.globalAlpha=pe;drawText('占整圆的比例 = θ/360 = '+TH+'/360',W/2,36,'#fbbf24',15);ctx.globalAlpha=1;}
-function drawArc(p){var W=cv.width,H=cv.height;drawCirc();var pe=ease(Math.min(p/0.8,1));drawSector(pe);var{cx,cy,rr,th,a0}=geom();ctx.globalAlpha=pe;ctx.strokeStyle='#34d399';ctx.lineWidth=4;ctx.beginPath();ctx.arc(cx,cy,rr,a0,a0+th*pe);ctx.stroke();ctx.globalAlpha=1;ctx.globalAlpha=pe;drawText('l = 2πR·θ/360 = '+(2*Math.PI*R*TH/360).toFixed(2),W/2,H-18,'#34d399',14);ctx.globalAlpha=1;}
-function drawArea(p){var W=cv.width,H=cv.height;drawCirc();var pe=ease(Math.min(p/0.8,1));drawSector(pe);ctx.globalAlpha=pe;drawText('S = πR²·θ/360 = '+(Math.PI*R*R*TH/360).toFixed(2),W/2,36,'#74b9ff',14);ctx.globalAlpha=1;}
-function drawApp(p){var W=cv.width,H=cv.height;drawCirc();drawSector(1);var pe=ease(Math.min(p/0.6,1));ctx.globalAlpha=pe;drawText('整圆量 × θ/360',W/2,36,'#e8eef8',15);ctx.globalAlpha=1;}
+function geom(){var W=cv.width,H=cv.height;
+ var leftCx=W*0.30,leftCy=H*0.40;
+ var rr=50+(R-1)*44;
+ var th=TH*Math.PI/180, a0=-Math.PI/2-th/2;
+ var barX0=W*0.575, barLen=Math.min(W*0.355, 12*2*Math.PI*R), barX1=barX0+barLen, barY=H*0.42;
+ var sqSize=Math.min(150, 40+(R-1)*30), sqX=barX0, sqY=H*0.60;
+ return{leftCx,leftCy,rr,th,a0,barX0,barX1,barLen,barY,sqX,sqY,sqSize};}
+function drawSector(p){var g=geom(),cx=g.leftCx,cy=g.leftCy,rr=g.rr,th=g.th,a0=g.a0;var end=a0+th*ease(Math.min(p/0.8,1));
+ ctx.strokeStyle='#3a5a8a';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,rr,0,7);ctx.stroke();
+ ctx.fillStyle='rgba(59,130,246,.35)';ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,rr,a0,end);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#74b9ff';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(cx,cy,rr,a0,end);ctx.stroke();
+ ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+rr*Math.cos(a0),cy+rr*Math.sin(a0));ctx.moveTo(cx,cy);ctx.lineTo(cx+rr*Math.cos(end),cy+rr*Math.sin(end));ctx.stroke();
+ ctx.fillStyle='#74b9ff';ctx.beginPath();ctx.arc(cx,cy,3,0,7);ctx.fill();
+ return g;}
+function drawSectorArcOnly(p){var g=drawSector(p);var cx=g.leftCx,cy=g.leftCy,rr=g.rr,th=g.th,a0=g.a0;var end=a0+th*ease(Math.min(p/0.8,1));
+ ctx.strokeStyle='#34d399';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,rr,a0,end);ctx.stroke();return g;}
+function drawScale(p,mode){var g=geom();var frac=(TH/360)*ease(Math.min(p/0.8,1));
+ ctx.strokeStyle='#3a5a8a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(g.barX0,g.barY);ctx.lineTo(g.barX1,g.barY);ctx.stroke();
+ drawText('0°',g.barX0,g.barY-14,'#9ab0d0',11);drawText('360°',g.barX1,g.barY-14,'#9ab0d0',11);
+ ctx.strokeStyle=(mode==='area')?'#74b9ff':'#34d399';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(g.barX0,g.barY);ctx.lineTo(g.barX0+g.barLen*frac,g.barY);ctx.stroke();
+ drawText('θ/360 = '+(TH/360).toFixed(3),g.barX0+g.barLen*frac/2,g.barY+18,'#34d399',11);
+ ctx.strokeStyle='#3a5a8a';ctx.lineWidth=2;ctx.strokeRect(g.sqX,g.sqY,g.sqSize,g.sqSize);
+ drawText('整圆面积',g.sqX+g.sqSize/2,g.sqY-10,'#9ab0d0',11);
+ ctx.fillStyle='rgba(59,130,246,.4)';ctx.fillRect(g.sqX,g.sqY+g.sqSize*(1-frac),g.sqSize,g.sqSize*frac);
+ drawText('θ/360',g.sqX+g.sqSize/2,g.sqY+g.sqSize*(1-frac/2),'#74b9ff',11);
+ var l=2*Math.PI*R*TH/360, s=Math.PI*R*R*TH/360;
+ if(mode==='arc'){drawText('整圆周 2πR = '+(2*Math.PI*R).toFixed(2),g.barX0,g.barY+40,'#9ab0d0',11);drawText('弧长 l = 2πR·θ/360 = '+l.toFixed(2),g.barX0,g.barY+56,'#34d399',12);}
+ if(mode==='area'){drawText('整圆面积 πR² = '+(Math.PI*R*R).toFixed(2),g.sqX,g.sqY+g.sqSize+22,'#9ab0d0',11);drawText('扇形面积 S = πR²·θ/360 = '+s.toFixed(2),g.sqX,g.sqY+g.sqSize+38,'#74b9ff',12);}
+ return g;}
+function drawIntro(p){var g=drawSector(p);drawText('O',g.leftCx-12,g.leftCy+14,'#74b9ff',12);drawText('R',g.leftCx+g.rr*0.5,g.leftCy+g.rr*0.25,'#fbbf24',12);drawText('扇形：弧 + 两条半径',cv.width/2,28,'#e8eef8',15);}
+function drawProp(p){drawSector(1);drawScale(p,'both');drawText('占整圆比例 = θ/360，弧长与面积都按此比例',cv.width/2,28,'#fbbf24',14);}
+function drawArc(p){drawSectorArcOnly(p);drawScale(p,'arc');drawText('弧长 = 整圆周 × θ/360',cv.width/2,28,'#34d399',15);}
+function drawArea(p){drawSector(p);drawScale(p,'area');drawText('面积 = 整圆面积 × θ/360',cv.width/2,28,'#74b9ff',15);}
+function drawApp(p){drawSector(1);drawScale(p,'both');var frac=TH/360,label='';
+ if(Math.abs(frac-0.5)<0.02)label='θ=180° → 半圆（占 1/2）';
+ else if(Math.abs(frac-0.25)<0.02)label='θ=90° → 四分之一圆（占 1/4）';
+ else if(Math.abs(frac-1)<0.02)label='θ=360° → 整圆（占 1）';
+ else label='θ='+TH+'° → 占 '+(TH/360).toFixed(2);
+ drawText(label,g.barX0,g.barY+78,'#e8eef8',13);
+ drawText('整圆量 × θ/360 就是扇形量',cv.width/2,28,'#e8eef8',15);}
 function sceneDraw(){var W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);var pp=ease(Math.min(animT/STEP_DUR,1));if(stepIdx===0)drawIntro(pp);else if(stepIdx===1)drawProp(pp);else if(stepIdx===2)drawArc(pp);else if(stepIdx===3)drawArea(pp);else if(stepIdx===4)drawApp(pp);}
 function sceneInit(){TH=120;R=2;stepIdx=0;animT=0;playing=false;paEl.value=TH;pbEl.value=R;readParams();}
 function sceneReset(){sceneInit();loadStep();}

@@ -87,7 +87,7 @@ function drawBranch(ox,oy,sc,xa,xb,col,glow,progress){
 function drawCurve(progress,glow){var {ox,oy,sc}=axes();var col=k>=0?'#34d399':'#f87171';
   drawBranch(ox,oy,sc,0.3,9,col,glow,progress);
   drawBranch(ox,oy,sc,-9,-0.3,col,glow,progress);
-  drawText('y = '+fmt(k)+' / x',ox+ (k>=0?80:-80),oy-(k/x)*(sc) ,col,14);
+  var lx=2,ly=k/lx;drawText('y = '+fmt(k)+' / x',ox+lx*sc,oy-ly*sc-14,col,14);
 }
 function drawIntro(p){var W=cv.width,H=cv.height;axes();var pe=ease(Math.min(p/0.6,1));ctx.globalAlpha=pe;drawText('反比例函数  y = k / x   (k 为常数, k ≠ 0)',W/2,36,'#e8eef8',17);drawText('自变量 x ≠ 0；y 随 x 变化而变化',W/2,H-16,'#9ab0d0',13);ctx.globalAlpha=1;}
 function drawPoints(p){var {ox,oy,sc}=axes();var xs=[1,2,4,8,-1,-2,-4];var pe=ease(Math.min(p/0.8,1));var n=Math.floor(pe*xs.length);

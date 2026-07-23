@@ -63,35 +63,35 @@ const cardCorr=document.getElementById('cardCorr'),cardAlt=document.getElementBy
 let TH=55;
 function readParams(){TH=parseInt(paEl.value);paV.textContent='θ='+TH+'°';cardCorr.textContent='同位角 = '+TH+'°（相等）';cardAlt.textContent='内错角 = '+TH+'°（相等）';cardCoint.textContent='同旁内角 = '+TH+'° + '+(180-TH)+'° = 180°（互补）';}
 paEl.oninput=function(){readParams();sceneDraw();};
-function layout(){var W=cv.width,H=cv.height,cx=W/2,cy=H/2;var y1=cy-70,y2=cy+70;var th=TH*Math.PI/180;var dx=70/Math.sin(th);var P1=[cx+dx*Math.cos(th),y1], P2=[cx-dx*Math.cos(th),y2];return{cx,cy,y1,y2,P1,P2,th};}
-function drawLines(){var W=cv.width,H=cv.height,{cx,cy,y1,y2,P1,P2}=layout();
+function layout(){var W=cv.width,H=cv.height;var cx=W/2,cy=H/2;var y1=cy-70,y2=cy+70;var th=TH*Math.PI/180;var dx=70/Math.tan(th);var P1=[cx+dx,y1],P2=[cx-dx,y2];return{cx,cy,y1,y2,P1,P2,th};}
+function transEnds(){var W=cv.width,{P1,th}=layout();var c=Math.cos(th),s=Math.sin(th);var Lx=30,Rx=W-30;var sL=(P1[0]-Lx)/c,yL=P1[1]+sL*s;var sR=(P1[0]-Rx)/c,yR=P1[1]+sR*s;return[[Lx,yL],[Rx,yR]];}
+function drawLines(){var W=cv.width,H=cv.height;var{P1,P2,y1,y2}=layout();var e=transEnds();
  ctx.strokeStyle='#3a5a8a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(30,y1);ctx.lineTo(W-30,y1);ctx.moveTo(30,y2);ctx.lineTo(W-30,y2);ctx.stroke();
- drawText('l₁',W-20,y1-6,'#74b9ff',12);drawText('l₂',W-20,y2+14,'#74b9ff',12);
- ctx.strokeStyle='#74b9ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(P1[0]+ (W-30-P1[0]),P1[1]);ctx.lineTo(P2[0]-(P2[0]-30),P2[1]);ctx.stroke();
- // 截线两端延长
- ctx.beginPath();ctx.moveTo(30, P1[1]+(30-P1[0])*Math.tan(layout().th));ctx.lineTo(W-30, P1[1]+((W-30)-P1[0])*Math.tan(layout().th));ctx.stroke();
+ drawText('l₁',W-20,y1-8,'#74b9ff',12);drawText('l₂',W-20,y2+16,'#74b9ff',12);
+ ctx.strokeStyle='#74b9ff';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(e[0][0],e[0][1]);ctx.lineTo(e[1][0],e[1][1]);ctx.stroke();
  ctx.fillStyle='#74b9ff';ctx.beginPath();ctx.arc(P1[0],P1[1],4,0,7);ctx.fill();ctx.beginPath();ctx.arc(P2[0],P2[1],4,0,7);ctx.fill();
+ drawText('P₁',P1[0]+12,P1[1]-12,'#74b9ff',12);drawText('P₂',P2[0]-18,P2[1]+14,'#74b9ff',12);
  return{P1,P2,y1,y2};
 }
 function ang(cx,cy,r,a0,a1,col){ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(cx,cy,r,a0,a1);ctx.stroke();}
 function drawIntro(p){var W=cv.width,H=cv.height;drawLines();var pe=ease(Math.min(p/0.7,1));ctx.globalAlpha=pe;drawText('两平行线被截线所截 → 8 个角',W/2,36,'#e8eef8',15);ctx.globalAlpha=1;}
-function drawCorr(p){var{P1,P2,y1,y2}=drawLines();var th=TH*Math.PI/180,pe=ease(Math.min(p/0.7,1));
- // 同位角：P1 右下角 与 P2 右下角 (都=θ)
- ang(P1[0],P1[1],16,0,th,'#fbbf24');ang(P2[0],P2[1],16,0,th,'#fbbf24');
- drawText('θ='+TH+'°',P1[0]+24,P1[1]+14,'#fbbf24',12);drawText('θ='+TH+'°',P2[0]+24,P2[1]+14,'#fbbf24',12);
- ctx.globalAlpha=pe;drawText('同位角相等：截线同侧、同方位',cv.width/2,36,'#fbbf24',15);ctx.globalAlpha=1;
+function drawCorr(p){var{P1,P2}=drawLines();var th=TH*Math.PI/180,a=-th,pe=ease(Math.min(p/0.7,1));
+ // 同位角：P₁ 右上角 与 P₂ 右上角（截线同侧、同方位，F 形），均 = θ
+ ang(P1[0],P1[1],16,a,0,'#fbbf24');ang(P2[0],P2[1],16,a,0,'#fbbf24');
+ drawText('θ='+TH+'°',P1[0]+24,P1[1]-16,'#fbbf24',12);drawText('θ='+TH+'°',P2[0]+24,P2[1]-16,'#fbbf24',12);
+ ctx.globalAlpha=pe;drawText('同位角：截线同侧、同方位（F 形）→ 相等',cv.width/2,36,'#fbbf24',15);ctx.globalAlpha=1;
 }
-function drawAlt(p){var{P1,P2}=drawLines();var th=TH*Math.PI/180,pe=ease(Math.min(p/0.7,1));
- // 内错角：P1 左下角(π-th..π) 与 P2 右上角(-th..0)? 取 P2 右上 = 截线右上侧
- ang(P1[0],P1[1],20,Math.PI-th,Math.PI,'#34d399');ang(P2[0],P2[1],20,-th,0,'#34d399');
- drawText(TH+'°',P1[0]-26,P1[1]+14,'#34d399',12);drawText(TH+'°',P2[0]+26,P2[1]-14,'#34d399',12);
- ctx.globalAlpha=pe;drawText('内错角相等：两线之间、截线两侧（Z 形）',cv.width/2,36,'#34d399',15);ctx.globalAlpha=1;
+function drawAlt(p){var{P1,P2}=drawLines();var th=TH*Math.PI/180,aL=Math.PI-th,pe=ease(Math.min(p/0.7,1));
+ // 内错角：P₁ 左下角(π-th..π) 与 P₂ 右上角(-th..0)，均 = θ，Z 形
+ ang(P1[0],P1[1],22,aL,Math.PI,'#34d399');ang(P2[0],P2[1],22,-th,0,'#34d399');
+ drawText(TH+'°',P1[0]-28,P1[1]+12,'#34d399',12);drawText(TH+'°',P2[0]+28,P2[1]-12,'#34d399',12);
+ ctx.globalAlpha=pe;drawText('内错角：两线之间、截线两侧（Z 形）→ 相等',cv.width/2,36,'#34d399',15);ctx.globalAlpha=1;
 }
-function drawCoint(p){var{P1,P2}=drawLines();var th=TH*Math.PI/180,pe=ease(Math.min(p/0.7,1));
- // 同旁内角：P1 左下(θ) 与 P2 左上(180-θ)，和=180
- ang(P1[0],P1[1],20,Math.PI-th,Math.PI,'#f87171');ang(P2[0],P2[1],20,Math.PI,Math.PI+th,'#f87171');
- drawText(TH+'°',P1[0]-26,P1[1]+14,'#f87171',12);drawText((180-TH)+'°',P2[0]-26,P2[1]-14,'#f87171',12);
- ctx.globalAlpha=pe;drawText('同旁内角互补：和 = 180°',cv.width/2,36,'#f87171',15);ctx.globalAlpha=1;
+function drawCoint(p){var{P1,P2}=drawLines();var th=TH*Math.PI/180,aL=Math.PI-th,pe=ease(Math.min(p/0.7,1));
+ // 同旁内角：P₁ 左下角(π-th..π)=θ 与 P₂ 左上角(π..2π-th)=180-θ，和=180，C 形
+ ang(P1[0],P1[1],22,aL,Math.PI,'#f87171');ang(P2[0],P2[1],22,Math.PI,2*Math.PI-th,'#f87171');
+ drawText(TH+'°',P1[0]-28,P1[1]+12,'#f87171',12);drawText((180-TH)+'°',P2[0]-30,P2[1]-12,'#f87171',12);
+ ctx.globalAlpha=pe;drawText('同旁内角：两线之间、截线同侧（C 形）→ 互补',cv.width/2,36,'#f87171',15);ctx.globalAlpha=1;
 }
 function drawConcl(p){var W=cv.width,H=cv.height;drawLines();var pe=ease(Math.min(p/0.6,1));ctx.globalAlpha=pe;drawText('同位角等 / 内错角等 / 同旁内角互补',W/2,40,'#e8eef8',15);drawText('反过来也是判定平行的依据',W/2,H-16,'#9ab0d0',13);ctx.globalAlpha=1;}
 function sceneDraw(){var W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);var p=ease(Math.min(animT/STEP_DUR,1));if(stepIdx===0)drawIntro(p);else if(stepIdx===1)drawCorr(p);else if(stepIdx===2)drawAlt(p);else if(stepIdx===3)drawCoint(p);else if(stepIdx===4)drawConcl(p);}

@@ -71,10 +71,11 @@ function drawAxisSym(axisX,cy,p,showProp){
   ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.setLineDash([7,5]);ctx.beginPath();ctx.moveTo(axisX,30);ctx.lineTo(axisX,cv.height-30);ctx.stroke();ctx.setLineDash([]);
   drawText('对称轴',axisX,20,'#fbbf24',12);
   // 原图（左，蓝）
-  ctx.save();ctx.translate(axisX-d,cy);ctx.scale(uu,uu);drawFLocal('rgba(59,130,246,.55)','#74b9ff',2/u);ctx.restore();
+  ctx.save();ctx.translate(axisX-d,cy);ctx.scale(uu,uu);drawFLocal('rgba(59,130,246,.55)','#74b9ff',2/uu);ctx.restore();
   ctx.save();ctx.translate(axisX-d,cy);ctx.scale(uu,uu);drawFLocal(null,'#74b9ff',0.12);ctx.restore();
-  // 翻折副本（绿）：scaleX = cos(p*π)
-  ctx.save();ctx.translate(axisX,cy);ctx.scale(uu*Math.cos(p*Math.PI),uu);ctx.translate(-d,0);drawFLocal('rgba(52,211,153,.6)','#34d399',2/u);ctx.restore();
+  // 翻折副本（绿）：p=0 在左侧与原图重合，p=1 翻到右侧并镜像
+  var sx=Math.cos(p*Math.PI);
+  ctx.save();ctx.translate(axisX-d*sx,cy);ctx.scale(uu*sx,uu);drawFLocal('rgba(52,211,153,.6)','#34d399',2/uu);ctx.restore();
   if(showProp){
     // 取顶点 (1.5,2) 作 P，其像 P'
     var Px=axisX-d+1.5*uu, Py=cy+2*uu;
@@ -94,10 +95,10 @@ function drawCentSym(cx,cy,p,showProp){
   // 中心点
   ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(cx,cy,5,0,7);ctx.fill();drawText('对称中心',cx,cy-16,'#f87171',12);
   // 原图（左，蓝）
-  ctx.save();ctx.translate(cx-d,cy);ctx.scale(uu,uu);drawFLocal('rgba(59,130,246,.55)','#74b9ff',2/u);ctx.restore();
+  ctx.save();ctx.translate(cx-d,cy);ctx.scale(uu,uu);drawFLocal('rgba(59,130,246,.55)','#74b9ff',2/uu);ctx.restore();
   ctx.save();ctx.translate(cx-d,cy);ctx.scale(uu,uu);drawFLocal(null,'#74b9ff',0.12);ctx.restore();
-  // 旋转副本（绿）
-  ctx.save();ctx.translate(cx,cy);ctx.rotate(p*Math.PI);ctx.scale(uu,uu);ctx.translate(-d,0);drawFLocal('rgba(52,211,153,.6)','#34d399',2/u);ctx.restore();
+  // 旋转副本（绿）：先 scale，再把本地中心(-d,0)绕(cx,cy)旋转 p*180°
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(p*Math.PI);ctx.translate(-d,0);ctx.scale(uu,uu);drawFLocal('rgba(52,211,153,.6)','#34d399',2/uu);ctx.restore();
   if(showProp){
     var Px=cx-d+1.5*uu, Py=cy+2*uu;
     var Px2=cx+d-1.5*uu, Py2=cy-2*uu;
